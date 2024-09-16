@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
+import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,7 +31,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void initState() {
     super.initState();
     _fetchTrips();
-   
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -41,81 +42,82 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
 //send button method
 
-void showTripAndUserIdInSnackBar(
-    Map<String, dynamic> tripData, BuildContext context) async {
-  // Extract tripId, userId, and driverId (driver's email)
-  final tripId = tripData['tripId'] ?? 'No Trip ID';
-  final userId = tripData['userId'] ?? 'No User ID';
-  final driverId = widget.driverEmail; // Email from the driver
+  void showTripAndUserIdInSnackBar(
+      Map<String, dynamic> tripData, BuildContext context) async {
+    // Extract tripId, userId, and driverId (driver's email)
+    final tripId = tripData['tripId'] ?? 'No Trip ID';
+    final userId = tripData['userId'] ?? 'No User ID';
+    final driverId = widget.driverEmail; // Email from the driver
 
-  if (tripId == 'No Trip ID' || userId == 'No User ID') {
-    // Show error if tripId or userId is missing
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Invalid Trip or User ID.'),
-        duration: Duration(seconds: 3),
-      ),
-    );
-    return ;
-  }
-
-  // Show confirmation dialog before adding the request to Firebase
-  bool confirm = await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Confirm Request ?'),
-        content: Text(
-          'Are you sure to send request to this user?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false); // Cancel confirmation
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true); // Confirm action
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
-      );
-    },
-  );
-
-  if (confirm == true) {
-    try {
-      // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
-      await FirebaseFirestore.instance.collection('requestsofDrivers').add({
-        'tripId': tripId,
-        'userId': userId,
-        'driverId': driverId,
-        'requestTimestamp': FieldValue.serverTimestamp(), // Optional: Add a timestamp
-      });
-
-      // Step 2: Show a SnackBar with tripId, userId, and driverId
+    if (tripId == 'No Trip ID' || userId == 'No User ID') {
+      // Show error if tripId or userId is missing
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
+          content: Text('Invalid Trip or User ID.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    // Show confirmation dialog before adding the request to Firebase
+    bool confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Request ?'),
           content: Text(
-            'Request sent successfully!\nTrip ID: $tripId\nUser ID: $userId\nDriver ID: $driverId',
+            'Are you sure to send request to this user?',
           ),
-          duration: const Duration(seconds: 10), // Show for 10 seconds
-        ),
-      );
-    } catch (e) {
-      // Handle error (e.g., if something goes wrong during the Firebase write)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error sending request: $e'),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Cancel confirmation
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Confirm action
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      try {
+        // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
+        await FirebaseFirestore.instance.collection('requestsofDrivers').add({
+          'tripId': tripId,
+          'userId': userId,
+          'driverId': driverId,
+          'requestTimestamp':
+              FieldValue.serverTimestamp(), // Optional: Add a timestamp
+        });
+
+        // Step 2: Show a SnackBar with tripId, userId, and driverId
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Request sent successfully!\nTrip ID: $tripId\nUser ID: $userId\nDriver ID: $driverId',
+            ),
+            duration: const Duration(seconds: 10), // Show for 10 seconds
+          ),
+        );
+      } catch (e) {
+        // Handle error (e.g., if something goes wrong during the Firebase write)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sending request: $e'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
-}
 
   // Fetch trips from Firestore
   Future<void> _fetchTrips() async {
@@ -257,8 +259,6 @@ void showTripAndUserIdInSnackBar(
     return null;
   }
 
-
-
   String _getSortField() => _selectedSortOption == 'Timestamp Newest First'
       ? 'timestamp'
       : 'timestamp';
@@ -275,7 +275,7 @@ void showTripAndUserIdInSnackBar(
         return _compareByIntegerPart(b['distance'], a['distance']);
       case 'Distance Smallest First':
         return _compareByIntegerPart(a['distance'], b['distance']);
-        
+
       default:
         return 0;
     }
@@ -341,7 +341,6 @@ void showTripAndUserIdInSnackBar(
   Future<void> _deleteTrip(String tripId) async {
     try {
       await FirebaseFirestore.instance.collection('trips').doc(tripId).delete();
-      
     } catch (e) {
       print('Error deleting trip: $e');
     }
@@ -378,20 +377,58 @@ void showTripAndUserIdInSnackBar(
       ),
       body: Column(
         children: [
-      
-          ElevatedButton(
-        onPressed: () {
-          
-       Navigator.push(
-            context,
-            MaterialPageRoute(
-      builder: (context) => DriverAcceptedPage(driverId: widget.driverEmail),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 5,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DriverAcceptedPage(driverId: widget.driverEmail),
+                      ),
+                    );
+                  },
+                  child: Text('View Accepted Requests'),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DriverSuccessfulTrips(driverId: widget.driverEmail,),
+                      ),
+                    );
+                  },
+                  child: Text('Successful Trips'),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DriverAcceptedPage(driverId: widget.driverEmail),
+                      ),
+                    );
+                  },
+                  child: Text('Successful Trips'),
+                ),
+              ],
             ),
-          );
-        },
-        child: Text('View Accepted Requests'),
-      ),
-      
+          ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -406,7 +443,8 @@ void showTripAndUserIdInSnackBar(
                 }
                 var tripData = _tripDataList[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   child: Card(
                     color: Colors.white.withOpacity(0.95),
                     shape: RoundedRectangleBorder(
@@ -424,7 +462,6 @@ void showTripAndUserIdInSnackBar(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
                           ),
-                          
                           SizedBox(
                             width: 10,
                           ),

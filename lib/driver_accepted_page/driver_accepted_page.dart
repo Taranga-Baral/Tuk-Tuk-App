@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DriverAcceptedPage extends StatefulWidget {
-  
   final String driverId;
 
   DriverAcceptedPage({required this.driverId});
@@ -13,7 +12,10 @@ class DriverAcceptedPage extends StatefulWidget {
   @override
   _DriverAcceptedPageState createState() => _DriverAcceptedPageState();
 }
-  Map<String, bool> _isButtonPressed = {}; 
+
+Map<String, bool> _isButtonPressed = {};
+Map<String, bool> _isEndButtonEnabled = {};
+
 class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
   Future<Map<String, dynamic>> _fetchUserDetails(String userId) async {
     final userDoc =
@@ -40,9 +42,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
     }
   }
 
-
-
-   Future<bool> _checkNetworkStatus() async {
+  Future<bool> _checkNetworkStatus() async {
     try {
       final result = await http.get(Uri.parse('https://www.google.com'));
       return result.statusCode == 200;
@@ -164,7 +164,11 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
 
                   final userDetails = snapshot.data![0];
                   final tripDetails = snapshot.data![1];
-                                      final isButtonDisabled = _isButtonPressed[tripId] ?? false;
+                  final isButtonDisabled = _isButtonPressed[tripId] ?? false;
+                  final isSendButtonDisabled =
+                      _isButtonPressed[tripId] ?? false;
+                  final isEndButtonEnabled =
+                      _isEndButtonEnabled[tripId] ?? false;
                   return Card(
                     margin: EdgeInsets.all(10),
                     child: ListTile(
@@ -208,40 +212,93 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                   }
                                 },
                               ),
-                               IconButton(
+                              IconButton(
                                 icon: Icon(Icons.send),
-                                color: isButtonDisabled ? Colors.grey : Colors.blue,
-                                onPressed: isButtonDisabled
+                                color: isSendButtonDisabled
+                                    ? Colors.grey
+                                    : Colors.blue,
+                                onPressed: isSendButtonDisabled
                                     ? null
                                     : () async {
-                                        final isNetworkAvailable = await _checkNetworkStatus();
+                                        final isNetworkAvailable =
+                                            await _checkNetworkStatus();
                                         if (isNetworkAvailable) {
                                           try {
-                                            await FirebaseFirestore.instance.collection('arrivedDrivers').add({
+                                            await FirebaseFirestore.instance
+                                                .collection('arrivedDrivers')
+                                                .add({
                                               'tripId': tripId,
                                               'driverId': widget.driverId,
                                               'userId': userId,
-                                              'timestamp': FieldValue.serverTimestamp(),
+                                              'timestamp':
+                                                  FieldValue.serverTimestamp(),
                                             });
 
                                             setState(() {
-                                              _isButtonPressed[tripId] = true; // Disable the button forever
+                                              _isButtonPressed[tripId] =
+                                                  true; // Disable the send button
+                                              _isEndButtonEnabled[tripId] =
+                                                  true; // Enable the end button
                                             });
 
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text('Driver arrival recorded')),
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      'Driver arrival recorded')),
                                             );
                                           } catch (e) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text('Failed to record arrival')),
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      'Failed to record arrival')),
                                             );
                                           }
                                         } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('No network connection')),
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'No network connection')),
                                           );
                                         }
                                       },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.done_all),
+                                color: isEndButtonEnabled
+                                    ? Colors.green
+                                    : Colors.grey,
+                                onPressed: isEndButtonEnabled
+                                    ? () async {
+                                        try {
+                                          await FirebaseFirestore.instance
+                                              .collection('successfulTrips')
+                                              .add({
+                                            'tripId': tripId,
+                                            'driverId': widget.driverId,
+                                            'userId': userId,
+                                            'timestamp':
+                                                FieldValue.serverTimestamp(),
+                                          });
+
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Trip marked as successful')),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Failed to mark trip as successful')),
+                                          );
+                                        }
+                                      }
+                                    : null, // Disable the end button if send button wasn't pressed
                               ),
                             ],
                           ),
