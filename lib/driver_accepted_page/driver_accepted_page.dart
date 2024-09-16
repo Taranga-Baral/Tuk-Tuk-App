@@ -4,13 +4,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class DriverAcceptedPage extends StatelessWidget {
-  final String driverId; // The driverId passed from the previous page
+class DriverAcceptedPage extends StatefulWidget {
+  
+  final String driverId;
 
   DriverAcceptedPage({required this.driverId});
 
+  @override
+  _DriverAcceptedPageState createState() => _DriverAcceptedPageState();
+}
+  Map<String, bool> _isButtonPressed = {}; 
+class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
   Future<Map<String, dynamic>> _fetchUserDetails(String userId) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
     if (userDoc.exists) {
       return userDoc.data()!;
     } else {
@@ -19,7 +26,8 @@ class DriverAcceptedPage extends StatelessWidget {
   }
 
   Future<Map<String, dynamic>> _fetchTripDetails(String tripId) async {
-    final tripDoc = await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
+    final tripDoc =
+        await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
     if (tripDoc.exists) {
       return tripDoc.data()!;
     } else {
@@ -29,6 +37,17 @@ class DriverAcceptedPage extends StatelessWidget {
         'fare': '0',
         'distance': '0',
       };
+    }
+  }
+
+
+
+   Future<bool> _checkNetworkStatus() async {
+    try {
+      final result = await http.get(Uri.parse('https://www.google.com'));
+      return result.statusCode == 200;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -57,10 +76,13 @@ class DriverAcceptedPage extends StatelessWidget {
     throw Exception('Failed to geocode address');
   }
 
-  Future<void> _launchOpenStreetMapWithDirections(String pickupLocation, String deliveryLocation) async {
+  Future<void> _launchOpenStreetMapWithDirections(
+      String pickupLocation, String deliveryLocation) async {
     try {
-      final pickupCoords = _parseCoordinates(pickupLocation) ?? await _geocodeAddress(pickupLocation);
-      final deliveryCoords = _parseCoordinates(deliveryLocation) ?? await _geocodeAddress(deliveryLocation);
+      final pickupCoords = _parseCoordinates(pickupLocation) ??
+          await _geocodeAddress(pickupLocation);
+      final deliveryCoords = _parseCoordinates(deliveryLocation) ??
+          await _geocodeAddress(deliveryLocation);
 
       final pickupLatitude = pickupCoords['latitude']!;
       final pickupLongitude = pickupCoords['longitude']!;
@@ -99,11 +121,12 @@ class DriverAcceptedPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Accepted Requests'),
+        // Removed the sorting options from the app bar
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('confirmedDrivers')
-            .where('driverId', isEqualTo: driverId) // Filter by driverId
+            .where('driverId', isEqualTo: widget.driverId)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -114,7 +137,8 @@ class DriverAcceptedPage extends StatelessWidget {
             return Center(child: Text('No accepted requests for this driver.'));
           }
 
-          final requests = snapshot.data!.docs;
+          // Removed sorting call
+          List<QueryDocumentSnapshot> requests = snapshot.data!.docs;
 
           return ListView.builder(
             itemCount: requests.length,
@@ -123,12 +147,13 @@ class DriverAcceptedPage extends StatelessWidget {
               final userId = request['userId'];
               final tripId = request['tripId'];
 
-              return FutureBuilder(
+              return FutureBuilder<List<Map<String, dynamic>>>(
                 future: Future.wait([
                   _fetchUserDetails(userId),
                   _fetchTripDetails(tripId),
                 ]),
-                builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                builder: (context,
+                    AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   }
@@ -139,7 +164,7 @@ class DriverAcceptedPage extends StatelessWidget {
 
                   final userDetails = snapshot.data![0];
                   final tripDetails = snapshot.data![1];
-
+                                      final isButtonDisabled = _isButtonPressed[tripId] ?? false;
                   return Card(
                     margin: EdgeInsets.all(10),
                     child: ListTile(
@@ -149,34 +174,76 @@ class DriverAcceptedPage extends StatelessWidget {
                         children: [
                           Text('User ID: $userId'),
                           Text('Username: ${userDetails['username']}'),
-                          Text('Phone: ${userDetails['phone']}'),
-                          Text('Pickup Location: ${tripDetails['pickupLocation']}'),
-                          Text('Delivery Location: ${tripDetails['deliveryLocation']}'),
+                          Text('Phone: ${userDetails['phone_number']}'),
+                          Text(
+                              'Pickup Location: ${tripDetails['pickupLocation']}'),
+                          Text(
+                              'Delivery Location: ${tripDetails['deliveryLocation']}'),
                           Text('Fare: ${tripDetails['fare']}'),
                           Text('Distance: ${tripDetails['distance']}'),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.phone),
-                            onPressed: () {
-                              final phoneNumber = userDetails['phone'] ?? '';
-                              if (phoneNumber.isNotEmpty) {
-                                _launchPhoneNumber(phoneNumber);
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.map),
-                            onPressed: () {
-                              final pickupLocation = tripDetails['pickupLocation'] ?? '';
-                              final deliveryLocation = tripDetails['deliveryLocation'] ?? '';
-                              if (pickupLocation.isNotEmpty && deliveryLocation.isNotEmpty) {
-                                _launchOpenStreetMapWithDirections(pickupLocation, deliveryLocation);
-                              }
-                            },
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.phone),
+                                onPressed: () {
+                                  final phoneNumber =
+                                      userDetails['phone'] ?? '';
+                                  if (phoneNumber.isNotEmpty) {
+                                    _launchPhoneNumber(phoneNumber);
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.map),
+                                onPressed: () {
+                                  final pickupLocation =
+                                      tripDetails['pickupLocation'] ?? '';
+                                  final deliveryLocation =
+                                      tripDetails['deliveryLocation'] ?? '';
+                                  if (pickupLocation.isNotEmpty &&
+                                      deliveryLocation.isNotEmpty) {
+                                    _launchOpenStreetMapWithDirections(
+                                        pickupLocation, deliveryLocation);
+                                  }
+                                },
+                              ),
+                               IconButton(
+                                icon: Icon(Icons.send),
+                                color: isButtonDisabled ? Colors.grey : Colors.blue,
+                                onPressed: isButtonDisabled
+                                    ? null
+                                    : () async {
+                                        final isNetworkAvailable = await _checkNetworkStatus();
+                                        if (isNetworkAvailable) {
+                                          try {
+                                            await FirebaseFirestore.instance.collection('arrivedDrivers').add({
+                                              'tripId': tripId,
+                                              'driverId': widget.driverId,
+                                              'userId': userId,
+                                              'timestamp': FieldValue.serverTimestamp(),
+                                            });
+
+                                            setState(() {
+                                              _isButtonPressed[tripId] = true; // Disable the button forever
+                                            });
+
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Driver arrival recorded')),
+                                            );
+                                          } catch (e) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Failed to record arrival')),
+                                            );
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('No network connection')),
+                                          );
+                                        }
+                                      },
+                              ),
+                            ],
                           ),
                         ],
                       ),

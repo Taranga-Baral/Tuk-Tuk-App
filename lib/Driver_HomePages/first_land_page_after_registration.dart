@@ -424,16 +424,7 @@ void showTripAndUserIdInSnackBar(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.bookmark),
-                            onPressed: () {
-                              final phoneNumber = tripData['phone'] ?? '';
-                              final tripId = tripData['tripId'] ?? '';
-                              if (phoneNumber.isNotEmpty && tripId.isNotEmpty) {
-                                _deleteTripWithConfirmation(tripId);
-                              }
-                            },
-                          ),
+                          
                           SizedBox(
                             width: 10,
                           ),
