@@ -186,42 +186,63 @@ class _RequestPageState extends State<RequestPage> {
 
                                 return Card(
                                   margin: EdgeInsets.all(10),
-                                  child: ListTile(
-                                    trailing: GestureDetector(
-                                      child: Icon(Icons.phone),
-                                      onTap: () {
-                                        final phoneNumber = driverData['phone'];
-                                        if (phoneNumber != null &&
-                                            phoneNumber.isNotEmpty) {
-                                          _launchPhoneNumber(phoneNumber);
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Phone number is unavailable')),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    title: Text(
-                                        '${driverData['name']} - ${driverData['numberPlate']}'),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Phone: ${driverData['phone']}'),
-                                        Text('Brand: ${driverData['brand']}'),
-                                        Text('Color: ${driverData['color']}'),
-                                        Text(
-                                            'Address: ${driverData['address']}'),
-                                        SizedBox(height: 10),
-                                        Text(
-                                            'Pickup Location: ${tripData['pickupLocation'] ?? 'N/A'}'),
-                                        Text(
-                                            'Delivery Location: ${tripData['deliveryLocation'] ?? 'N/A'}'),
-                                      ],
-                                    ),
+                                  child: Stack(
+                                    children: [
+                                      ListTile(
+                                        trailing: GestureDetector(
+                                          child: Icon(Icons.phone),
+                                          onTap: () {
+                                            final phoneNumber =
+                                                driverData['phone'];
+                                            if (phoneNumber != null &&
+                                                phoneNumber.isNotEmpty) {
+                                              _launchPhoneNumber(phoneNumber);
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                    content: Text(
+                                                        'Phone number is unavailable')),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        title: Text(
+                                            '${driverData['name']} - ${driverData['numberPlate']}'),
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                                '𝗣𝗵𝗼𝗻𝗲: ${driverData['phone']}'),
+                                            Text(
+                                                '𝗕𝗿𝗮𝗻𝗱: ${driverData['brand']}'),
+                                            Text(
+                                                '𝗖𝗼𝗹𝗼𝗿: ${driverData['color']}'),
+                                            Text(
+                                                '𝗔𝗱𝗱𝗿𝗲𝘀𝘀: ${driverData['address']}'),
+                                            SizedBox(height: 10),
+                                            Text(
+                                                '𝗣𝗶𝗰𝗸𝘂𝗽: ${tripData['pickupLocation'] ?? 'N/A'}'),
+                                            Text(
+                                                '𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆: ${tripData['deliveryLocation'] ?? 'N/A'}'),
+                                          ],
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 1,
+                                        right: 10,
+                                        child: Container(
+                                          height: 60,
+                                          width: 60,
+                                          padding: EdgeInsets.all(8),
+                                          child: Opacity(
+                                            opacity: 0.8,
+                                              child: Image.asset(
+                                                  "images/arrived_auto.png")),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
@@ -295,7 +316,7 @@ class _RequestPageState extends State<RequestPage> {
                                         ListTile(
                                           title: Text('$name - $numberPlate'),
                                           subtitle: Text(
-                                              'Vehicle: $brand $vehicleType ($color)'),
+                                              '𝗩𝗲𝗵𝗶𝗰𝗹𝗲: $brand $vehicleType ($color)'),
                                           trailing: IconButton(
                                             icon: Icon(_expandedStates[index]
                                                 ? Icons.expand_less
@@ -311,31 +332,35 @@ class _RequestPageState extends State<RequestPage> {
                                         ),
                                         if (_expandedStates[index])
                                           Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: const EdgeInsets.only(
+                                                bottom: 20, left: 18),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text('Phone: $phone'),
-                                                Text('Address: $address'),
-                                                Text('Pickup: $pickupLocation'),
+                                                Text('𝗣𝗵𝗼𝗻𝗲: $phone'),
                                                 Text(
-                                                    'Delivery: $deliveryLocation'),
-                                                Text('Fare: $fare'),
-                                                Text('Distance: $distance km'),
+                                                    '𝗔𝗱𝗱𝗿𝗲𝘀𝘀: $address'),
+                                                Text(
+                                                    '𝗣𝗶𝗰𝗸𝘂𝗽: $pickupLocation'),
+                                                Text(
+                                                    '𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆: $deliveryLocation'),
+                                                Text('𝗙𝗮𝗿𝗲: $fare'),
+                                                Text(
+                                                    '𝗗𝗶𝘀𝘁𝗮𝗻𝗰𝗲: $distance km'),
                                                 Row(
                                                   children: [
                                                     ElevatedButton(
-                                                      onPressed:
-                                                          _buttonStates[tripId] ==
-                                                                  true
-                                                              ? null
-                                                              : () {
-                                                                  confirmRequest(
-                                                                      userId,
-                                                                      driverId,
-                                                                      tripId);
-                                                                },
+                                                      onPressed: _buttonStates[
+                                                                  tripId] ==
+                                                              true
+                                                          ? null
+                                                          : () {
+                                                              confirmRequest(
+                                                                  userId,
+                                                                  driverId,
+                                                                  tripId);
+                                                            },
                                                       style: ElevatedButton
                                                           .styleFrom(
                                                         backgroundColor:
@@ -358,8 +383,10 @@ class _RequestPageState extends State<RequestPage> {
                                                     GestureDetector(
                                                       child: Icon(Icons.phone),
                                                       onTap: () {
-                                                        final phoneNumber = phone;
-                                                        if (phoneNumber != null &&
+                                                        final phoneNumber =
+                                                            phone;
+                                                        if (phoneNumber !=
+                                                                null &&
                                                             phoneNumber
                                                                 .isNotEmpty) {
                                                           _launchPhoneNumber(

@@ -1,3 +1,115 @@
+
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:flutter/material.dart';
+
+// class HistoryPage extends StatefulWidget {
+//   final String userId;
+
+//   const HistoryPage({super.key, required this.userId});
+
+//   @override
+//   _HistoryPageState createState() => _HistoryPageState();
+// }
+
+// class _HistoryPageState extends State<HistoryPage> {
+//   Future<List<Map<String, dynamic>>> _fetchTrips() async {
+//     try {
+//       // Fetch trips for the given userId
+//       QuerySnapshot tripsSnapshot = await FirebaseFirestore.instance
+//           .collection('successfulTrips')
+//           .where('userId', isEqualTo: widget.userId)
+//           .get();
+
+//       // Fetch user details and vehicle data for each trip
+//       List<Map<String, dynamic>> tripsData = await Future.wait(tripsSnapshot.docs.map((doc) async {
+//         final tripData = doc.data() as Map<String, dynamic>;
+//         final userSnapshot = await FirebaseFirestore.instance
+//             .collection('users')
+//             .doc(tripData['userId'])
+//             .get();
+//         final vehicleSnapshot = tripData['driverId'] != null
+//             ? await FirebaseFirestore.instance
+//                 .collection('vehicleData')
+//                 .where('driverId', isEqualTo: tripData['driverId'])
+//                 .get()
+//             : null;
+        
+//         final vehicleName = vehicleSnapshot?.docs.isNotEmpty == true
+//             ? vehicleSnapshot!.docs.first.data()['name'] ?? 'Unknown'
+//             : 'Unknown';
+
+//         final username = userSnapshot.data()?['username'] ?? 'Unknown';
+
+//         return {
+//           'tripId': doc.id,
+//           'timestamp': tripData['timestamp'],
+//           'userId': tripData['userId'],
+//           'driverId': tripData['driverId'],
+//           'username': username, // Include username here
+//           'vehicleName': vehicleName, // Include vehicle name here
+//         };
+//       }));
+
+//       return tripsData;
+//     } catch (e) {
+//       print('Error fetching trips: $e');
+//       return [];
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Trips'),
+//       ),
+//       body: FutureBuilder<List<Map<String, dynamic>>>(
+//         future: _fetchTrips(),
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+
+//           if (snapshot.hasError) {
+//             return const Center(child: Text('Error fetching trips.'));
+//           }
+
+//           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+//             List<Map<String, dynamic>> trips = snapshot.data!;
+
+//             return ListView.builder(
+//               itemCount: trips.length,
+//               itemBuilder: (context, index) {
+//                 var trip = trips[index];
+                
+//                 return Card(
+//                   elevation: 5,
+//                   margin: const EdgeInsets.all(8),
+//                   child: Padding(
+//                     padding: const EdgeInsets.all(16.0),
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text('Trip ID: ${trip['tripId']}'),
+//                         Text('User ID: ${trip['userId']}'),
+//                         Text('Username: ${trip['username']}'), // Display username
+//                         Text('Driver ID: ${trip['driverId'] ?? 'N/A'}'),
+//                         Text('Vehicle Name: ${trip['vehicleName'] ?? 'N/A'}'), // Display vehicle name
+//                         Text('Timestamp: ${trip['timestamp']?.toDate() ?? 'N/A'}'),
+//                       ],
+//                     ),
+//                   ),
+//                 );
+//               },
+//             );
+//           }
+
+//           return const Center(child: Text('No trips found.'));
+//         },
+//       ),
+//     );
+//   }
+// }
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -11,37 +123,44 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  String _filterOption = 'All'; 
-
-  // Function to fetch trips based on userId and filter based on driverId
-  Future<List<Map<String, dynamic>>> _fetchTrips(String filterOption) async {
+  Future<List<Map<String, dynamic>>> _fetchTrips() async {
     try {
-      // Query trips where userId matches
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('trips')
+      // Fetch trips for the given userId
+      QuerySnapshot tripsSnapshot = await FirebaseFirestore.instance
+          .collection('successfulTrips')
           .where('userId', isEqualTo: widget.userId)
           .get();
 
-      List<Map<String, dynamic>> tripsData;
+      // Fetch user details and vehicle data for each trip
+      List<Map<String, dynamic>> tripsData = await Future.wait(tripsSnapshot.docs.map((doc) async {
+        final tripData = doc.data() as Map<String, dynamic>;
+        final userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(tripData['userId'])
+            .get();
+        final vehicleSnapshot = tripData['driverId'] != null
+            ? await FirebaseFirestore.instance
+                .collection('vehicleData')
+                .where('driverId', isEqualTo: tripData['driverId'])
+                .get()
+            : null;
+        
+        final vehicleData = vehicleSnapshot?.docs.isNotEmpty == true
+            ? vehicleSnapshot!.docs.first.data() as Map<String, dynamic>
+            : {};
+        
+        final username = userSnapshot.data()?['username'] ?? 'Unknown';
+        final driverPhone = vehicleData['phone'] ?? 'Unknown';
 
-      if (filterOption == 'Approved') {
-        // Filter trips to only include those with a driverId (Approved)
-        tripsData = querySnapshot.docs
-            .where((doc) => (doc.data() as Map<String, dynamic>).containsKey('driverId'))
-            .map((doc) => {'tripId': doc.id, ...doc.data() as Map<String, dynamic>})
-            .toList();
-      } else if (filterOption == 'Pending') {
-        // Filter trips to only include those without a driverId (Pending)
-        tripsData = querySnapshot.docs
-            .where((doc) => !(doc.data() as Map<String, dynamic>).containsKey('driverId'))
-            .map((doc) => {'tripId': doc.id, ...doc.data() as Map<String, dynamic>})
-            .toList();
-      } else {
-        // "All" filter: Show all trips made by the user
-        tripsData = querySnapshot.docs
-            .map((doc) => {'tripId': doc.id, ...doc.data() as Map<String, dynamic>})
-            .toList();
-      }
+        return {
+          'tripId': doc.id,
+          'timestamp': tripData['timestamp'],
+          'userId': tripData['userId'],
+          'driverId': tripData['driverId'],
+          'username': username, // Include username here
+          'driverPhone': driverPhone, // Include driver phone number here
+        };
+      }));
 
       return tripsData;
     } catch (e) {
@@ -55,80 +174,48 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trips'),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (String result) {
-              setState(() {
-                _filterOption = result; // Change filter based on selection
-              });
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'All',
-                child: Text('All'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Approved',
-                child: Text('Approved'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Pending',
-                child: Text('Pending'),
-              ),
-            ],
-          ),
-        ],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _fetchTrips(_filterOption), // Fetch trips based on the filter option
+        future: _fetchTrips(),
         builder: (context, snapshot) {
-          // Loading state
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Error state
           if (snapshot.hasError) {
             return const Center(child: Text('Error fetching trips.'));
           }
 
-          // Data fetched successfully
           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
             List<Map<String, dynamic>> trips = snapshot.data!;
 
-            // Display the list of trips
             return ListView.builder(
               itemCount: trips.length,
               itemBuilder: (context, index) {
-                Map<String, dynamic> trip = trips[index];
+                var trip = trips[index];
+                
                 return Card(
                   elevation: 5,
                   margin: const EdgeInsets.all(8),
-                  child: ListTile(
-                    title: Text('Trip ID: ${trip['tripId']}'),
-                    subtitle: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text('Trip ID: ${trip['tripId']}'),
                         Text('User ID: ${trip['userId']}'),
-                        Text('Pickup Location: ${trip['pickupLocation']}'),
-                        Text('Delivery Location: ${trip['deliveryLocation']}'),
-                        Text('Distance: ${trip['distance']} km'),
-                        Text('Fare: ${trip['fare']}'),
-                        if (trip.containsKey('driverId'))
-                          Text('Driver ID: ${trip['driverId']}'), 
-                        Text('Timestamp: ${trip['timestamp'] ?? 'N/A'}'),
+                        Text('Username: ${trip['username']}'), // Display username
+                        Text('Driver ID: ${trip['driverId'] ?? 'N/A'}'),
+                        Text('Driver Phone: ${trip['driverPhone'] ?? 'N/A'}'), // Display driver phone number
+                        Text('Timestamp: ${trip['timestamp']?.toDate() ?? 'N/A'}'),
                       ],
                     ),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                    },
                   ),
                 );
               },
             );
           }
 
-          // No trips found
           return const Center(child: Text('No trips found.'));
         },
       ),
