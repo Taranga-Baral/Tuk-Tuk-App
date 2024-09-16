@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DriverAuthPage extends StatefulWidget {
   @override
@@ -213,7 +212,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                DriverHomePage(driverEmail: _emailController.toString(),)), 
+                DriverRegistrationPage()), 
       );
     } catch (e) {
       print('Error submitting form: $e');
@@ -243,18 +242,9 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus(); // Check if the user is already logged in
   }
 
-  Future<void> _checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? savedEmail = prefs.getString('driverEmail');
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) =>  DriverHomePage(driverEmail: _emailController.toString(),)),
-    );
-    }
+  
 
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class RequestPageHomePage extends StatefulWidget {
+class HistoryPage extends StatefulWidget {
   final String userId;
 
-  const RequestPageHomePage({Key? key, required this.userId}) : super(key: key);
+  const HistoryPage({Key? key, required this.userId}) : super(key: key);
 
   @override
-  _RequestPageHomePageState createState() => _RequestPageHomePageState();
+  _HistoryPageState createState() => _HistoryPageState();
 }
 
-class _RequestPageHomePageState extends State<RequestPageHomePage> {
+class _HistoryPageState extends State<HistoryPage> {
   String _filterOption = 'All'; 
 
   // Function to fetch trips based on userId and filter based on driverId

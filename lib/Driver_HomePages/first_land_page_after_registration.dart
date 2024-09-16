@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,9 +30,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void initState() {
     super.initState();
     _fetchTrips();
-    _removeOldTripsTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      _removeOldTrips();
-    });
+   
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -41,6 +40,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
 //send button method
+
 void showTripAndUserIdInSnackBar(
     Map<String, dynamic> tripData, BuildContext context) async {
   // Extract tripId, userId, and driverId (driver's email)
@@ -56,10 +56,10 @@ void showTripAndUserIdInSnackBar(
         duration: Duration(seconds: 3),
       ),
     );
-    return;
+    return ;
   }
 
-  // Show confirmation dialog before updating the trip
+  // Show confirmation dialog before adding the request to Firebase
   bool confirm = await showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -88,33 +88,34 @@ void showTripAndUserIdInSnackBar(
 
   if (confirm == true) {
     try {
-      // Step 1: Update the "trips" collection in Firebase, adding the driverId field
-      await FirebaseFirestore.instance.collection('trips').doc(tripId).update({
-        'driverId': driverId, // Add driverId to the trip
+      // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
+      await FirebaseFirestore.instance.collection('requestsofDrivers').add({
+        'tripId': tripId,
+        'userId': userId,
+        'driverId': driverId,
+        'requestTimestamp': FieldValue.serverTimestamp(), // Optional: Add a timestamp
       });
 
       // Step 2: Show a SnackBar with tripId, userId, and driverId
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Trip ID: $tripId\nUser ID: $userId\nDriver ID: $driverId',
+            'Request sent successfully!\nTrip ID: $tripId\nUser ID: $userId\nDriver ID: $driverId',
           ),
           duration: const Duration(seconds: 10), // Show for 10 seconds
         ),
       );
     } catch (e) {
-      // Handle error (e.g., if tripId doesn't exist in Firebase)
+      // Handle error (e.g., if something goes wrong during the Firebase write)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error updating trip: $e'),
+          content: Text('Error sending request: $e'),
           duration: const Duration(seconds: 3),
         ),
       );
     }
   }
 }
-
-
 
   // Fetch trips from Firestore
   Future<void> _fetchTrips() async {
@@ -256,39 +257,7 @@ void showTripAndUserIdInSnackBar(
     return null;
   }
 
-  // Refresh trip list
-  Future<void> _refreshTrips() async {
-    await _removeOldTrips();
 
-    setState(() {
-      _tripDataList.clear();
-      _lastDocument = null;
-      _hasMore = true;
-    });
-    await _fetchTrips();
-  }
-
-  // Remove trips older than 30 minutes
-  Future<void> _removeOldTrips() async {
-    final now = DateTime.now();
-    final cutoff = now.subtract(const Duration(minutes: 30));
-
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('trips')
-          .where('timestamp', isLessThan: cutoff)
-          .get();
-
-      final oldDocs = querySnapshot.docs;
-      if (oldDocs.isNotEmpty) {
-        for (final doc in oldDocs) {
-          await doc.reference.delete();
-        }
-      }
-    } catch (e) {
-      print('Error removing old trips: $e');
-    }
-  }
 
   String _getSortField() => _selectedSortOption == 'Timestamp Newest First'
       ? 'timestamp'
@@ -306,6 +275,7 @@ void showTripAndUserIdInSnackBar(
         return _compareByIntegerPart(b['distance'], a['distance']);
       case 'Distance Smallest First':
         return _compareByIntegerPart(a['distance'], b['distance']);
+        
       default:
         return 0;
     }
@@ -371,7 +341,7 @@ void showTripAndUserIdInSnackBar(
   Future<void> _deleteTrip(String tripId) async {
     try {
       await FirebaseFirestore.instance.collection('trips').doc(tripId).delete();
-      await _refreshTrips();
+      
     } catch (e) {
       print('Error deleting trip: $e');
     }
@@ -406,115 +376,133 @@ void showTripAndUserIdInSnackBar(
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _refreshTrips,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: _tripDataList.length + (_hasMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index >= _tripDataList.length) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: CardLoading(
-                    height: 150, borderRadius: BorderRadius.circular(15)),
-              );
-            }
-            var tripData = _tripDataList[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Card(
-                color: Colors.white.withOpacity(0.95),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                elevation: 5,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          tripData['username'] ?? 'No Username',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
+      body: Column(
+        children: [
+      
+          ElevatedButton(
+        onPressed: () {
+          
+       Navigator.push(
+            context,
+            MaterialPageRoute(
+      builder: (context) => DriverAcceptedPage(driverId: widget.driverEmail),
+            ),
+          );
+        },
+        child: Text('View Accepted Requests'),
+      ),
+      
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _tripDataList.length + (_hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= _tripDataList.length) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: CardLoading(
+                        height: 150, borderRadius: BorderRadius.circular(15)),
+                  );
+                }
+                var tripData = _tripDataList[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Card(
+                    color: Colors.white.withOpacity(0.95),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    elevation: 5,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              tripData['username'] ?? 'No Username',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.bookmark),
+                            onPressed: () {
+                              final phoneNumber = tripData['phone'] ?? '';
+                              final tripId = tripData['tripId'] ?? '';
+                              if (phoneNumber.isNotEmpty && tripId.isNotEmpty) {
+                                _deleteTripWithConfirmation(tripId);
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.phone),
+                            onPressed: () {
+                              final phoneNumber = tripData['phone'] ?? '';
+                              _launchPhoneNumber(phoneNumber);
+                            },
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.location_history),
+                            onPressed: () {
+                              final tripId = tripData['tripId'] ?? '';
+                              _launchOpenStreetMapWithDirections(tripId);
+                            },
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          IconButton(
+                              icon: const Icon(Icons.send),
+                              onPressed: () {
+                                showTripAndUserIdInSnackBar(tripData, context);
+                              }),
+                        ],
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.bookmark),
-                        onPressed: () {
-                          final phoneNumber = tripData['phone'] ?? '';
-                          final tripId = tripData['tripId'] ?? '';
-                          if (phoneNumber.isNotEmpty && tripId.isNotEmpty) {
-                            _deleteTripWithConfirmation(tripId);
-                          }
-                        },
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('UserId: ${tripData['userId'] ?? 'No UserId'}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w300)),
+                          Text(
+                              'Pickup: ${tripData['pickupLocation'] ?? 'No pickup location'}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w300)),
+                          Text(
+                              'Delivery: ${tripData['deliveryLocation'] ?? 'No delivery location'}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w300)),
+                          Text(
+                              'Distance: ${tripData['distance']?.toStringAsFixed(2) ?? 'No distance'} km',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w300)),
+                          Text(
+                              'Fare: NPR ${tripData['fare']?.toStringAsFixed(2) ?? 'No fare'}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w300)),
+                          Text('Phone: ${tripData['phone'] ?? 'No phone'}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w300)),
+                          Text(
+                              'Timestamp: ${tripData['timestamp']?.toDate() ?? 'No timestamp'}',
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.grey)),
+                        ],
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.phone),
-                        onPressed: () {
-                          final phoneNumber = tripData['phone'] ?? '';
-                          _launchPhoneNumber(phoneNumber);
-                        },
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.location_history),
-                        onPressed: () {
-                          final tripId = tripData['tripId'] ?? '';
-                          _launchOpenStreetMapWithDirections(tripId);
-                        },
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      IconButton(
-                          icon: const Icon(Icons.send), onPressed: () {
-                            showTripAndUserIdInSnackBar(tripData, context);
-                          }),
-                    ],
+                      isThreeLine: true,
+                    ),
                   ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('UserId: ${tripData['userId'] ?? 'No UserId'}',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w300)),
-                      Text(
-                          'Pickup: ${tripData['pickupLocation'] ?? 'No pickup location'}',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w300)),
-                      Text(
-                          'Delivery: ${tripData['deliveryLocation'] ?? 'No delivery location'}',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w300)),
-                      Text(
-                          'Distance: ${tripData['distance']?.toStringAsFixed(2) ?? 'No distance'} km',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w300)),
-                      Text(
-                          'Fare: NPR ${tripData['fare']?.toStringAsFixed(2) ?? 'No fare'}',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w300)),
-                      Text('Phone: ${tripData['phone'] ?? 'No phone'}',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w300)),
-                      Text(
-                          'Timestamp: ${tripData['timestamp']?.toDate() ?? 'No timestamp'}',
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.grey)),
-                    ],
-                  ),
-                  isThreeLine: true,
-                ),
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
