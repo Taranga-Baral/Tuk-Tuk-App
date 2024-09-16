@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 
 class DriverRegistrationPage extends StatefulWidget {
-  const DriverRegistrationPage({Key? key}) : super(key: key);
+  const DriverRegistrationPage({super.key});
 
   @override
   _DriverRegistrationPageState createState() => _DriverRegistrationPageState();
@@ -132,7 +132,7 @@ Future<void> _validateDriver() async {
               const SizedBox(height: 10),
               TextField(
                 decoration: const InputDecoration(
-                          prefixIconColor: const Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Enter your E-mail',
                           prefixIcon: Icon(Icons.email),
                           hintText: 'johndoe@gmail.com',

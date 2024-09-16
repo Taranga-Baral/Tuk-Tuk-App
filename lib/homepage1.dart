@@ -17,6 +17,8 @@ class HomePage1 extends StatelessWidget {
   final String deliveryLongitude = '84.5119';
   final String videoUrl = 'https://www.youtube.com/video/Fpb5XtZb-DI';
 
+  const HomePage1({super.key});
+
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {

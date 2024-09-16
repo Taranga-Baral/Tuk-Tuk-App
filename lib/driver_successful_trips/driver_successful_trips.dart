@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class DriverSuccessfulTrips extends StatefulWidget {
   final String driverId;
 
-  DriverSuccessfulTrips({required this.driverId});
+  const DriverSuccessfulTrips({super.key, required this.driverId});
 
   @override
   _DriverSuccessfulTripsState createState() => _DriverSuccessfulTripsState();
@@ -30,7 +30,7 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
 
       // Fetch user and trip details for each successful trip
       final tripsData = await Future.wait(successfulTripsSnapshot.docs.map((doc) async {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         final userSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(data['userId'])

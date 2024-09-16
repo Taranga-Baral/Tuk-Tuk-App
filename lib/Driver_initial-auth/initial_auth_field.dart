@@ -14,6 +14,8 @@ import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
 class DriverAuthPage extends StatefulWidget {
+  const DriverAuthPage({super.key});
+
   @override
   _DriverAuthPageState createState() => _DriverAuthPageState();
 }
@@ -246,6 +248,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
 
   
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -437,7 +440,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         controller: _numberPlateController,
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Number Plate',
                           prefixIcon:
                               Icon(Icons.format_list_numbered_rtl_outlined),
@@ -462,7 +465,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         controller: _brandController,
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Brand',
                           prefixIcon: Icon(Icons.electric_rickshaw_outlined),
                           filled: true,
@@ -486,7 +489,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         controller: _colorController,
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Color',
                           prefixIcon: Icon(Icons.color_lens_outlined),
                           filled: true,
@@ -710,7 +713,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         controller: _nameController,
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Name',
                           prefixIcon: Icon(Icons.person),
                           filled: true,
@@ -737,7 +740,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         controller: _addressController,
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Address',
                           prefixIcon: Icon(Icons.place_outlined),
                           filled: true,
@@ -764,7 +767,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         controller: _dobController,
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Date of Birth',
                           prefixIcon: Icon(Icons.date_range),
                           filled: true,
@@ -794,7 +797,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Email',
                           prefixIcon: Icon(Icons.email),
                           filled: true,
@@ -834,7 +837,7 @@ SizedBox(
 
                         decoration: const InputDecoration(
                           prefixIconColor:
-                              const Color.fromARGB(255, 187, 109, 201),
+                              Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Phone Number',
                           prefixIcon: Icon(Icons.phone),
                           filled: true,

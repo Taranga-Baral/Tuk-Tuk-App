@@ -2,6 +2,8 @@ import 'package:final_menu/homepage.dart';
 import 'package:flutter/material.dart';
 
 class MapPage extends StatefulWidget {
+  const MapPage({super.key});
+
   @override
   _MapPageState createState() => _MapPageState();
 }

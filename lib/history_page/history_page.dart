@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class HistoryPage extends StatefulWidget {
   final String userId;
 
-  const HistoryPage({Key? key, required this.userId}) : super(key: key);
+  const HistoryPage({super.key, required this.userId});
 
   @override
   _HistoryPageState createState() => _HistoryPageState();
@@ -45,7 +45,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
       return tripsData;
     } catch (e) {
-      print("Error fetching trips: $e");
+      print('Error fetching trips: $e');
       return [];
     }
   }

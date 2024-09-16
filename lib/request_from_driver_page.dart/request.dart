@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 class RequestPage extends StatefulWidget {
   final String userId;
 
-  RequestPage({required this.userId});
+  const RequestPage({super.key, required this.userId});
 
   @override
   _RequestPageState createState() => _RequestPageState();
@@ -18,7 +18,9 @@ class _RequestPageState extends State<RequestPage> {
   bool isDataLoaded = false;
   bool showArrivedDrivers = false;
   bool _isOnline = true; // Track connectivity status
-  final Map<String, bool> _buttonStates = {}; // Track button states per trip using tripId (String)
+  final Map<String, bool> _buttonStates =
+      {}; // Track button states per trip using tripId (String)
+  List<bool> _expandedStates = []; // Track expanded state for each card
 
   @override
   void initState() {
@@ -54,9 +56,13 @@ class _RequestPageState extends State<RequestPage> {
             .get();
 
         setState(() {
-          _buttonStates[tripId] = confirmedSnapshot.docs.isNotEmpty; // Button is darkened if confirmed
+          _buttonStates[tripId] = confirmedSnapshot
+              .docs.isNotEmpty; // Button is darkened if confirmed
         });
       }
+
+      // Initialize the _expandedStates list with false values for all requests
+      _expandedStates = List.filled(requestsSnapshot.docs.length, false);
 
       setState(() {
         requests = requestsSnapshot.docs;
@@ -77,9 +83,9 @@ class _RequestPageState extends State<RequestPage> {
     }
   }
 
-  Future<void> confirmRequest(String userId, String driverId, String tripId) async {
+  Future<void> confirmRequest(
+      String userId, String driverId, String tripId) async {
     if (!_isOnline) {
-      // If offline, display message without changing button state
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('No internet connection.'),
@@ -151,97 +157,255 @@ class _RequestPageState extends State<RequestPage> {
         ],
       ),
       body: isDataLoaded
-          ? showArrivedDrivers
-              ? ListView.builder(
-                  itemCount: arrivedDrivers.length,
-                  itemBuilder: (context, index) {
-                    final driver = arrivedDrivers[index];
-                    final driverId = driver['driverId'];
-                    final tripId = driver['tripId'];
+          ? LayoutBuilder(
+              // Use LayoutBuilder to manage screen size
+              builder: (context, constraints) {
+                return Column(
+                  children: [
+                    if (showArrivedDrivers) ...[
+                      Flexible(
+                        child: ListView.builder(
+                          itemCount: arrivedDrivers.length,
+                          itemBuilder: (context, index) {
+                            final driver = arrivedDrivers[index];
+                            final driverId = driver['driverId'];
+                            final tripId = driver['tripId'];
 
-                    return FutureBuilder<Map<String, dynamic>>(
-                      future: _getDriverAndTripDetails(driverId, tripId),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-
-                        final driverData = snapshot.data!['driver'] ?? {};
-                        final tripData = snapshot.data!['trip'] ?? {};
-
-                        return Card(
-                          margin: EdgeInsets.all(10),
-                          child: ListTile(
-                            trailing: GestureDetector(
-                              child: Icon(Icons.phone),
-                              onTap: () {
-                                final phoneNumber = driverData['phone']; // Get the phone number from the driverData
-                                if (phoneNumber != null && phoneNumber.isNotEmpty) {
-                                  _launchPhoneNumber(phoneNumber); // Launch the phone dialer
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Phone number is unavailable')),
-                                  );
+                            return FutureBuilder<Map<String, dynamic>>(
+                              future:
+                                  _getDriverAndTripDetails(driverId, tripId),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
                                 }
-                              },
-                            ),
-                            title: Text('${driverData['name']} - ${driverData['numberPlate']}'),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Phone: ${driverData['phone']}'),
-                                Text('Brand: ${driverData['brand']}'),
-                                Text('Color: ${driverData['color']}'),
-                                Text('Address: ${driverData['address']}'),
-                                SizedBox(height: 10),
-                                Text('Pickup Location: ${tripData['pickupLocation'] ?? 'N/A'}'),
-                                Text('Delivery Location: ${tripData['deliveryLocation'] ?? 'N/A'}'),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                )
-              : ListView.builder(
-                  itemCount: requests.length,
-                  itemBuilder: (context, index) {
-                    final request = requests[index];
-                    final tripId = request['tripId'];
-                    final driverId = request['driverId'];
-                    final userId = request['userId'];
 
-                    return Card(
-                      margin: EdgeInsets.all(10),
-                      child: ListTile(
-                        title: Text('Trip ID: $tripId'),
-                        subtitle: Text('Driver ID: $driverId'),
-                        trailing: ElevatedButton(
-                          onPressed: _buttonStates[tripId] == true
-                              ? null
-                              : () {
-                                  confirmRequest(userId, driverId, tripId);
-                                },
-                          child: Text(
-                              _buttonStates[tripId] == true ? 'Confirmed' : 'Confirm'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _buttonStates[tripId] == true
-                                ? Colors.grey
-                                : null,
-                          ),
+                                final driverData =
+                                    snapshot.data!['driver'] ?? {};
+                                final tripData = snapshot.data!['trip'] ?? {};
+
+                                return Card(
+                                  margin: EdgeInsets.all(10),
+                                  child: ListTile(
+                                    trailing: GestureDetector(
+                                      child: Icon(Icons.phone),
+                                      onTap: () {
+                                        final phoneNumber = driverData['phone'];
+                                        if (phoneNumber != null &&
+                                            phoneNumber.isNotEmpty) {
+                                          _launchPhoneNumber(phoneNumber);
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Phone number is unavailable')),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    title: Text(
+                                        '${driverData['name']} - ${driverData['numberPlate']}'),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Phone: ${driverData['phone']}'),
+                                        Text('Brand: ${driverData['brand']}'),
+                                        Text('Color: ${driverData['color']}'),
+                                        Text(
+                                            'Address: ${driverData['address']}'),
+                                        SizedBox(height: 10),
+                                        Text(
+                                            'Pickup Location: ${tripData['pickupLocation'] ?? 'N/A'}'),
+                                        Text(
+                                            'Delivery Location: ${tripData['deliveryLocation'] ?? 'N/A'}'),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
-                    );
-                  },
-                )
+                    ] else ...[
+                      Flexible(
+                        child: ListView.builder(
+                          itemCount: requests.length,
+                          itemBuilder: (context, index) {
+                            final request = requests[index];
+                            final tripId = request['tripId'];
+                            final driverId = request['driverId'];
+                            final userId = request['userId'];
+
+                            return FutureBuilder(
+                              future: Future.wait([
+                                FirebaseFirestore.instance
+                                    .collection('vehicleData')
+                                    .doc(driverId)
+                                    .get(),
+                                FirebaseFirestore.instance
+                                    .collection('trips')
+                                    .doc(tripId)
+                                    .get(),
+                              ]),
+                              builder: (context,
+                                  AsyncSnapshot<List<DocumentSnapshot>>
+                                      snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Text("Loading ...");
+                                }
+
+                                if (snapshot.hasError || !snapshot.hasData) {
+                                  return Text('Error loading data');
+                                }
+
+                                final vehicleData = snapshot.data![0].data()
+                                    as Map<String, dynamic>;
+                                final tripData = snapshot.data![1].data()
+                                    as Map<String, dynamic>;
+
+                                final phone = vehicleData['phone'] ?? 'N/A';
+                                final address = vehicleData['address'] ?? 'N/A';
+                                final brand = vehicleData['brand'] ?? 'N/A';
+                                final color = vehicleData['color'] ?? 'N/A';
+                                final name = vehicleData['name'] ?? 'N/A';
+                                final numberPlate =
+                                    vehicleData['numberPlate'] ?? 'N/A';
+                                final vehicleType =
+                                    vehicleData['vehicleType'] ?? 'N/A';
+
+                                final pickupLocation =
+                                    tripData['pickupLocation'] ?? 'N/A';
+                                final deliveryLocation =
+                                    tripData['deliveryLocation'] ?? 'N/A';
+                                final fare = tripData['fare'] ?? 'N/A';
+                                final distance = tripData['distance'] ?? 'N/A';
+
+                                return Card(
+                                  margin: EdgeInsets.all(10),
+                                  child: AnimatedContainer(
+                                    duration: Duration(milliseconds: 300),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ListTile(
+                                          title: Text('$name - $numberPlate'),
+                                          subtitle: Text(
+                                              'Vehicle: $brand $vehicleType ($color)'),
+                                          trailing: IconButton(
+                                            icon: Icon(_expandedStates[index]
+                                                ? Icons.expand_less
+                                                : Icons.expand_more),
+                                            onPressed: () {
+                                              setState(() {
+                                                _expandedStates[index] =
+                                                    !_expandedStates[
+                                                        index]; // Toggle expansion
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        if (_expandedStates[index])
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text('Phone: $phone'),
+                                                Text('Address: $address'),
+                                                Text('Pickup: $pickupLocation'),
+                                                Text(
+                                                    'Delivery: $deliveryLocation'),
+                                                Text('Fare: $fare'),
+                                                Text('Distance: $distance km'),
+                                                Row(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed:
+                                                          _buttonStates[tripId] ==
+                                                                  true
+                                                              ? null
+                                                              : () {
+                                                                  confirmRequest(
+                                                                      userId,
+                                                                      driverId,
+                                                                      tripId);
+                                                                },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        backgroundColor:
+                                                            _buttonStates[
+                                                                        tripId] ==
+                                                                    true
+                                                                ? Colors.grey
+                                                                : null,
+                                                      ),
+                                                      child: Text(
+                                                        _buttonStates[tripId] ==
+                                                                true
+                                                            ? 'Confirmed'
+                                                            : 'Confirm',
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 20,
+                                                    ),
+                                                    GestureDetector(
+                                                      child: Icon(Icons.phone),
+                                                      onTap: () {
+                                                        final phoneNumber = phone;
+                                                        if (phoneNumber != null &&
+                                                            phoneNumber
+                                                                .isNotEmpty) {
+                                                          _launchPhoneNumber(
+                                                              phoneNumber);
+                                                        } else {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                                content: Text(
+                                                                    'Phone number is unavailable')),
+                                                          );
+                                                        }
+                                                      },
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              },
+            )
           : Center(child: CircularProgressIndicator()),
     );
   }
 
-  Future<Map<String, dynamic>> _getDriverAndTripDetails(String driverId, String tripId) async {
-    final driverSnapshot = await FirebaseFirestore.instance.collection('vehicleData').doc(driverId).get();
-    final tripSnapshot = await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
+  Future<Map<String, dynamic>> _getDriverAndTripDetails(
+      String driverId, String tripId) async {
+    final driverSnapshot = await FirebaseFirestore.instance
+        .collection('vehicleData')
+        .doc(driverId)
+        .get();
+    final tripSnapshot =
+        await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
 
     return {
       'driver': driverSnapshot.data(),

@@ -22,7 +22,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   final int _itemsPerPage = 10;
   DocumentSnapshot? _lastDocument;
   bool _hasMore = true;
-  List<Map<String, dynamic>> _tripDataList = [];
+  final List<Map<String, dynamic>> _tripDataList = [];
   bool _isLoading = false;
   final ScrollController _scrollController = ScrollController();
   Timer? _removeOldTripsTimer;
@@ -350,7 +350,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.driverEmail}'),
+        title: Text(widget.driverEmail),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {

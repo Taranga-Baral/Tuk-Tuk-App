@@ -8,7 +8,7 @@ import 'dart:convert';
 class HomePage extends StatefulWidget {
   final String url;
 
-  HomePage({required this.url});
+  const HomePage({super.key, required this.url});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<String> _getDistanceFromAPI(String location1, String location2) async {
     final apiUrl = 'https://distance-api3.p.rapidapi.com/distance?location1=$location1&location2=$location2&unit=kilometers';
-    final apiKey = 'cd3125ef15msh2caab8018e8198ap187972jsnb9ff3f522f8e';
+    const apiKey = 'cd3125ef15msh2caab8018e8198ap187972jsnb9ff3f522f8e';
     
     try {
       final response = await http.get(
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     if (user != null) {
       try {
         final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-        return userDoc.data() as Map<String, dynamic>? ?? {};
+        return userDoc.data() ?? {};
       } catch (e) {
         print('Error fetching user details: $e');
       }

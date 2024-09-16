@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
   @override
   _SignInPageState createState() => _SignInPageState();
 }
@@ -137,7 +139,7 @@ class _SignInPageState extends State<SignInPage> {
                       controller: _controllerEmail,
                       decoration: const InputDecoration(
                         prefixIconColor:
-                            const Color.fromARGB(255, 187, 109, 201),
+                            Color.fromARGB(255, 187, 109, 201),
                         labelText: 'Enter your E-mail',
                         prefixIcon: Icon(Icons.email),
                         hintText: 'johndoe@gmail.com',
