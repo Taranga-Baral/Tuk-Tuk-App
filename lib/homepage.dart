@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _startDelay() async {
-    await Future.delayed(Duration(seconds: 1));
+    
     if (mounted) {
       setState(() {
         _isLoading = false;
