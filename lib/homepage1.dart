@@ -119,7 +119,7 @@ class HomePage1 extends StatelessWidget {
                               title: 'Book a Ride',
                               subtitle: 'Get a ride quickly',
                               color: Colors.pinkAccent,
-                              icon: Icons.directions_car,
+                              icon: Icons.electric_rickshaw_outlined,
                               onTap: () {
                                 String url =
                                     'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=$pickupLatitude%2C$pickupLongitude%3B$deliveryLatitude%2C$deliveryLongitude';
@@ -139,7 +139,7 @@ class HomePage1 extends StatelessWidget {
                               title: 'Driver Mode',
                               subtitle: 'Start driving',
                               color: Colors.blueAccent,
-                              icon: Icons.person,
+                              icon: Icons.person_4_outlined,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -172,7 +172,7 @@ class HomePage1 extends StatelessWidget {
                               title: 'View History',
                               subtitle: 'within 30 mins',
                               color: Colors.orangeAccent,
-                              icon: Icons.directions_car,
+                              icon: Icons.history,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -190,7 +190,7 @@ class HomePage1 extends StatelessWidget {
                               title: 'View Request',
                               subtitle: 'Driver Request',
                               color: Colors.lightBlueAccent,
-                              icon: Icons.person,
+                              icon: Icons.handshake_outlined,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -498,7 +498,7 @@ class HomePage1 extends StatelessWidget {
               backgroundColor: Colors.white,
               radius: 30,
               child: Icon(
-                Icons.help,
+                Icons.help_outline_sharp,
                 size: 40,
                 color: const Color.fromARGB(255, 236, 116, 236),
               ),

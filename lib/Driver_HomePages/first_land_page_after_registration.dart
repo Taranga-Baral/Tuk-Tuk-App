@@ -102,7 +102,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Request sent successfully!\nTrip ID: $tripId\nUser ID: $userId\nDriver ID: $driverId',
+              'Request sent successfully!',
             ),
             duration: const Duration(seconds: 10), // Show for 10 seconds
           ),

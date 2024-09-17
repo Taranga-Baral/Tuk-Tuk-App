@@ -485,12 +485,11 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                   return Card(
                     margin: EdgeInsets.all(10),
                     child: ListTile(
-                      title: Text('Trip ID: $tripId'),
+                      title: Text('Username: ${userDetails['username']}'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('User ID: $userId'),
-                          Text('Username: ${userDetails['username']}'),
+                         
                           Text('Phone: ${userDetails['phone_number']}'),
                           Text(
                               'Pickup Location: ${tripDetails['pickupLocation']}'),
@@ -529,7 +528,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                 icon: Icon(Icons.send),
                                 color: isSendButtonPressed
                                     ? Colors.green
-                                    : Colors.red,
+                                    : Colors.greenAccent,
                                 onPressed: isSendButtonPressed
                                     ? null
                                     : () async {
@@ -583,7 +582,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                 icon: Icon(Icons.done_all),
                                 color: isDoneButtonEnabled
                                     ? Colors.green
-                                    : Colors.red,
+                                    : Colors.greenAccent,
                                 onPressed: isSendButtonPressed
                                     ? (isDoneButtonEnabled
                                         ? null
