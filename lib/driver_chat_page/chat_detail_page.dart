@@ -26,22 +26,25 @@
 //       final message = messageController.text;
 //       final timestamp = FieldValue.serverTimestamp();
 
-//       // Send message to driverChats collection
-//       await FirebaseFirestore.instance.collection('driverChats').add({
-//         'driverId': widget.driverId,
-//         'tripId': widget.tripId,
-//         'userId': widget.userId,
-//         'message': message,
-//         'timestamp': timestamp,
-//       });
+//       try {
+//         // Send message to driverChats collection
+//         await FirebaseFirestore.instance.collection('driverChats').add({
+//           'driverId': widget.driverId,
+//           'tripId': widget.tripId,
+//           'userId': widget.userId,
+//           'message': message,
+//           'timestamp': timestamp,
+//         });
 
-//       // Clear the text field
-//       messageController.clear();
+//         // Clear the text field
+//         messageController.clear();
+//       } catch (e) {
+//         print('Error sending message: $e');
+//       }
 //     }
 //   }
 
 //   Stream<List<Map<String, dynamic>>> _getMessages() {
-//     // Separate streams for userChats and driverChats
 //     final userChatsStream = FirebaseFirestore.instance
 //         .collection('userChats')
 //         .where('tripId', isEqualTo: widget.tripId)
@@ -70,12 +73,18 @@
 //           }).toList();
 //         });
 
-//     // Combine the streams
 //     return Rx.combineLatest2(userChatsStream, driverChatsStream, (userChats, driverChats) {
 //       List<Map<String, dynamic>> allChats = [];
 //       allChats.addAll(userChats);
 //       allChats.addAll(driverChats);
-//       allChats.sort((a, b) => (a['timestamp'] as Timestamp).compareTo(b['timestamp'] as Timestamp));
+//       allChats.sort((a, b) {
+//         final timestampA = a['timestamp'] as Timestamp?;
+//         final timestampB = b['timestamp'] as Timestamp?;
+//         if (timestampA == null || timestampB == null) {
+//           return 0; // Handle cases where timestamp might be null
+//         }
+//         return timestampA.compareTo(timestampB);
+//       });
 //       return allChats;
 //     });
 //   }
@@ -84,7 +93,7 @@
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(
-//         title: Text('Chat Details'),
+//         title: Text('Chat'),
 //       ),
 //       body: Column(
 //         children: [
@@ -113,7 +122,7 @@
 //                     final isDriverMessage = chatData['collection'] == 'driverChats';
 
 //                     return Align(
-//                       alignment: isDriverMessage ? Alignment.centerLeft : Alignment.centerRight,
+//                       alignment: isDriverMessage ? Alignment.centerRight : Alignment.centerLeft,
 //                       child: Padding(
 //                         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
 //                         child: Card(
@@ -274,11 +283,41 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
     });
   }
 
+ Future<String?> _fetchUsername() async {
+  try {
+    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .get();
+    
+    // Safely cast the data to a Map<String, dynamic>
+    final data = userDoc.data() as Map<String, dynamic>?;
+    
+    // Check if data is not null and retrieve the username
+    return data?['username'] as String?;
+  } catch (e) {
+    print('Error fetching username: $e');
+    return null;
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat Details'),
+        title: FutureBuilder<String?>(
+          future: _fetchUsername(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text('Chat'); // Fallback text while loading
+            }
+            if (snapshot.hasError || !snapshot.hasData) {
+              return Text('Chat'); // Fallback text if there's an error
+            }
+            return Text('Chat with ${snapshot.data}');
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -368,6 +407,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
+                  color: Colors.greenAccent,
                   onPressed: _sendMessage,
                 ),
               ],

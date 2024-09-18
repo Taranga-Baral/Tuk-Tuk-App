@@ -1,16 +1,257 @@
+// import 'dart:io';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
+// import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
+// import 'package:final_menu/homepage.dart';
+// import 'package:final_menu/login_screen/sign_in_page.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:easy_stepper/easy_stepper.dart';
+// import 'package:image/image.dart' as img;
+// import 'package:image_picker/image_picker.dart';
+
+// class DriverAuthPage extends StatefulWidget {
+//   const DriverAuthPage({super.key});
+
+//   @override
+//   _DriverAuthPageState createState() => _DriverAuthPageState();
+// }
+
+// Color _color = const Color.fromARGB(255, 189, 62, 228);
+
+// class _DriverAuthPageState extends State<DriverAuthPage> {
+//   void showSnackBar(BuildContext context, String message) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text(message),
+//         duration: const Duration(seconds: 3),
+//         behavior: SnackBarBehavior.floating,
+//       ),
+//     );
+//   }
+
+//   DateTime? _selectedDateOfBirth;
+//   final _picker = ImagePicker();
+//   String _selectedVehicleType = 'Tuk Tuk'; // Default value for dropdown
+
+//   final _numberPlateController = TextEditingController();
+//   final _brandController = TextEditingController();
+//   final _colorController = TextEditingController();
+//   final _licenseNumberController = TextEditingController();
+//   final _nameController = TextEditingController();
+//   final _addressController = TextEditingController();
+//   final _dobController = TextEditingController();
+//   final _emailController = TextEditingController();
+//   final _phoneController = TextEditingController();
+
+//   File? _bluebookPhoto;
+//   File? _citizenshipFrontPhoto;
+//   File? _licenseFrontPhoto;
+//   File? _selfieWithCitizenshipPhoto;
+//   File? _selfieWithLicensePhoto;
+//   File? _profilePicturePhoto;
+
+//   String? _bluebookPhotoUrl;
+//   String? _citizenshipFrontUrl;
+//   String? _licenseFrontUrl;
+//   String? _selfieWithCitizenshipUrl;
+//   String? _selfieWithLicenseUrl;
+//   String? _profilePictureUrl;
+
+//   int _activeStep = 0; // Manage active step
+//   bool _termsAccepted = false; // Track terms acceptance
+
+//   bool _validateFields() {
+//     final email = _emailController.text;
+//     final phoneNumber = _phoneController.text.replaceAll('+977 ', '');
+
+//     final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+//     final phoneNumberRegex = RegExp(r'^\d{10}$'); // 10 digits
+
+//     if (_nameController.text.isEmpty ||
+//         _addressController.text.isEmpty ||
+//         _dobController.text.isEmpty ||
+//         email.isEmpty ||
+//         phoneNumber.isEmpty ||
+//         !emailRegex.hasMatch(email) ||
+//         !phoneNumberRegex.hasMatch(phoneNumber)) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(
+//           content: Text(
+//             'Either you left some field or some entered format is incorrect',
+//           ),
+//         ),
+//       );
+//       return false;
+//     }
+
+//     return true;
+//   }
+
+//   Future<void> _pickImage(String imageType) async {
+//     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+//     if (pickedFile != null) {
+//       setState(() {
+//         switch (imageType) {
+//           case 'bluebook':
+//             _bluebookPhoto = File(pickedFile.path);
+//             break;
+//           case 'citizenshipFront':
+//             _citizenshipFrontPhoto = File(pickedFile.path);
+//             break;
+//           case 'licenseFront':
+//             _licenseFrontPhoto = File(pickedFile.path);
+//             break;
+//           case 'selfieWithCitizenship':
+//             _selfieWithCitizenshipPhoto = File(pickedFile.path);
+//             break;
+//           case 'selfieWithLicense':
+//             _selfieWithLicensePhoto = File(pickedFile.path);
+//             break;
+//           case 'profilePicture':
+//             _profilePicturePhoto = File(pickedFile.path);
+//             break;
+//         }
+//       });
+//     }
+//   }
+
+//   Future<File?> _compressImage(File imageFile) async {
+//     final img.Image? image = img.decodeImage(await imageFile.readAsBytes());
+//     if (image == null) return null;
+
+//     final img.Image resized =
+//         img.copyResize(image, width: 800); // Adjust size as needed
+//     final compressedFile = File(imageFile.path)
+//       ..writeAsBytesSync(
+//           img.encodeJpg(resized, quality: 85)); // Adjust quality as needed
+
+//     return compressedFile;
+//   }
+
+
+
+
+//   Future<String?> _uploadImage(
+//     File imageFile, String imageType, String driverId) async {
+//   try {
+//     final compressedImageFile = await _compressImage(imageFile);
+//     if (compressedImageFile == null) {
+//       print('Compressed image is null for $imageType');
+//       return null;
+//     }
+
+//     final storageRef = FirebaseStorage.instance.ref().child(
+//         'images/$driverId/$imageType/${DateTime.now().millisecondsSinceEpoch}.jpg');
+//     final uploadTask = storageRef.putFile(compressedImageFile);
+
+//     final snapshot = await uploadTask.whenComplete(() {});
+//     final downloadUrl = await snapshot.ref.getDownloadURL();
+
+//     return downloadUrl;
+//   } catch (e) {
+//     print('Error uploading image for $imageType: $e');
+//     return null;
+//   }
+// }
+
+
+
+//   Future<void> _submitForm() async {
+//   try {
+//     String driverId = _emailController.text; // Unique identifier (email)
+//     bool allUploadsSuccessful = true;
+
+//     // Upload images and get URLs if the respective photo exists
+//     if (_bluebookPhoto != null) {
+//       _bluebookPhotoUrl = await _uploadImage(_bluebookPhoto!, 'bluebook', driverId);
+//       if (_bluebookPhotoUrl == null) allUploadsSuccessful = false;
+//     }
+//     if (_citizenshipFrontPhoto != null) {
+//       _citizenshipFrontUrl = await _uploadImage(_citizenshipFrontPhoto!, 'citizenshipFront', driverId);
+//       if (_citizenshipFrontUrl == null) allUploadsSuccessful = false;
+//     }
+//     if (_licenseFrontPhoto != null) {
+//       _licenseFrontUrl = await _uploadImage(_licenseFrontPhoto!, 'licenseFront', driverId);
+//       if (_licenseFrontUrl == null) allUploadsSuccessful = false;
+//     }
+//     if (_selfieWithCitizenshipPhoto != null) {
+//       _selfieWithCitizenshipUrl = await _uploadImage(_selfieWithCitizenshipPhoto!, 'selfieWithCitizenship', driverId);
+//       if (_selfieWithCitizenshipUrl == null) allUploadsSuccessful = false;
+//     }
+//     if (_selfieWithLicensePhoto != null) {
+//       _selfieWithLicenseUrl = await _uploadImage(_selfieWithLicensePhoto!, 'selfieWithLicense', driverId);
+//       if (_selfieWithLicenseUrl == null) allUploadsSuccessful = false;
+//     }
+//     if (_profilePicturePhoto != null) {
+//       _profilePictureUrl = await _uploadImage(_profilePicturePhoto!, 'profilePicture', driverId);
+//       if (_profilePictureUrl == null) allUploadsSuccessful = false;
+//     }
+
+//     if (!allUploadsSuccessful) {
+//       // Show error message if any upload failed
+//       showSnackBar(context, 'Some images failed to upload. Please try again.');
+//       return;
+//     }
+
+//     // Check if the document already exists in Firestore
+//     final vehicleDataRef = FirebaseFirestore.instance.collection('vehicleData').doc(driverId);
+//     final docSnapshot = await vehicleDataRef.get();
+
+//     if (docSnapshot.exists) {
+//       // Update existing fields
+//       await vehicleDataRef.update({
+//         'vehicleType': _selectedVehicleType,
+//         'numberPlate': _numberPlateController.text,
+//         'brand': _brandController.text,
+//         'color': _colorController.text,
+//         if (_bluebookPhotoUrl != null) 'bluebookPhotoUrl': _bluebookPhotoUrl,
+//         'licenseNumber': _licenseNumberController.text,
+//         if (_citizenshipFrontUrl != null) 'citizenshipFrontUrl': _citizenshipFrontUrl,
+//         if (_licenseFrontUrl != null) 'licenseFrontUrl': _licenseFrontUrl,
+//         if (_selfieWithCitizenshipUrl != null) 'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl,
+//         if (_selfieWithLicenseUrl != null) 'selfieWithLicenseUrl': _selfieWithLicenseUrl,
+//         if (_profilePictureUrl != null) 'profilePictureUrl': _profilePictureUrl,
+//         'name': _nameController.text,
+//         'address': _addressController.text,
+//         'dob': _dobController.text,
+//         'email': _emailController.text,
+//         'phone': _phoneController.text,
+//       });
+//     } else {
+//       // Create new document
+//       await vehicleDataRef.set({
+//         'vehicleType': _selectedVehicleType,
+//         'numberPlate': _numberPlateController.text,
+//         'brand': _brandController.text,
+//         'color': _colorController.text,
+//         'bluebookPhotoUrl': _bluebookPhotoUrl ?? '',
+//         'licenseNumber': _licenseNumberController.text,
+//         'citizenshipFrontUrl': _citizenshipFrontUrl ?? '',
+//         'licenseFrontUrl': _licenseFrontUrl ?? '',
+//         'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl ?? '',
+//         'selfieWithLicenseUrl': _selfieWithLicenseUrl ?? '',
+//         'profilePictureUrl': _profilePictureUrl ?? '',
+//         'name': _nameController.text,
+//         'address': _addressController.text,
+//         'dob': _dobController.text,
+//         'email': _emailController.text,
+//         'phone': _phoneController.text,
+//       });
+//     }
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_stepper/easy_stepper.dart';
 import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
 import 'package:final_menu/homepage.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:easy_stepper/easy_stepper.dart';
-import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
 class DriverAuthPage extends StatefulWidget {
@@ -94,82 +335,146 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   Future<void> _pickImage(String imageType) async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+      // setState(() {
+      //   switch (imageType) {
+      //     case 'bluebook':
+      //       _bluebookPhoto = File(pickedFile.path);
+      //       break;
+      //     case 'citizenshipFront':
+      //       _citizenshipFrontPhoto = File(pickedFile.path);
+      //       break;
+      //     case 'licenseFront':
+      //       _licenseFrontPhoto = File(pickedFile.path);
+      //       break;
+      //     case 'selfieWithCitizenship':
+      //       _selfieWithCitizenshipPhoto = File(pickedFile.path);
+      //       break;
+      //     case 'selfieWithLicense':
+      //       _selfieWithLicensePhoto = File(pickedFile.path);
+      //       break;
+      //     case 'profilePicture':
+      //       _profilePicturePhoto = File(pickedFile.path);
+      //       break;
+      //   }
+      // });
+
+
       setState(() {
-        switch (imageType) {
-          case 'bluebook':
-            _bluebookPhoto = File(pickedFile.path);
-            break;
-          case 'citizenshipFront':
-            _citizenshipFrontPhoto = File(pickedFile.path);
-            break;
-          case 'licenseFront':
-            _licenseFrontPhoto = File(pickedFile.path);
-            break;
-          case 'selfieWithCitizenship':
-            _selfieWithCitizenshipPhoto = File(pickedFile.path);
-            break;
-          case 'selfieWithLicense':
-            _selfieWithLicensePhoto = File(pickedFile.path);
-            break;
-            case 'profilePicture':
-            _profilePicturePhoto = File(pickedFile.path);
-            break;
-        }
-      });
+  switch (imageType) {
+    case 'bluebook':
+      _bluebookPhoto = File(pickedFile.path);
+      break;
+    case 'citizenshipFront':
+      _citizenshipFrontPhoto = File(pickedFile.path);
+      break;
+    case 'licenseFront':
+      _licenseFrontPhoto = File(pickedFile.path);
+      break;
+    case 'selfieWithCitizenship':
+      _selfieWithCitizenshipPhoto = File(pickedFile.path);
+      break;
+    case 'selfieWithLicense':
+      _selfieWithLicensePhoto = File(pickedFile.path);
+      break;
+    case 'profilePicture':
+      _profilePicturePhoto = File(pickedFile.path);
+      break;
+  }
+});
+
     }
   }
 
-  Future<File?> _compressImage(File imageFile) async {
-    final img.Image? image = img.decodeImage(await imageFile.readAsBytes());
-    if (image == null) return null;
-
-    final img.Image resized =
-        img.copyResize(image, width: 800); // Adjust size as needed
-    final compressedFile = File(imageFile.path)
-      ..writeAsBytesSync(
-          img.encodeJpg(resized, quality: 85)); // Adjust quality as needed
-
-    return compressedFile;
+ Future<String?> _uploadImage(File imageFile, String imageType, String driverId) async {
+  if (!imageFile.existsSync()) {
+    print('File does not exist for $imageType');
+    return null;
   }
 
-  Future<String?> _uploadImage(
-      File imageFile, String imageType, String driverId) async {
-    try {
-      final compressedImageFile = await _compressImage(imageFile);
-      final storageRef = FirebaseStorage.instance.ref().child(
-          'images/$driverId/$imageType/${DateTime.now().millisecondsSinceEpoch}.jpg');
-      final uploadTask = storageRef.putFile(compressedImageFile!);
-      final snapshot = await uploadTask;
-      final downloadUrl = await snapshot.ref.getDownloadURL();
-      return downloadUrl;
-    } catch (e) {
-      print('Error uploading image: $e');
-      return null;
-    }
-  }
+  try {
+    final storageRef = FirebaseStorage.instance.ref().child(
+        'images/$driverId/$imageType/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    final uploadTask = storageRef.putFile(imageFile);
 
-Future<void> _submitForm() async {
+    final snapshot = await uploadTask.whenComplete(() {});
+    final downloadUrl = await snapshot.ref.getDownloadURL();
+
+    return downloadUrl;
+  } catch (e) {
+    print('Error uploading image for $imageType: $e');
+    return null;
+  }
+}
+
+
+
+Future<void> _submitForm(BuildContext context) async {
   try {
     String driverId = _emailController.text; // Unique identifier (email)
+    bool allUploadsSuccessful = true;
+
+    // Show the loading popup with an image
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Disable back button and outside touch
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async {
+            // Show warning if user tries to press back
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please wait while we process your request.')),
+            );
+            return false; // Prevent back button
+          },
+          child: Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  
+                  Image.asset('assets/loading_screen.gif', height: 100), 
+                  const SizedBox(height: 10),
+                  const Text('Uploading and processing data...'),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
 
     // Upload images and get URLs if the respective photo exists
     if (_bluebookPhoto != null) {
       _bluebookPhotoUrl = await _uploadImage(_bluebookPhoto!, 'bluebook', driverId);
+      if (_bluebookPhotoUrl == null) allUploadsSuccessful = false;
     }
     if (_citizenshipFrontPhoto != null) {
       _citizenshipFrontUrl = await _uploadImage(_citizenshipFrontPhoto!, 'citizenshipFront', driverId);
+      if (_citizenshipFrontUrl == null) allUploadsSuccessful = false;
     }
     if (_licenseFrontPhoto != null) {
       _licenseFrontUrl = await _uploadImage(_licenseFrontPhoto!, 'licenseFront', driverId);
+      if (_licenseFrontUrl == null) allUploadsSuccessful = false;
     }
     if (_selfieWithCitizenshipPhoto != null) {
       _selfieWithCitizenshipUrl = await _uploadImage(_selfieWithCitizenshipPhoto!, 'selfieWithCitizenship', driverId);
+      if (_selfieWithCitizenshipUrl == null) allUploadsSuccessful = false;
     }
     if (_selfieWithLicensePhoto != null) {
       _selfieWithLicenseUrl = await _uploadImage(_selfieWithLicensePhoto!, 'selfieWithLicense', driverId);
+      if (_selfieWithLicenseUrl == null) allUploadsSuccessful = false;
     }
     if (_profilePicturePhoto != null) {
       _profilePictureUrl = await _uploadImage(_profilePicturePhoto!, 'profilePicture', driverId);
+      if (_profilePictureUrl == null) allUploadsSuccessful = false;
+    }
+
+    if (!allUploadsSuccessful) {
+      // Show error message if any upload failed
+      showSnackBar(context, 'Some images failed to upload. Please try again.');
+      Navigator.pop(context); // Close the popup
+      return;
     }
 
     // Check if the document already exists in Firestore
@@ -217,24 +522,29 @@ Future<void> _submitForm() async {
         'phone': _phoneController.text,
       });
     }
-
+    
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Successful Registration.')),
     );
 
-    // Wait for 1 second before navigating
-    await Future.delayed(const Duration(seconds: 1));
+    // Wait for a few seconds to ensure user sees the popup
+    await Future.delayed(const Duration(seconds: 3));
 
-    // Navigate to next page
+    // Close the popup and navigate to next page
+    Navigator.pop(context);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => DriverRegistrationPage()),
     );
   } catch (e) {
     print('Error submitting form: $e');
+    showSnackBar(context, 'An error occurred. Please try again.');
+    Navigator.pop(context); // Close the popup in case of an error
   }
 }
+
+
 
 
 
@@ -262,8 +572,6 @@ Future<void> _submitForm() async {
   void initState() {
     super.initState();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -456,8 +764,7 @@ Future<void> _submitForm() async {
                       TextField(
                         controller: _numberPlateController,
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Number Plate',
                           prefixIcon:
                               Icon(Icons.format_list_numbered_rtl_outlined),
@@ -481,8 +788,7 @@ Future<void> _submitForm() async {
                       TextField(
                         controller: _brandController,
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Brand',
                           prefixIcon: Icon(Icons.electric_rickshaw_outlined),
                           filled: true,
@@ -505,8 +811,7 @@ Future<void> _submitForm() async {
                       TextField(
                         controller: _colorController,
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Color',
                           prefixIcon: Icon(Icons.color_lens_outlined),
                           filled: true,
@@ -711,18 +1016,9 @@ Future<void> _submitForm() async {
                         ),
                       ),
 
-
-
-
-                      
-
-
-
-
                       if (_selfieWithLicensePhoto != null) ...[
                         Image.file(_selfieWithLicensePhoto!),
                       ],
-                      
 
                       SizedBox(
                         height: 25,
@@ -754,7 +1050,6 @@ Future<void> _submitForm() async {
                         Image.file(_profilePicturePhoto!),
                       ],
 
-
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
@@ -770,8 +1065,7 @@ Future<void> _submitForm() async {
                       TextField(
                         controller: _nameController,
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Name',
                           prefixIcon: Icon(Icons.person),
                           filled: true,
@@ -797,8 +1091,7 @@ Future<void> _submitForm() async {
                       TextField(
                         controller: _addressController,
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Address',
                           prefixIcon: Icon(Icons.place_outlined),
                           filled: true,
@@ -820,12 +1113,10 @@ Future<void> _submitForm() async {
                         height: 25,
                       ),
 
-
                       TextField(
                         controller: _dobController,
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Date of Birth',
                           prefixIcon: Icon(Icons.date_range),
                           filled: true,
@@ -852,10 +1143,8 @@ Future<void> _submitForm() async {
 
                       TextFormField(
                         controller: _emailController,
-                        
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Email',
                           prefixIcon: Icon(Icons.email),
                           filled: true,
@@ -872,8 +1161,6 @@ Future<void> _submitForm() async {
                             borderRadius: BorderRadius.all(Radius.circular(18)),
                           ),
                         ),
-
-                        
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           final emailRegex =
@@ -886,16 +1173,13 @@ Future<void> _submitForm() async {
                           return null; // Return null if validation is successful
                         },
                       ),
-SizedBox(
-  height: 25,
-),
+                      SizedBox(
+                        height: 25,
+                      ),
                       TextFormField(
                         controller: _phoneController,
-                        
-
                         decoration: const InputDecoration(
-                          prefixIconColor:
-                              Color.fromARGB(255, 187, 109, 201),
+                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                           labelText: 'Phone Number',
                           prefixIcon: Icon(Icons.phone),
                           filled: true,
@@ -912,8 +1196,6 @@ SizedBox(
                             borderRadius: BorderRadius.all(Radius.circular(18)),
                           ),
                         ),
-
-
                         keyboardType: TextInputType.phone,
                         validator: (value) {
                           final phoneNumber =
@@ -941,7 +1223,7 @@ SizedBox(
                         child: GestureDetector(
                           onTap: () {
                             if (_validateFields()) {
-                              _submitForm();
+                              _submitForm(context);
                             }
                           },
                           child: Container(

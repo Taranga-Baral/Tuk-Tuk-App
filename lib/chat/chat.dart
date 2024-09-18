@@ -88,43 +88,50 @@ Widget build(BuildContext context) {
                 String tripId = data['tripId'];
                 String profilePictureUrl = data['profilePictureUrl'];
 
-                return Card(
-                  elevation: 5,
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: profilePictureUrl.isNotEmpty
-                          ? NetworkImage(profilePictureUrl)
-                          : AssetImage('assets/default_profile.png')
-                              as ImageProvider, // Fallback image if no URL
+                return Column(
+                  children: [
+                    Card(
+                      elevation: 5,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: profilePictureUrl.isNotEmpty
+                              ? NetworkImage(profilePictureUrl)
+                              : AssetImage('assets/default_profile.png')
+                                  as ImageProvider, // Fallback image if no URL
+                        ),
+                        title: Text('Driver: ${data['driverName']}'),
+                        subtitle: Text(
+                          'Pickup: ${data['pickupLocation']}\n'
+                          'Delivery: ${data['deliveryLocation']}\n'
+                          'Phone: ${data['driverPhone']}',
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.chat),
+                          onPressed: () {
+                            // Navigate to ChatDetailPage
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatDetailPage(
+                                  userId: widget.userId,
+                                  driverId: driverId,
+                                  tripId: tripId,
+                                  driverName: data['driverName'],
+                                  pickupLocation: data['pickupLocation'],
+                                  deliveryLocation: data['deliveryLocation'],
+                                  distance: data['distance'],
+                                  fare: data['fare'],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                    title: Text('Driver: ${data['driverName']}'),
-                    subtitle: Text(
-                      'Pickup: ${data['pickupLocation']}\n'
-                      'Delivery: ${data['deliveryLocation']}\n'
-                      'Phone: ${data['driverPhone']}',
+                    SizedBox(
+                      height: 10,
                     ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.chat),
-                      onPressed: () {
-                        // Navigate to ChatDetailPage
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatDetailPage(
-                              userId: widget.userId,
-                              driverId: driverId,
-                              tripId: tripId,
-                              driverName: data['driverName'],
-                              pickupLocation: data['pickupLocation'],
-                              deliveryLocation: data['deliveryLocation'],
-                              distance: data['distance'],
-                              fare: data['fare'],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  ],
                 );
               },
             ),

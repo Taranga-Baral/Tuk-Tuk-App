@@ -316,6 +316,7 @@
 //   }
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/driver_chat_page/chat_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -480,16 +481,18 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
 
                   final userDetails = snapshot.data![0];
                   final tripDetails = snapshot.data![1];
-                  final isSendButtonPressed = _isSendButtonPressed[tripId] ?? false;
-                  final isDoneButtonEnabled = _isDoneButtonPressed[tripId] ?? false;
+                  final isSendButtonPressed =
+                      _isSendButtonPressed[tripId] ?? false;
+                  final isDoneButtonEnabled =
+                      _isDoneButtonPressed[tripId] ?? false;
                   return Card(
                     margin: EdgeInsets.all(10),
                     child: ListTile(
+                      
                       title: Text('Username: ${userDetails['username']}'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                         
                           Text('Phone: ${userDetails['phone_number']}'),
                           Text(
                               'Pickup Location: ${tripDetails['pickupLocation']}'),
@@ -500,6 +503,19 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
+                              IconButton(
+                        icon: Icon(Icons.chat),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      DriverChatDisplayPage(
+                                          driverId: widget.driverId,
+                                          tripId: tripId,
+                                          userId: userId)));
+                        },
+                      ),
                               IconButton(
                                 icon: Icon(Icons.phone),
                                 onPressed: () {
@@ -594,8 +610,8 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                 'tripId': tripId,
                                                 'driverId': widget.driverId,
                                                 'userId': userId,
-                                                'timestamp':
-                                                    FieldValue.serverTimestamp(),
+                                                'timestamp': FieldValue
+                                                    .serverTimestamp(),
                                               });
 
                                               setState(() {

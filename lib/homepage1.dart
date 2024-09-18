@@ -1,6 +1,7 @@
 import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
+import 'package:final_menu/Statistics_page/Statistics-Page.dart';
 import 'package:final_menu/chat/chat.dart';
 import 'package:final_menu/homepage.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
@@ -213,7 +214,7 @@ class HomePage1 extends StatelessWidget {
                     ),
 
 
-                    //chat and Rate Driver Page
+                    //chat and Stats Page
                     Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: constraints.maxWidth * 0.05),
@@ -223,15 +224,15 @@ class HomePage1 extends StatelessWidget {
                           Expanded(
                             child: _requestPagemethod(
                               context: context,
-                              title: 'Rate Drivers',
-                              subtitle: 'Rate Drivers',
+                              title: 'View Statistics',
+                              subtitle: 'See your Stats',
                               color: Colors.indigoAccent,
-                              icon: Icons.history,
+                              icon: Icons.calculate,
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => HistoryPage(userId: userId),//this is final ekdam 
+                                    builder: (context) => StatisticsPage(userId: userId,),//this is final ekdam 
                                   ),
                                 );
                               },
