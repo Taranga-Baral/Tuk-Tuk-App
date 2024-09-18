@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:final_menu/chat/chat.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
+import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
+import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,7 +43,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
   }
 
-//send button method
+    //send button method
 
   void showTripAndUserIdInSnackBar(
       Map<String, dynamic> tripData, BuildContext context) async {
@@ -404,8 +407,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            DriverSuccessfulTrips(driverId: widget.driverEmail,),
+                        builder: (context) => DriverSuccessfulTrips(
+                          driverId: widget.driverEmail,
+                        ),
                       ),
                     );
                   },
@@ -420,11 +424,27 @@ class _DriverHomePageState extends State<DriverHomePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            DriverAcceptedPage(driverId: widget.driverEmail),
+                            DriverChatPage(driverId: widget.driverEmail,),//seeeeeeeeeeeeeeeeeeeeeeeee
                       ),
                     );
                   },
-                  child: Text('Successful Trips'),
+                  child: Text('Chat'),
+                ),
+
+                SizedBox(
+                  width: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SignInPage(),
+                      ),
+                    );
+                  },
+                  child: Text('Passenger Mode'),
                 ),
               ],
             ),
@@ -495,9 +515,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('UserId: ${tripData['userId'] ?? 'No UserId'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
                           Text(
                               'Pickup: ${tripData['pickupLocation'] ?? 'No pickup location'}',
                               style: const TextStyle(
@@ -517,6 +534,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           Text('Phone: ${tripData['phone'] ?? 'No phone'}',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w300)),
+                          SizedBox(
+                            height: 5,
+                          ),
                           Text(
                               'Timestamp: ${tripData['timestamp']?.toDate() ?? 'No timestamp'}',
                               style: const TextStyle(

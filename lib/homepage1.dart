@@ -1,6 +1,7 @@
 import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
+import 'package:final_menu/chat/chat.dart';
 import 'package:final_menu/homepage.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -118,7 +119,7 @@ class HomePage1 extends StatelessWidget {
                               context: context,
                               title: 'Book a Ride',
                               subtitle: 'Get a ride quickly',
-                              color: Colors.pinkAccent,
+                              color: Colors.indigoAccent,
                               icon: Icons.electric_rickshaw_outlined,
                               onTap: () {
                                 String url =
@@ -132,20 +133,19 @@ class HomePage1 extends StatelessWidget {
                               },
                             ),
                           ),
-                          SizedBox(width: 10),
+                         SizedBox(width: 10),
                           Expanded(
-                            child: _buildCard(
+                            child: _requestPagemethod(
                               context: context,
-                              title: 'Driver Mode',
-                              subtitle: 'Start driving',
-                              color: Colors.blueAccent,
-                              icon: Icons.person_4_outlined,
+                              title: 'View Request',
+                              subtitle: 'Driver Request',
+                              color: Colors.indigoAccent,
+                              icon: Icons.handshake_outlined,
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        DriverRegistrationPage(),
+                                    builder: (context) => RequestPage(userId: userId,),
                                   ),
                                 );
                               },
@@ -171,7 +171,7 @@ class HomePage1 extends StatelessWidget {
                               context: context,
                               title: 'View History',
                               subtitle: 'within 30 mins',
-                              color: Colors.orangeAccent,
+                              color: Colors.indigoAccent,
                               icon: Icons.history,
                               onTap: () {
                                 Navigator.push(
@@ -183,19 +183,75 @@ class HomePage1 extends StatelessWidget {
                               },
                             ),
                           ),
-                          SizedBox(width: 10),
+                          
+                           SizedBox(width: 10),
                           Expanded(
-                            child: _requestPagemethod(
+                            child: _buildCard(
                               context: context,
-                              title: 'View Request',
-                              subtitle: 'Driver Request',
-                              color: Colors.lightBlueAccent,
-                              icon: Icons.handshake_outlined,
+                              title: 'Driver Login',
+                              subtitle: 'Start driving',
+                              color: Colors.indigoAccent,
+                              icon: Icons.person_4_outlined,
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => RequestPage(userId: userId,),
+                                    builder: (context) =>
+                                        DriverRegistrationPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+
+                    SizedBox(
+                      height: 40,
+                    ),
+
+
+                    //chat and Rate Driver Page
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: constraints.maxWidth * 0.05),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: _requestPagemethod(
+                              context: context,
+                              title: 'Rate Drivers',
+                              subtitle: 'Rate Drivers',
+                              color: Colors.indigoAccent,
+                              icon: Icons.history,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HistoryPage(userId: userId),//this is final ekdam 
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          
+                           SizedBox(width: 10),
+                          Expanded(
+                            child: _buildCard(
+                              context: context,
+                              title: 'Chat with Driver',
+                              subtitle: 'Start driving',
+                              color: Colors.indigoAccent,
+                              icon: Icons.person_4_outlined,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChatPage(userId: userId,),
                                   ),
                                 );
                               },

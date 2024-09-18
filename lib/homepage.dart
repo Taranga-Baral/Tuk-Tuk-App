@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
               Center(child: CircularProgressIndicator()),
             Positioned(
               bottom: 100,
-              right: 5,
+              right: 50,
               child: ElevatedButton(
                 onPressed: () async {
                   final pickupLocation = await webView?.evaluateJavascript(source: "document.getElementById('route_from').value") ?? 'N/A';

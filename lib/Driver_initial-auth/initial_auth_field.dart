@@ -52,12 +52,14 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   File? _licenseFrontPhoto;
   File? _selfieWithCitizenshipPhoto;
   File? _selfieWithLicensePhoto;
+  File? _profilePicturePhoto;
 
   String? _bluebookPhotoUrl;
   String? _citizenshipFrontUrl;
   String? _licenseFrontUrl;
   String? _selfieWithCitizenshipUrl;
   String? _selfieWithLicenseUrl;
+  String? _profilePictureUrl;
 
   int _activeStep = 0; // Manage active step
   bool _termsAccepted = false; // Track terms acceptance
@@ -109,6 +111,9 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
           case 'selfieWithLicense':
             _selfieWithLicensePhoto = File(pickedFile.path);
             break;
+            case 'profilePicture':
+            _profilePicturePhoto = File(pickedFile.path);
+            break;
         }
       });
     }
@@ -143,46 +148,57 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
     }
   }
 
-  Future<void> _submitForm() async {
-    if (_bluebookPhoto == null ||
-        _citizenshipFrontPhoto == null ||
-        _licenseFrontPhoto == null ||
-        _selfieWithCitizenshipPhoto == null ||
-        _selfieWithLicensePhoto == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload all required photos.')),
-      );
-      return;
+Future<void> _submitForm() async {
+  try {
+    String driverId = _emailController.text; // Unique identifier (email)
+
+    // Upload images and get URLs if the respective photo exists
+    if (_bluebookPhoto != null) {
+      _bluebookPhotoUrl = await _uploadImage(_bluebookPhoto!, 'bluebook', driverId);
+    }
+    if (_citizenshipFrontPhoto != null) {
+      _citizenshipFrontUrl = await _uploadImage(_citizenshipFrontPhoto!, 'citizenshipFront', driverId);
+    }
+    if (_licenseFrontPhoto != null) {
+      _licenseFrontUrl = await _uploadImage(_licenseFrontPhoto!, 'licenseFront', driverId);
+    }
+    if (_selfieWithCitizenshipPhoto != null) {
+      _selfieWithCitizenshipUrl = await _uploadImage(_selfieWithCitizenshipPhoto!, 'selfieWithCitizenship', driverId);
+    }
+    if (_selfieWithLicensePhoto != null) {
+      _selfieWithLicenseUrl = await _uploadImage(_selfieWithLicensePhoto!, 'selfieWithLicense', driverId);
+    }
+    if (_profilePicturePhoto != null) {
+      _profilePictureUrl = await _uploadImage(_profilePicturePhoto!, 'profilePicture', driverId);
     }
 
-    try {
-      String driverId = _emailController.text; // Unique identifier (email)
+    // Check if the document already exists in Firestore
+    final vehicleDataRef = FirebaseFirestore.instance.collection('vehicleData').doc(driverId);
+    final docSnapshot = await vehicleDataRef.get();
 
-      // Upload images and get URLs
-      if (_bluebookPhoto != null) {
-        _bluebookPhotoUrl =
-            await _uploadImage(_bluebookPhoto!, 'bluebook', driverId);
-      }
-      if (_citizenshipFrontPhoto != null) {
-        _citizenshipFrontUrl = await _uploadImage(
-            _citizenshipFrontPhoto!, 'citizenshipFront', driverId);
-      }
-      if (_licenseFrontPhoto != null) {
-        _licenseFrontUrl =
-            await _uploadImage(_licenseFrontPhoto!, 'licenseFront', driverId);
-      }
-      if (_selfieWithCitizenshipPhoto != null) {
-        _selfieWithCitizenshipUrl = await _uploadImage(
-            _selfieWithCitizenshipPhoto!, 'selfieWithCitizenship', driverId);
-      }
-      if (_selfieWithLicensePhoto != null) {
-        _selfieWithLicenseUrl = await _uploadImage(
-            _selfieWithLicensePhoto!, 'selfieWithLicense', driverId);
-      }
-
-      // Save data to Firestore
-      final vehicleData = FirebaseFirestore.instance.collection('vehicleData');
-      await vehicleData.doc(driverId).set({
+    if (docSnapshot.exists) {
+      // Update existing fields
+      await vehicleDataRef.update({
+        'vehicleType': _selectedVehicleType,
+        'numberPlate': _numberPlateController.text,
+        'brand': _brandController.text,
+        'color': _colorController.text,
+        if (_bluebookPhotoUrl != null) 'bluebookPhotoUrl': _bluebookPhotoUrl,
+        'licenseNumber': _licenseNumberController.text,
+        if (_citizenshipFrontUrl != null) 'citizenshipFrontUrl': _citizenshipFrontUrl,
+        if (_licenseFrontUrl != null) 'licenseFrontUrl': _licenseFrontUrl,
+        if (_selfieWithCitizenshipUrl != null) 'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl,
+        if (_selfieWithLicenseUrl != null) 'selfieWithLicenseUrl': _selfieWithLicenseUrl,
+        if (_profilePictureUrl != null) 'profilePictureUrl': _profilePictureUrl,
+        'name': _nameController.text,
+        'address': _addressController.text,
+        'dob': _dobController.text,
+        'email': _emailController.text,
+        'phone': _phoneController.text,
+      });
+    } else {
+      // Create new document
+      await vehicleDataRef.set({
         'vehicleType': _selectedVehicleType,
         'numberPlate': _numberPlateController.text,
         'brand': _brandController.text,
@@ -193,33 +209,34 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
         'licenseFrontUrl': _licenseFrontUrl ?? '',
         'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl ?? '',
         'selfieWithLicenseUrl': _selfieWithLicenseUrl ?? '',
+        'profilePictureUrl': _profilePictureUrl ?? '',
         'name': _nameController.text,
         'address': _addressController.text,
         'dob': _dobController.text,
         'email': _emailController.text,
         'phone': _phoneController.text,
       });
-
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Successful Registration.')),
-      );
-
-      // Wait for 1 second before navigating to the next page
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Navigate to HI.dart
-      Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                DriverRegistrationPage()), 
-      );
-    } catch (e) {
-      print('Error submitting form: $e');
     }
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Successful Registration.')),
+    );
+
+    // Wait for 1 second before navigating
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Navigate to next page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => DriverRegistrationPage()),
+    );
+  } catch (e) {
+    print('Error submitting form: $e');
   }
+}
+
+
 
   Future<void> _selectDateOfBirth() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -694,9 +711,50 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                         ),
                       ),
 
+
+
+
+                      
+
+
+
+
                       if (_selfieWithLicensePhoto != null) ...[
                         Image.file(_selfieWithLicensePhoto!),
                       ],
+                      
+
+                      SizedBox(
+                        height: 25,
+                      ),
+                      ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
+                        child: GestureDetector(
+                          onTap: () => _pickImage('profilePicture'),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.055,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            color: _color,
+                            child: const Center(
+                              child: Text(
+                                'Upload your Profile Picture',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      if (_profilePicturePhoto != null) ...[
+                        Image.file(_profilePicturePhoto!),
+                      ],
+
+
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
