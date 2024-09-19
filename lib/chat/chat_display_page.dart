@@ -604,7 +604,7 @@ class ChatDetailPage extends StatelessWidget {
                     }
                     String? profilePictureUrl = snapshot.data;
                     return AvatarGlow(
-                      glowRadiusFactor: 0.3,
+                      glowRadiusFactor: 0.4,
                       startDelay: Duration(milliseconds: 500),
                       glowColor: Colors.greenAccent, // Adjust the glow color as needed
                       glowShape: BoxShape.circle,

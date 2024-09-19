@@ -1,4 +1,3 @@
-
 // import 'package:flutter/material.dart';
 // import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,7 +47,7 @@
 //   Future<String> _getDistanceFromAPI(String location1, String location2) async {
 //     final apiUrl = 'https://distance-api3.p.rapidapi.com/distance?location1=$location1&location2=$location2&unit=kilometers';
 //     const apiKey = 'cd3125ef15msh2caab8018e8198ap187972jsnb9ff3f522f8e';
-    
+
 //     try {
 //       final response = await http.get(
 //         Uri.parse(apiUrl),
@@ -122,39 +121,39 @@
 //         child: Stack(
 //           children: [
 //             if (!_isLoading)
-            //   InAppWebView(
-            //     initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-            //     initialOptions: InAppWebViewGroupOptions(
-            //       crossPlatform: InAppWebViewOptions(
-            //         javaScriptEnabled: true,
-            //         cacheEnabled: true,
-            //         useOnLoadResource: true,
-            //         mediaPlaybackRequiresUserGesture: false,
-            //       ),
-            //     ),
-            //     onWebViewCreated: (controller) {
-            //       webView = controller;
-            //     },
-            //     onLoadStop: (controller, url) async {
-            //       await controller.evaluateJavascript(source: """
-            //         var mapViewerElement = document.querySelector('h1.d-flex.m-0.fw-semibold');
-            //         if (mapViewerElement) mapViewerElement.style.display = 'none';
+//   InAppWebView(
+//     initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+//     initialOptions: InAppWebViewGroupOptions(
+//       crossPlatform: InAppWebViewOptions(
+//         javaScriptEnabled: true,
+//         cacheEnabled: true,
+//         useOnLoadResource: true,
+//         mediaPlaybackRequiresUserGesture: false,
+//       ),
+//     ),
+//     onWebViewCreated: (controller) {
+//       webView = controller;
+//     },
+//     onLoadStop: (controller, url) async {
+//       await controller.evaluateJavascript(source: """
+//         var mapViewerElement = document.querySelector('h1.d-flex.m-0.fw-semibold');
+//         if (mapViewerElement) mapViewerElement.style.display = 'none';
 
-            //         var historyLinkElement = document.querySelector('a.btn.btn-outline-primary.geolink.flex-grow-1#history_tab');
-            //         if (historyLinkElement) historyLinkElement.remove();
-                    
-            //         var secondaryElement = document.querySelector('.secondary.d-flex.gap-2.align-items-center');
-            //         if (secondaryElement) secondaryElement.remove();
-                    
-            //         var editLinkElement = document.querySelector('a.btn.btn-outline-primary.geolink.editlink#editanchor');
-            //         if (editLinkElement) editLinkElement.remove();
+//         var historyLinkElement = document.querySelector('a.btn.btn-outline-primary.geolink.flex-grow-1#history_tab');
+//         if (historyLinkElement) historyLinkElement.remove();
 
-            //         result;
-            //       """);
-            //     },
-            //   ),
-            // if (_isLoading)
-            //   Center(child: CircularProgressIndicator()),
+//         var secondaryElement = document.querySelector('.secondary.d-flex.gap-2.align-items-center');
+//         if (secondaryElement) secondaryElement.remove();
+
+//         var editLinkElement = document.querySelector('a.btn.btn-outline-primary.geolink.editlink#editanchor');
+//         if (editLinkElement) editLinkElement.remove();
+
+//         result;
+//       """);
+//     },
+//   ),
+// if (_isLoading)
+//   Center(child: CircularProgressIndicator()),
 
 //             Positioned(
 //               bottom: 100,
@@ -356,8 +355,10 @@ class _HomePageState extends State<HomePage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        final userDoc =
-            await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         return userDoc.data() ?? {};
       } catch (e) {
         print('Error fetching user details: $e');
@@ -381,7 +382,10 @@ class _HomePageState extends State<HomePage> {
   Future<void> _storeDataInFirestore(Map<String, dynamic> data) async {
     final uniqueKey = FirebaseFirestore.instance.collection('trips').doc().id;
     try {
-      await FirebaseFirestore.instance.collection('trips').doc(uniqueKey).set(data);
+      await FirebaseFirestore.instance
+          .collection('trips')
+          .doc(uniqueKey)
+          .set(data);
     } catch (e) {
       print('Error storing data: $e');
     }
@@ -400,6 +404,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.deepOrange.shade500.withOpacity(0.8),
         title: Text('Home Page'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -443,18 +448,151 @@ class _HomePageState extends State<HomePage> {
                   """);
                 },
               ),
-            if (_isLoading)
-              Center(child: CircularProgressIndicator()),
+            if (_isLoading) Center(child: CircularProgressIndicator()),
+            // Positioned(
+            //   bottom: 100,
+            //   right: 50,
+            //   child: ElevatedButton(
+            //     onPressed: () async {
+            //       final pickupLocation = await webView?.evaluateJavascript(
+            //               source: "document.getElementById('route_from').value") ??
+            //           'N/A';
+            //       final deliveryLocation = await webView?.evaluateJavascript(
+            //               source: "document.getElementById('route_to').value") ??
+            //           'N/A';
+
+            //       if (pickupLocation.isEmpty || deliveryLocation.isEmpty) {
+            //         _showSnackbar('Enter Proper Address');
+            //         return;
+            //       }
+
+            //       final distance =
+            //           await _getDistanceFromAPI(pickupLocation, deliveryLocation);
+            //       final fare = _calculateFare(distance);
+
+            //       final confirmed = await showDialog<bool>(
+            //         context: context,
+            //         barrierDismissible: false,
+            //         builder: (context) => StatefulBuilder(
+            //           builder: (context, setState) {
+            //             return AlertDialog(
+            //               title: Text('Confirm Booking'),
+            //               content: Column(
+            //                 mainAxisSize: MainAxisSize.min,
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Text(
+            //                     'Pickup: $pickupLocation\n'
+            //                     'Delivery: $deliveryLocation\n'
+            //                     'Estimated Fare: NPR${fare.toStringAsFixed(2)}\n\n'
+            //                     'Please select your municipality.',
+            //                   ),
+            //                   SizedBox(height: 10),
+            //                   SizedBox(
+            //                     width: double.infinity,
+            //                     child: DropdownButton<String>(
+            //                       value: selectedMunicipality,
+            //                       hint: Text('Select Municipality'),
+            //                       isExpanded: true,
+            //                       items: municipalitySections.expand((section) {
+            //                         List<DropdownMenuItem<String>> items = [];
+            //                         // Add section title as a non-selectable item
+            //                         items.add(DropdownMenuItem<String>(
+            //                           enabled: false,
+            //                           child: Text(
+            //                             section['title'],
+            //                             style: TextStyle(
+            //                                 fontWeight: FontWeight.bold,
+            //                                 color: Colors.grey),
+            //                           ),
+            //                         ));
+            //                         // Add each municipality under the section
+            //                         items.addAll(section['municipalities']
+            //                             .map<DropdownMenuItem<String>>(
+            //                                 (String municipality) {
+            //                           return DropdownMenuItem<String>(
+            //                             value: municipality,
+            //                             child: Padding(
+            //                               padding: const EdgeInsets.only(left: 8.0),
+            //                               child: Text(municipality),
+            //                             ),
+            //                           );
+            //                         }).toList());
+            //                         return items;
+            //                       }).toList(),
+            //                       onChanged: (String? newValue) {
+            //                         setState(() {
+            //                           selectedMunicipality = newValue;
+            //                         });
+            //                       },
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //               actions: <Widget>[
+            //                 TextButton(
+            //                   child: Text('Cancel'),
+            //                   onPressed: () =>
+            //                       Navigator.of(context).pop(false),
+            //                 ),
+            //                 TextButton(
+            //                   child: Text('Confirm'),
+            //                   onPressed: () {
+            //                     if (selectedMunicipality == null) {
+            //                       _showSnackbar('Please select a municipality');
+            //                     } else {
+            //                       Navigator.of(context).pop(true);
+            //                     }
+            //                   },
+            //                 ),
+            //               ],
+            //             );
+            //           },
+            //         ),
+            //       );
+
+            //       if (confirmed == true && selectedMunicipality != null) {
+            //         final userDetails = await _getUserDetails();
+            //         final user = FirebaseAuth.instance.currentUser;
+            //         final data = {
+            //           'username': userDetails['username'] ?? 'N/A',
+            //           'email': userDetails['email'] ?? 'N/A',
+            //           'phone': userDetails['phone_number'] ?? 'N/A',
+            //           'pickupLocation': pickupLocation,
+            //           'deliveryLocation': deliveryLocation,
+            //           'distance': distance,
+            //           'fare': fare.toStringAsFixed(2),
+            //           'timestamp': FieldValue.serverTimestamp(),
+            //           'municipalityDropdown': selectedMunicipality,
+            //           'userId': user?.uid ?? 'N/A',
+            //         };
+
+            //         await _storeDataInFirestore(data);
+
+            //         _showSnackbar(
+            //             'Booking successful!\n'
+            //             'Username: ${userDetails['username']}\nEmail: ${userDetails['email']}\nPhone: ${userDetails['phone_number']}\nPickup: $pickupLocation\nDelivery: $deliveryLocation\nDistance: $distance km\nFare: NPR ${fare.toStringAsFixed(2)}\nMunicipality: $selectedMunicipality');
+            //       }
+            //     },
+            //     child: Text('Book your ride'),
+            //   ),
+            // ),
+
             Positioned(
               bottom: 100,
               right: 50,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepOrange.shade300.withOpacity(0.6),
+                ),
                 onPressed: () async {
                   final pickupLocation = await webView?.evaluateJavascript(
-                          source: "document.getElementById('route_from').value") ??
+                          source:
+                              "document.getElementById('route_from').value") ??
                       'N/A';
                   final deliveryLocation = await webView?.evaluateJavascript(
-                          source: "document.getElementById('route_to').value") ??
+                          source:
+                              "document.getElementById('route_to').value") ??
                       'N/A';
 
                   if (pickupLocation.isEmpty || deliveryLocation.isEmpty) {
@@ -462,8 +600,8 @@ class _HomePageState extends State<HomePage> {
                     return;
                   }
 
-                  final distance =
-                      await _getDistanceFromAPI(pickupLocation, deliveryLocation);
+                  final distance = await _getDistanceFromAPI(
+                      pickupLocation, deliveryLocation);
                   final fare = _calculateFare(distance);
 
                   final confirmed = await showDialog<bool>(
@@ -481,7 +619,7 @@ class _HomePageState extends State<HomePage> {
                                 'Pickup: $pickupLocation\n'
                                 'Delivery: $deliveryLocation\n'
                                 'Estimated Fare: NPR${fare.toStringAsFixed(2)}\n\n'
-                                'Please select your municipality.',
+                                'Your Municipality',
                               ),
                               SizedBox(height: 10),
                               SizedBox(
@@ -509,7 +647,8 @@ class _HomePageState extends State<HomePage> {
                                       return DropdownMenuItem<String>(
                                         value: municipality,
                                         child: Padding(
-                                          padding: const EdgeInsets.only(left: 8.0),
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
                                           child: Text(municipality),
                                         ),
                                       );
@@ -528,8 +667,7 @@ class _HomePageState extends State<HomePage> {
                           actions: <Widget>[
                             TextButton(
                               child: Text('Cancel'),
-                              onPressed: () =>
-                                  Navigator.of(context).pop(false),
+                              onPressed: () => Navigator.of(context).pop(false),
                             ),
                             TextButton(
                               child: Text('Confirm'),
@@ -565,14 +703,15 @@ class _HomePageState extends State<HomePage> {
 
                     await _storeDataInFirestore(data);
 
-                    _showSnackbar(
-                        'Booking successful!\n'
+                    _showSnackbar('Booking successful!\n'
                         'Username: ${userDetails['username']}\nEmail: ${userDetails['email']}\nPhone: ${userDetails['phone_number']}\nPickup: $pickupLocation\nDelivery: $deliveryLocation\nDistance: $distance km\nFare: NPR ${fare.toStringAsFixed(2)}\nMunicipality: $selectedMunicipality');
                   }
                 },
-                child: Text('Confirm'),
+                child: Text('Book your ride',style: TextStyle(color: Colors.white),),
               ),
             ),
+
+
           ],
         ),
       ),

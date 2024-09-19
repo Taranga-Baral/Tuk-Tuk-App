@@ -157,6 +157,7 @@ class _RequestPageState extends State<RequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: Text('Requests Page'),
         actions: [
           PopupMenuButton<String>(
@@ -211,7 +212,7 @@ class _RequestPageState extends State<RequestPage> {
                                 final tripData = snapshot.data!['trip'] ?? {};
 
                                 return Padding(
-                                  padding: const EdgeInsets.all(5.0),
+                                  padding: const EdgeInsets.only(top: 12,right: 5,left: 5),
                                   child: Card(
                                     margin: EdgeInsets.all(10),
                                     child: Stack(
@@ -271,7 +272,7 @@ class _RequestPageState extends State<RequestPage> {
                                           top: -20,
                                           right: -10,
                                           child: CircleAvatar(
-                                            radius: 30,
+                                            radius: 21,
                                             backgroundImage: driverData['profilePictureUrl'] !=
                                                       null
                                                   ? NetworkImage(driverData['profilePictureUrl'])

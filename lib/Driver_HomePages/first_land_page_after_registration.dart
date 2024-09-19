@@ -490,7 +490,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   child: Card(
-                    color: Colors.white.withOpacity(0.95),
+                    
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
                     elevation: 5,
@@ -510,6 +510,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             width: 10,
                           ),
                           IconButton(
+
                             icon: const Icon(Icons.phone),
                             onPressed: () {
                               final phoneNumber = tripData['phone'] ?? '';

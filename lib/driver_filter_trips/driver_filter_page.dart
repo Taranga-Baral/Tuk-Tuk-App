@@ -178,7 +178,6 @@
 // }
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -258,52 +257,79 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Driver Filter Page'),
+        backgroundColor: Colors.teal, // Customize app bar color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            
             // Dropdown to select municipality
-            DropdownButton<String>(
-              value: _selectedPlace,
-              hint: Text('Select a place'),
-              items: _places.map((String place) {
-                return DropdownMenuItem<String>(
-                  value: place,
-                  child: Text(place),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedPlace = newValue;
-                });
-              },
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.teal, width: 2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedPlace,
+                  hint: Text('Select a place'),
+                  underline: SizedBox(), // Remove the underline
+                  items: _places.map((String place) {
+                    return DropdownMenuItem<String>(
+                      value: place,
+                      child: Text(place),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedPlace = newValue;
+                    });
+                  },
+                ),
+              ),
             ),
+            SizedBox(height: 16),
             
             // Dropdown to select sorting option
-            DropdownButton<String>(
-              value: _selectedSort,
-              hint: Text('Select sorting option'),
-              items: _sortOptions.map((String sortOption) {
-                return DropdownMenuItem<String>(
-                  value: sortOption,
-                  child: Text(sortOption),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedSort = newValue;
-                });
-              },
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.teal, width: 2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedSort,
+                  hint: Text('Select sorting option'),
+                  underline: SizedBox(), // Remove the underline
+                  items: _sortOptions.map((String sortOption) {
+                    return DropdownMenuItem<String>(
+                      value: sortOption,
+                      child: Text(sortOption),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedSort = newValue;
+                    });
+                  },
+                ),
+              ),
             ),
             SizedBox(height: 20),
+
             // Display selected place
             Text(
               'Selected Place: ${_selectedPlace ?? 'None selected'}',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
             SizedBox(height: 20),
+
             // StreamBuilder to display trips
             Expanded(
               child: StreamBuilder<List<Map<String, dynamic>>>(
@@ -326,109 +352,81 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                       return Card(
                         elevation: 4.0,
                         margin: EdgeInsets.symmetric(vertical: 8.0),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(16.0),
-                          // title: Text('Pickup Location: ${trip['pickupLocation'] ?? 'N/A'}'),
-
-
-
-                          title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              trip['username'] ?? 'No Username',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                trip['username'] ?? 'No Username',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.teal),
+                              ),
+                              SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${trip['municipalityDropdown'] ?? 'No Record of Municipality'}',
+                                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.phone, color: Colors.teal),
+                                    onPressed: () {
+                                      final phoneNumber = trip['phone'] ?? '';
+                                      _launchPhoneNumber(phoneNumber);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.location_history, color: Colors.teal),
+                                    onPressed: () {
+                                      final tripId = trip['tripId'] ?? '';
+                                      _launchOpenStreetMapWithDirections(tripId);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.send, color: Colors.teal),
+                                    onPressed: () {
+                                      showTripAndUserIdInSnackBar(trip, context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Pickup: ${trip['pickupLocation'] ?? 'No pickup location'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Delivery: ${trip['deliveryLocation'] ?? 'No delivery location'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Distance: ${double.parse(trip['distance']).toStringAsFixed(1)} km',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(0)}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              Text(
+                                'Phone: ${trip['phone'] ?? 'No phone'}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                'Timestamp: ${trip['timestamp']?.toDate() ?? 'No timestamp'}',
+                                style: TextStyle(fontSize: 12, color: Colors.grey),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.phone),
-                            onPressed: () {
-                              final phoneNumber = trip['phone'] ?? '';
-                              _launchPhoneNumber(phoneNumber);
-                            },
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.location_history),
-                            onPressed: () {
-                              final tripId = trip['tripId'] ?? '';
-                              _launchOpenStreetMapWithDirections(tripId);
-                            },
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          IconButton(
-                              icon: const Icon(Icons.send),
-                              onPressed: () {
-                                showTripAndUserIdInSnackBar(trip, context);
-                              }),
-                        ],
-                      ),
-
-
-
-                          // subtitle: Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.start,
-                          //   children: [
-                          //     Text('Delivery Location: ${trip['deliveryLocation'] ?? 'N/A'}'),
-                          //     Text('Trip ID: ${trip['tripId'] ?? 'N/A'}'), // Document ID as tripId
-                          //     Text('Driver ID: ${widget.driverId}'), // Display passed driverId
-                          //     Text('Fare: ${trip['fare'] ?? 'N/A'}'),
-                          //     Text('Distance: ${trip['distance'] ?? 'N/A'}'),
-                          //     // Add more fields as needed
-                          //   ],
-                          // ),
-
-
-
-                          subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              '${trip['municipalityDropdown'] ?? 'No Record of Municipality'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w400)),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              'Pickup: ${trip['pickupLocation'] ?? 'No pickup location'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text(
-                              'Delivery: ${trip['deliveryLocation'] ?? 'No delivery location'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text(
-                              'Distance: ${double.parse(trip['distance']).toStringAsFixed(1)?? 'No distance'} km',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text(
-                              'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(0) ?? 'No fare'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text('Phone: ${trip['phone'] ?? 'No phone'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              'Timestamp: ${trip['timestamp']?.toDate() ?? 'No timestamp'}',
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey)),
-                        ],
-                      ),
-
-
                         ),
                       );
                     },
@@ -441,6 +439,11 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
       ),
     );
   }
+
+  // Other helper functions (launch URL, phone call, snack bar, etc.)
+  // ...
+
+
   
    void showTripAndUserIdInSnackBar(
       Map<String, dynamic> tripData, BuildContext context) async {
@@ -615,6 +618,5 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
       print('Could not launch $launchUri');
     }
   }
-
 
 }

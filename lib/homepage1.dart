@@ -84,8 +84,9 @@ class HomePage1 extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Home Page'),
-            backgroundColor: Colors.purpleAccent,
+            
+            title: Text('Tuk Tuk '),
+            backgroundColor: Colors.purpleAccent.shade200.withOpacity(0.96),
           ),
           body: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
@@ -115,10 +116,10 @@ class HomePage1 extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _buildCard(
+                              color: Colors.deepOrange.shade500.withOpacity(0.92),
                               context: context,
                               title: 'Book a Ride',
                               subtitle: 'Get a ride quickly',
-                              color: Colors.indigoAccent,
                               icon: Icons.electric_rickshaw_outlined,
                               onTap: () {
                                 String url =
@@ -132,19 +133,21 @@ class HomePage1 extends StatelessWidget {
                               },
                             ),
                           ),
-                         SizedBox(width: 10),
+                          SizedBox(width: 10),
                           Expanded(
                             child: _requestPagemethod(
                               context: context,
                               title: 'View Request',
                               subtitle: 'Driver Request',
-                              color: Colors.indigoAccent,
-                              icon: Icons.handshake_outlined,
+                              color: Colors.blue,
+                              icon: Icons.send,
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => RequestPage(userId: userId,),
+                                    builder: (context) => RequestPage(
+                                      userId: userId,
+                                    ),
                                   ),
                                 );
                               },
@@ -170,27 +173,27 @@ class HomePage1 extends StatelessWidget {
                               context: context,
                               title: 'View History',
                               subtitle: 'within 30 mins',
-                              color: Colors.indigoAccent,
+                              color: Colors.amber,
                               icon: Icons.history,
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => HistoryPage(userId: userId),//this is final ekdam 
+                                    builder: (context) => HistoryPage(
+                                        userId: userId), //this is final ekdam
                                   ),
                                 );
                               },
                             ),
                           ),
-                          
-                           SizedBox(width: 10),
+                          SizedBox(width: 10),
                           Expanded(
                             child: _buildCard(
                               context: context,
-                              title: 'Driver Login',
+                              title: 'Tuk Tuk Driver',
                               subtitle: 'Start driving',
-                              color: Colors.indigoAccent,
-                              icon: Icons.person_4_outlined,
+                              color: Colors.cyan,
+                              icon: Icons.electric_rickshaw_outlined,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -206,11 +209,9 @@ class HomePage1 extends StatelessWidget {
                       ),
                     ),
 
-
                     SizedBox(
                       height: 40,
                     ),
-
 
                     //chat and Stats Page
                     Padding(
@@ -224,33 +225,35 @@ class HomePage1 extends StatelessWidget {
                               context: context,
                               title: 'View Statistics',
                               subtitle: 'See your Stats',
-                              color: Colors.indigoAccent,
+                              color: Colors.lime,
                               icon: Icons.calculate,
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => StatisticsPage(userId: userId,),//this is final ekdam 
+                                    builder: (context) => StatisticsPage(
+                                      userId: userId,
+                                    ), //this is final ekdam
                                   ),
                                 );
                               },
                             ),
                           ),
-                          
-                           SizedBox(width: 10),
+                          SizedBox(width: 10),
                           Expanded(
                             child: _buildCard(
                               context: context,
                               title: 'Chat with Driver',
                               subtitle: 'Start driving',
-                              color: Colors.indigoAccent,
-                              icon: Icons.person_4_outlined,
+                              color: Colors.greenAccent,
+                              icon: Icons.chat,
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChatPage(userId: userId,),
+                                    builder: (context) => ChatPage(
+                                      userId: userId,
+                                    ),
                                   ),
                                 );
                               },
@@ -289,7 +292,7 @@ class HomePage1 extends StatelessWidget {
                         context: context,
                         title: 'Passenger Signout',
                         subtitle: 'Sign out safely',
-                        color: Colors.redAccent,
+                        color: Colors.redAccent.shade400.withOpacity(0.9),
                         icon: Icons.logout,
                         isFullWidth: true,
                         onTap: () {
@@ -539,7 +542,7 @@ class HomePage1 extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Help Us fill places you know so that it will help others too',
+                    'Help Us fill places you know',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ],
@@ -604,3 +607,4 @@ class TopRightRoundedClipper extends CustomClipper<Path> {
     return false;
   }
 }
+
