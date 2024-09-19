@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:final_menu/chat/chat.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
+import 'package:final_menu/driver_filter_trips/driver_filter_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:http/http.dart' as http;
@@ -43,7 +43,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
   }
 
-    //send button method
+  //send button method
 
   void showTripAndUserIdInSnackBar(
       Map<String, dynamic> tripData, BuildContext context) async {
@@ -399,6 +399,31 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   },
                   child: Text('View Accepted Requests'),
                 ),
+
+
+
+
+                SizedBox(
+                  width: 20,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DriverFilterPage(
+                          driverId: widget.driverEmail,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text('Filter Trips'),
+                ),
+
+
+
+
+
                 SizedBox(
                   width: 20,
                 ),
@@ -423,14 +448,14 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            DriverChatPage(driverId: widget.driverEmail,),//seeeeeeeeeeeeeeeeeeeeeeeee
+                        builder: (context) => DriverChatPage(
+                          driverId: widget.driverEmail,
+                        ), //seeeeeeeeeeeeeeeeeeeeeeeee
                       ),
                     );
                   },
                   child: Text('Chat'),
                 ),
-
                 SizedBox(
                   width: 20,
                 ),
@@ -439,8 +464,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            SignInPage(),
+                        builder: (context) => SignInPage(),
                       ),
                     );
                   },
@@ -516,6 +540,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
+                              '${tripData['municipalityDropdown'] ?? 'No Record of Municipality'}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w400)),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text(
                               'Pickup: ${tripData['pickupLocation'] ?? 'No pickup location'}',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w300)),
@@ -524,11 +555,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w300)),
                           Text(
-                              'Distance: ${tripData['distance']?.toStringAsFixed(2) ?? 'No distance'} km',
+                              'Distance: ${tripData['distance']?.toStringAsFixed(1) ?? 'No distance'} km',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w300)),
                           Text(
-                              'Fare: NPR ${tripData['fare']?.toStringAsFixed(2) ?? 'No fare'}',
+                              'Fare: NPR ${tripData['fare']?.toStringAsFixed(0) ?? 'No fare'}',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w300)),
                           Text('Phone: ${tripData['phone'] ?? 'No phone'}',

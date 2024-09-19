@@ -481,7 +481,7 @@ class ChatDetailPage extends StatelessWidget {
   final String distance;
   final String fare;
 
-  ChatDetailPage({
+  const ChatDetailPage({super.key, 
     required this.userId,
     required this.driverId,
     required this.tripId,
@@ -506,7 +506,7 @@ class ChatDetailPage extends StatelessWidget {
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
             data['collection'] = 'userChats';
             return data;
           }).toList();
@@ -519,7 +519,7 @@ class ChatDetailPage extends StatelessWidget {
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
             data['collection'] = 'driverChats';
             return data;
           }).toList();
@@ -561,8 +561,8 @@ class ChatDetailPage extends StatelessWidget {
                       Text('Driver Name: $driverName'),
                       Text('Pickup Location: $pickupLocation'),
                       Text('Delivery Location: $deliveryLocation'),
-                      Text('Distance: ${distance} km'),
-                      Text('Fare: NPR ${fare}'),
+                      Text('Distance: $distance km'),
+                      Text('Fare: NPR $fare'),
                     ],
                   ),
                   actions: [

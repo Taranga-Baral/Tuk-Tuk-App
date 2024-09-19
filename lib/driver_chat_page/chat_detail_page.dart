@@ -202,7 +202,7 @@ class DriverChatDisplayPage extends StatefulWidget {
   final String tripId;
   final String userId;
 
-  DriverChatDisplayPage({
+  const DriverChatDisplayPage({super.key, 
     required this.driverId,
     required this.tripId,
     required this.userId,
@@ -247,7 +247,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
             data['collection'] = 'userChats';
             return data;
           }).toList();
@@ -261,7 +261,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
             data['collection'] = 'driverChats';
             return data;
           }).toList();

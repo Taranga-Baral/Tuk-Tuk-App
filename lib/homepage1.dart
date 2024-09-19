@@ -1,6 +1,4 @@
-import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
-import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
 import 'package:final_menu/Statistics_page/Statistics-Page.dart';
 import 'package:final_menu/chat/chat.dart';
 import 'package:final_menu/homepage.dart';

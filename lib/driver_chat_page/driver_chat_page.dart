@@ -159,7 +159,7 @@ import 'package:flutter/material.dart';
 class DriverChatPage extends StatelessWidget {
   final String driverId;
 
-  DriverChatPage({required this.driverId});
+  const DriverChatPage({super.key, required this.driverId});
 
   Future<Map<String, dynamic>?> fetchTripDetails(String tripId) async {
     final tripSnapshot =

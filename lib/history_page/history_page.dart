@@ -146,7 +146,7 @@ class _HistoryPageState extends State<HistoryPage> {
             : null;
         
         final vehicleData = vehicleSnapshot?.docs.isNotEmpty == true
-            ? vehicleSnapshot!.docs.first.data() as Map<String, dynamic>
+            ? vehicleSnapshot!.docs.first.data()
             : {};
         
         final username = userSnapshot.data()?['username'] ?? 'Unknown';

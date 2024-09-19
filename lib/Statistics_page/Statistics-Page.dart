@@ -206,7 +206,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           color: Colors.orange,
                         ),
                         SizedBox(height: 16),
-                        Container(
+                        SizedBox(
                           height: 300, // Set height for the chart
                           child: PieChart(
                             PieChartData(
@@ -286,7 +286,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return PieChartSectionData(
       value: value,
       color: color,
-      title: '${value.toStringAsFixed(2)}',
+      title: value.toStringAsFixed(2),
       titleStyle: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.bold,

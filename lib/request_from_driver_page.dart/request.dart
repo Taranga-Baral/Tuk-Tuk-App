@@ -59,13 +59,13 @@ class _RequestPageState extends State<RequestPage> {
       print('Arrived drivers loaded: ${arrivedDriversSnapshot.docs.length}');
 
       // Debugging: Print retrieved documents
-      requestsSnapshot.docs.forEach((doc) {
+      for (var doc in requestsSnapshot.docs) {
         print('Request: ${doc.data()}');
-      });
+      }
 
-      arrivedDriversSnapshot.docs.forEach((doc) {
+      for (var doc in arrivedDriversSnapshot.docs) {
         print('Arrived driver: ${doc.data()}');
-      });
+      }
 
       // Check if requests exist before continuing
       if (requestsSnapshot.docs.isEmpty &&
@@ -315,7 +315,7 @@ class _RequestPageState extends State<RequestPage> {
                                       snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return Text("Loading ...");
+                                  return Text('Loading ...');
                                 }
 
                                 if (snapshot.hasError || !snapshot.hasData) {

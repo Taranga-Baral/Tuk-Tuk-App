@@ -245,9 +245,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_stepper/easy_stepper.dart';
-import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
-import 'package:final_menu/homepage.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
