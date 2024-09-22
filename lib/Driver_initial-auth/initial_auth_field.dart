@@ -1132,7 +1132,6 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                       ),
                     ],
                     if (_activeStep == 3) ...[
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children:  [

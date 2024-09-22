@@ -658,7 +658,7 @@ class _HomePage1State extends State<HomePage1> {
 
                               
                               context: context,
-                              title: 'तुक तुक बोलौने',
+                              title: 'टुक टुक बोलौने',
                               subtitle: 'Get a ride quickly',
                               icon: Icons.map_rounded,
                               onTap: () {
@@ -705,7 +705,7 @@ class _HomePage1State extends State<HomePage1> {
                           Expanded(
                             child: _buildCard(
                               context: context,
-                              title: 'हजुरको विवरण ',
+                              title: 'हजुरको विवरण',
                               subtitle: 'Your Stats',
                               icon: Icons.calculate,
                               onTap: () {
