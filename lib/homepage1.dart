@@ -906,7 +906,7 @@ class _HomePage1State extends State<HomePage1> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           gradient: LinearGradient(
-            colors: [Colors.blueAccent, Colors.lightBlueAccent],
+            colors: [const Color.fromARGB(255, 201, 78, 223), const Color.fromARGB(255, 136, 100, 235),const Color.fromARGB(255, 69, 178, 228)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

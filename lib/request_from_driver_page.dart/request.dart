@@ -352,183 +352,189 @@ class _RequestPageState extends State<RequestPage> {
                                 final fare = tripData['fare'] ?? 'N/A';
                                 final distance = tripData['distance'] ?? 'N/A';
 
-                                return Card(
-                                  elevation: 5,
-                                  margin: EdgeInsets.all(10),
-                                  child: AnimatedContainer(
-                                    duration: Duration(milliseconds: 300),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ListTile(
-                                          leading: CircleAvatar(
-                                            radius: 20,
-                                            backgroundImage: profilePicture !=
-                                                    null
-                                                ? NetworkImage(profilePicture)
-                                                : AssetImage(
-                                                        'assets/tuktuk.jpg')
-                                                    as ImageProvider, // Fallback image if no URL
-                                          ),
-                                          title: Text(
-                                            '$name - $numberPlate',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          subtitle: Text('Vehicle : $brand $vehicleType ($color)')
-                                              ,
-                                            
-                                          trailing: IconButton(
-                                            icon: Icon(_expandedStates[index]
-                                                ? Icons.expand_less
-                                                : Icons.expand_more),
-                                            onPressed: () {
-                                              setState(() {
-                                                _expandedStates[index] =
-                                                    !_expandedStates[
-                                                        index]; // Toggle expansion
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        if (_expandedStates[index])
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 20, left: 18),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Phone: ',
-                                                    ),
-                                                    Text('$phone'),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 2,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Address: ',
-                                                    ),
-                                                    Text('$address'),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 2,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Pickup: ',
-                                                    ),
-                                                    Text('$pickupLocation'),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 2,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Delivery Location: ',
-                                                    ),
-                                                    Text('$deliveryLocation'),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 2,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Fare: ',
-                                                    ),
-                                                    Text('$fare'),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 2,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'Distance: ',
-                                                    ),
-                                                    Text('$distance km'),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    ElevatedButton(
-                                                      onPressed: _buttonStates[
-                                                                  tripId] ==
-                                                              true
-                                                          ? null
-                                                          : () {
-                                                              confirmRequest(
-                                                                  userId,
-                                                                  driverId,
-                                                                  tripId);
-                                                            },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            _buttonStates[
-                                                                        tripId] ==
-                                                                    true
-                                                                ? Colors.grey
-                                                                : null,
-                                                      ),
-                                                      child: Text(
-                                                        _buttonStates[tripId] ==
-                                                                true
-                                                            ? 'Confirmed'
-                                                            : 'Confirm',
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 20,
-                                                    ),
-                                                    GestureDetector(
-                                                      child: Icon(Icons.phone),
-                                                      onTap: () {
-                                                        final phoneNumber =
-                                                            phone;
-                                                        if (phoneNumber !=
-                                                                null &&
-                                                            phoneNumber
-                                                                .isNotEmpty) {
-                                                          _launchPhoneNumber(
-                                                              phoneNumber);
-                                                        } else {
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                            SnackBar(
-                                                                content: Text(
-                                                                    'Phone number is unavailable')),
-                                                          );
-                                                        }
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                );
+return Card(
+  elevation: 5,
+  margin: EdgeInsets.all(10),
+  child: AnimatedContainer(
+    duration: Duration(milliseconds: 300),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          leading: CircleAvatar(
+            radius: 20,
+            backgroundImage: profilePicture != null
+                ? NetworkImage(profilePicture)
+                : AssetImage('assets/tuktuk.jpg') as ImageProvider, // Fallback image if no URL
+          ),
+          title: Text(
+            '$name - $numberPlate',
+            style: TextStyle(fontWeight: FontWeight.bold),
+            maxLines: null, // Allow multiple lines
+            softWrap: true,  // Enable text wrapping
+            overflow: TextOverflow.visible, // Ensure text overflows correctly
+          ),
+          subtitle: Text(
+            'Vehicle: $brand $vehicleType ($color)',
+            maxLines: null, // Allow multiple lines
+            softWrap: true,  // Enable text wrapping
+            overflow: TextOverflow.visible, // Ensure text overflows correctly
+          ),
+          trailing: IconButton(
+            icon: Icon(_expandedStates[index] ? Icons.expand_less : Icons.expand_more),
+            onPressed: () {
+              setState(() {
+                _expandedStates[index] = !_expandedStates[index]; // Toggle expansion
+              });
+            },
+          ),
+        ),
+        if (_expandedStates[index])
+            
+
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20, left: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                        
+                    Text('Phone: ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+                    Expanded(  // Wrap the phone text to ensure it fits
+                      child: Text(
+                        '$phone',
+                        maxLines: null,  // Allow multiple lines
+                        softWrap: true,  // Enable text wrapping
+                        overflow: TextOverflow.visible, // Ensure text overflows correctly
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2),
+                Divider(),
+
+                Row(
+                  children: [
+                    Text('Address: ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+                    Expanded(  // Wrap the address text to ensure it fits
+                      child: Text(
+                        '$address',
+                        maxLines: null,  // Allow multiple lines
+                        softWrap: true,  // Enable text wrapping
+                        overflow: TextOverflow.visible, // Ensure text overflows correctly
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2),
+                Divider(),
+
+                Row(
+                  children: [
+                    Text('Pickup: ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+                    Expanded(  // Wrap the pickup location text to ensure it fits
+                      child: Text(
+                        '$pickupLocation',
+                        maxLines: null,  // Allow multiple lines
+                        softWrap: true,  // Enable text wrapping
+                        overflow: TextOverflow.visible, // Ensure text overflows correctly
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2),
+                Divider(),
+
+                Row(
+                  children: [
+                    Text('Delivery: ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+                    Expanded(  // Wrap the delivery location text to ensure it fits
+                      child: Text(
+                        '$deliveryLocation',
+                        maxLines: null,  // Allow multiple lines
+                        softWrap: true,  // Enable text wrapping
+                        overflow: TextOverflow.visible, // Ensure text overflows correctly
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2),
+                Divider(),
+                Row(
+                  children: [
+                    Text('Fare: ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+                    Expanded(  // Wrap the fare text to ensure it fits
+                      child: Text(
+                        '$fare',
+                        maxLines: null,  // Allow multiple lines
+                        softWrap: true,  // Enable text wrapping
+                        overflow: TextOverflow.visible, // Ensure text overflows correctly
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2),
+                Divider(),
+                
+                Row(
+                  children: [
+                    Text('Distance: ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+                    Expanded(  // Wrap the distance text to ensure it fits
+                      child: Text(
+                        '$distance km',
+                        maxLines: null,  // Allow multiple lines
+                        softWrap: true,  // Enable text wrapping
+                        overflow: TextOverflow.visible, // Ensure text overflows correctly
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5),
+                Divider(),
+
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _buttonStates[tripId] == true
+                          ? null
+                          : () {
+                              confirmRequest(userId, driverId, tripId);
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _buttonStates[tripId] == true ? Colors.grey : null,
+                      ),
+                      child: Text(
+                        _buttonStates[tripId] == true ? 'Confirmed' : 'Confirm',
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    GestureDetector(
+                      child: Icon(Icons.phone),
+                      onTap: () {
+                        final phoneNumber = phone;
+                        if (phoneNumber != null && phoneNumber.isNotEmpty) {
+                          _launchPhoneNumber(phoneNumber);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Phone number is unavailable')),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+      ],
+    ),
+  ),
+);
+
                               },
                             );
                           },
