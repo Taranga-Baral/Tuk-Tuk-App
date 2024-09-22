@@ -1,4 +1,3 @@
-
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:flutter/material.dart';
 
@@ -350,7 +349,7 @@
 //                     );
 //                   },
 //                 ),
-                
+
 //               ],
 //             ),
 //           ),
@@ -453,7 +452,7 @@
 //                         'message': messageController.text,
 //                         'timestamp': FieldValue.serverTimestamp(),
 //                       });
-                      
+
 //                       messageController.clear();
 //                     }
 //                   },
@@ -481,7 +480,8 @@ class ChatDetailPage extends StatelessWidget {
   final String distance;
   final String fare;
 
-  const ChatDetailPage({super.key, 
+  const ChatDetailPage({
+    super.key,
     required this.userId,
     required this.driverId,
     required this.tripId,
@@ -494,8 +494,10 @@ class ChatDetailPage extends StatelessWidget {
 
   Future<String?> fetchDriverProfilePicture() async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final driverSnapshot = await firestore.collection('vehicleData').doc(driverId).get();
-    return driverSnapshot.data()?['profilePictureUrl']; // Fetch the profile picture URL
+    final driverSnapshot =
+        await firestore.collection('vehicleData').doc(driverId).get();
+    return driverSnapshot
+        .data()?['profilePictureUrl']; // Fetch the profile picture URL
   }
 
   Stream<List<Map<String, dynamic>>> _getMessages() {
@@ -505,12 +507,12 @@ class ChatDetailPage extends StatelessWidget {
         .orderBy('timestamp', descending: false)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
-            final data = doc.data();
-            data['collection'] = 'userChats';
-            return data;
-          }).toList();
-        });
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['collection'] = 'userChats';
+        return data;
+      }).toList();
+    });
 
     final driverChatsStream = FirebaseFirestore.instance
         .collection('driverChats')
@@ -518,14 +520,15 @@ class ChatDetailPage extends StatelessWidget {
         .orderBy('timestamp', descending: false)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
-            final data = doc.data();
-            data['collection'] = 'driverChats';
-            return data;
-          }).toList();
-        });
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['collection'] = 'driverChats';
+        return data;
+      }).toList();
+    });
 
-    return Rx.combineLatest2(userChatsStream, driverChatsStream, (userChats, driverChats) {
+    return Rx.combineLatest2(userChatsStream, driverChatsStream,
+        (userChats, driverChats) {
       List<Map<String, dynamic>> allChats = [];
       allChats.addAll(userChats);
       allChats.addAll(driverChats);
@@ -547,7 +550,6 @@ class ChatDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        
         actions: [
           IconButton(
             onPressed: () {
@@ -558,16 +560,42 @@ class ChatDetailPage extends StatelessWidget {
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Driver Name: $driverName'),
-                      Text('Pickup Location: $pickupLocation'),
-                      Text('Delivery Location: $deliveryLocation'),
-                      Text('Distance: $distance km'),
-                      Text('Fare: NPR $fare'),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment
+                            .start, // Aligns children to the right
+                        children: [
+                          Text(
+                            'Driver Name: $driverName',
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            'Pickup Location: $pickupLocation',
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            'Delivery Location: $deliveryLocation',
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            'Distance: $distance km',
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            'Fare: NPR $fare',
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            Colors.green, // Button background color
+                      ),
                       child: Text('Close'),
                     ),
                   ],
@@ -606,10 +634,11 @@ class ChatDetailPage extends StatelessWidget {
                     return AvatarGlow(
                       glowRadiusFactor: 0.4,
                       startDelay: Duration(milliseconds: 500),
-                      glowColor: Colors.greenAccent, // Adjust the glow color as needed
+                      glowColor:
+                          Colors.greenAccent, // Adjust the glow color as needed
                       glowShape: BoxShape.circle,
                       animate: true,
-                      
+
                       child: Material(
                         elevation: 8.0,
                         shape: CircleBorder(),
@@ -618,7 +647,8 @@ class ChatDetailPage extends StatelessWidget {
                           radius: 50,
                           backgroundImage: profilePictureUrl != null
                               ? NetworkImage(profilePictureUrl)
-                              : AssetImage('assets/tuktuk1.png') as ImageProvider, // Fallback image if no URL
+                              : AssetImage('assets/tuktuk1.png')
+                                  as ImageProvider, // Fallback image if no URL
                         ),
                       ),
                     );
@@ -651,34 +681,46 @@ class ChatDetailPage extends StatelessWidget {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final chatData = messages[index];
-                    final isDriverMessage = chatData['collection'] == 'driverChats';
+                    final isDriverMessage =
+                        chatData['collection'] == 'driverChats';
 
                     return Align(
-                      alignment: isDriverMessage ? Alignment.centerLeft : Alignment.centerRight,
+                      alignment: isDriverMessage
+                          ? Alignment.centerLeft
+                          : Alignment.centerRight,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 6.0, horizontal: 10.0),
                         child: Card(
-                          color: isDriverMessage ? Colors.green[100] : Colors.blue[100],
+                          color: isDriverMessage
+                              ? Colors.green[100]
+                              : Colors.blue[100],
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Container(
                             padding: EdgeInsets.all(12.0),
-                            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+                            constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.7),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   chatData['message'],
                                   style: TextStyle(
-                                    color: isDriverMessage ? Colors.black87 : Colors.black,
+                                    color: isDriverMessage
+                                        ? Colors.black87
+                                        : Colors.black,
                                     fontSize: 16.0,
                                   ),
                                 ),
                                 SizedBox(height: 5.0),
                                 Text(
                                   chatData['timestamp'] != null
-                                      ? chatData['timestamp'].toDate().toString()
+                                      ? chatData['timestamp']
+                                          .toDate()
+                                          .toString()
                                       : 'Sending...',
                                   style: TextStyle(
                                     color: Colors.grey[600],
@@ -719,14 +761,16 @@ class ChatDetailPage extends StatelessWidget {
                   icon: Icon(Icons.send),
                   onPressed: () async {
                     if (messageController.text.isNotEmpty) {
-                      await FirebaseFirestore.instance.collection('userChats').add({
+                      await FirebaseFirestore.instance
+                          .collection('userChats')
+                          .add({
                         'userId': userId,
                         'driverId': driverId,
                         'tripId': tripId,
                         'message': messageController.text,
                         'timestamp': FieldValue.serverTimestamp(),
                       });
-                      
+
                       messageController.clear();
                     }
                   },

@@ -444,140 +444,12 @@ class _HomePageState extends State<HomePage> {
                     var editLinkElement = document.querySelector('a.btn.btn-outline-primary.geolink.editlink#editanchor');
                     if (editLinkElement) editLinkElement.remove();
 
+
                     result;
                   """);
                 },
               ),
             if (_isLoading) Center(child: CircularProgressIndicator()),
-            // Positioned(
-            //   bottom: 100,
-            //   right: 50,
-            //   child: ElevatedButton(
-            //     onPressed: () async {
-            //       final pickupLocation = await webView?.evaluateJavascript(
-            //               source: "document.getElementById('route_from').value") ??
-            //           'N/A';
-            //       final deliveryLocation = await webView?.evaluateJavascript(
-            //               source: "document.getElementById('route_to').value") ??
-            //           'N/A';
-
-            //       if (pickupLocation.isEmpty || deliveryLocation.isEmpty) {
-            //         _showSnackbar('Enter Proper Address');
-            //         return;
-            //       }
-
-            //       final distance =
-            //           await _getDistanceFromAPI(pickupLocation, deliveryLocation);
-            //       final fare = _calculateFare(distance);
-
-            //       final confirmed = await showDialog<bool>(
-            //         context: context,
-            //         barrierDismissible: false,
-            //         builder: (context) => StatefulBuilder(
-            //           builder: (context, setState) {
-            //             return AlertDialog(
-            //               title: Text('Confirm Booking'),
-            //               content: Column(
-            //                 mainAxisSize: MainAxisSize.min,
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Text(
-            //                     'Pickup: $pickupLocation\n'
-            //                     'Delivery: $deliveryLocation\n'
-            //                     'Estimated Fare: NPR${fare.toStringAsFixed(2)}\n\n'
-            //                     'Please select your municipality.',
-            //                   ),
-            //                   SizedBox(height: 10),
-            //                   SizedBox(
-            //                     width: double.infinity,
-            //                     child: DropdownButton<String>(
-            //                       value: selectedMunicipality,
-            //                       hint: Text('Select Municipality'),
-            //                       isExpanded: true,
-            //                       items: municipalitySections.expand((section) {
-            //                         List<DropdownMenuItem<String>> items = [];
-            //                         // Add section title as a non-selectable item
-            //                         items.add(DropdownMenuItem<String>(
-            //                           enabled: false,
-            //                           child: Text(
-            //                             section['title'],
-            //                             style: TextStyle(
-            //                                 fontWeight: FontWeight.bold,
-            //                                 color: Colors.grey),
-            //                           ),
-            //                         ));
-            //                         // Add each municipality under the section
-            //                         items.addAll(section['municipalities']
-            //                             .map<DropdownMenuItem<String>>(
-            //                                 (String municipality) {
-            //                           return DropdownMenuItem<String>(
-            //                             value: municipality,
-            //                             child: Padding(
-            //                               padding: const EdgeInsets.only(left: 8.0),
-            //                               child: Text(municipality),
-            //                             ),
-            //                           );
-            //                         }).toList());
-            //                         return items;
-            //                       }).toList(),
-            //                       onChanged: (String? newValue) {
-            //                         setState(() {
-            //                           selectedMunicipality = newValue;
-            //                         });
-            //                       },
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //               actions: <Widget>[
-            //                 TextButton(
-            //                   child: Text('Cancel'),
-            //                   onPressed: () =>
-            //                       Navigator.of(context).pop(false),
-            //                 ),
-            //                 TextButton(
-            //                   child: Text('Confirm'),
-            //                   onPressed: () {
-            //                     if (selectedMunicipality == null) {
-            //                       _showSnackbar('Please select a municipality');
-            //                     } else {
-            //                       Navigator.of(context).pop(true);
-            //                     }
-            //                   },
-            //                 ),
-            //               ],
-            //             );
-            //           },
-            //         ),
-            //       );
-
-            //       if (confirmed == true && selectedMunicipality != null) {
-            //         final userDetails = await _getUserDetails();
-            //         final user = FirebaseAuth.instance.currentUser;
-            //         final data = {
-            //           'username': userDetails['username'] ?? 'N/A',
-            //           'email': userDetails['email'] ?? 'N/A',
-            //           'phone': userDetails['phone_number'] ?? 'N/A',
-            //           'pickupLocation': pickupLocation,
-            //           'deliveryLocation': deliveryLocation,
-            //           'distance': distance,
-            //           'fare': fare.toStringAsFixed(2),
-            //           'timestamp': FieldValue.serverTimestamp(),
-            //           'municipalityDropdown': selectedMunicipality,
-            //           'userId': user?.uid ?? 'N/A',
-            //         };
-
-            //         await _storeDataInFirestore(data);
-
-            //         _showSnackbar(
-            //             'Booking successful!\n'
-            //             'Username: ${userDetails['username']}\nEmail: ${userDetails['email']}\nPhone: ${userDetails['phone_number']}\nPickup: $pickupLocation\nDelivery: $deliveryLocation\nDistance: $distance km\nFare: NPR ${fare.toStringAsFixed(2)}\nMunicipality: $selectedMunicipality');
-            //       }
-            //     },
-            //     child: Text('Book your ride'),
-            //   ),
-            // ),
-
             Positioned(
               bottom: 100,
               right: 50,
@@ -670,7 +542,12 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () => Navigator.of(context).pop(false),
                             ),
                             TextButton(
-                              child: Text('Confirm'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.deepOrange.shade600
+                                    .withOpacity(
+                                        0.7), // Button background color
+                              ),
                               onPressed: () {
                                 if (selectedMunicipality == null) {
                                   _showSnackbar('Please select a municipality');
@@ -678,6 +555,7 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.of(context).pop(true);
                                 }
                               },
+                              child: Text('Confirm'),
                             ),
                           ],
                         );
@@ -707,11 +585,12 @@ class _HomePageState extends State<HomePage> {
                         'Username: ${userDetails['username']}\nEmail: ${userDetails['email']}\nPhone: ${userDetails['phone_number']}\nPickup: $pickupLocation\nDelivery: $deliveryLocation\nDistance: $distance km\nFare: NPR ${fare.toStringAsFixed(2)}\nMunicipality: $selectedMunicipality');
                   }
                 },
-                child: Text('Book your ride',style: TextStyle(color: Colors.white),),
+                child: Text(
+                  'Book your ride',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
-
-
           ],
         ),
       ),

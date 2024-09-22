@@ -52,14 +52,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
     }
   }
 
-  Future<void> _launchPhoneNumber(String phoneNumber) async {
-    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
-    if (await canLaunchUrl(launchUri)) {
-      await launchUrl(launchUri);
-    } else {
-      print('Could not launch $launchUri');
-    }
-  }
+
 
   Future<Map<String, double>> _geocodeAddress(String address) async {
     final response = await http.get(Uri.parse(
@@ -205,10 +198,18 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                 icon: Icon(Icons.phone),
                                 onPressed: () {
                                   final phoneNumber =
-                                      userDetails['phone'] ?? '';
-                                  if (phoneNumber.isNotEmpty) {
-                                    _launchPhoneNumber(phoneNumber);
-                                  }
+                                                  tripDetails['phone'];
+                                              if (phoneNumber != null &&
+                                                  phoneNumber.isNotEmpty) {
+                                                _launchPhoneNumber(phoneNumber);
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                      content: Text(
+                                                          'Phone number is unavailable')),
+                                                );
+                                              }
                                 },
                               ),
                               IconButton(
@@ -335,6 +336,16 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
       ),
     );
   }
+  
+  Future<void> _launchPhoneNumber(String phoneNumber) async {
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      print('Could not launch $launchUri');
+    }
+  }
+
 }
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:final_menu/driver_chat_page/chat_detail_page.dart';
@@ -390,14 +401,14 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
 //     }
 //   }
 
-//   Future<void> _launchPhoneNumber(String phoneNumber) async {
-//     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
-//     if (await canLaunchUrl(launchUri)) {
-//       await launchUrl(launchUri);
-//     } else {
-//       print('Could not launch $launchUri');
-//     }
-//   }
+  // Future<void> _launchPhoneNumber(String phoneNumber) async {
+  //   final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+  //   if (await canLaunchUrl(launchUri)) {
+  //     await launchUrl(launchUri);
+  //   } else {
+  //     print('Could not launch $launchUri');
+  //   }
+  // }
 
 //   Future<Map<String, double>> _geocodeAddress(String address) async {
 //     final response = await http.get(Uri.parse(

@@ -132,9 +132,6 @@
 //     return compressedFile;
 //   }
 
-
-
-
 //   Future<String?> _uploadImage(
 //     File imageFile, String imageType, String driverId) async {
 //   try {
@@ -157,8 +154,6 @@
 //     return null;
 //   }
 // }
-
-
 
 //   Future<void> _submitForm() async {
 //   try {
@@ -302,14 +297,16 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
 
   int _activeStep = 0; // Manage active step
   bool _termsAccepted = false; // Track terms acceptance
-
+  final _formKey = GlobalKey<FormState>();
   bool _validateFields() {
     final email = _emailController.text;
     final phoneNumber = _phoneController.text.replaceAll('+977 ', '');
 
+    // Regex for email and phone number validation
     final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
     final phoneNumberRegex = RegExp(r'^\d{10}$'); // 10 digits
 
+    // Validate text fields
     if (_nameController.text.isEmpty ||
         _addressController.text.isEmpty ||
         _dobController.text.isEmpty ||
@@ -317,13 +314,18 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
         phoneNumber.isEmpty ||
         !emailRegex.hasMatch(email) ||
         !phoneNumberRegex.hasMatch(phoneNumber)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Either you left some field or some entered format is incorrect',
-          ),
-        ),
-      );
+      showSnackBar(context, 'Please fill all required fields correctly.');
+      return false;
+    }
+
+    // Validate if all images are selected
+    if (_bluebookPhoto == null ||
+        _citizenshipFrontPhoto == null ||
+        _licenseFrontPhoto == null ||
+        _selfieWithCitizenshipPhoto == null ||
+        _selfieWithLicensePhoto == null ||
+        _profilePicturePhoto == null) {
+      showSnackBar(context, 'Please select all required images.');
       return false;
     }
 
@@ -333,218 +335,199 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   Future<void> _pickImage(String imageType) async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      // setState(() {
-      //   switch (imageType) {
-      //     case 'bluebook':
-      //       _bluebookPhoto = File(pickedFile.path);
-      //       break;
-      //     case 'citizenshipFront':
-      //       _citizenshipFrontPhoto = File(pickedFile.path);
-      //       break;
-      //     case 'licenseFront':
-      //       _licenseFrontPhoto = File(pickedFile.path);
-      //       break;
-      //     case 'selfieWithCitizenship':
-      //       _selfieWithCitizenshipPhoto = File(pickedFile.path);
-      //       break;
-      //     case 'selfieWithLicense':
-      //       _selfieWithLicensePhoto = File(pickedFile.path);
-      //       break;
-      //     case 'profilePicture':
-      //       _profilePicturePhoto = File(pickedFile.path);
-      //       break;
-      //   }
-      // });
-
-
       setState(() {
-  switch (imageType) {
-    case 'bluebook':
-      _bluebookPhoto = File(pickedFile.path);
-      break;
-    case 'citizenshipFront':
-      _citizenshipFrontPhoto = File(pickedFile.path);
-      break;
-    case 'licenseFront':
-      _licenseFrontPhoto = File(pickedFile.path);
-      break;
-    case 'selfieWithCitizenship':
-      _selfieWithCitizenshipPhoto = File(pickedFile.path);
-      break;
-    case 'selfieWithLicense':
-      _selfieWithLicensePhoto = File(pickedFile.path);
-      break;
-    case 'profilePicture':
-      _profilePicturePhoto = File(pickedFile.path);
-      break;
-  }
-});
-
+        switch (imageType) {
+          case 'bluebook':
+            _bluebookPhoto = File(pickedFile.path);
+            break;
+          case 'citizenshipFront':
+            _citizenshipFrontPhoto = File(pickedFile.path);
+            break;
+          case 'licenseFront':
+            _licenseFrontPhoto = File(pickedFile.path);
+            break;
+          case 'selfieWithCitizenship':
+            _selfieWithCitizenshipPhoto = File(pickedFile.path);
+            break;
+          case 'selfieWithLicense':
+            _selfieWithLicensePhoto = File(pickedFile.path);
+            break;
+          case 'profilePicture':
+            _profilePicturePhoto = File(pickedFile.path);
+            break;
+        }
+      });
     }
   }
 
- Future<String?> _uploadImage(File imageFile, String imageType, String driverId) async {
-  if (!imageFile.existsSync()) {
-    print('File does not exist for $imageType');
-    return null;
+  Future<String?> _uploadImage(
+      File imageFile, String imageType, String driverId) async {
+    if (!imageFile.existsSync()) {
+      print('File does not exist for $imageType');
+      return null;
+    }
+
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child(
+          'images/$driverId/$imageType/${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final uploadTask = storageRef.putFile(imageFile);
+
+      final snapshot = await uploadTask.whenComplete(() {});
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image for $imageType: $e');
+      return null;
+    }
   }
 
-  try {
-    final storageRef = FirebaseStorage.instance.ref().child(
-        'images/$driverId/$imageType/${DateTime.now().millisecondsSinceEpoch}.jpg');
-    final uploadTask = storageRef.putFile(imageFile);
+  Future<void> _submitForm(BuildContext context) async {
+    if (!_validateFields()) {
+      return; // If validation fails, do not proceed
+    }
 
-    final snapshot = await uploadTask.whenComplete(() {});
-    final downloadUrl = await snapshot.ref.getDownloadURL();
+    try {
+      String driverId = _emailController.text; // Unique identifier (email)
+      bool allUploadsSuccessful = true;
 
-    return downloadUrl;
-  } catch (e) {
-    print('Error uploading image for $imageType: $e');
-    return null;
-  }
-}
-
-
-
-Future<void> _submitForm(BuildContext context) async {
-  try {
-    String driverId = _emailController.text; // Unique identifier (email)
-    bool allUploadsSuccessful = true;
-
-    // Show the loading popup with an image
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Disable back button and outside touch
-      builder: (BuildContext context) {
-        return WillPopScope(
-          onWillPop: () async {
-            // Show warning if user tries to press back
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please wait while we process your request.')),
-            );
-            return false; // Prevent back button
-          },
-          child: Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  
-                  Image.asset('assets/loading_screen.gif', height: 100), 
-                  const SizedBox(height: 10),
-                  const Text('Uploading and processing data...'),
-                ],
+      // Show the loading popup with an image
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Disable back button and outside touch
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () async {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content:
+                        Text('Please wait while we process your request.')),
+              );
+              return false; // Prevent back button
+            },
+            child: Dialog(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset('assets/loading_screen.gif', height: 100),
+                    const SizedBox(height: 10),
+                    const Text('Uploading and processing data...'),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
 
-    // Upload images and get URLs if the respective photo exists
-    if (_bluebookPhoto != null) {
-      _bluebookPhotoUrl = await _uploadImage(_bluebookPhoto!, 'bluebook', driverId);
-      if (_bluebookPhotoUrl == null) allUploadsSuccessful = false;
-    }
-    if (_citizenshipFrontPhoto != null) {
-      _citizenshipFrontUrl = await _uploadImage(_citizenshipFrontPhoto!, 'citizenshipFront', driverId);
-      if (_citizenshipFrontUrl == null) allUploadsSuccessful = false;
-    }
-    if (_licenseFrontPhoto != null) {
-      _licenseFrontUrl = await _uploadImage(_licenseFrontPhoto!, 'licenseFront', driverId);
-      if (_licenseFrontUrl == null) allUploadsSuccessful = false;
-    }
-    if (_selfieWithCitizenshipPhoto != null) {
-      _selfieWithCitizenshipUrl = await _uploadImage(_selfieWithCitizenshipPhoto!, 'selfieWithCitizenship', driverId);
-      if (_selfieWithCitizenshipUrl == null) allUploadsSuccessful = false;
-    }
-    if (_selfieWithLicensePhoto != null) {
-      _selfieWithLicenseUrl = await _uploadImage(_selfieWithLicensePhoto!, 'selfieWithLicense', driverId);
-      if (_selfieWithLicenseUrl == null) allUploadsSuccessful = false;
-    }
-    if (_profilePicturePhoto != null) {
-      _profilePictureUrl = await _uploadImage(_profilePicturePhoto!, 'profilePicture', driverId);
-      if (_profilePictureUrl == null) allUploadsSuccessful = false;
-    }
+      // Upload images and get URLs
+      if (_bluebookPhoto != null) {
+        _bluebookPhotoUrl =
+            await _uploadImage(_bluebookPhoto!, 'bluebook', driverId);
+        if (_bluebookPhotoUrl == null) allUploadsSuccessful = false;
+      }
+      if (_citizenshipFrontPhoto != null) {
+        _citizenshipFrontUrl = await _uploadImage(
+            _citizenshipFrontPhoto!, 'citizenshipFront', driverId);
+        if (_citizenshipFrontUrl == null) allUploadsSuccessful = false;
+      }
+      if (_licenseFrontPhoto != null) {
+        _licenseFrontUrl =
+            await _uploadImage(_licenseFrontPhoto!, 'licenseFront', driverId);
+        if (_licenseFrontUrl == null) allUploadsSuccessful = false;
+      }
+      if (_selfieWithCitizenshipPhoto != null) {
+        _selfieWithCitizenshipUrl = await _uploadImage(
+            _selfieWithCitizenshipPhoto!, 'selfieWithCitizenship', driverId);
+        if (_selfieWithCitizenshipUrl == null) allUploadsSuccessful = false;
+      }
+      if (_selfieWithLicensePhoto != null) {
+        _selfieWithLicenseUrl = await _uploadImage(
+            _selfieWithLicensePhoto!, 'selfieWithLicense', driverId);
+        if (_selfieWithLicenseUrl == null) allUploadsSuccessful = false;
+      }
+      if (_profilePicturePhoto != null) {
+        _profilePictureUrl = await _uploadImage(
+            _profilePicturePhoto!, 'profilePicture', driverId);
+        if (_profilePictureUrl == null) allUploadsSuccessful = false;
+      }
 
-    if (!allUploadsSuccessful) {
-      // Show error message if any upload failed
-      showSnackBar(context, 'Some images failed to upload. Please try again.');
-      Navigator.pop(context); // Close the popup
-      return;
+      // Check if all uploads were successful
+      if (!allUploadsSuccessful) {
+        showSnackBar(
+            context, 'Some images failed to upload. Please try again.');
+        Navigator.pop(context); // Close the popup
+        return;
+      }
+
+      // Proceed with saving the form data in Firestore
+      final vehicleDataRef =
+          FirebaseFirestore.instance.collection('vehicleData').doc(driverId);
+      final docSnapshot = await vehicleDataRef.get();
+
+      if (docSnapshot.exists) {
+        // Update existing fields
+        await vehicleDataRef.update({
+          'vehicleType': _selectedVehicleType,
+          'numberPlate': _numberPlateController.text,
+          'brand': _brandController.text,
+          'color': _colorController.text,
+          if (_bluebookPhotoUrl != null) 'bluebookPhotoUrl': _bluebookPhotoUrl,
+          'licenseNumber': _licenseNumberController.text,
+          if (_citizenshipFrontUrl != null)
+            'citizenshipFrontUrl': _citizenshipFrontUrl,
+          if (_licenseFrontUrl != null) 'licenseFrontUrl': _licenseFrontUrl,
+          if (_selfieWithCitizenshipUrl != null)
+            'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl,
+          if (_selfieWithLicenseUrl != null)
+            'selfieWithLicenseUrl': _selfieWithLicenseUrl,
+          if (_profilePictureUrl != null)
+            'profilePictureUrl': _profilePictureUrl,
+          'name': _nameController.text,
+          'address': _addressController.text,
+          'dob': _dobController.text,
+          'email': _emailController.text,
+          'phone': _phoneController.text,
+        });
+      } else {
+        // Create new document
+        await vehicleDataRef.set({
+          'vehicleType': _selectedVehicleType,
+          'numberPlate': _numberPlateController.text,
+          'brand': _brandController.text,
+          'color': _colorController.text,
+          'bluebookPhotoUrl': _bluebookPhotoUrl ?? '',
+          'licenseNumber': _licenseNumberController.text,
+          'citizenshipFrontUrl': _citizenshipFrontUrl ?? '',
+          'licenseFrontUrl': _licenseFrontUrl ?? '',
+          'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl ?? '',
+          'selfieWithLicenseUrl': _selfieWithLicenseUrl ?? '',
+          'profilePictureUrl': _profilePictureUrl ?? '',
+          'name': _nameController.text,
+          'address': _addressController.text,
+          'dob': _dobController.text,
+          'email': _emailController.text,
+          'phone': _phoneController.text,
+        });
+      }
+
+      // Success
+      showSnackBar(context, 'Registration successful.');
+      await Future.delayed(const Duration(seconds: 3));
+
+      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DriverRegistrationPage()),
+      );
+    } catch (e) {
+      print('Error submitting form: $e');
+      showSnackBar(context, 'An error occurred. Please try again.');
+      Navigator.pop(context); // Close the popup in case of error
     }
-
-    // Check if the document already exists in Firestore
-    final vehicleDataRef = FirebaseFirestore.instance.collection('vehicleData').doc(driverId);
-    final docSnapshot = await vehicleDataRef.get();
-
-    if (docSnapshot.exists) {
-      // Update existing fields
-      await vehicleDataRef.update({
-        'vehicleType': _selectedVehicleType,
-        'numberPlate': _numberPlateController.text,
-        'brand': _brandController.text,
-        'color': _colorController.text,
-        if (_bluebookPhotoUrl != null) 'bluebookPhotoUrl': _bluebookPhotoUrl,
-        'licenseNumber': _licenseNumberController.text,
-        if (_citizenshipFrontUrl != null) 'citizenshipFrontUrl': _citizenshipFrontUrl,
-        if (_licenseFrontUrl != null) 'licenseFrontUrl': _licenseFrontUrl,
-        if (_selfieWithCitizenshipUrl != null) 'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl,
-        if (_selfieWithLicenseUrl != null) 'selfieWithLicenseUrl': _selfieWithLicenseUrl,
-        if (_profilePictureUrl != null) 'profilePictureUrl': _profilePictureUrl,
-        'name': _nameController.text,
-        'address': _addressController.text,
-        'dob': _dobController.text,
-        'email': _emailController.text,
-        'phone': _phoneController.text,
-      });
-    } else {
-      // Create new document
-      await vehicleDataRef.set({
-        'vehicleType': _selectedVehicleType,
-        'numberPlate': _numberPlateController.text,
-        'brand': _brandController.text,
-        'color': _colorController.text,
-        'bluebookPhotoUrl': _bluebookPhotoUrl ?? '',
-        'licenseNumber': _licenseNumberController.text,
-        'citizenshipFrontUrl': _citizenshipFrontUrl ?? '',
-        'licenseFrontUrl': _licenseFrontUrl ?? '',
-        'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl ?? '',
-        'selfieWithLicenseUrl': _selfieWithLicenseUrl ?? '',
-        'profilePictureUrl': _profilePictureUrl ?? '',
-        'name': _nameController.text,
-        'address': _addressController.text,
-        'dob': _dobController.text,
-        'email': _emailController.text,
-        'phone': _phoneController.text,
-      });
-    }
-    
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Successful Registration.')),
-    );
-
-    // Wait for a few seconds to ensure user sees the popup
-    await Future.delayed(const Duration(seconds: 3));
-
-    // Close the popup and navigate to next page
-    Navigator.pop(context);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => DriverRegistrationPage()),
-    );
-  } catch (e) {
-    print('Error submitting form: $e');
-    showSnackBar(context, 'An error occurred. Please try again.');
-    Navigator.pop(context); // Close the popup in case of an error
   }
-}
-
-
-
-
 
   Future<void> _selectDateOfBirth() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -619,20 +602,7 @@ Future<void> _submitForm(BuildContext context) async {
               width: MediaQuery.of(context).size.width,
               child: EasyStepper(
                 activeStep: _activeStep,
-                onStepReached: (index) {
-                  setState(() {
-                    if (_activeStep == 0 && !_termsAccepted && index > 0) {
-                      // Prevent navigation if terms are not accepted
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                'Please accept the terms and conditions.')),
-                      );
-                    } else {
-                      _activeStep = index;
-                    }
-                  });
-                },
+                onStepReached: (index) {},
                 steps: const [
                   EasyStep(
                     title: 'Terms & Conditions',
@@ -739,130 +709,215 @@ Future<void> _submitForm(BuildContext context) async {
                       ),
                     ],
                     if (_activeStep == 1) ...[
-                      // Vehicle Info Step
-                      DropdownButton<String>(
-                        value: _selectedVehicleType,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedVehicleType = newValue!;
-                          });
-                        },
-                        items: <String>['Tuk Tuk']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children:  [
+                          GestureDetector(
+                            child: Icon(Icons.arrow_back),
+                            onTap: () {
+                              setState(() {
+                                      _activeStep = 0;
+                                    });
+                            },
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 5,
-                      ),
+                      Form(
+                        key: _formKey, // Form key for validation
+                        child: Column(
+                          children: [
+                            // Vehicle Info Step
+                            DropdownButton<String>(
+                              value: _selectedVehicleType,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedVehicleType = newValue!;
+                                });
+                              },
+                              items: <String>[
+                                'Tuk Tuk'
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
 
-                      TextField(
-                        controller: _numberPlateController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Number Plate',
-                          prefixIcon:
-                              Icon(Icons.format_list_numbered_rtl_outlined),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-
-                      TextField(
-                        controller: _brandController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Brand',
-                          prefixIcon: Icon(Icons.electric_rickshaw_outlined),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-
-                      TextField(
-                        controller: _colorController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Color',
-                          prefixIcon: Icon(Icons.color_lens_outlined),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _activeStep = 2;
-                            });
-                          },
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.07,
-                            width: MediaQuery.of(context).size.width,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Next',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w600,
+                            // Number Plate TextFormField
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'This field is required';
+                                }
+                                return null; // Valid input
+                              },
+                              controller: _numberPlateController,
+                              decoration: const InputDecoration(
+                                labelText: 'Number Plate',
+                                prefixIcon: Icon(
+                                    Icons.format_list_numbered_rtl_outlined),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244),
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
                                 ),
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 25),
+
+                            // Brand TextFormField
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'This field is required';
+                                }
+                                return null; // Valid input
+                              },
+                              controller: _brandController,
+                              decoration: const InputDecoration(
+                                labelText: 'Brand',
+                                prefixIcon:
+                                    Icon(Icons.electric_rickshaw_outlined),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244),
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 25),
+
+                            // Color TextFormField
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'This field is required';
+                                }
+                                return null; // Valid input
+                              },
+                              controller: _colorController,
+                              decoration: const InputDecoration(
+                                labelText: 'Color',
+                                prefixIcon: Icon(Icons.color_lens_outlined),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244),
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Next Button
+                            ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(12)),
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (_formKey.currentState == null ||
+                                      !_formKey.currentState!.validate()) {
+                                    // If form is invalid, show a SnackBar and prevent navigation
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Please fill out all fields before proceeding.')),
+                                    );
+                                    return; // Prevent further execution
+                                  }
+
+                                  // Validate the form
+                                  if (_formKey.currentState!.validate()) {
+                                    // If the form is valid, proceed to the next step
+                                    setState(() {
+                                      _activeStep = 2;
+                                    });
+                                  } else {
+                                    // If validation fails, show the errors in the form
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Please fill out all fields')),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.07,
+                                  width: MediaQuery.of(context).size.width,
+                                  color: _color,
+                                  child: const Center(
+                                    child: Text(
+                                      'Next',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                      )
                     ],
                     if (_activeStep == 2) ...[
-                      // Documents Step
-                      // ElevatedButton(
-                      //   onPressed: () => _pickImage('bluebook'),
-                      //   child: const Text('Upload Bluebook Photo'),
-                      // ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children:  [
+                          GestureDetector(
+                            child: Icon(Icons.arrow_back),
+                            onTap: () {
+                              setState(() {
+                                      _activeStep = 0;
+                                    });
+                            },
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: 20,
+                      ),
                       ClipRRect(
                         borderRadius:
                             const BorderRadius.all(Radius.circular(12)),
@@ -893,6 +948,10 @@ Future<void> _submitForm(BuildContext context) async {
                         Image.file(_bluebookPhoto!),
                       ],
 
+                      SizedBox(
+                        height: 25,
+                      ),
+
                       ClipRRect(
                         borderRadius:
                             const BorderRadius.all(Radius.circular(12)),
@@ -915,7 +974,9 @@ Future<void> _submitForm(BuildContext context) async {
                           ),
                         ),
                       ),
-
+                        SizedBox(
+                        height: 25,
+                      ),
                       if (_citizenshipFrontPhoto != null) ...[
                         Image.file(_citizenshipFrontPhoto!),
                       ],
@@ -946,15 +1007,14 @@ Future<void> _submitForm(BuildContext context) async {
                         ),
                       ),
 
+                      SizedBox(
+                        height: 25,
+                      ),
+
                       if (_licenseFrontPhoto != null) ...[
                         Image.file(_licenseFrontPhoto!),
                       ],
-                      // ElevatedButton(
-                      //   onPressed: () => _pickImage(''),
-                      //   child:
-                      //       const Text(''),
-                      // ),
-
+                      
                       SizedBox(
                         height: 25,
                       ),
@@ -979,6 +1039,10 @@ Future<void> _submitForm(BuildContext context) async {
                             ),
                           ),
                         ),
+                      ),
+
+                      SizedBox(
+                        height: 25,
                       ),
 
                       if (_selfieWithCitizenshipPhoto != null) ...[
@@ -1014,6 +1078,10 @@ Future<void> _submitForm(BuildContext context) async {
                         ),
                       ),
 
+                      SizedBox(
+                        height: 25,
+                      ),
+
                       if (_selfieWithLicensePhoto != null) ...[
                         Image.file(_selfieWithLicensePhoto!),
                       ],
@@ -1044,6 +1112,10 @@ Future<void> _submitForm(BuildContext context) async {
                         ),
                       ),
 
+                      SizedBox(
+                        height: 25,
+                      ),
+
                       if (_profilePicturePhoto != null) ...[
                         Image.file(_profilePicturePhoto!),
                       ],
@@ -1060,7 +1132,31 @@ Future<void> _submitForm(BuildContext context) async {
                       ),
                     ],
                     if (_activeStep == 3) ...[
-                      TextField(
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children:  [
+                          GestureDetector(
+                            child: Icon(Icons.arrow_back),
+                            onTap: () {
+                              setState(() {
+                                      _activeStep = 0;
+                                    });
+                            },
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+                          return null; // Return null if the input is valid
+                        },
                         controller: _nameController,
                         decoration: const InputDecoration(
                           prefixIconColor: Color.fromARGB(255, 187, 109, 201),
@@ -1086,7 +1182,13 @@ Future<void> _submitForm(BuildContext context) async {
                         height: 25,
                       ),
 
-                      TextField(
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+                          return null; // Return null if the input is valid
+                        },
                         controller: _addressController,
                         decoration: const InputDecoration(
                           prefixIconColor: Color.fromARGB(255, 187, 109, 201),
@@ -1111,7 +1213,13 @@ Future<void> _submitForm(BuildContext context) async {
                         height: 25,
                       ),
 
-                      TextField(
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+                          return null; // Return null if the input is valid
+                        },
                         controller: _dobController,
                         decoration: const InputDecoration(
                           prefixIconColor: Color.fromARGB(255, 187, 109, 201),

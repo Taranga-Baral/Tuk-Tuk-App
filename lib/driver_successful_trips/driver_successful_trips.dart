@@ -81,11 +81,11 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('𝗣𝗵𝗼𝗻𝗲: ${userData['phone_number'] ?? 'Unknown'}'),
-                        Text('𝗣𝗶𝗰𝗸𝘂𝗽 𝗟𝗼𝗰𝗮𝘁𝗶𝗼𝗻: ${tripDetails['pickupLocation'] ?? 'Unknown'}'),
-                        Text('𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆 𝗟𝗼𝗰𝗮𝘁𝗶𝗼𝗻: ${tripDetails['deliveryLocation'] ?? 'Unknown'}'),
-                        Text('𝗙𝗮𝗿𝗲: ${tripDetails['fare'] ?? '0'}'),
-                        Text('𝗗𝗶𝘀𝘁𝗮𝗻𝗰𝗲: ${tripDetails['distance'] ?? '0'}'),
+                        Text('Phone: ${userData['phone_number'] ?? 'Unknown'}'),
+                        Text('Pickup Location: ${tripDetails['pickupLocation'] ?? 'Unknown'}'),
+                        Text('Deliver Location: ${tripDetails['deliveryLocation'] ?? 'Unknown'}'),
+                        Text('Fare: ${tripDetails['fare'] ?? '0'}'),
+                        Text('Distance: ${tripDetails['distance'] ?? '0'}'),
                       ],
                     ),
                   ),

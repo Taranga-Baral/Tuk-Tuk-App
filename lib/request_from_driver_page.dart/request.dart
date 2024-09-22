@@ -40,12 +40,11 @@ class _RequestPageState extends State<RequestPage> {
     try {
       print('Fetching requests...');
       final requestsSnapshot = await FirebaseFirestore.instance
-  .collection('requestsofDrivers')
-  .where('userId', isEqualTo: widget.userId)
-  .orderBy('requestTimestamp', descending: true)
-  .limit(30) // Load first 20 documents
-  .get();
-
+          .collection('requestsofDrivers')
+          .where('userId', isEqualTo: widget.userId)
+          .orderBy('requestTimestamp', descending: true)
+          .limit(30) // Load first 20 documents
+          .get();
 
       print('Requests loaded: ${requestsSnapshot.docs.length}');
 
@@ -212,7 +211,8 @@ class _RequestPageState extends State<RequestPage> {
                                 final tripData = snapshot.data!['trip'] ?? {};
 
                                 return Padding(
-                                  padding: const EdgeInsets.only(top: 12,right: 5,left: 5),
+                                  padding: const EdgeInsets.only(
+                                      top: 12, right: 5, left: 5),
                                   child: Card(
                                     margin: EdgeInsets.all(10),
                                     child: Stack(
@@ -247,24 +247,27 @@ class _RequestPageState extends State<RequestPage> {
                                             },
                                           ),
                                           title: Text(
-                                              '${driverData['name']} - ${driverData['numberPlate']}'),
+                                            '${driverData['name']} - ${driverData['numberPlate']}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
                                           subtitle: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                  '𝗣𝗵𝗼𝗻𝗲: ${driverData['phone']}'),
+                                                  'Phone: ${driverData['phone']}'),
                                               Text(
-                                                  '𝗕𝗿𝗮𝗻𝗱: ${driverData['brand']}'),
+                                                  'Brand: ${driverData['brand']}'),
                                               Text(
-                                                  '𝗖𝗼𝗹𝗼𝗿: ${driverData['color']}'),
+                                                  'Color: ${driverData['color']}'),
                                               Text(
-                                                  '𝗔𝗱𝗱𝗿𝗲𝘀𝘀: ${driverData['address']}'),
+                                                  'Address: ${driverData['address']}'),
                                               SizedBox(height: 10),
                                               Text(
-                                                  '𝗣𝗶𝗰𝗸𝘂𝗽: ${tripData['pickupLocation'] ?? 'N/A'}'),
+                                                  'Pickup: ${tripData['pickupLocation'] ?? 'N/A'}'),
                                               Text(
-                                                  '𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆: ${tripData['deliveryLocation'] ?? 'N/A'}'),
+                                                  'Delivery: ${tripData['deliveryLocation'] ?? 'N/A'}'),
                                             ],
                                           ),
                                         ),
@@ -273,12 +276,14 @@ class _RequestPageState extends State<RequestPage> {
                                           right: -10,
                                           child: CircleAvatar(
                                             radius: 21,
-                                            backgroundImage: driverData['profilePictureUrl'] !=
-                                                      null
-                                                  ? NetworkImage(driverData['profilePictureUrl'])
-                                                  : AssetImage(
-                                                          'assets/tuktuk.jpg')
-                                                      as ImageProvider,
+                                            backgroundImage: driverData[
+                                                        'profilePictureUrl'] !=
+                                                    null
+                                                ? NetworkImage(driverData[
+                                                    'profilePictureUrl'])
+                                                : AssetImage(
+                                                        'assets/tuktuk.jpg')
+                                                    as ImageProvider,
                                           ),
                                         ),
                                       ],
@@ -366,9 +371,14 @@ class _RequestPageState extends State<RequestPage> {
                                                         'assets/tuktuk.jpg')
                                                     as ImageProvider, // Fallback image if no URL
                                           ),
-                                          title: Text('$name - $numberPlate'),
-                                          subtitle: Text(
-                                              '𝗩𝗲𝗵𝗶𝗰𝗹𝗲: $brand $vehicleType ($color)'),
+                                          title: Text(
+                                            '$name - $numberPlate',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          subtitle: Text('Vehicle : $brand $vehicleType ($color)')
+                                              ,
+                                            
                                           trailing: IconButton(
                                             icon: Icon(_expandedStates[index]
                                                 ? Icons.expand_less
@@ -390,16 +400,72 @@ class _RequestPageState extends State<RequestPage> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text('𝗣𝗵𝗼𝗻𝗲: $phone'),
-                                                Text(
-                                                    '𝗔𝗱𝗱𝗿𝗲𝘀𝘀: $address'),
-                                                Text(
-                                                    '𝗣𝗶𝗰𝗸𝘂𝗽: $pickupLocation'),
-                                                Text(
-                                                    '𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆: $deliveryLocation'),
-                                                Text('𝗙𝗮𝗿𝗲: $fare'),
-                                                Text(
-                                                    '𝗗𝗶𝘀𝘁𝗮𝗻𝗰𝗲: $distance km'),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Phone: ',
+                                                    ),
+                                                    Text('$phone'),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 2,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Address: ',
+                                                    ),
+                                                    Text('$address'),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 2,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Pickup: ',
+                                                    ),
+                                                    Text('$pickupLocation'),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 2,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Delivery Location: ',
+                                                    ),
+                                                    Text('$deliveryLocation'),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 2,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Fare: ',
+                                                    ),
+                                                    Text('$fare'),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 2,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Distance: ',
+                                                    ),
+                                                    Text('$distance km'),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
                                                 Row(
                                                   children: [
                                                     ElevatedButton(
