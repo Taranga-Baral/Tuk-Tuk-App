@@ -935,7 +935,6 @@ class _HomePage1State extends State<HomePage1> {
               ],
             ),
             SizedBox(height: 20),
-            // Welcome message
             Text(
               'हजुर लाई स्वागत छ ,',
               style: TextStyle(
