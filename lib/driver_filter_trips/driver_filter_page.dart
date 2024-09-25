@@ -194,6 +194,7 @@ class DriverFilterPage extends StatefulWidget {
 class _DriverFilterPageState extends State<DriverFilterPage> {
   String? _selectedPlace;
   String? _selectedSort;
+  String? _selectedVehicleMode; // Add selected vehicle mode
   final List<String> _places = [
     'Bharatpur Metropolitan City',
     'Kalika Municipality',
@@ -212,6 +213,12 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     'Distance Smallest First'
   ];
 
+  final List<String> _vehicleModes = [
+    'Petrol',
+    'Electric',
+    'All', // Option to show all vehicle modes
+  ];
+
   // Helper function to convert string before '.' to integer
   int _parseStringToInt(String? value) {
     if (value == null || value.isEmpty) return 0;
@@ -219,37 +226,41 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     return int.tryParse(parts[0]) ?? 0;
   }
 
-  // Stream to fetch trips based on the selected place and sort them
+  // Stream to fetch trips based on the selected place, sort them, and filter by vehicle mode
   Stream<List<Map<String, dynamic>>> _getTripsStream() {
     if (_selectedPlace == null) {
       return Stream.value([]);
     }
 
-    return FirebaseFirestore.instance
+    var query = FirebaseFirestore.instance
         .collection('trips')
-        .where('municipalityDropdown', isEqualTo: _selectedPlace)
-        .snapshots()
-        .map((snapshot) {
-          final trips = snapshot.docs.map((doc) => {
-            'tripId': doc.id, // Document ID as tripId
-            ...doc.data(),    // Other document fields
-          }).toList();
+        .where('municipalityDropdown', isEqualTo: _selectedPlace);
 
-          // Sort trips based on the selected sort option
-          if (_selectedSort == 'Timestamp Newest First') {
-            trips.sort((a, b) => (b['timestamp'] as Timestamp).compareTo(a['timestamp'] as Timestamp));
-          } else if (_selectedSort == 'Price Expensive First') {
-            trips.sort((a, b) => _parseStringToInt(b['fare']) - _parseStringToInt(a['fare']));
-          } else if (_selectedSort == 'Price Cheap First') {
-            trips.sort((a, b) => _parseStringToInt(a['fare']) - _parseStringToInt(b['fare']));
-          } else if (_selectedSort == 'Distance Largest First') {
-            trips.sort((a, b) => _parseStringToInt(b['distance']) - _parseStringToInt(a['distance']));
-          } else if (_selectedSort == 'Distance Smallest First') {
-            trips.sort((a, b) => _parseStringToInt(a['distance']) - _parseStringToInt(b['distance']));
-          }
+    if (_selectedVehicleMode != null && _selectedVehicleMode != 'All') {
+      query = query.where('vehicle_mode', isEqualTo: _selectedVehicleMode);
+    }
 
-          return trips;
-        });
+    return query.snapshots().map((snapshot) {
+      final trips = snapshot.docs.map((doc) => {
+        'tripId': doc.id,
+        ...doc.data(),
+      }).toList();
+
+      // Sort trips based on the selected sort option
+      if (_selectedSort == 'Timestamp Newest First') {
+        trips.sort((a, b) => (b['timestamp'] as Timestamp).compareTo(a['timestamp'] as Timestamp));
+      } else if (_selectedSort == 'Price Expensive First') {
+        trips.sort((a, b) => _parseStringToInt(b['fare']) - _parseStringToInt(a['fare']));
+      } else if (_selectedSort == 'Price Cheap First') {
+        trips.sort((a, b) => _parseStringToInt(a['fare']) - _parseStringToInt(b['fare']));
+      } else if (_selectedSort == 'Distance Largest First') {
+        trips.sort((a, b) => _parseStringToInt(b['distance']) - _parseStringToInt(a['distance']));
+      } else if (_selectedSort == 'Distance Smallest First') {
+        trips.sort((a, b) => _parseStringToInt(a['distance']) - _parseStringToInt(b['distance']));
+      }
+
+      return trips;
+    });
   }
 
   @override
@@ -257,7 +268,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Driver Filter Page'),
-        backgroundColor: Colors.teal, // Customize app bar color
+        backgroundColor: Colors.teal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -276,7 +287,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   isExpanded: true,
                   value: _selectedPlace,
                   hint: Text('Select a place'),
-                  underline: SizedBox(), // Remove the underline
+                  underline: SizedBox(),
                   items: _places.map((String place) {
                     return DropdownMenuItem<String>(
                       value: place,
@@ -292,7 +303,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
               ),
             ),
             SizedBox(height: 16),
-            
+
             // Dropdown to select sorting option
             DecoratedBox(
               decoration: BoxDecoration(
@@ -306,7 +317,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   isExpanded: true,
                   value: _selectedSort,
                   hint: Text('Select sorting option'),
-                  underline: SizedBox(), // Remove the underline
+                  underline: SizedBox(),
                   items: _sortOptions.map((String sortOption) {
                     return DropdownMenuItem<String>(
                       value: sortOption,
@@ -316,6 +327,36 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedSort = newValue;
+                    });
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+
+            // Dropdown to select vehicle mode
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.teal, width: 2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedVehicleMode,
+                  hint: Text('Select vehicle mode'),
+                  underline: SizedBox(),
+                  items: _vehicleModes.map((String mode) {
+                    return DropdownMenuItem<String>(
+                      value: mode,
+                      child: Text(mode),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedVehicleMode = newValue;
                     });
                   },
                 ),
@@ -413,17 +454,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 style: TextStyle(fontSize: 14),
                               ),
                               Text(
-                                'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(0)}',
+                                'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(2)}',
                                 style: TextStyle(fontSize: 14),
-                              ),
-                              Text(
-                                'Phone: ${trip['phone'] ?? 'No phone'}',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                'Timestamp: ${trip['timestamp']?.toDate() ?? 'No timestamp'}',
-                                style: TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                             ],
                           ),
@@ -439,7 +471,6 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
       ),
     );
   }
-
   // Other helper functions (launch URL, phone call, snack bar, etc.)
   // ...
 

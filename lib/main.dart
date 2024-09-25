@@ -238,37 +238,13 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Center the logo
-          Center(
-            child: Image.asset(
-              'assets/logo.png', // Your logo path
-              width: MediaQuery.of(context).size.width * 0.6, // Responsive width
-              height: MediaQuery.of(context).size.width * 0.6, // Responsive height
-              fit: BoxFit.contain,
-            ),
-          ),
-          const Spacer(), // Push text to the bottom
-          // Text at the bottom
-          Padding(
-            padding: const EdgeInsets.only(bottom: 50.0),
-            child: Column(
-              children: const [
-                Text(
-                  'Welcome to Your App!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Your tagline here',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ],
+      body: Center(
+        child: Image.asset(
+          'assets/logo.png', // Path to your splash image
+          width: MediaQuery.of(context).size.width * 0.7, // Adjust size if needed
+          height: MediaQuery.of(context).size.width * 0.7,
+          fit: BoxFit.contain, // Ensures the image scales nicely
+        ),
       ),
     );
   }

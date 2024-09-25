@@ -1,4 +1,3 @@
-
 // import 'dart:convert';
 // import 'package:http/http.dart' as http;
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -88,271 +87,232 @@
 //           appBar: AppBar(
 //             title: Text('Tuk Tuk'),
 //           ),
-          // body: LayoutBuilder(
-          //   builder: (BuildContext context, BoxConstraints constraints) {
-          //     return SingleChildScrollView(
-          //       child: Column(
-          //         children: [
-          //           Padding(
-          //             padding: EdgeInsets.only(left: 0,right: 0),
-          //             child: _buildUserDetailsCard(
-          //               context: context,
-          //               username: username,
-          //               avatarLetter: username.isNotEmpty
-          //                   ? username[0].toUpperCase()
-          //                   : 'U',
-          //             ),
-          //           ),
-          //           SizedBox(height: 25),
-          //           Padding(
-          //             padding: EdgeInsets.symmetric(
-          //                 horizontal: constraints.maxWidth * 0.05),
-          //             child: Row(
-          //               children: [
-          //                 Expanded(
-          //                   child: _buildCard(
+// body: LayoutBuilder(
+//   builder: (BuildContext context, BoxConstraints constraints) {
+//     return SingleChildScrollView(
+//       child: Column(
+//         children: [
+//           Padding(
+//             padding: EdgeInsets.only(left: 0,right: 0),
+//             child: _buildUserDetailsCard(
+//               context: context,
+//               username: username,
+//               avatarLetter: username.isNotEmpty
+//                   ? username[0].toUpperCase()
+//                   : 'U',
+//             ),
+//           ),
+//           SizedBox(height: 25),
+//           Padding(
+//             padding: EdgeInsets.symmetric(
+//                 horizontal: constraints.maxWidth * 0.05),
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: _buildCard(
 
-                              
-          //                     context: context,
-          //                     title: 'Ride',
-          //                     subtitle: 'Get a ride quickly',
-          //                     icon: Icons.map_rounded,
-          //                     onTap: () {
-          //                       String url =
-          //                           'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=$pickupLatitude%2C$pickupLongitude%3B$deliveryLatitude%2C$deliveryLongitude';
-                                   
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                           builder: (context) => HomePage(url: url),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //                 SizedBox(width: 10),
-          //                 Expanded(
-          //                   child: _buildCard(
-          //                     context: context,
-          //                     title: 'Approve',
-          //                     subtitle: 'Approve Drivers',
-          //                     icon: Icons.send,
-          //                     onTap: () {
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                           builder: (context) => RequestPage(
-          //                             userId: userId,
-          //                           ),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
+//                     context: context,
+//                     title: 'Ride',
+//                     subtitle: 'Get a ride quickly',
+//                     icon: Icons.map_rounded,
+//                     onTap: () {
+//                       String url =
+//                           'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=$pickupLatitude%2C$pickupLongitude%3B$deliveryLatitude%2C$deliveryLongitude';
 
-          //           Padding(
-          //             padding: EdgeInsets.symmetric(
-          //                 horizontal: constraints.maxWidth * 0.05),
-          //             child: Row(
-          //               children: [
-          //                 Expanded(
-          //                   child: _buildCard(
-          //                     context: context,
-          //                     title: 'Statistics',
-          //                     subtitle: 'Your Stats',
-          //                     icon: Icons.calculate,
-          //                     onTap: () {
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                           builder: (context) => StatisticsPage(
-          //                             userId: userId,
-          //                           ),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //                 SizedBox(width: 10),
-          //                 Expanded(
-          //                   child: _buildCard(
-          //                     context: context,
-          //                     title: 'Chats',
-          //                     subtitle: 'Communicate',
-          //                     icon: Icons.chat,
-          //                     onTap: () {
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                           builder: (context) => ChatPage(
-          //                             userId: userId,
-          //                           ),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => HomePage(url: url),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//                 SizedBox(width: 10),
+//                 Expanded(
+//                   child: _buildCard(
+//                     context: context,
+//                     title: 'Approve',
+//                     subtitle: 'Approve Drivers',
+//                     icon: Icons.send,
+//                     onTap: () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => RequestPage(
+//                             userId: userId,
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
 
-                    
-          //           Padding(
-          //             padding: EdgeInsets.symmetric(
-          //                 horizontal: constraints.maxWidth * 0.05),
-          //             child: Row(
-          //               children: [
-          //                 Expanded(
-          //                   child: _buildCard(
-          //                     context: context,
-          //                     title: 'View History',
-          //                     subtitle: 'Past rides',
-          //                     icon: Icons.history,
-          //                     onTap: () {
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                           builder: (context) => HistoryPage(
-          //                             userId: userId,
-          //                           ),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //                 SizedBox(width: 10),
-          //                 Expanded(
-          //                   child: _buildCard(
-          //                     context: context,
-          //                     title: 'Driver',
-          //                     subtitle: 'Start driving',
-          //                     icon: Icons.electric_rickshaw_outlined,
-          //                     onTap: () {
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                           builder: (context) =>
-          //                               DriverRegistrationPage(),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
+//           Padding(
+//             padding: EdgeInsets.symmetric(
+//                 horizontal: constraints.maxWidth * 0.05),
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: _buildCard(
+//                     context: context,
+//                     title: 'Statistics',
+//                     subtitle: 'Your Stats',
+//                     icon: Icons.calculate,
+//                     onTap: () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => StatisticsPage(
+//                             userId: userId,
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//                 SizedBox(width: 10),
+//                 Expanded(
+//                   child: _buildCard(
+//                     context: context,
+//                     title: 'Chats',
+//                     subtitle: 'Communicate',
+//                     icon: Icons.chat,
+//                     onTap: () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => ChatPage(
+//                             userId: userId,
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
 
-                   
-                    
+//           Padding(
+//             padding: EdgeInsets.symmetric(
+//                 horizontal: constraints.maxWidth * 0.05),
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: _buildCard(
+//                     context: context,
+//                     title: 'View History',
+//                     subtitle: 'Past rides',
+//                     icon: Icons.history,
+//                     onTap: () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => HistoryPage(
+//                             userId: userId,
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//                 SizedBox(width: 10),
+//                 Expanded(
+//                   child: _buildCard(
+//                     context: context,
+//                     title: 'Driver',
+//                     subtitle: 'Start driving',
+//                     icon: Icons.electric_rickshaw_outlined,
+//                     onTap: () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) =>
+//                               DriverRegistrationPage(),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
 
-          //           SizedBox(height: 20),
-          //           Padding(
-          //             padding: EdgeInsets.symmetric(
-          //                 horizontal: constraints.maxWidth * 0.05),
-          //             child: _buildCard(
-          //               context: context,
-          //               title: 'Passenger Signout',
-          //               subtitle: 'Sign out safely',
-          //               icon: Icons.logout,
-          //               isFullWidth: true,
-          //               onTap: () {
-          //                 FirebaseAuth.instance.signOut();
-          //                 Navigator.pushReplacement(
-          //                   context,
-          //                   MaterialPageRoute(
-          //                     builder: (context) => SignInPage(),
-          //                   ),
-          //                 );
-          //               },
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     );
-          //   },
-          // ),
-  //       );
-  //     },
-  //   );
-  // }
+//           SizedBox(height: 20),
+//           Padding(
+//             padding: EdgeInsets.symmetric(
+//                 horizontal: constraints.maxWidth * 0.05),
+//             child: _buildCard(
+//               context: context,
+//               title: 'Passenger Signout',
+//               subtitle: 'Sign out safely',
+//               icon: Icons.logout,
+//               isFullWidth: true,
+//               onTap: () {
+//                 FirebaseAuth.instance.signOut();
+//                 Navigator.pushReplacement(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => SignInPage(),
+//                   ),
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   },
+// ),
+//       );
+//     },
+//   );
+// }
 
-  // Widget _buildCard({
-  //   required BuildContext context,
-  //   required String title,
-  //   required String subtitle,
-  //   required IconData icon,
-  //   required VoidCallback onTap,
-  //   bool isFullWidth = false,
-  // }) {
-  //   return GestureDetector(
-  //     onTap: onTap,
-  //     child: Card(
-        
-  //       margin: EdgeInsets.only(bottom: 20),
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(16.0),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Row(
-  //               children: [
-  //                 Icon(icon),
-  //                 SizedBox(width: 10),
-  //                 Flexible(
-  //                   child: Text(
-  //                     title,
-  //                     style:
-  //                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //                     overflow: TextOverflow.ellipsis, // Prevent overflow
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             SizedBox(height: 8),
-  //             Text(subtitle, overflow: TextOverflow.ellipsis),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+// Widget _buildCard({
+//   required BuildContext context,
+//   required String title,
+//   required String subtitle,
+//   required IconData icon,
+//   required VoidCallback onTap,
+//   bool isFullWidth = false,
+// }) {
+//   return GestureDetector(
+//     onTap: onTap,
+//     child: Card(
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//       margin: EdgeInsets.only(bottom: 20),
+//       child: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               children: [
+//                 Icon(icon),
+//                 SizedBox(width: 10),
+//                 Flexible(
+//                   child: Text(
+//                     title,
+//                     style:
+//                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//                     overflow: TextOverflow.ellipsis, // Prevent overflow
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             SizedBox(height: 8),
+//             Text(subtitle, overflow: TextOverflow.ellipsis),
+//           ],
+//         ),
+//       ),
+//     ),
+//   );
+// }
 
 // Widget _buildUserDetailsCard({
 //   required BuildContext context,
@@ -401,9 +361,9 @@
 //                 onTap: () {
 //                   // Store the selected value in the global variable
 //                   var pacetogo = result['display_name'];
-                  
+
 //                   Navigator.of(context).pop(); // Close the popup on tap
-                  
+
 //                   // You can handle additional actions here if needed
 //                 },
 //               );
@@ -538,7 +498,6 @@
 // }
 // }
 
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -553,6 +512,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
+
 class HomePage1 extends StatefulWidget {
   const HomePage1({super.key});
 
@@ -587,7 +547,8 @@ class _HomePage1State extends State<HomePage1> {
         ),
       );
     }
-
+    IconData iconData;
+    Color iconColor;
     final String userId = currentUser.uid;
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
@@ -632,13 +593,13 @@ class _HomePage1State extends State<HomePage1> {
           appBar: AppBar(
             title: Text('Tuk Tuk'),
           ),
-             body: LayoutBuilder(
+          body: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(left: 0,right: 0),
+                      padding: EdgeInsets.only(left: 0, right: 0),
                       child: _buildUserDetailsCard(
                         context: context,
                         username: username,
@@ -655,16 +616,13 @@ class _HomePage1State extends State<HomePage1> {
                         children: [
                           Expanded(
                             child: _buildCard(
-
-                              
                               context: context,
                               title: 'टुक टुक बोलौने',
                               subtitle: 'Get a ride quickly',
                               icon: Icons.map_rounded,
                               onTap: () {
-                                String url =
-                                    'https://www.openstreetmap.org/';
-                                   
+                                String url = 'https://www.openstreetmap.org/';
+
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -696,7 +654,6 @@ class _HomePage1State extends State<HomePage1> {
                         ],
                       ),
                     ),
-
                     Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: constraints.maxWidth * 0.05),
@@ -742,8 +699,6 @@ class _HomePage1State extends State<HomePage1> {
                         ],
                       ),
                     ),
-
-                    
                     Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: constraints.maxWidth * 0.05),
@@ -788,10 +743,6 @@ class _HomePage1State extends State<HomePage1> {
                         ],
                       ),
                     ),
-
-                   
-                    
-
                     SizedBox(height: 20),
                     Padding(
                       padding: EdgeInsets.symmetric(
@@ -854,7 +805,8 @@ class _HomePage1State extends State<HomePage1> {
     }
 
     // Function to display results in a popup
-    void showSearchResults(BuildContext context, List<Map<String, dynamic>> results) {
+    void showSearchResults(
+        BuildContext context, List<Map<String, dynamic>> results) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -873,26 +825,45 @@ class _HomePage1State extends State<HomePage1> {
                       setState(() {
                         // Update the pickup latitude and longitude
                         mapsearchedplace = result['display_name'];
-
                       });
                       Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomePage(url: 'https://www.openstreetmap.org/search?query=$mapsearchedplace'),
-                                  ),
-                                );
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomePage(
+                              url:
+                                  'https://www.openstreetmap.org/search?query=$mapsearchedplace'),
+                        ),
+                      );
                     },
                   );
                 },
               ),
             ),
             actions: [
-              TextButton(
-                child: Text('Close'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [const Color.fromARGB(255, 127, 182, 226), const Color.fromARGB(255, 211, 135, 224)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                  ),
+                  child: Text(
+                    'Close',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              )
             ],
           );
         },
@@ -906,7 +877,11 @@ class _HomePage1State extends State<HomePage1> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           gradient: LinearGradient(
-            colors: [const Color.fromARGB(255, 201, 78, 223), const Color.fromARGB(255, 136, 100, 235),const Color.fromARGB(255, 69, 178, 228)],
+            colors: [
+              const Color.fromARGB(255, 201, 78, 223),
+              const Color.fromARGB(255, 136, 100, 235),
+              const Color.fromARGB(255, 69, 178, 228)
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -974,52 +949,69 @@ class _HomePage1State extends State<HomePage1> {
     );
   }
 
-Widget _buildCard({
-  required BuildContext context,
-  required String title,
-  required String subtitle,
-  required IconData icon,
-  required VoidCallback onTap,
-  bool isFullWidth = false,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Card(
-      margin: const EdgeInsets.only(bottom: 20),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon),
-                const SizedBox(width: 10),
-                Flexible(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                    // Remove the overflow property to allow the text to wrap
+  Widget _buildCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+    bool isFullWidth = false,
+  }) {
+    // Determine the color of the icon based on the title
+    Color iconColor;
+
+    if (title == 'टुक टुक बोलौने') {
+      iconColor = const Color.fromARGB(255, 226, 93, 52).withOpacity(0.8);
+    } else if (title == 'जान राजी चालक') {
+      iconColor = const Color.fromARGB(255, 70, 153, 221);
+    } else if (title == 'हजुरको विवरण') {
+      iconColor = const Color.fromARGB(255, 181, 197, 37);
+    } else if (title == 'चालक संग वार्तालाप') {
+      iconColor = const Color.fromARGB(255, 75, 182, 130).withOpacity(0.9);
+    } else if (title == 'पुर्व यत्रा') {
+      iconColor = const Color.fromARGB(255, 226, 183, 54);
+    } else if (title == 'चालक मोड') {
+      iconColor = const Color.fromARGB(255, 127, 94, 185);
+    } else {
+      iconColor = Colors.red; // Default color if title doesn't match
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Set the color of the icon dynamically
+                  Icon(icon, color: iconColor),
+
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                      // Remove the overflow property to allow the text to wrap
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              style: const TextStyle(fontSize: 16),
-              overflow: TextOverflow.ellipsis, // Subtitle can still overflow
-            ),
-          ],
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 16),
+                overflow: TextOverflow.ellipsis, // Subtitle can still overflow
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
-
-
-
-}
-

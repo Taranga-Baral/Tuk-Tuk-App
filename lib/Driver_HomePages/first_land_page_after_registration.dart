@@ -496,45 +496,72 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     elevation: 5,
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              tripData['username'] ?? 'No Username',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  tripData['username'] ?? 'No Username',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold, fontSize: 18),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                          
+                                icon: const Icon(Icons.phone),
+                                onPressed: () {
+                                  final phoneNumber = tripData['phone'] ?? '';
+                                  _launchPhoneNumber(phoneNumber);
+                                },
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.location_history),
+                                onPressed: () {
+                                  final tripId = tripData['tripId'] ?? '';
+                                  _launchOpenStreetMapWithDirections(tripId);
+                                },
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                                  icon: const Icon(Icons.send),
+                                  onPressed: () {
+                                    showTripAndUserIdInSnackBar(tripData, context);
+                                  }),
+                            ],
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          IconButton(
 
-                            icon: const Icon(Icons.phone),
-                            onPressed: () {
-                              final phoneNumber = tripData['phone'] ?? '';
-                              _launchPhoneNumber(phoneNumber);
-                            },
+                          Row(
+                            children: [
+                              Text(tripData['no_of_person'].toString(),style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500),),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Icon(Icons.info_outline),
+                              SizedBox(
+                                width: 10,
+                              ),
+
+
+                              Text(tripData['vehicle_mode'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400),),
+                              
+
+
+                            ],
                           ),
                           SizedBox(
-                            width: 10,
+                            height: 10,
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.location_history),
-                            onPressed: () {
-                              final tripId = tripData['tripId'] ?? '';
-                              _launchOpenStreetMapWithDirections(tripId);
-                            },
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          IconButton(
-                              icon: const Icon(Icons.send),
-                              onPressed: () {
-                                showTripAndUserIdInSnackBar(tripData, context);
-                              }),
                         ],
                       ),
                       subtitle: Column(

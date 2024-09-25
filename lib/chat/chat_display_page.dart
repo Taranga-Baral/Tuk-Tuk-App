@@ -479,6 +479,8 @@ class ChatDetailPage extends StatelessWidget {
   final String deliveryLocation;
   final String distance;
   final String fare;
+  final int no_of_person;
+  final String vehicle_mode;
 
   const ChatDetailPage({
     super.key,
@@ -490,6 +492,8 @@ class ChatDetailPage extends StatelessWidget {
     required this.deliveryLocation,
     required this.distance,
     required this.fare,
+    required this.no_of_person,
+    required this.vehicle_mode,
   });
 
   Future<String?> fetchDriverProfilePicture() async {
@@ -565,23 +569,37 @@ class ChatDetailPage extends StatelessWidget {
                             .start, // Aligns children to the right
                         children: [
                           Text(
-                            'Driver Name: $driverName',
+                            'चालकको नाम : $driverName',
                             textAlign: TextAlign.left,
                           ),
+                          Divider(),
                           Text(
-                            'Pickup Location: $pickupLocation',
+                            'उठाउने स्थान : $pickupLocation',
                             textAlign: TextAlign.left,
                           ),
+                          Divider(),
                           Text(
-                            'Delivery Location: $deliveryLocation',
+                            'डेलिभरी स्थान : $deliveryLocation',
                             textAlign: TextAlign.left,
                           ),
+                          Divider(),
                           Text(
-                            'Distance: $distance km',
+                            'दूरी : $distance km',
                             textAlign: TextAlign.left,
                           ),
+                          Divider(),
                           Text(
-                            'Fare: NPR $fare',
+                            'भाडा : NPR $fare',
+                            textAlign: TextAlign.left,
+                          ),
+                          Divider(),
+                          Text(
+                            'यात्री (हरू) : $no_of_person',
+                            textAlign: TextAlign.left,
+                          ),
+                          Divider(),
+                          Text(
+                            'सवारी साधनको प्रकार : $vehicle_mode',
                             textAlign: TextAlign.left,
                           ),
                         ],

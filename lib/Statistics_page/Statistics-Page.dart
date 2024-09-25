@@ -293,19 +293,19 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     child: ListView(
                       children: [
                         _buildStatCard(
-                          title: 'Total Fare Paid',
+                          title: 'भुक्तानी गरिएको कुल भाडा',
                           value: 'NPR ${totalFare.toStringAsFixed(2)}',
                           color: Colors.lime,
                         ),
                         SizedBox(height: 16),
                         _buildStatCard(
-                          title: 'Total Distance Traveled',
+                          title: 'अनुमानित यात्रा',
                           value: '${totalDistance.toStringAsFixed(2)} km',
                           color: Colors.green,
                         ),
                         SizedBox(height: 16),
                         _buildStatCard(
-                          title: 'Total Trips',
+                          title: 'यात्रा संख्या',
                           value: '$totalDeliveryLocations',
                           color: Colors.orange,
                         ),

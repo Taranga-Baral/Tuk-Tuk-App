@@ -15,17 +15,18 @@ class DriverRegistrationPage extends StatefulWidget {
 
 class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController(); // New phone controller
   bool _isLoading = false;
-   Color _color = const Color.fromARGB(255, 189, 62, 228);
+  Color _color = const Color.fromARGB(255, 189, 62, 228);
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();  // Check if the user is already logged in
+    _checkLoginStatus(); // Check if the user is already logged in
   }
 
   // Check if user is already registered and logged in
- Future<void> _checkLoginStatus() async {
+  Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? savedEmail = prefs.getString('driverEmail');
 
@@ -39,47 +40,57 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
   }
 
 Future<void> _validateDriver() async {
-    final String email = _emailController.text.trim();
+  final String email = _emailController.text.trim();
+  final String phone = _phoneController.text.trim(); // Get phone number
 
-    if (email.isEmpty) {
-      _showErrorMessage('Please enter your email');
-      return;
-    }
+  if (email.isEmpty || phone.isEmpty) {
+    _showErrorMessage('Please enter both email and phone number.');
+    return;
+  }
 
-    setState(() {
-      _isLoading = true;
-      _color = _color == const Color.fromARGB(255, 189, 62, 228)
-          ? const Color.fromARGB(255, 14, 199, 54)
-          : const Color.fromARGB(255, 189, 62, 228);
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('vehicleData')
-          .where('email', isEqualTo: email)
-          .limit(1)
-          .get();
+  try {
+    // Query to match both email and phone number
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('vehicleData')
+        .where('email', isEqualTo: email)  
+        .where('phone', isEqualTo: phone)
+        .limit(1)
+        .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('driverEmail', email);
-
-        // Pass the email to DriverHomePage
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => DriverHomePage(driverEmail: email)),
-        );
-      } else {
-        _showErrorMessage('Email not found. Please check and try again.');
-      }
-    } catch (e) {
-      _showErrorMessage('Error validating driver: $e');
-    } finally {
+    if (querySnapshot.docs.isNotEmpty) {
       setState(() {
-        _isLoading = false;
+        _color = const Color.fromARGB(255, 14, 199, 54); // Green color
+      });
+
+      // Save the email locally and navigate to DriverHomePage
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('driverEmail', email);
+
+      // Navigate to DriverHomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DriverHomePage(driverEmail: email)),
+      );
+    } else {
+      _showErrorMessage('No matching driver found. Please check your email and phone number.');
+      // Don't change the button color if details are incorrect
+      setState(() {
+        _color = const Color.fromARGB(255, 189, 62, 228); // Keep original color
       });
     }
+  } catch (e) {
+    _showErrorMessage('Error validating driver: $e');
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
 
   void _showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -87,12 +98,10 @@ Future<void> _validateDriver() async {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
         title: const Text('Driver Registration'),
       ),
       body: SingleChildScrollView(
@@ -101,15 +110,13 @@ Future<void> _validateDriver() async {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               GestureDetector(
+              GestureDetector(
                 onTap: () {
                   Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DriverAuthPage()));
+                      context, MaterialPageRoute(builder: (context) => DriverAuthPage()));
                 },
                 child: const Text(
-                  ' New Driver? Register Here (Driver Mode)',
+                  'New Driver? Register Here (Driver Mode)',
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
@@ -117,14 +124,7 @@ Future<void> _validateDriver() async {
                       decorationColor: Color.fromARGB(255, 101, 12, 185)),
                 ),
               ),
-              SizedBox(
-                height: 5,
-              ),
-              
-        
-              SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               const Text(
                 'Enter your registered email:',
                 style: TextStyle(fontSize: 16),
@@ -132,114 +132,83 @@ Future<void> _validateDriver() async {
               const SizedBox(height: 10),
               TextField(
                 decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Enter your E-mail',
-                          prefixIcon: Icon(Icons.email),
-                          hintText: 'johndoe@gmail.com',
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
+                  prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                  labelText: 'Enter your E-mail',
+                  prefixIcon: Icon(Icons.email),
+                  hintText: 'johndoe@gmail.com',
+                  filled: true,
+                  fillColor: Colors.white12,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(18)),
+                  ),
+                ),
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                
               ),
-        
-        
-        
-        
-             
-        
-        
-        
-                      
+              const SizedBox(height: 20),
+              const Text(
+                'Enter your phone number:',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                decoration: const InputDecoration(
+                  prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                  labelText: 'Enter your Phone Number',
+                  prefixIcon: Icon(Icons.phone),
+                  hintText: '123-456-7890',
+                  filled: true,
+                  fillColor: Colors.white12,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(18)),
+                  ),
+                ),
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+              ),
               const SizedBox(height: 38),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  // : ElevatedButton(
-                  //     onPressed: _validateDriver,
-                  //     child: const Text('Submit'),),
-                 : ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: _validateDriver,
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.07,
-                            width: MediaQuery.of(context).size.width,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Submit',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                  : ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      child: GestureDetector(
+                        onTap: _validateDriver,
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.07,
+                          width: MediaQuery.of(context).size.width,
+                          color: _color,
+                          child: const Center(
+                            child: Text(
+                              'Submit',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ),
                       ),
-        
-              const SizedBox(height: 38),
-        
-                       GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignInPage()),
-                          );
-                        },
-                        child: Container(
-                          height: 100,
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.02),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                                color: const Color.fromARGB(255, 200, 54, 244),
-                                width: 2),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Passenger Mode',
-                                style: GoogleFonts.amaticSc(
-                                  fontSize: MediaQuery.of(context).size.height * 0.04,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color.fromARGB(255, 200, 54, 244),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                            ],
-                          ),
-                        ),
-                      ),
+                    ),
             ],
           ),
         ),
       ),
     );
   }
+
 
   @override
   void dispose() {

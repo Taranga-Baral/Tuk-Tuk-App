@@ -202,6 +202,8 @@ class _ChatPageState extends State<ChatPage> {
         'profilePictureUrl': driverData['profilePictureUrl'] ?? '', // Fetch profile picture
         'driverId': confirmedDriverData['driverId'],
         'tripId': confirmedDriverData['tripId'],
+        'no_of_person':tripData['no_of_person'],
+        'vehicle_mode':tripData['vehicle_mode'],
       });
     }
 
@@ -305,11 +307,43 @@ class _ChatPageState extends State<ChatPage> {
             ? NetworkImage(profilePictureUrl)
             : AssetImage('assets/loading_screen.gif') as ImageProvider,
       ),
-      title: Text('Driver: ${data['driverName']}', style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('${index + 1}. Driver: ${data['driverName']}', style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(
+              height: 8,
+            ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.start,
+          //   children: [
+          //     Text(data['no_of_person'].toString()),
+
+          //     SizedBox(
+          //       width: 8,
+          //     ),
+
+          //       Icon(Icons.info_outline,size: 14,),
+
+          //     SizedBox(
+          //       width: 8,
+          //     ),
+
+          //     Text(data['vehicle_mode']),
+
+          //     SizedBox(
+          //       height: 30,
+          //     ),
+
+
+          //   ],
+          // )
+        ],
+      ),
       subtitle: Text(
-        'Pickup: ${data['pickupLocation']}\n'
-        'Delivery: ${data['deliveryLocation']}\n'
-        'Phone: ${data['driverPhone']}',
+        'उठाउने स्थान : ${data['pickupLocation']}\n\n'
+        'डेलिभरी स्थान : ${data['deliveryLocation']}\n\n'
+        'सम्पर्क : ${data['driverPhone']}',
         style: TextStyle(color: Colors.grey[600]),
       ),
       trailing: IconButton(
@@ -329,6 +363,8 @@ class _ChatPageState extends State<ChatPage> {
                     pickupLocation: data['pickupLocation'],
                     deliveryLocation: data['deliveryLocation'],
                     distance: data['distance'],
+                    no_of_person: data['no_of_person'],
+                    vehicle_mode: data['vehicle_mode'],
                     fare: data['fare'],
                   ),
                 );
