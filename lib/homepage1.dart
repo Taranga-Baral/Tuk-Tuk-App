@@ -499,6 +499,8 @@
 // }
 
 import 'dart:convert';
+import 'package:final_menu/main.dart';
+import 'package:final_menu/splash_screen/splash_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
@@ -566,7 +568,7 @@ class _HomePage1State extends State<HomePage1> {
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(child: SplashScreen()),
           );
         }
 
@@ -784,25 +786,75 @@ class _HomePage1State extends State<HomePage1> {
     // Controller for the search field
     TextEditingController searchController = TextEditingController();
 
-    // Function to handle Nominatim API search
-    Future<List<Map<String, dynamic>>> searchLocations(String query) async {
-      final url =
-          'https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=5';
-      final response = await http.get(Uri.parse(url));
+Future<List<Map<String, dynamic>>> searchLocations(String query) async {
+  // Trim and convert the query to lowercase for better matching
+  String trimmedQuery = query.trim().toLowerCase();
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return data
-            .map((item) => {
-                  'display_name': item['display_name'],
-                  'lat': item['lat'],
-                  'lon': item['lon'],
-                })
-            .toList();
-      } else {
-        throw Exception('Failed to load locations');
-      }
+  // Variables to hold the queries for 'chowk' and 'chok'
+  String chowkQuery = trimmedQuery;
+  String chokQuery = trimmedQuery;
+
+  // Check if the query contains either 'chowk' or 'chok'
+  bool containsChowk = trimmedQuery.contains('chowk');
+  bool containsChok = trimmedQuery.contains('chok');
+
+  // Modify the query if "chowk" or "chok" is found
+  if (containsChowk) {
+    chokQuery = trimmedQuery.replaceAll('chowk', 'chok');
+  } else if (containsChok) {
+    chowkQuery = trimmedQuery.replaceAll('chok', 'chowk');
+  }
+
+  // Call API for both variations
+  final String urlChowk =
+      'https://nominatim.openstreetmap.org/search?q=$chowkQuery,nepal&format=json&limit=50';
+  final String urlChok =
+      'https://nominatim.openstreetmap.org/search?q=$chokQuery,nepal&format=json&limit=50';
+
+  final responseChowk = await http.get(Uri.parse(urlChowk));
+  final responseChok = await http.get(Uri.parse(urlChok));
+
+  // Ensure both requests were successful
+  if (responseChowk.statusCode == 200 && responseChok.statusCode == 200) {
+    final List<dynamic> dataChowk = jsonDecode(responseChowk.body);
+    final List<dynamic> dataChok = jsonDecode(responseChok.body);
+
+    List<Map<String, dynamic>> combinedResults = [];
+
+    if (containsChowk || containsChok) {
+      // If query contains 'chowk' or 'chok', combine both results
+      combinedResults.addAll(dataChowk
+          .map((item) => {
+                'display_name': item['display_name'],
+                'lat': item['lat'],
+                'lon': item['lon'],
+              })
+          .toList());
+
+      combinedResults.addAll(dataChok
+          .map((item) => {
+                'display_name': item['display_name'],
+                'lat': item['lat'],
+                'lon': item['lon'],
+              })
+          .toList());
+    } else {
+      // Otherwise, only return results from the first query
+      combinedResults.addAll(dataChowk
+          .map((item) => {
+                'display_name': item['display_name'],
+                'lat': item['lat'],
+                'lon': item['lon'],
+              })
+          .toList());
     }
+
+    return combinedResults;
+  } else {
+    throw Exception('Failed to load locations');
+  }
+}
+
 
     // Function to display results in a popup
     void showSearchResults(
@@ -811,7 +863,7 @@ class _HomePage1State extends State<HomePage1> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Search Results'),
+            title: Text('Searched Places'),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -819,22 +871,27 @@ class _HomePage1State extends State<HomePage1> {
                 itemCount: results.length,
                 itemBuilder: (BuildContext context, int index) {
                   final result = results[index];
-                  return ListTile(
-                    title: Text(result['display_name']),
-                    onTap: () {
-                      setState(() {
-                        // Update the pickup latitude and longitude
-                        mapsearchedplace = result['display_name'];
-                      });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomePage(
-                              url:
-                                  'https://www.openstreetmap.org/search?query=$mapsearchedplace'),
-                        ),
-                      );
-                    },
+                  return Column(
+                    children: [
+                      ListTile(
+                        title: Text(result['display_name']),
+                        onTap: () {
+                          setState(() {
+                            // Update the pickup latitude and longitude
+                            mapsearchedplace = result['display_name'];
+                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomePage(
+                                  url:
+                                      'https://www.openstreetmap.org/search?query=$mapsearchedplace'),
+                            ),
+                          );
+                        },
+                      ),
+                      Divider(),
+                    ],
                   );
                 },
               ),
@@ -843,7 +900,10 @@ class _HomePage1State extends State<HomePage1> {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [const Color.fromARGB(255, 127, 182, 226), const Color.fromARGB(255, 211, 135, 224)],
+                    colors: [
+                      const Color.fromARGB(255, 127, 182, 226),
+                      const Color.fromARGB(255, 211, 135, 224),
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -878,9 +938,13 @@ class _HomePage1State extends State<HomePage1> {
           borderRadius: BorderRadius.circular(25),
           gradient: LinearGradient(
             colors: [
+                        
               const Color.fromARGB(255, 201, 78, 223),
               const Color.fromARGB(255, 136, 100, 235),
-              const Color.fromARGB(255, 69, 178, 228)
+              const Color.fromARGB(255, 69, 178, 228),
+              
+        
+            
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -938,6 +1002,7 @@ class _HomePage1State extends State<HomePage1> {
                   borderSide: BorderSide.none,
                 ),
               ),
+              // Inside _buildUserDetailsCard TextField onSubmitted callback
               onSubmitted: (value) async {
                 final results = await searchLocations(value);
                 showSearchResults(context, results);
@@ -979,6 +1044,8 @@ class _HomePage1State extends State<HomePage1> {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        color: Colors.transparent,
+        elevation: 0,
         margin: const EdgeInsets.only(bottom: 20),
         child: Padding(
           padding: const EdgeInsets.all(16.0),

@@ -149,11 +149,14 @@
 //   }
 // }
 import 'package:final_menu/homepage1.dart';
+import 'package:final_menu/splash_screen/splash_screen.dart';
+import 'package:final_menu/tutorial_screen/tutorial_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:final_menu/login_screen/sign_up_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -198,6 +201,7 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _isLoading = true;
+  bool _isFirstLaunch = true; // Default to true
 
   @override
   void initState() {
@@ -209,8 +213,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     // Display splash screen for 3 seconds
     await Future.delayed(const Duration(seconds: 3));
 
+    // Check if the tutorial has been completed
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hasSeenTutorial = prefs.getBool('hasSeenTutorial') ?? false;
+
     setState(() {
       _isLoading = false;
+      _isFirstLaunch = !hasSeenTutorial; // If tutorial is seen, not first launch
     });
   }
 
@@ -221,31 +230,18 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return const SplashScreen();
     }
 
-    // After loading is complete, check the user status
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      return const HomePage1();
+    // After loading is complete, check if the tutorial needs to be shown
+    if (_isFirstLaunch) {
+      return TutorialPage(); // Show tutorial
     } else {
-      return const RegistrationPage();
+      // After tutorial or for registered users, check if user is logged in
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return HomePage1(); // Navigate to HomePage1 if logged in
+      } else {
+        return const RegistrationPage(); // Navigate to Registration if not logged in
+      }
     }
   }
 }
 
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Image.asset(
-          'assets/logo.png', // Path to your splash image
-          width: MediaQuery.of(context).size.width * 0.7, // Adjust size if needed
-          height: MediaQuery.of(context).size.width * 0.7,
-          fit: BoxFit.contain, // Ensures the image scales nicely
-        ),
-      ),
-    );
-  }
-}

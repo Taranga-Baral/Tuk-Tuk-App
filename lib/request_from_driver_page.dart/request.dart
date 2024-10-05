@@ -398,6 +398,10 @@ Divider(),
                                   return Text('Error loading data');
                                 }
 
+                                if (snapshot.data == null) {
+                                  return Text('No any user data');
+                                }
+
                                 final vehicleData = snapshot.data![0].data()
                                     as Map<String, dynamic>;
                                 final tripData = snapshot.data![1].data()

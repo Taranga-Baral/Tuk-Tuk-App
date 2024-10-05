@@ -110,15 +110,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Opacity(
-                    opacity: 0.8,
-                    child:  Image(
-                      image: NetworkImage(
-                          'https://i.postimg.cc/j27Q02yg/auto-removebg-preview.png'),
-                      height: screenHeight *0.07,
-                      width: 130,
-                    ),
-                  ),
+                  CircleAvatar(
+                  radius: 20,
+                  backgroundImage: AssetImage('assets/signin_signup_logo.jpg'),
+                ),
                   SizedBox(
                     height: 12,
                   ),

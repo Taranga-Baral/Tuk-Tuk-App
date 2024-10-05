@@ -461,7 +461,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => SignInPage(),
