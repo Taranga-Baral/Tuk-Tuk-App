@@ -380,99 +380,191 @@ class _DriverHomePageState extends State<DriverHomePage> {
       ),
       body: Column(
         children: [
+          // SingleChildScrollView(
+          //   scrollDirection: Axis.horizontal,
+          //   child: Row(
+          //     children: [
+          //       SizedBox(
+          //         width: 5,
+          //       ),
+          //       ElevatedButton(
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) =>
+          //                   DriverAcceptedPage(driverId: widget.driverEmail),
+          //             ),
+          //           );
+          //         },
+          //         child: Text('View Accepted Requests'),
+          //       ),
+
+
+
+
+          //       SizedBox(
+          //         width: 20,
+          //       ),
+          //       ElevatedButton(
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => DriverFilterPage(
+          //                 driverId: widget.driverEmail,
+          //               ),
+          //             ),
+          //           );
+          //         },
+          //         child: Text('Filter Trips'),
+          //       ),
+
+
+
+
+
+          //       SizedBox(
+          //         width: 20,
+          //       ),
+          //       ElevatedButton(
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => DriverSuccessfulTrips(
+          //                 driverId: widget.driverEmail,
+          //               ),
+          //             ),
+          //           );
+          //         },
+          //         child: Text('Successful Trips'),
+          //       ),
+          //       SizedBox(
+          //         width: 20,
+          //       ),
+          //       ElevatedButton(
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => DriverChatPage(
+          //                 driverId: widget.driverEmail,
+          //               ), //seeeeeeeeeeeeeeeeeeeeeeeee
+          //             ),
+          //           );
+          //         },
+          //         child: Text('Chat'),
+          //       ),
+          //       SizedBox(
+          //         width: 20,
+          //       ),
+          //       ElevatedButton(
+          //         onPressed: () {
+          //           Navigator.pushReplacement(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => SignInPage(),
+          //             ),
+          //           );
+          //         },
+          //         child: Text('Passenger Mode'),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+
+
+
           SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 5,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DriverAcceptedPage(driverId: widget.driverEmail),
-                      ),
-                    );
-                  },
-                  child: Text('View Accepted Requests'),
-                ),
-
-
-
-
-                SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DriverFilterPage(
-                          driverId: widget.driverEmail,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text('Filter Trips'),
-                ),
-
-
-
-
-
-                SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DriverSuccessfulTrips(
-                          driverId: widget.driverEmail,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text('Successful Trips'),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DriverChatPage(
-                          driverId: widget.driverEmail,
-                        ), //seeeeeeeeeeeeeeeeeeeeeeeee
-                      ),
-                    );
-                  },
-                  child: Text('Chat'),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SignInPage(),
-                      ),
-                    );
-                  },
-                  child: Text('Passenger Mode'),
-                ),
-              ],
+  scrollDirection: Axis.horizontal,
+  child: Row(
+    children: [
+      SizedBox(width: 5),
+      // Button 1
+      _customElevatedButton(
+        context: context,
+        label: 'View Accepted Requests',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  DriverAcceptedPage(driverId: widget.driverEmail),
             ),
-          ),
+          );
+        },
+      ),
+      SizedBox(width: 20),
+      // Button 2
+      _customElevatedButton(
+        context: context,
+        label: 'Filter Trips',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DriverFilterPage(
+                driverId: widget.driverEmail,
+              ),
+            ),
+          );
+        },
+      ),
+      SizedBox(width: 20),
+      // Button 3
+      _customElevatedButton(
+        context: context,
+        label: 'Successful Trips',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DriverSuccessfulTrips(
+                driverId: widget.driverEmail,
+              ),
+            ),
+          );
+        },
+      ),
+      SizedBox(width: 20),
+      // Button 4
+      _customElevatedButton(
+        context: context,
+        label: 'Chat',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DriverChatPage(
+                driverId: widget.driverEmail,
+              ),
+            ),
+          );
+        },
+      ),
+      SizedBox(width: 20),
+      // Button 5
+      _customElevatedButton(
+        context: context,
+        label: 'Passenger Mode',
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignInPage(),
+            ),
+          );
+        },
+      ),
+    ],
+  ),
+),
+
+
+
+
+
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -489,121 +581,130 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  child: Card(
-                    
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
-                    elevation: 5,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    children: [
+                      Card(
+                        
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                        elevation: 0,
+                        color: Colors.transparent,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(16),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Text(
-                                  tripData['username'] ?? 'No Username',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 18),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              IconButton(
-                          
-                                icon: const Icon(Icons.phone),
-                                onPressed: () {
-                                  final phoneNumber = tripData['phone'] ?? '';
-                                  _launchPhoneNumber(phoneNumber);
-                                },
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.location_history),
-                                onPressed: () {
-                                  final tripId = tripData['tripId'] ?? '';
-                                  _launchOpenStreetMapWithDirections(tripId);
-                                },
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              IconButton(
-                                  icon: const Icon(Icons.send),
-                                  onPressed: () {
-                                    showTripAndUserIdInSnackBar(tripData, context);
-                                  }),
-                            ],
-                          ),
-
-                          Row(
-                            children: [
-                              Text(tripData['no_of_person'].toString(),style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500),),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Icon(Icons.info_outline),
-                              SizedBox(
-                                width: 10,
-                              ),
-
-
-                              Text(tripData['vehicle_mode'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400),),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      tripData['username'] ?? 'No Username',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold, fontSize: 18),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  IconButton(
                               
-
-
+                                    icon: const Icon(Icons.phone),
+                                    onPressed: () {
+                                      final phoneNumber = tripData['phone'] ?? '';
+                                      _launchPhoneNumber(phoneNumber);
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.location_history),
+                                    onPressed: () {
+                                      final tripId = tripData['tripId'] ?? '';
+                                      _launchOpenStreetMapWithDirections(tripId);
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  IconButton(
+                                      icon: const Icon(Icons.send),
+                                      onPressed: () {
+                                        showTripAndUserIdInSnackBar(tripData, context);
+                                      }),
+                                ],
+                              ),
+                      
+                              Row(
+                                children: [
+                                  Text(tripData['no_of_person'].toString(),style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500),),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Icon(Icons.info_outline),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                      
+                      
+                                  Text(tripData['vehicle_mode'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400),),
+                                  
+                      
+                      
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
                             ],
                           ),
-                          SizedBox(
-                            height: 10,
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '${tripData['municipalityDropdown'] ?? 'No Record of Municipality'}',
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w400)),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                  'Pickup: ${tripData['pickupLocation'] ?? 'No pickup location'}',
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w300)),
+                              Text(
+                                  'Delivery: ${tripData['deliveryLocation'] ?? 'No delivery location'}',
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w300)),
+                              Text(
+                                  'Distance: ${tripData['distance']?.toStringAsFixed(1) ?? 'No distance'} km',
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w300)),
+                              Text(
+                                  'Fare: NPR ${tripData['fare']?.toStringAsFixed(0) ?? 'No fare'}',
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w300)),
+                              Text('Phone: ${tripData['phone'] ?? 'No phone'}',
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w300)),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                  'Timestamp: ${tripData['timestamp']?.toDate() ?? 'No timestamp'}',
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey)),
+                            ],
                           ),
-                        ],
+                          isThreeLine: true,
+                        ),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              '${tripData['municipalityDropdown'] ?? 'No Record of Municipality'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w400)),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              'Pickup: ${tripData['pickupLocation'] ?? 'No pickup location'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text(
-                              'Delivery: ${tripData['deliveryLocation'] ?? 'No delivery location'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text(
-                              'Distance: ${tripData['distance']?.toStringAsFixed(1) ?? 'No distance'} km',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text(
-                              'Fare: NPR ${tripData['fare']?.toStringAsFixed(0) ?? 'No fare'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          Text('Phone: ${tripData['phone'] ?? 'No phone'}',
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w300)),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              'Timestamp: ${tripData['timestamp']?.toDate() ?? 'No timestamp'}',
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey)),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15,right: 15),
+                        child: Divider(),
                       ),
-                      isThreeLine: true,
-                    ),
+                    ],
                   ),
                 );
               },
@@ -620,4 +721,28 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _removeOldTripsTimer?.cancel();
     super.dispose();
   }
+}
+Widget _customElevatedButton({
+  required BuildContext context,
+  required String label,
+  required VoidCallback onPressed,
+}) {
+  return ElevatedButton(
+    onPressed: onPressed,
+    style: ElevatedButton.styleFrom(
+      foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 83, 182, 136), // Text color
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30), // Rounded corners
+      ),
+      elevation: 2, // Shadow effect
+    ),
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontSize: 16, // Text size
+        fontWeight: FontWeight.bold, // Text weight
+      ),
+    ),
+  );
 }
