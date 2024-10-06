@@ -3,12 +3,12 @@ import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TutorialPage extends StatefulWidget {
+class TutorialPageDriver extends StatefulWidget {
   @override
-  _TutorialPageState createState() => _TutorialPageState();
+  _TutorialPageDriverState createState() => _TutorialPageDriverState();
 }
 
-class _TutorialPageState extends State<TutorialPage> {
+class _TutorialPageDriverState extends State<TutorialPageDriver> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
@@ -16,8 +16,8 @@ class _TutorialPageState extends State<TutorialPage> {
   final List<Map<String, String>> _tutorialData = [
     {
       'image': 'assets/logo.png',
-      'title': 'Welcome to Tuk Tuk!',
-      'subtitle': 'Platform for your Ride',
+      'title': 'चालक मोडमा स्वागत छ!',
+      'subtitle': 'Driver Optimised Page',
     },
     {
       'image': 'assets/search_tutorial.png',

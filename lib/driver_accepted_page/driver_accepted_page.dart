@@ -8,7 +8,7 @@ import 'dart:convert';
 class DriverAcceptedPage extends StatefulWidget {
   final String driverId;
 
-  const DriverAcceptedPage({super.key, required this.driverId});
+  const DriverAcceptedPage({super.key, required this.driverId, required String driverEmail});
 
   @override
   _DriverAcceptedPageState createState() => _DriverAcceptedPageState();

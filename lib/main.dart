@@ -150,7 +150,7 @@
 // }
 import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/splash_screen/splash_screen.dart';
-import 'package:final_menu/tutorial_screen/tutorial_screen.dart';
+import 'package:final_menu/tutorial_screen_user/tutorial_screen_user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -232,7 +232,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     // After loading is complete, check if the tutorial needs to be shown
     if (_isFirstLaunch) {
-      return TutorialPage(); // Show tutorial
+      return TutorialPageUser(); // Show tutorial
     } else {
       // After tutorial or for registered users, check if user is logged in
       User? user = FirebaseAuth.instance.currentUser;
