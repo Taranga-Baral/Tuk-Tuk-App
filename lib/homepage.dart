@@ -500,7 +500,7 @@ class _HomePageState extends State<HomePage> {
 
   // Print to check if it's daytime or nighttime and the calculated fare
   print("Booking time: ${isDaytime ? 'Daytime' : 'Nighttime'}");
-  print("Calculated fare: $fare");
+  print('Calculated fare: $fare');
 }
 
 

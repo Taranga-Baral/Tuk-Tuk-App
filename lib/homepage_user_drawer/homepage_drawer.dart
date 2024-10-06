@@ -39,7 +39,7 @@ class DrawerPage extends StatelessWidget {
               child: currentUser == null || currentUser.photoURL == null
                   ? Text(
   (currentUser?.displayName != null && currentUser!.displayName!.isNotEmpty)
-    ? currentUser!.displayName![0] // Using ! to assert non-null, after check
+    ? currentUser.displayName![0] // Using ! to assert non-null, after check
     : 'U', // Default character if displayName is null or empty
   style: TextStyle(fontSize: 40, color: Colors.blueGrey.shade900),
 )

@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'package:final_menu/homepage1.dart';
 import 'package:flutter/material.dart';
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

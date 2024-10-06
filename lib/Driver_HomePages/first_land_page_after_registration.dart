@@ -724,7 +724,6 @@ import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:card_loading/card_loading.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'trip_model.dart';
 import 'trip_card_widget.dart';
@@ -1057,8 +1056,6 @@ import 'trip_card_widget.dart';
 //     super.dispose();
 //   }
 // }import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:url_launcher/url_launcher.dart';
 // Import your other necessary files here...
 
 class DriverHomePage extends StatefulWidget {
