@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TripModel {
   String? tripId;
+  String? userId;
   String? username;
   String? phoneNumber;
   String? pickupLocation;
@@ -16,6 +17,7 @@ class TripModel {
 
   TripModel({
     this.tripId,
+    this.userId,
     this.username,
     this.phoneNumber,
     this.pickupLocation,
@@ -31,6 +33,7 @@ class TripModel {
   factory TripModel.fromJson(Map<String, dynamic> json) {
     return TripModel(
       tripId: json['tripId'] as String?,
+      userId: json['userId'] as String?,
       username: json['username'] as String?,
       phoneNumber: json['phone'] as String?,
       pickupLocation: json['pickupLocation'] as String?,

@@ -808,12 +808,12 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                               ),
                               Divider(),
                               Text(
-                                'Distance: ${double.parse(trip['distance']).toStringAsFixed(1)} km',
+                                'Distance: ${double.parse(trip['distance']).toStringAsFixed(0)} km',
                                 style: TextStyle(fontSize: 14),
                               ),
                               Divider(),
                               Text(
-                                'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(2)}',
+                                'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(1)}',
                                 style: TextStyle(fontSize: 14),
                               ),
                               Divider(),

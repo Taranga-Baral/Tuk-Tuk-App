@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   String? selectedMode;
   int selectedPassengers = 1; // Default to 1 passenger
   double fare = 0.0;
+  bool isBookingInProgress = false; // Add this variable
 
   final List<Map<String, dynamic>> municipalitySections = [
     {
@@ -81,96 +82,92 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _calculateFare(String distance) {
-  double rate;
-  double distancedoublevar = double.parse(distance);
-  int distanceintvarwithoutroundoff = distancedoublevar.toInt();
-  int distanceintvar = distanceintvarwithoutroundoff.round();
+    double rate;
+    double distancedoublevar = double.parse(distance);
+    int distanceintvarwithoutroundoff = distancedoublevar.toInt();
+    int distanceintvar = distanceintvarwithoutroundoff.round();
 
-  DateTime now = DateTime.now();
-  int currentHour = now.hour;
-  //daytime is equal to 6 to 6
-  bool isDaytime = currentHour >= 6 && currentHour < 18;
+    DateTime now = DateTime.now();
+    int currentHour = now.hour;
+    //daytime is equal to 6 to 6
+    bool isDaytime = currentHour >= 6 && currentHour < 18;
 
-  // Default rate modifier for daytime is 1, and for nighttime it's 1.05
-  double timeMultiplier = isDaytime ? 1 : 1.1;
+    // Default rate modifier for daytime is 1, and for nighttime it's 1.05
+    double timeMultiplier = isDaytime ? 1 : 1.1;
 
-  // Calculate base rate based on distance and mode
-  if (distanceintvar <= 7) {
-    if (selectedMode == 'Petrol') {
-      if (selectedPassengers == 1) {
-        rate = 2.0;
-      } else if (selectedPassengers == 2) {
-        rate = 3.2;
-      } else if (selectedPassengers == 3) {
-        rate = 4.5;
-      } else if (selectedPassengers == 4) {
-        rate = 5.6;
-      } else if (selectedPassengers == 5) {
-        rate = 7;
+    // Calculate base rate based on distance and mode
+    if (distanceintvar <= 7) {
+      if (selectedMode == 'Petrol') {
+        if (selectedPassengers == 1) {
+          rate = 2.0;
+        } else if (selectedPassengers == 2) {
+          rate = 3.2;
+        } else if (selectedPassengers == 3) {
+          rate = 4.5;
+        } else if (selectedPassengers == 4) {
+          rate = 5.6;
+        } else if (selectedPassengers == 5) {
+          rate = 7;
+        } else {
+          rate = 8.4;
+        }
       } else {
-        rate = 8.4;
+        // Non-petrol mode
+        if (selectedPassengers == 1) {
+          rate = 0.75;
+        } else if (selectedPassengers == 2) {
+          rate = 0.84;
+        } else if (selectedPassengers == 3) {
+          rate = 1.05;
+        } else if (selectedPassengers == 4) {
+          rate = 1.3;
+        } else if (selectedPassengers == 5) {
+          rate = 1.7;
+        } else {
+          rate = 1.86;
+        }
       }
-    } else { // Non-petrol mode
-      if (selectedPassengers == 1) {
-        rate = 0.75;
-      } else if (selectedPassengers == 2) {
-        rate = 0.84;
-      } else if (selectedPassengers == 3) {
-        rate = 1.05;
-      } else if (selectedPassengers == 4) {
-        rate = 1.3;
-      } else if (selectedPassengers == 5) {
-        rate = 1.7;
+    } else {
+      // Distance greater than 7 km
+      if (selectedMode == 'Petrol') {
+        if (selectedPassengers == 1) {
+          rate = 1.5;
+        } else if (selectedPassengers == 2) {
+          rate = 2.8;
+        } else if (selectedPassengers == 3) {
+          rate = 4.05;
+        } else if (selectedPassengers == 4) {
+          rate = 5.2;
+        } else if (selectedPassengers == 5) {
+          rate = 6;
+        } else {
+          rate = 6.8;
+        }
       } else {
-        rate = 1.86;
+        // Non-petrol mode
+        if (selectedPassengers == 1) {
+          rate = 0.65;
+        } else if (selectedPassengers == 2) {
+          rate = 0.77;
+        } else if (selectedPassengers == 3) {
+          rate = 0.9;
+        } else if (selectedPassengers == 4) {
+          rate = 1.1;
+        } else if (selectedPassengers == 5) {
+          rate = 1.4;
+        } else {
+          rate = 1.6;
+        }
       }
     }
-  } else { // Distance greater than 7 km
-    if (selectedMode == 'Petrol') {
-      if (selectedPassengers == 1) {
-        rate = 1.5;
-      } else if (selectedPassengers == 2) {
-        rate = 2.8;
-      } else if (selectedPassengers == 3) {
-        rate = 4.05;
-      } else if (selectedPassengers == 4) {
-        rate = 5.2;
-      } else if (selectedPassengers == 5) {
-        rate = 6;
-      } else {
-        rate = 6.8;
-      }
-    } else { // Non-petrol mode
-      if (selectedPassengers == 1) {
-        rate = 0.65;
-      } else if (selectedPassengers == 2) {
-        rate = 0.77;
-      } else if (selectedPassengers == 3) {
-        rate = 0.9;
-      } else if (selectedPassengers == 4) {
-        rate = 1.1;
-      } else if (selectedPassengers == 5) {
-        rate = 1.4;
-      } else {
-        rate = 1.6;
-      }
-    }
+
+    // Apply distance and the time-based multiplier to the fare calculation
+    fare = (double.parse(distance) * 10) * rate * timeMultiplier;
+
+    // Print to check if it's daytime or nighttime and the calculated fare
+    print("Booking time: ${isDaytime ? 'Daytime' : 'Nighttime'}");
+    print('Calculated fare: $fare');
   }
-
-  // Apply distance and the time-based multiplier to the fare calculation
-  fare = (double.parse(distance) * 10) * rate * timeMultiplier;
-
-  // Print to check if it's daytime or nighttime and the calculated fare
-  print("Booking time: ${isDaytime ? 'Daytime' : 'Nighttime'}");
-  print('Calculated fare: $fare');
-}
-
-
-
-
-
-
-
 
   Future<void> _storeDataInFirestore(Map<String, dynamic> data) async {
     try {
@@ -189,45 +186,46 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-  backgroundColor: Colors.deepOrange.shade500.withOpacity(0.8),
-  title: Text('Home Page'),
-  leading: IconButton(
-    icon: Icon(Icons.arrow_back),
-    onPressed: () => Navigator.of(context).pop(),
-  ),
-  actions: [
-  IconButton(
-    icon: Icon(Icons.location_history,color: Colors.white,),
-    onPressed: () async {
-      await _requestLocationPermission();
-      // Simulate clicking the location button in the web view
-      if (webView != null) {
-        await webView!.evaluateJavascript(source: """
+        backgroundColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        title: Text('Home Page'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.location_history,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              await _requestLocationPermission();
+              // Simulate clicking the location button in the web view
+              if (webView != null) {
+                await webView!.evaluateJavascript(source: """
           document.querySelector('.control-button.control-button-last').click();
         """);
-      }
-    },
-  ),
-],
-
-),
-
+              }
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Stack(
           children: [
             if (!_isLoading)
               InAppWebView(
-  initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-  initialOptions: InAppWebViewGroupOptions(
-    crossPlatform: InAppWebViewOptions(
-      javaScriptEnabled: true,
-      cacheEnabled: true,
-      mediaPlaybackRequiresUserGesture: false,
-    ),
-  ),
-  onWebViewCreated: (controller) => webView = controller,
-  onLoadStop: (controller, url) async {
-    await controller.evaluateJavascript(source: """
+                initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+                initialOptions: InAppWebViewGroupOptions(
+                  crossPlatform: InAppWebViewOptions(
+                    javaScriptEnabled: true,
+                    cacheEnabled: true,
+                    mediaPlaybackRequiresUserGesture: false,
+                  ),
+                ),
+                onWebViewCreated: (controller) => webView = controller,
+                onLoadStop: (controller, url) async {
+                  await controller.evaluateJavascript(source: """
       var mapViewerElement = document.querySelector('h1.d-flex.m-0.fw-semibold');
       if (mapViewerElement) mapViewerElement.style.display = 'none';
 
@@ -242,18 +240,16 @@ class _HomePageState extends State<HomePage> {
 
       result;
     """);
-  },
-  onGeolocationPermissionsShowPrompt: (controller, origin) async {
-    return GeolocationPermissionShowPromptResponse(
-      origin: origin,
-      allow: true,  // Set to true to grant permission
-      retain: true, // Set to true if you want to retain the permissions
-    );
-  },
-),
-
-
-
+                },
+                onGeolocationPermissionsShowPrompt: (controller, origin) async {
+                  return GeolocationPermissionShowPromptResponse(
+                    origin: origin,
+                    allow: true, // Set to true to grant permission
+                    retain:
+                        true, // Set to true if you want to retain the permissions
+                  );
+                },
+              ),
             if (_isLoading) Center(child: CircularProgressIndicator()),
             Positioned(
               bottom: 50,
@@ -303,13 +299,15 @@ class _HomePageState extends State<HomePage> {
                                       value: selectedMunicipality,
                                       hint: Text('Select Municipality'),
                                       isExpanded: true,
-                                      items: municipalitySections.expand((section) {
+                                      items: municipalitySections
+                                          .expand((section) {
                                         return [
                                           DropdownMenuItem<String>(
                                               enabled: false,
                                               child: Text(section['title'],
                                                   style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       color: Colors.grey)))
                                         ].followedBy(
                                           section['municipalities']
@@ -318,28 +316,31 @@ class _HomePageState extends State<HomePage> {
                                             return DropdownMenuItem<String>(
                                               value: municipality,
                                               child: Padding(
-                                                  padding: const EdgeInsets.only(
-                                                      left: 8.0),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
                                                   child: Text(municipality)),
                                             );
                                           }),
                                         );
                                       }).toList(),
                                       onChanged: (String? newValue) => setState(
-                                          () => selectedMunicipality = newValue),
+                                          () =>
+                                              selectedMunicipality = newValue),
                                     ),
                                     SizedBox(height: 10),
                                     DropdownButton<String>(
                                       value: selectedMode,
                                       hint: Text('Select Mode'),
                                       isExpanded: true,
-                                      items: modes.map<DropdownMenuItem<String>>(
-                                          (String mode) {
+                                      items: modes
+                                          .map<DropdownMenuItem<String>>(
+                                              (String mode) {
                                         return DropdownMenuItem<String>(
                                           value: mode,
                                           child: Padding(
-                                              padding:
-                                                  const EdgeInsets.only(left: 8.0),
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0),
                                               child: Text(mode)),
                                         );
                                       }).toList(),
@@ -362,11 +363,12 @@ class _HomePageState extends State<HomePage> {
                                           int passengerCount = index + 1;
                                           return ChoiceChip(
                                             label: Text('$passengerCount'),
-                                            selected:
-                                                selectedPassengers == passengerCount,
+                                            selected: selectedPassengers ==
+                                                passengerCount,
                                             onSelected: (selected) {
                                               setState(() {
-                                                selectedPassengers = passengerCount;
+                                                selectedPassengers =
+                                                    passengerCount;
                                                 // Recalculate fare based on number of passengers
                                                 _calculateFare(distance);
                                               });
@@ -391,40 +393,60 @@ class _HomePageState extends State<HomePage> {
                                           Navigator.of(context).pop(false)),
                                   TextButton(
                                     style: TextButton.styleFrom(
-                                        foregroundColor: Colors.white,
-                                        backgroundColor: Colors.deepOrange.shade600
-                                            .withOpacity(0.7)),
-                                    onPressed: () async {
-                                      if (selectedMunicipality != null &&
-                                          selectedMode != null) {
-                                        final userDetails = await _getUserDetails();
-                                        final timestamp =
-                                            DateTime.now(); // Set timestamp here
-                                        final user =
-                                            FirebaseAuth.instance.currentUser;
-                                        final bookingData = {
-                                          'vehicle_mode': selectedMode,
-                                          'no_of_person': selectedPassengers,
-                                          'userId': user?.uid ?? 'N/A',
-                                          'municipalityDropdown':
-                                              selectedMunicipality,
-                                          'timestamp': FieldValue.serverTimestamp(),
-                                          'fare': fare.toStringAsFixed(2),
-                                          'distance': distance,
-                                          'username':
-                                              userDetails['username'] ?? 'N/A',
-                                          'email': userDetails['email'] ?? 'N/A',
-                                          'phone':
-                                              userDetails['phone_number'] ?? 'N/A',
-                                          'pickupLocation': pickupLocation,
-                                          'deliveryLocation': deliveryLocation,
-                                        };
-                                        await _storeDataInFirestore(bookingData);
-                                        Navigator.of(context).pop(true);
-                                      } else {
-                                        _showSnackbar('Please select all options');
-                                      }
-                                    },
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors
+                                          .deepOrange.shade600
+                                          .withOpacity(0.7),
+                                    ),
+                                    onPressed: isBookingInProgress
+                                        ? null
+                                        : () async {
+                                            if (selectedMunicipality != null &&
+                                                selectedMode != null) {
+                                              setState(() {
+                                                isBookingInProgress =
+                                                    true; // Disable the button
+                                              });
+                                              final userDetails =
+                                                  await _getUserDetails();
+                                              final user = FirebaseAuth
+                                                  .instance.currentUser;
+                                              final bookingData = {
+                                                'vehicle_mode': selectedMode,
+                                                'no_of_person':
+                                                    selectedPassengers,
+                                                'userId': user?.uid ?? 'N/A',
+                                                'municipalityDropdown':
+                                                    selectedMunicipality,
+                                                'timestamp': FieldValue
+                                                    .serverTimestamp(),
+                                                'fare': fare.toStringAsFixed(2),
+                                                'distance': distance,
+                                                'username':
+                                                    userDetails['username'] ??
+                                                        'N/A',
+                                                'email': userDetails['email'] ??
+                                                    'N/A',
+                                                'phone': userDetails[
+                                                        'phone_number'] ??
+                                                    'N/A',
+                                                'pickupLocation':
+                                                    pickupLocation,
+                                                'deliveryLocation':
+                                                    deliveryLocation,
+                                              };
+                                              await _storeDataInFirestore(
+                                                  bookingData);
+                                              Navigator.of(context).pop(true);
+                                              setState(() {
+                                                isBookingInProgress =
+                                                    false; // Enable the button after completion
+                                              });
+                                            } else {
+                                              _showSnackbar(
+                                                  'Please select all options');
+                                            }
+                                          },
                                     child: Text('Confirm'),
                                   ),
                                 ],
@@ -440,7 +462,10 @@ class _HomePageState extends State<HomePage> {
                     _showSnackbar('Booking confirmed!');
                   }
                 },
-                child: Text('Book a Ride',style: TextStyle(color: Colors.white),),
+                child: Text(
+                  'Book a Ride',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -448,18 +473,16 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  
-Future<void> _requestLocationPermission() async {
-  var status = await Permission.location.status;
-  if (status.isDenied) {
-    // Request location permission if denied
-    if (await Permission.location.request().isGranted) {
-      _showSnackbar('Location permission granted');
-    } else {
-      _showSnackbar('Location permission denied');
+
+  Future<void> _requestLocationPermission() async {
+    var status = await Permission.location.status;
+    if (status.isDenied) {
+      // Request location permission if denied
+      if (await Permission.location.request().isGranted) {
+        _showSnackbar('Location permission granted');
+      } else {
+        _showSnackbar('Location permission denied');
+      }
     }
-  } 
-}
-
-
+  }
 }
