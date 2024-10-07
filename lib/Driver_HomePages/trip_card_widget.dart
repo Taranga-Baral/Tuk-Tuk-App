@@ -91,14 +91,14 @@ class TripCardWidget extends StatelessWidget {
   final bool isButtonDisabled; // Add this line
 
   const TripCardWidget({
-    Key? key,
+    super.key,
     required this.tripData,
     required this.index,
     required this.onPhoneTap,
     required this.onMapTap,
     required this.onRequestTap,
     required this.isButtonDisabled, // Accept disabled state as a parameter
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

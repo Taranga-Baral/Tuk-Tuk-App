@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TutorialPageDriver extends StatefulWidget {
+  const TutorialPageDriver({super.key});
+
   @override
   _TutorialPageDriverState createState() => _TutorialPageDriverState();
 }

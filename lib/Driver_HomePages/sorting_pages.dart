@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class SortingPage extends StatelessWidget {
   final String selectedSortOption;
   
-  const SortingPage({Key? key, required this.selectedSortOption}) : super(key: key);
+  const SortingPage({super.key, required this.selectedSortOption});
 
   @override
   Widget build(BuildContext context) {

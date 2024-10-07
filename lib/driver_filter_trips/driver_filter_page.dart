@@ -500,7 +500,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DriverFilterPage extends StatefulWidget {
   final String driverId;
 
-  DriverFilterPage({required this.driverId});
+  const DriverFilterPage({super.key, required this.driverId});
 
   @override
   _DriverFilterPageState createState() => _DriverFilterPageState();

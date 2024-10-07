@@ -3,6 +3,8 @@ import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class DrawerPage extends StatelessWidget {
+  const DrawerPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final User? currentUser = FirebaseAuth.instance.currentUser;

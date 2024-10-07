@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TutorialPageUser extends StatefulWidget {
+  const TutorialPageUser({super.key});
+
   @override
   _TutorialPageUserState createState() => _TutorialPageUserState();
 }

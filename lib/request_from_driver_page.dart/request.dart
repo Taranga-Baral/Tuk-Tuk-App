@@ -424,10 +424,10 @@ Divider(),
                                 final deliveryLocation =
                                     tripData['deliveryLocation'] ?? 'N/A';
 
-                                final no_of_person =
+                                final noOfPerson =
                                     tripData['no_of_person'] ?? 'N/A';
 
-                                final vehicle_mode =
+                                final vehicleMode =
                                     tripData['vehicle_mode'] ?? 'N/A';
 
                                 final fare = tripData['fare'] ?? 'N/A';
@@ -473,7 +473,7 @@ Divider(),
                                                       MainAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      'Passenger $no_of_person',
+                                                      'Passenger $noOfPerson',
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                           fontWeight:
@@ -493,7 +493,7 @@ Divider(),
                                                       width: 10,
                                                     ),
                                                     Text(
-                                                      '$vehicle_mode',
+                                                      '$vehicleMode',
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                           fontWeight:

@@ -28,7 +28,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   final int _itemsPerPage = 10;
   DocumentSnapshot? _lastDocument;
   bool _hasMore = true;
-  List<bool> _isButtonDisabledList =
+  final List<bool> _isButtonDisabledList =
       []; // List to hold button states for each trip
 
   final List<TripModel> _tripDataList = [];
