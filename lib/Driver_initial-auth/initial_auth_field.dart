@@ -1,243 +1,5 @@
-// import 'dart:io';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
-// import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
-// import 'package:final_menu/homepage.dart';
-// import 'package:final_menu/login_screen/sign_in_page.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
-
-// import 'package:flutter/foundation.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:easy_stepper/easy_stepper.dart';
-// import 'package:image/image.dart' as img;
-// import 'package:image_picker/image_picker.dart';
-
-// class DriverAuthPage extends StatefulWidget {
-//   const DriverAuthPage({super.key});
-
-//   @override
-//   _DriverAuthPageState createState() => _DriverAuthPageState();
-// }
-
-// Color _color = const Color.fromARGB(255, 189, 62, 228);
-
-// class _DriverAuthPageState extends State<DriverAuthPage> {
-//   void showSnackBar(BuildContext context, String message) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text(message),
-//         duration: const Duration(seconds: 3),
-//         behavior: SnackBarBehavior.floating,
-//       ),
-//     );
-//   }
-
-//   DateTime? _selectedDateOfBirth;
-//   final _picker = ImagePicker();
-//   String _selectedVehicleType = 'Tuk Tuk'; // Default value for dropdown
-
-//   final _numberPlateController = TextEditingController();
-//   final _brandController = TextEditingController();
-//   final _colorController = TextEditingController();
-//   final _licenseNumberController = TextEditingController();
-//   final _nameController = TextEditingController();
-//   final _addressController = TextEditingController();
-//   final _dobController = TextEditingController();
-//   final _emailController = TextEditingController();
-//   final _phoneController = TextEditingController();
-
-//   File? _bluebookPhoto;
-//   File? _citizenshipFrontPhoto;
-//   File? _licenseFrontPhoto;
-//   File? _selfieWithCitizenshipPhoto;
-//   File? _selfieWithLicensePhoto;
-//   File? _profilePicturePhoto;
-
-//   String? _bluebookPhotoUrl;
-//   String? _citizenshipFrontUrl;
-//   String? _licenseFrontUrl;
-//   String? _selfieWithCitizenshipUrl;
-//   String? _selfieWithLicenseUrl;
-//   String? _profilePictureUrl;
-
-//   int _activeStep = 0; // Manage active step
-//   bool _termsAccepted = false; // Track terms acceptance
-
-//   bool _validateFields() {
-//     final email = _emailController.text;
-//     final phoneNumber = _phoneController.text.replaceAll('+977 ', '');
-
-//     final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-//     final phoneNumberRegex = RegExp(r'^\d{10}$'); // 10 digits
-
-//     if (_nameController.text.isEmpty ||
-//         _addressController.text.isEmpty ||
-//         _dobController.text.isEmpty ||
-//         email.isEmpty ||
-//         phoneNumber.isEmpty ||
-//         !emailRegex.hasMatch(email) ||
-//         !phoneNumberRegex.hasMatch(phoneNumber)) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(
-//           content: Text(
-//             'Either you left some field or some entered format is incorrect',
-//           ),
-//         ),
-//       );
-//       return false;
-//     }
-
-//     return true;
-//   }
-
-//   Future<void> _pickImage(String imageType) async {
-//     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-//     if (pickedFile != null) {
-//       setState(() {
-//         switch (imageType) {
-//           case 'bluebook':
-//             _bluebookPhoto = File(pickedFile.path);
-//             break;
-//           case 'citizenshipFront':
-//             _citizenshipFrontPhoto = File(pickedFile.path);
-//             break;
-//           case 'licenseFront':
-//             _licenseFrontPhoto = File(pickedFile.path);
-//             break;
-//           case 'selfieWithCitizenship':
-//             _selfieWithCitizenshipPhoto = File(pickedFile.path);
-//             break;
-//           case 'selfieWithLicense':
-//             _selfieWithLicensePhoto = File(pickedFile.path);
-//             break;
-//           case 'profilePicture':
-//             _profilePicturePhoto = File(pickedFile.path);
-//             break;
-//         }
-//       });
-//     }
-//   }
-
-//   Future<File?> _compressImage(File imageFile) async {
-//     final img.Image? image = img.decodeImage(await imageFile.readAsBytes());
-//     if (image == null) return null;
-
-//     final img.Image resized =
-//         img.copyResize(image, width: 800); // Adjust size as needed
-//     final compressedFile = File(imageFile.path)
-//       ..writeAsBytesSync(
-//           img.encodeJpg(resized, quality: 85)); // Adjust quality as needed
-
-//     return compressedFile;
-//   }
-
-//   Future<String?> _uploadImage(
-//     File imageFile, String imageType, String driverId) async {
-//   try {
-//     final compressedImageFile = await _compressImage(imageFile);
-//     if (compressedImageFile == null) {
-//       print('Compressed image is null for $imageType');
-//       return null;
-//     }
-
-//     final storageRef = FirebaseStorage.instance.ref().child(
-//         'images/$driverId/$imageType/${DateTime.now().millisecondsSinceEpoch}.jpg');
-//     final uploadTask = storageRef.putFile(compressedImageFile);
-
-//     final snapshot = await uploadTask.whenComplete(() {});
-//     final downloadUrl = await snapshot.ref.getDownloadURL();
-
-//     return downloadUrl;
-//   } catch (e) {
-//     print('Error uploading image for $imageType: $e');
-//     return null;
-//   }
-// }
-
-//   Future<void> _submitForm() async {
-//   try {
-//     String driverId = _emailController.text; // Unique identifier (email)
-//     bool allUploadsSuccessful = true;
-
-//     // Upload images and get URLs if the respective photo exists
-//     if (_bluebookPhoto != null) {
-//       _bluebookPhotoUrl = await _uploadImage(_bluebookPhoto!, 'bluebook', driverId);
-//       if (_bluebookPhotoUrl == null) allUploadsSuccessful = false;
-//     }
-//     if (_citizenshipFrontPhoto != null) {
-//       _citizenshipFrontUrl = await _uploadImage(_citizenshipFrontPhoto!, 'citizenshipFront', driverId);
-//       if (_citizenshipFrontUrl == null) allUploadsSuccessful = false;
-//     }
-//     if (_licenseFrontPhoto != null) {
-//       _licenseFrontUrl = await _uploadImage(_licenseFrontPhoto!, 'licenseFront', driverId);
-//       if (_licenseFrontUrl == null) allUploadsSuccessful = false;
-//     }
-//     if (_selfieWithCitizenshipPhoto != null) {
-//       _selfieWithCitizenshipUrl = await _uploadImage(_selfieWithCitizenshipPhoto!, 'selfieWithCitizenship', driverId);
-//       if (_selfieWithCitizenshipUrl == null) allUploadsSuccessful = false;
-//     }
-//     if (_selfieWithLicensePhoto != null) {
-//       _selfieWithLicenseUrl = await _uploadImage(_selfieWithLicensePhoto!, 'selfieWithLicense', driverId);
-//       if (_selfieWithLicenseUrl == null) allUploadsSuccessful = false;
-//     }
-//     if (_profilePicturePhoto != null) {
-//       _profilePictureUrl = await _uploadImage(_profilePicturePhoto!, 'profilePicture', driverId);
-//       if (_profilePictureUrl == null) allUploadsSuccessful = false;
-//     }
-
-//     if (!allUploadsSuccessful) {
-//       // Show error message if any upload failed
-//       showSnackBar(context, 'Some images failed to upload. Please try again.');
-//       return;
-//     }
-
-//     // Check if the document already exists in Firestore
-//     final vehicleDataRef = FirebaseFirestore.instance.collection('vehicleData').doc(driverId);
-//     final docSnapshot = await vehicleDataRef.get();
-
-//     if (docSnapshot.exists) {
-//       // Update existing fields
-//       await vehicleDataRef.update({
-//         'vehicleType': _selectedVehicleType,
-//         'numberPlate': _numberPlateController.text,
-//         'brand': _brandController.text,
-//         'color': _colorController.text,
-//         if (_bluebookPhotoUrl != null) 'bluebookPhotoUrl': _bluebookPhotoUrl,
-//         'licenseNumber': _licenseNumberController.text,
-//         if (_citizenshipFrontUrl != null) 'citizenshipFrontUrl': _citizenshipFrontUrl,
-//         if (_licenseFrontUrl != null) 'licenseFrontUrl': _licenseFrontUrl,
-//         if (_selfieWithCitizenshipUrl != null) 'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl,
-//         if (_selfieWithLicenseUrl != null) 'selfieWithLicenseUrl': _selfieWithLicenseUrl,
-//         if (_profilePictureUrl != null) 'profilePictureUrl': _profilePictureUrl,
-//         'name': _nameController.text,
-//         'address': _addressController.text,
-//         'dob': _dobController.text,
-//         'email': _emailController.text,
-//         'phone': _phoneController.text,
-//       });
-//     } else {
-//       // Create new document
-//       await vehicleDataRef.set({
-//         'vehicleType': _selectedVehicleType,
-//         'numberPlate': _numberPlateController.text,
-//         'brand': _brandController.text,
-//         'color': _colorController.text,
-//         'bluebookPhotoUrl': _bluebookPhotoUrl ?? '',
-//         'licenseNumber': _licenseNumberController.text,
-//         'citizenshipFrontUrl': _citizenshipFrontUrl ?? '',
-//         'licenseFrontUrl': _licenseFrontUrl ?? '',
-//         'selfieWithCitizenshipUrl': _selfieWithCitizenshipUrl ?? '',
-//         'selfieWithLicenseUrl': _selfieWithLicenseUrl ?? '',
-//         'profilePictureUrl': _profilePictureUrl ?? '',
-//         'name': _nameController.text,
-//         'address': _addressController.text,
-//         'dob': _dobController.text,
-//         'email': _emailController.text,
-//         'phone': _phoneController.text,
-//       });
-//     }
 import 'dart:io';
+import 'package:bcrypt/bcrypt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
@@ -246,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DriverAuthPage extends StatefulWidget {
   const DriverAuthPage({super.key});
@@ -280,6 +43,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   final _dobController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   File? _bluebookPhoto;
   File? _citizenshipFrontPhoto;
@@ -296,8 +60,16 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   String? _profilePictureUrl;
 
   int _activeStep = 0; // Manage active step
+  bool _obscurePassword = true; // To toggle password visibility
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
+  }
+
   bool _termsAccepted = false; // Track terms acceptance
   final _formKey = GlobalKey<FormState>();
+  final _formKeylast = GlobalKey<FormState>();
   bool _validateFields() {
     final email = _emailController.text;
     final phoneNumber = _phoneController.text.replaceAll('+977 ', '');
@@ -309,6 +81,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
     // Validate text fields
     if (_nameController.text.isEmpty ||
         _addressController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
         _dobController.text.isEmpty ||
         email.isEmpty ||
         phoneNumber.isEmpty ||
@@ -358,7 +131,21 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
         }
       });
     }
+
+
+
+
+
+    
   }
+
+
+
+
+
+
+
+
 
   Future<String?> _uploadImage(
       File imageFile, String imageType, String driverId) async {
@@ -380,6 +167,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
       print('Error uploading image for $imageType: $e');
       return null;
     }
+
   }
 
   Future<void> _submitForm(BuildContext context) async {
@@ -388,6 +176,8 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
     }
 
     try {
+      String hashedPassword =
+          BCrypt.hashpw(_passwordController.text, BCrypt.gensalt());
       String driverId = _emailController.text; // Unique identifier (email)
       bool allUploadsSuccessful = true;
 
@@ -489,6 +279,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
           'address': _addressController.text,
           'dob': _dobController.text,
           'email': _emailController.text,
+          'password': hashedPassword,
           'phone': _phoneController.text,
         });
       } else {
@@ -509,6 +300,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
           'address': _addressController.text,
           'dob': _dobController.text,
           'email': _emailController.text,
+          'password': hashedPassword,
           'phone': _phoneController.text,
         });
       }
@@ -711,13 +503,13 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                     if (_activeStep == 1) ...[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children:  [
+                        children: [
                           GestureDetector(
                             child: Icon(Icons.arrow_back),
                             onTap: () {
                               setState(() {
-                                      _activeStep = 0;
-                                    });
+                                _activeStep = 0;
+                              });
                             },
                           ),
                         ],
@@ -843,6 +635,38 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 25),
+
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'This field is required';
+                                }
+                                return null; // Valid input
+                              },
+                              controller: _licenseNumberController,
+                              decoration: const InputDecoration(
+                                labelText: 'License Number',
+                                prefixIcon: Icon(Icons.numbers),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244),
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                              ),
+                            ),
+
                             const SizedBox(height: 20),
 
                             // Next Button
@@ -900,16 +724,15 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                       )
                     ],
                     if (_activeStep == 2) ...[
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children:  [
+                        children: [
                           GestureDetector(
                             child: Icon(Icons.arrow_back),
                             onTap: () {
                               setState(() {
-                                      _activeStep = 0;
-                                    });
+                                _activeStep = 0;
+                              });
                             },
                           ),
                         ],
@@ -974,7 +797,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                           ),
                         ),
                       ),
-                        SizedBox(
+                      SizedBox(
                         height: 25,
                       ),
                       if (_citizenshipFrontPhoto != null) ...[
@@ -1014,7 +837,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                       if (_licenseFrontPhoto != null) ...[
                         Image.file(_licenseFrontPhoto!),
                       ],
-                      
+
                       SizedBox(
                         height: 25,
                       ),
@@ -1134,199 +957,278 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                     if (_activeStep == 3) ...[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children:  [
+                        children: [
                           GestureDetector(
                             child: Icon(Icons.arrow_back),
                             onTap: () {
                               setState(() {
-                                      _activeStep = 0;
-                                    });
+                                _activeStep = 0;
+                              });
                             },
                           ),
                         ],
                       ),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'This field is required';
+                              }
+                              return null; // Return null if the input is valid
+                            },
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                              prefixIconColor:
+                                  Color.fromARGB(255, 187, 109, 201),
+                              labelText: 'Name',
+                              prefixIcon: Icon(Icons.person),
+                              filled: true,
+                              fillColor: Colors.white12,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244)),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18)),
+                              ),
+                            ),
+                          ),
 
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'This field is required';
-                          }
-                          return null; // Return null if the input is valid
-                        },
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Name',
-                          prefixIcon: Icon(Icons.person),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
+                          SizedBox(
+                            height: 25,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                      ),
 
-                      SizedBox(
-                        height: 25,
-                      ),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'This field is required';
+                              }
+                              return null; // Return null if the input is valid
+                            },
+                            controller: _addressController,
+                            decoration: const InputDecoration(
+                              prefixIconColor:
+                                  Color.fromARGB(255, 187, 109, 201),
+                              labelText: 'Address',
+                              prefixIcon: Icon(Icons.place_outlined),
+                              filled: true,
+                              fillColor: Colors.white12,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244)),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18)),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
 
-                      TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'This field is required';
-                          }
-                          return null; // Return null if the input is valid
-                        },
-                        controller: _addressController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Address',
-                          prefixIcon: Icon(Icons.place_outlined),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'This field is required';
+                              }
+                              return null; // Return null if the input is valid
+                            },
+                            controller: _dobController,
+                            decoration: const InputDecoration(
+                              prefixIconColor:
+                                  Color.fromARGB(255, 187, 109, 201),
+                              labelText: 'Date of Birth',
+                              prefixIcon: Icon(Icons.date_range),
+                              filled: true,
+                              fillColor: Colors.white12,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244)),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18)),
+                              ),
+                            ),
+                            readOnly: true,
+                            onTap: _selectDateOfBirth,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
 
-                      TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'This field is required';
-                          }
-                          return null; // Return null if the input is valid
-                        },
-                        controller: _dobController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Date of Birth',
-                          prefixIcon: Icon(Icons.date_range),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
+                          SizedBox(
+                            height: 25,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                        readOnly: true,
-                        onTap: _selectDateOfBirth,
-                      ),
 
-                      SizedBox(
-                        height: 25,
-                      ),
+                          TextFormField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(
+                              prefixIconColor:
+                                  Color.fromARGB(255, 187, 109, 201),
+                              labelText: 'Email',
+                              prefixIcon: Icon(Icons.email),
+                              filled: true,
+                              fillColor: Colors.white12,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244)),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18)),
+                              ),
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) {
+                              final emailRegex =
+                                  RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter an email address.';
+                              } else if (!emailRegex.hasMatch(value)) {
+                                return 'Please enter a valid email address.';
+                              }
+                              return null; // Return null if validation is successful
+                            },
+                          ),
 
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
+                          SizedBox(
+                            height: 25,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
+                          Form(
+                            key: _formKeylast,
+                            child: TextFormField(
+                              controller: _passwordController,
+                              obscureText:
+                                  _obscurePassword, // Obscure text if true
+                              decoration: InputDecoration(
+                                prefixIconColor:
+                                    const Color.fromARGB(255, 187, 109, 201),
+                                labelText: 'Password',
+                                prefixIcon: const Icon(Icons.password),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color:
+                                          Color.fromARGB(255, 182, 116, 194)),
+                                ),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 200, 54, 244)),
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons
+                                            .visibility, // Show the correct icon
+                                    color: const Color.fromARGB(
+                                        255, 187, 109, 201),
+                                  ),
+                                  onPressed:
+                                      _togglePasswordVisibility, // Toggle password visibility
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'This field is required';
+                                } else if (value.length < 6) {
+                                  // Check for minimum length
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null; // Return null if validation is successful
+                              },
+                            ),
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          final emailRegex =
-                              RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter an email address.';
-                          } else if (!emailRegex.hasMatch(value)) {
-                            return 'Please enter a valid email address.';
-                          }
-                          return null; // Return null if validation is successful
-                        },
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      TextFormField(
-                        controller: _phoneController,
-                        decoration: const InputDecoration(
-                          prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                          labelText: 'Phone Number',
-                          prefixIcon: Icon(Icons.phone),
-                          filled: true,
-                          fillColor: Colors.white12,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 182, 116, 194)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 200, 54, 244)),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          final phoneNumber =
-                              value?.replaceAll('+977 ', '') ?? '';
-                          final phoneNumberRegex = RegExp(r'^\d{10}$');
-                          if (!phoneNumberRegex.hasMatch(phoneNumber)) {
-                            return 'Phone number must be 10 digits excluding +977.';
-                          }
-                          return null; // Return null if validation is successful
-                        },
-                      ),
 
-                      const SizedBox(height: 30),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      // if (_validateFields()) {
-                      //   _submitForm();
-                      // }
-                      //   },
-                      //   child: const Text('Submit'),
-                      // )
+                          SizedBox(
+                            height: 25,
+                          ),
+                          TextFormField(
+                            controller: _phoneController,
+                            decoration: const InputDecoration(
+                              prefixIconColor:
+                                  Color.fromARGB(255, 187, 109, 201),
+                              labelText: 'Phone Number',
+                              prefixIcon: Icon(Icons.phone),
+                              filled: true,
+                              fillColor: Colors.white12,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 182, 116, 194)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 200, 54, 244)),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18)),
+                              ),
+                            ),
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              final phoneNumber =
+                                  value?.replaceAll('+977 ', '') ?? '';
+                              final phoneNumberRegex = RegExp(r'^\d{10}$');
+                              if (!phoneNumberRegex.hasMatch(phoneNumber)) {
+                                return 'Phone number must be 10 digits excluding +977.';
+                              }
+                              return null; // Return null if validation is successful
+                            },
+                          ),
+
+                          const SizedBox(height: 30),
+                          // ElevatedButton(
+                          //   onPressed: () {
+                          // if (_validateFields()) {
+                          //   _submitForm();
+                          // }
+                          //   },
+                          //   child: const Text('Submit'),
+                          // )
+                        ],
+                      ),
                       ClipRRect(
                         borderRadius:
                             const BorderRadius.all(Radius.circular(12)),
                         child: GestureDetector(
                           onTap: () {
+                            if (_formKeylast.currentState == null ||
+                                !_formKeylast.currentState!.validate()) {
+                              // If form is invalid, show a SnackBar and prevent navigation
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Please fill out all fields before proceeding.')),
+                              );
+                              return; // Prevent further execution
+                            }
+
                             if (_validateFields()) {
                               _submitForm(context);
                             }

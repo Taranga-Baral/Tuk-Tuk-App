@@ -1,3 +1,5 @@
+import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
+import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,7 +45,7 @@ class _TutorialPageDriverState extends State<TutorialPageDriver> {
     await prefs.setBool('hasSeenTutorial', true); // Set tutorial as seen
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => SignInPage()), // Navigate to HomePage1
+      MaterialPageRoute(builder: (context) => DriverAuthPage()), // Navigate to HomePage1
     );
   }
 

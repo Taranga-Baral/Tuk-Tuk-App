@@ -125,6 +125,7 @@ class _RequestPageState extends State<RequestPage> {
         'userId': userId,
         'driverId': driverId,
         'tripId': tripId,
+        'arrived' : false,
         'confirmedAt': FieldValue.serverTimestamp(),
       });
 

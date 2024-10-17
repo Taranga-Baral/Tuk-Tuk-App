@@ -1,8 +1,10 @@
+
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
+import 'package:bcrypt/bcrypt.dart'; // Import the bcrypt package
 
 class DriverRegistrationPage extends StatefulWidget {
   const DriverRegistrationPage({super.key});
@@ -13,82 +15,86 @@ class DriverRegistrationPage extends StatefulWidget {
 
 class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController(); // New phone controller
+  final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   Color _color = const Color.fromARGB(255, 189, 62, 228);
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus(); // Check if the user is already logged in
+    _checkLoginStatus();
   }
 
-  // Check if user is already registered and logged in
   Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? savedEmail = prefs.getString('driverEmail');
 
     if (savedEmail != null && savedEmail.isNotEmpty) {
-      // If email is already saved, navigate to DriverHomePage with the email
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DriverHomePage(driverEmail: savedEmail)),
+        MaterialPageRoute(
+            builder: (context) => DriverHomePage(driverEmail: savedEmail)),
       );
     }
   }
 
-Future<void> _validateDriver() async {
-  final String email = _emailController.text.trim();
-  final String phone = _phoneController.text.trim(); // Get phone number
+  Future<void> _validateDriver() async {
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
 
-  if (email.isEmpty || phone.isEmpty) {
-    _showErrorMessage('Please enter both email and phone number.');
-    return;
-  }
-
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    // Query to match both email and phone number
-    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('vehicleData')
-        .where('email', isEqualTo: email)  
-        .where('phone', isEqualTo: phone)
-        .limit(1)
-        .get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      setState(() {
-        _color = const Color.fromARGB(255, 14, 199, 54); // Green color
-      });
-
-      // Save the email locally and navigate to DriverHomePage
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('driverEmail', email);
-
-      // Navigate to DriverHomePage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DriverHomePage(driverEmail: email)),
-      );
-    } else {
-      _showErrorMessage('No matching driver found. Please check your email and phone number.');
-      // Don't change the button color if details are incorrect
-      setState(() {
-        _color = const Color.fromARGB(255, 189, 62, 228); // Keep original color
-      });
+    if (email.isEmpty || password.isEmpty) {
+      _showErrorMessage('Please enter both email and Password.');
+      return;
     }
-  } catch (e) {
-    _showErrorMessage('Error validating driver: $e');
-  } finally {
+
     setState(() {
-      _isLoading = false;
+      _isLoading = true;
     });
-  }
-}
 
+    try {
+      final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('vehicleData')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        String hashedPassword = querySnapshot.docs.first['password'];
+
+        if (BCrypt.checkpw(password, hashedPassword)) {
+          setState(() {
+            _color = const Color.fromARGB(255, 14, 199, 54);
+          });
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('driverEmail', email);
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DriverHomePage(driverEmail: email)),
+          );
+        } else {
+          _showErrorMessage(
+              'No matching driver found. Please check your email and Password.');
+          setState(() {
+            _color = const Color.fromARGB(255, 189, 62, 228);
+          });
+        }
+      } else {
+        _showErrorMessage('No matching driver found. Please check your email.');
+        setState(() {
+          _color = const Color.fromARGB(255, 189, 62, 228);
+        });
+      }
+    } catch (e) {
+      _showErrorMessage('Error validating driver: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   void _showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -101,6 +107,7 @@ Future<void> _validateDriver() async {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Driver Registration'),
+        backgroundColor: const Color.fromARGB(255, 101, 12, 185),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -111,7 +118,9 @@ Future<void> _validateDriver() async {
               GestureDetector(
                 onTap: () {
                   Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (context) => DriverAuthPage()));
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DriverAuthPage()));
                 },
                 child: const Text(
                   'New Driver? Register Here (Driver Mode)',
@@ -125,7 +134,7 @@ Future<void> _validateDriver() async {
               const SizedBox(height: 20),
               const Text(
                 'Enter your registered email:',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -135,12 +144,14 @@ Future<void> _validateDriver() async {
                   prefixIcon: Icon(Icons.email),
                   hintText: 'johndoe@gmail.com',
                   filled: true,
-                  fillColor: Colors.white12,
+                  fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -151,30 +162,32 @@ Future<void> _validateDriver() async {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Enter your phone number:',
-                style: TextStyle(fontSize: 16),
+                'Enter your Password:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               TextField(
                 decoration: const InputDecoration(
                   prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                  labelText: 'Enter your Phone Number',
-                  prefixIcon: Icon(Icons.phone),
-                  hintText: '123-456-7890',
+                  labelText: 'Enter your Password',
+                  prefixIcon: Icon(Icons.lock), // Changed icon to lock
+                  hintText: '********',
                   filled: true,
-                  fillColor: Colors.white12,
+                  fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(18)),
                   ),
                 ),
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
+                controller: _passwordController,
+                obscureText: true, // Make password field obscure
               ),
               const SizedBox(height: 38),
               _isLoading
@@ -207,10 +220,10 @@ Future<void> _validateDriver() async {
     );
   }
 
-
   @override
   void dispose() {
     _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 }

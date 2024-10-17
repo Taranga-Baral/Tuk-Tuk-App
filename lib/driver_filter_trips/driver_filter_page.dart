@@ -227,82 +227,82 @@
 //                     itemCount: trips.length,
 //                     itemBuilder: (context, index) {
 //                       final trip = trips[index];
-                      // return Card(
-                      //   elevation: 4.0,
-                      //   margin: EdgeInsets.symmetric(vertical: 8.0),
-                      //   shape: RoundedRectangleBorder(
-                      //     borderRadius: BorderRadius.circular(12),
-                      //   ),
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(16.0),
-                      //     child: Column(
-                      //       crossAxisAlignment: CrossAxisAlignment.start,
-                      //       children: [
-                      //         Text(
-                      //           trip['username'] ?? 'No Username',
-                      //           style: TextStyle(
-                      //               fontWeight: FontWeight.bold,
-                      //               fontSize: 18,
-                      //               color: Colors.teal),
-                      //         ),
-                      //         SizedBox(height: 8),
-                      //         Row(
-                      //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //           children: [
-                      //             Expanded(
-                      //               child: Text(
-                      //                 '${trip['municipalityDropdown'] ?? 'No Record of Municipality'}',
-                      //                 style: TextStyle(fontSize: 14, color: Colors.black54),
-                      //               ),
-                      //             ),
-                      //             IconButton(
-                      //               icon: Icon(Icons.phone, color: Colors.teal),
-                      //               onPressed: () {
-                      //                 final phoneNumber = trip['phone'] ?? '';
-                      //                 _launchPhoneNumber(phoneNumber);
-                      //               },
-                      //             ),
-                      //             IconButton(
-                      //               icon: Icon(Icons.location_history, color: Colors.teal),
-                      //               onPressed: () {
-                      //                 final tripId = trip['tripId'] ?? '';
-                      //                 _launchOpenStreetMapWithDirections(tripId);
-                      //               },
-                      //             ),
-                      //             IconButton(
-                      //               icon: Icon(Icons.send, color: Colors.teal),
-                      //               onPressed: () {
-                      //                 showTripAndUserIdInSnackBar(trip, context);
-                      //               },
-                      //             ),
-                      //           ],
-                      //         ),
-                      //         SizedBox(height: 8),
-                      //         Text(
-                      //           'Pickup: ${trip['pickupLocation'] ?? 'No pickup location'}',
-                      //           style: TextStyle(fontSize: 14),
-                      //         ),
-                      //         Divider(),
-                      //         Text(
-                      //           'Delivery: ${trip['deliveryLocation'] ?? 'No delivery location'}',
-                      //           style: TextStyle(fontSize: 14),
-                      //         ),
-                      //         Divider(),
-                      //         Text(
-                      //           'Distance: ${double.parse(trip['distance']).toStringAsFixed(1)} km',
-                      //           style: TextStyle(fontSize: 14),
-                      //         ),
-                      //         Divider(),
-                      //         Text(
-                      //           'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(2)}',
-                      //           style: TextStyle(fontSize: 14),
-                      //         ),
-                      //         Divider(),
+// return Card(
+//   elevation: 4.0,
+//   margin: EdgeInsets.symmetric(vertical: 8.0),
+//   shape: RoundedRectangleBorder(
+//     borderRadius: BorderRadius.circular(12),
+//   ),
+//   child: Padding(
+//     padding: const EdgeInsets.all(16.0),
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           trip['username'] ?? 'No Username',
+//           style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 18,
+//               color: Colors.teal),
+//         ),
+//         SizedBox(height: 8),
+//         Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Expanded(
+//               child: Text(
+//                 '${trip['municipalityDropdown'] ?? 'No Record of Municipality'}',
+//                 style: TextStyle(fontSize: 14, color: Colors.black54),
+//               ),
+//             ),
+//             IconButton(
+//               icon: Icon(Icons.phone, color: Colors.teal),
+//               onPressed: () {
+//                 final phoneNumber = trip['phone'] ?? '';
+//                 _launchPhoneNumber(phoneNumber);
+//               },
+//             ),
+//             IconButton(
+//               icon: Icon(Icons.location_history, color: Colors.teal),
+//               onPressed: () {
+//                 final tripId = trip['tripId'] ?? '';
+//                 _launchOpenStreetMapWithDirections(tripId);
+//               },
+//             ),
+//             IconButton(
+//               icon: Icon(Icons.send, color: Colors.teal),
+//               onPressed: () {
+//                 showTripAndUserIdInSnackBar(trip, context);
+//               },
+//             ),
+//           ],
+//         ),
+//         SizedBox(height: 8),
+//         Text(
+//           'Pickup: ${trip['pickupLocation'] ?? 'No pickup location'}',
+//           style: TextStyle(fontSize: 14),
+//         ),
+//         Divider(),
+//         Text(
+//           'Delivery: ${trip['deliveryLocation'] ?? 'No delivery location'}',
+//           style: TextStyle(fontSize: 14),
+//         ),
+//         Divider(),
+//         Text(
+//           'Distance: ${double.parse(trip['distance']).toStringAsFixed(1)} km',
+//           style: TextStyle(fontSize: 14),
+//         ),
+//         Divider(),
+//         Text(
+//           'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(2)}',
+//           style: TextStyle(fontSize: 14),
+//         ),
+//         Divider(),
 
-                      //       ],
-                      //     ),
-                      //   ),
-                      // );
+//       ],
+//     ),
+//   ),
+// );
 //                     },
 //                   );
 //                 },
@@ -314,83 +314,82 @@
 //     );
 //   }
 
-    
-  //  void showTripAndUserIdInSnackBar(
-  //     Map<String, dynamic> tripData, BuildContext context) async {
-  //   // Extract tripId, userId, and driverId (driver's email)
-  //   final tripId = tripData['tripId'] ?? 'No Trip ID';
-  //   final userId = tripData['userId'] ?? 'No User ID';
-  //   final driverId = widget.driverId; 
-  //   if (tripId == 'No Trip ID' || userId == 'No User ID') {
-  //     // Show error if tripId or userId is missing
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Invalid Trip or User ID.'),
-  //         duration: Duration(seconds: 3),
-  //       ),
-  //     );
-  //     return;
-  //   }
+//  void showTripAndUserIdInSnackBar(
+//     Map<String, dynamic> tripData, BuildContext context) async {
+//   // Extract tripId, userId, and driverId (driver's email)
+//   final tripId = tripData['tripId'] ?? 'No Trip ID';
+//   final userId = tripData['userId'] ?? 'No User ID';
+//   final driverId = widget.driverId;
+//   if (tripId == 'No Trip ID' || userId == 'No User ID') {
+//     // Show error if tripId or userId is missing
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(
+//         content: Text('Invalid Trip or User ID.'),
+//         duration: Duration(seconds: 3),
+//       ),
+//     );
+//     return;
+//   }
 
-  //   // Show confirmation dialog before adding the request to Firebase
-  //   bool confirm = await showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Confirm Request ?'),
-  //         content: Text(
-  //           'Are you sure to send request to this user?',
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop(false); // Cancel confirmation
-  //             },
-  //             child: const Text('Cancel'),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop(true); // Confirm action
-  //             },
-  //             child: const Text('Confirm'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
+//   // Show confirmation dialog before adding the request to Firebase
+//   bool confirm = await showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         title: const Text('Confirm Request ?'),
+//         content: Text(
+//           'Are you sure to send request to this user?',
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () {
+//               Navigator.of(context).pop(false); // Cancel confirmation
+//             },
+//             child: const Text('Cancel'),
+//           ),
+//           TextButton(
+//             onPressed: () {
+//               Navigator.of(context).pop(true); // Confirm action
+//             },
+//             child: const Text('Confirm'),
+//           ),
+//         ],
+//       );
+//     },
+//   );
 
-  //   if (confirm == true) {
-  //     try {
-  //       // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
-  //       await FirebaseFirestore.instance.collection('requestsofDrivers').add({
-  //         'tripId': tripId,
-  //         'userId': userId,
-  //         'driverId': driverId,
-  //         'requestTimestamp':
-  //             FieldValue.serverTimestamp(), // Optional: Add a timestamp
-  //       });
+//   if (confirm == true) {
+//     try {
+//       // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
+//       await FirebaseFirestore.instance.collection('requestsofDrivers').add({
+//         'tripId': tripId,
+//         'userId': userId,
+//         'driverId': driverId,
+//         'requestTimestamp':
+//             FieldValue.serverTimestamp(), // Optional: Add a timestamp
+//       });
 
-  //       // Step 2: Show a SnackBar with tripId, userId, and driverId
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(
-  //             'Request sent successfully!',
-  //           ),
-  //           duration: const Duration(seconds: 10), // Show for 10 seconds
-  //         ),
-  //       );
-  //     } catch (e) {
-        
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Error sending request: $e'),
-  //           duration: const Duration(seconds: 3),
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
-  
+//       // Step 2: Show a SnackBar with tripId, userId, and driverId
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text(
+//             'Request sent successfully!',
+//           ),
+//           duration: const Duration(seconds: 10), // Show for 10 seconds
+//         ),
+//       );
+//     } catch (e) {
+
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text('Error sending request: $e'),
+//           duration: const Duration(seconds: 3),
+//         ),
+//       );
+//     }
+//   }
+// }
+
 //   Future<void> _launchOpenStreetMapWithDirections(String tripId) async {
 //     try {
 //       DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance
@@ -451,7 +450,7 @@
 //       print('Error fetching trip details: $e');
 //     }
 //   }
-  
+
 //     Map<String, double>? _parseCoordinates(String location) {
 //     final parts = location.split(',');
 //     if (parts.length == 2) {
@@ -463,7 +462,7 @@
 //     }
 //     return null;
 //   }
-  
+
 //  Future<Map<String, double>> _geocodeAddress(String address) async {
 //     final response = await http.get(Uri.parse(
 //         'https://nominatim.openstreetmap.org/search?format=json&q=${Uri.encodeComponent(address)}'));
@@ -479,7 +478,7 @@
 //     }
 //     throw Exception('Failed to geocode address');
 //   }
-  
+
 //   Future<void> _launchPhoneNumber(String phoneNumber) async {
 //     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
 //     if (await canLaunchUrl(launchUri)) {
@@ -488,7 +487,6 @@
 //       print('Could not launch $launchUri');
 //     }
 //   }}
-
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -579,22 +577,31 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     }
 
     return query.snapshots().map((snapshot) {
-      final trips = snapshot.docs.map((doc) => {
-        'tripId': doc.id,
-        ...doc.data(),
-      }).toList();
+      final trips = snapshot.docs
+          .map((doc) => {
+                'tripId': doc.id,
+                ...doc.data(),
+              })
+          .toList();
 
       // Sort trips based on the selected sort option
       if (_selectedSort == 'Timestamp Newest First') {
-        trips.sort((a, b) => (b['timestamp'] as Timestamp).compareTo(a['timestamp'] as Timestamp));
+        trips.sort((a, b) => (b['timestamp'] as Timestamp)
+            .compareTo(a['timestamp'] as Timestamp));
       } else if (_selectedSort == 'Price Expensive First') {
-        trips.sort((a, b) => _parseStringToInt(b['fare']) - _parseStringToInt(a['fare']));
+        trips.sort((a, b) =>
+            _parseStringToInt(b['fare']) - _parseStringToInt(a['fare']));
       } else if (_selectedSort == 'Price Cheap First') {
-        trips.sort((a, b) => _parseStringToInt(a['fare']) - _parseStringToInt(b['fare']));
+        trips.sort((a, b) =>
+            _parseStringToInt(a['fare']) - _parseStringToInt(b['fare']));
       } else if (_selectedSort == 'Distance Largest First') {
-        trips.sort((a, b) => _parseStringToInt(b['distance']) - _parseStringToInt(a['distance']));
+        trips.sort((a, b) =>
+            _parseStringToInt(b['distance']) -
+            _parseStringToInt(a['distance']));
       } else if (_selectedSort == 'Distance Smallest First') {
-        trips.sort((a, b) => _parseStringToInt(a['distance']) - _parseStringToInt(a['distance']));
+        trips.sort((a, b) =>
+            _parseStringToInt(a['distance']) -
+            _parseStringToInt(a['distance']));
       }
 
       return trips;
@@ -632,7 +639,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   border: Border.all(color: Colors.teal, width: 2),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: _selectedPlace,
@@ -662,7 +670,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   border: Border.all(color: Colors.teal, width: 2),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: _selectedSort,
@@ -692,7 +701,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   border: Border.all(color: Colors.teal, width: 2),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: _selectedVehicleMode,
@@ -718,7 +728,10 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
             // Display selected place
             Text(
               'Selected Place: ${_selectedPlace ?? 'None selected'}',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal),
             ),
             SizedBox(height: 20),
 
@@ -735,14 +748,15 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   }
                   final trips = snapshot.data ?? [];
                   if (trips.isEmpty) {
-                    return Center(child: Text('No trips available for selected place.'));
+                    return Center(
+                        child: Text('No trips available for selected place.'));
                   }
                   return ListView.builder(
                     itemCount: trips.length,
                     itemBuilder: (context, index) {
                       final trip = trips[index];
                       //return card
-                           return Card(
+                      return Card(
                         elevation: 4.0,
                         margin: EdgeInsets.symmetric(vertical: 8.0),
                         shape: RoundedRectangleBorder(
@@ -762,12 +776,14 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                               ),
                               SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
                                       '${trip['municipalityDropdown'] ?? 'No Record of Municipality'}',
-                                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.black54),
                                     ),
                                   ),
                                   IconButton(
@@ -778,20 +794,25 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.location_history, color: Colors.teal),
+                                    icon: Icon(Icons.location_history,
+                                        color: Colors.teal),
                                     onPressed: () {
                                       final tripId = trip['tripId'] ?? '';
-                                      _launchOpenStreetMapWithDirections(tripId);
+                                      _launchOpenStreetMapWithDirections(
+                                          tripId);
                                     },
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.send, color: Colors.teal),
                                     onPressed: () {
-                                      showTripAndUserIdInSnackBar(trip, context);
-                                       setState(() {
-                                    _isSendButtonDarkened = !_isSendButtonDarkened; // Toggle button state
-                                    _saveSendButtonState(_isSendButtonDarkened); // Save state
-                                  });
+                                      showTripAndUserIdInSnackBar(
+                                          trip, context);
+                                      setState(() {
+                                        _isSendButtonDarkened =
+                                            !_isSendButtonDarkened; // Toggle button state
+                                        _saveSendButtonState(
+                                            _isSendButtonDarkened); // Save state
+                                      });
                                     },
                                   ),
                                 ],
@@ -817,7 +838,6 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 style: TextStyle(fontSize: 14),
                               ),
                               Divider(),
-
                             ],
                           ),
                         ),
@@ -832,7 +852,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
       ),
     );
   }
-  
+
   Future<void> _launchOpenStreetMapWithDirections(String tripId) async {
     try {
       DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance
@@ -893,8 +913,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
       print('Error fetching trip details: $e');
     }
   }
-  
-    Map<String, double>? _parseCoordinates(String location) {
+
+  Map<String, double>? _parseCoordinates(String location) {
     final parts = location.split(',');
     if (parts.length == 2) {
       final latitude = double.tryParse(parts[0]);
@@ -905,8 +925,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     }
     return null;
   }
-  
- Future<Map<String, double>> _geocodeAddress(String address) async {
+
+  Future<Map<String, double>> _geocodeAddress(String address) async {
     final response = await http.get(Uri.parse(
         'https://nominatim.openstreetmap.org/search?format=json&q=${Uri.encodeComponent(address)}'));
 
@@ -921,7 +941,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     }
     throw Exception('Failed to geocode address');
   }
-  
+
   Future<void> _launchPhoneNumber(String phoneNumber) async {
     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
     if (await canLaunchUrl(launchUri)) {
@@ -930,13 +950,13 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
       print('Could not launch $launchUri');
     }
   }
-      
-   void showTripAndUserIdInSnackBar(
+
+  void showTripAndUserIdInSnackBar(
       Map<String, dynamic> tripData, BuildContext context) async {
     // Extract tripId, userId, and driverId (driver's email)
     final tripId = tripData['tripId'] ?? 'No Trip ID';
     final userId = tripData['userId'] ?? 'No User ID';
-    final driverId = widget.driverId; 
+    final driverId = widget.driverId;
     if (tripId == 'No Trip ID' || userId == 'No User ID') {
       // Show error if tripId or userId is missing
       ScaffoldMessenger.of(context).showSnackBar(
@@ -987,22 +1007,20 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
         });
 
         // Step 2: Show a SnackBar with tripId, userId, and driverId
-        ScaffoldMessenger.of(context).showSnackBar(
+        
           SnackBar(
             content: Text(
               'Request sent successfully!',
             ),
             duration: const Duration(seconds: 10), // Show for 10 seconds
-          ),
-        );
+          );
       } catch (e) {
-        
-        ScaffoldMessenger.of(context).showSnackBar(
+       
           SnackBar(
             content: Text('Error sending request: $e'),
             duration: const Duration(seconds: 3),
-          ),
-        );
+          );
+    
       }
     }
   }

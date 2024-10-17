@@ -53,6 +53,7 @@ android {
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        
     }
 
     buildTypes {
@@ -68,4 +69,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+     
+}

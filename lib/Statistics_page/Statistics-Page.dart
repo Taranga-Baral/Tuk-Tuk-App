@@ -220,7 +220,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   Future<void> _calculateStatistics() async {
     try {
-      // Fetch all successful trips for the user
       final successfulTripsSnapshot = await FirebaseFirestore.instance
           .collection('successfulTrips')
           .where('userId', isEqualTo: widget.userId)
@@ -235,7 +234,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
         }
       }
 
-      // Fetch all trips for the user's tripIds and calculate fare and distance
       double fareSum = 0.0;
       double distanceSum = 0.0;
 
@@ -260,7 +258,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
         }
       }
 
-      // Count delivery locations based on the number of successful trips
       totalDeliveryLocations = successfulTripsSnapshot.docs.length;
 
       setState(() {
@@ -278,6 +275,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Statistics Page'),
@@ -296,22 +296,25 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           title: 'भुक्तानी गरिएको कुल भाडा',
                           value: 'NPR ${totalFare.toStringAsFixed(2)}',
                           color: Colors.lime,
+                          screenWidth: screenWidth,
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: screenHeight * 0.02), // Adjust height based on screen size
                         _buildStatCard(
                           title: 'अनुमानित यात्रा',
                           value: '${totalDistance.toStringAsFixed(2)} km',
                           color: Colors.green,
+                          screenWidth: screenWidth,
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: screenHeight * 0.02),
                         _buildStatCard(
                           title: 'यात्रा संख्या',
                           value: '$totalDeliveryLocations',
                           color: Colors.orange,
+                          screenWidth: screenWidth,
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: screenHeight * 0.02),
                         SizedBox(
-                          height: 300, // Set height for the chart
+                          height: screenHeight * 0.3, // Make chart height responsive
                           child: PieChart(
                             PieChartData(
                               sections: [
@@ -333,7 +336,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                               ],
                               borderData: FlBorderData(show: false),
                               sectionsSpace: 0,
-                              centerSpaceRadius: 40,
+                              centerSpaceRadius: screenWidth * 0.1, // Adjust radius responsively
                             ),
                           ),
                         ),
@@ -350,6 +353,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     required String title,
     required String value,
     required Color color,
+    required double screenWidth,
   }) {
     return Card(
       elevation: 5,
@@ -357,21 +361,23 @@ class _StatisticsPageState extends State<StatisticsPage> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(screenWidth * 0.04), // Make padding responsive
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.045, // Responsive font size
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             Text(
               value,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: screenWidth * 0.045, // Responsive font size
                 fontWeight: FontWeight.bold,
                 color: color,
               ),
@@ -381,6 +387,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       ),
     );
   }
+
 
   PieChartSectionData _buildPieChartSection({
     required String title,
