@@ -494,6 +494,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class DriverFilterPage extends StatefulWidget {
   final String driverId;
@@ -534,7 +535,10 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     'Electric',
     'All',
   ];
-
+ String formatTimestamp(Timestamp timestamp) {
+    DateTime dateTime = timestamp.toDate();
+    return DateFormat.yMMMd().add_jm().format(dateTime);
+  }
   // Helper function to convert string before '.' to integer
   int _parseStringToInt(String? value) {
     if (value == null || value.isEmpty) return 0;
@@ -563,60 +567,115 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
   }
 
   // Stream to fetch trips based on the selected place, sort them, and filter by vehicle mode
-  Stream<List<Map<String, dynamic>>> _getTripsStream() {
-    if (_selectedPlace == null) {
-      return Stream.value([]);
-    }
+  // Stream<List<Map<String, dynamic>>> _getTripsStream() {
+  //   if (_selectedPlace == null) {
+  //     return Stream.value([]);
+  //   }
 
-    var query = FirebaseFirestore.instance
-        .collection('trips')
-        .where('municipalityDropdown', isEqualTo: _selectedPlace);
+  //   var query = FirebaseFirestore.instance
+  //       .collection('trips')
+  //       .where('municipalityDropdown', isEqualTo: _selectedPlace);
 
-    if (_selectedVehicleMode != null && _selectedVehicleMode != 'All') {
-      query = query.where('vehicle_mode', isEqualTo: _selectedVehicleMode);
-    }
+  //   if (_selectedVehicleMode != null && _selectedVehicleMode != 'All') {
+  //     query = query.where('vehicle_mode', isEqualTo: _selectedVehicleMode);
+  //   }
 
-    return query.snapshots().map((snapshot) {
-      final trips = snapshot.docs
-          .map((doc) => {
-                'tripId': doc.id,
-                ...doc.data(),
-              })
-          .toList();
+  //   return query.snapshots().map((snapshot) {
+  //     final trips = snapshot.docs
+  //         .map((doc) => {
+  //               'tripId': doc.id,
+  //               ...doc.data(),
+  //             })
+  //         .toList();
 
-      // Sort trips based on the selected sort option
-      if (_selectedSort == 'Timestamp Newest First') {
-        trips.sort((a, b) => (b['timestamp'] as Timestamp)
-            .compareTo(a['timestamp'] as Timestamp));
-      } else if (_selectedSort == 'Price Expensive First') {
-        trips.sort((a, b) =>
-            _parseStringToInt(b['fare']) - _parseStringToInt(a['fare']));
-      } else if (_selectedSort == 'Price Cheap First') {
-        trips.sort((a, b) =>
-            _parseStringToInt(a['fare']) - _parseStringToInt(b['fare']));
-      } else if (_selectedSort == 'Distance Largest First') {
-        trips.sort((a, b) =>
-            _parseStringToInt(b['distance']) -
-            _parseStringToInt(a['distance']));
-      } else if (_selectedSort == 'Distance Smallest First') {
-        trips.sort((a, b) =>
-            _parseStringToInt(a['distance']) -
-            _parseStringToInt(a['distance']));
-      }
+  //     // Sort trips based on the selected sort option
+  //     if (_selectedSort == 'Timestamp Newest First') {
+  //       trips.sort((a, b) => (b['timestamp'] as Timestamp)
+  //           .compareTo(a['timestamp'] as Timestamp));
+  //     } else if (_selectedSort == 'Price Expensive First') {
+  //       trips.sort((a, b) =>
+  //           _parseStringToInt(b['fare']) - _parseStringToInt(a['fare']));
+  //     } else if (_selectedSort == 'Price Cheap First') {
+  //       trips.sort((a, b) =>
+  //           _parseStringToInt(a['fare']) - _parseStringToInt(b['fare']));
+  //     } else if (_selectedSort == 'Distance Largest First') {
+  //       trips.sort((a, b) =>
+  //           _parseStringToInt(b['distance']) -
+  //           _parseStringToInt(a['distance']));
+  //     } else if (_selectedSort == 'Distance Smallest First') {
+  //       trips.sort((a, b) =>
+  //           _parseStringToInt(a['distance']) -
+  //           _parseStringToInt(a['distance']));
+  //     }
 
-      return trips;
-    });
+  //     return trips;
+  //   });
+  // }
+
+  // Stream to fetch trips based on the selected place, sort them, and filter by vehicle mode
+Stream<List<Map<String, dynamic>>> _getTripsStream() {
+  if (_selectedPlace == null) {
+    return Stream.value([]);
   }
+
+  var query = FirebaseFirestore.instance
+      .collection('trips')
+      .where('municipalityDropdown', isEqualTo: _selectedPlace);
+
+  if (_selectedVehicleMode != null && _selectedVehicleMode != 'All') {
+    query = query.where('vehicle_mode', isEqualTo: _selectedVehicleMode);
+  }
+
+  return query.snapshots().map((snapshot) {
+    final trips = snapshot.docs
+        .map((doc) => {
+              'tripId': doc.id,
+              ...doc.data(),
+            })
+        .toList();
+
+    // Filter out trips older than 1 hour
+    final now = DateTime.now();
+    final oneHourAgo = now.subtract(Duration(hours: 1));
+    trips.removeWhere((trip) {
+      final tripTimestamp = (trip['timestamp'] as Timestamp).toDate();
+      return tripTimestamp.isBefore(oneHourAgo);
+    });
+
+    // Sort trips based on the selected sort option
+    if (_selectedSort == 'Timestamp Newest First') {
+      trips.sort((a, b) => (b['timestamp'] as Timestamp)
+          .compareTo(a['timestamp'] as Timestamp));
+    } else if (_selectedSort == 'Price Expensive First') {
+      trips.sort((a, b) =>
+          _parseStringToInt(b['fare']) - _parseStringToInt(a['fare']));
+    } else if (_selectedSort == 'Price Cheap First') {
+      trips.sort((a, b) =>
+          _parseStringToInt(a['fare']) - _parseStringToInt(b['fare']));
+    } else if (_selectedSort == 'Distance Largest First') {
+      trips.sort((a, b) =>
+          _parseStringToInt(b['distance']) -
+          _parseStringToInt(a['distance']));
+    } else if (_selectedSort == 'Distance Smallest First') {
+      trips.sort((a, b) =>
+          _parseStringToInt(a['distance']) -
+          _parseStringToInt(b['distance']));
+    }
+
+    return trips;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Driver Filter Page'),
+        title: Center(child: Text('Driver Filter Page',style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.height *0.023),)),
         backgroundColor: Colors.teal,
         actions: [
           IconButton(
-            icon: Icon(_showDropdowns ? Icons.expand_less : Icons.expand_more),
+            icon: Icon(_showDropdowns ? Icons.expand_less : Icons.expand_more,color: Colors.white,),
             onPressed: () {
               setState(() {
                 _showDropdowns = !_showDropdowns; // Toggle dropdowns visibility
@@ -749,13 +808,14 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   final trips = snapshot.data ?? [];
                   if (trips.isEmpty) {
                     return Center(
-                        child: Text('No trips available for selected place.'));
+                        child: Text('Either the Trips are booked an hour Earlier or the Passengers are Inactive'));
                   }
                   return ListView.builder(
                     itemCount: trips.length,
                     itemBuilder: (context, index) {
                       final trip = trips[index];
                       //return card
+                               
                       return Card(
                         elevation: 4.0,
                         margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -838,6 +898,10 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 style: TextStyle(fontSize: 14),
                               ),
                               Divider(),
+                              Text(
+                                'TimeStamp: ${formatTimestamp(trip['timestamp'])}',
+                                style: TextStyle(fontSize: 14),
+                              ),
                             ],
                           ),
                         ),

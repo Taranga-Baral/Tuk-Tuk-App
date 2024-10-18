@@ -226,6 +226,7 @@
 //     super.dispose();
 //   }
 // }
+import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -244,7 +245,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
-  Color _color = const Color.fromARGB(255, 189, 62, 228);
+  Color _color = Colors.teal;
 
   @override
   void initState() {
@@ -286,7 +287,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          DriverHomePage(driverEmail: savedEmail)),
+                          BottomNavBarPage(driverEmail: savedEmail)),
                   (Route<dynamic> route) =>
                       false, // This removes all previous routes from the stack
                 );
@@ -348,13 +349,13 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
           _showErrorMessage(
               'No matching driver found. Please check your email and Password.');
           setState(() {
-            _color = const Color.fromARGB(255, 189, 62, 228);
+            _color = Colors.teal;
           });
         }
       } else {
         _showErrorMessage('No matching driver found. Please check your email.');
         setState(() {
-          _color = const Color.fromARGB(255, 189, 62, 228);
+          _color = Colors.teal;
         });
       }
     } catch (e) {
@@ -377,7 +378,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Driver Registration'),
-        backgroundColor: const Color.fromARGB(255, 101, 12, 185),
+        backgroundColor: Colors.teal,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -398,7 +399,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       decoration: TextDecoration.underline,
-                      decorationColor: Color.fromARGB(255, 101, 12, 185)),
+                      decorationColor: Colors.teal),
                 ),
               ),
               const SizedBox(height: 20),
@@ -409,7 +410,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
               const SizedBox(height: 10),
               TextField(
                 decoration: const InputDecoration(
-                  prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                  prefixIconColor: Colors.teal,
                   labelText: 'Enter your E-mail',
                   prefixIcon: Icon(Icons.email),
                   hintText: 'johndoe@gmail.com',
@@ -417,11 +418,11 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
+                        BorderSide(color: Colors.teal),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
+                        BorderSide(color: Colors.teal),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -438,7 +439,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
               const SizedBox(height: 10),
               TextField(
                 decoration: const InputDecoration(
-                  prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                  prefixIconColor: Colors.teal,
                   labelText: 'Enter your Password',
                   prefixIcon: Icon(Icons.lock), // Changed icon to lock
                   hintText: '********',
@@ -446,11 +447,11 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Color.fromARGB(255, 182, 116, 194)),
+                        BorderSide(color: Colors.teal),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Color.fromARGB(255, 200, 54, 244)),
+                        BorderSide(color: Colors.teal),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(18)),

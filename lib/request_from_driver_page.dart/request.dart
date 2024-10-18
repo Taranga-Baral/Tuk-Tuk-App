@@ -125,7 +125,7 @@ class _RequestPageState extends State<RequestPage> {
         'userId': userId,
         'driverId': driverId,
         'tripId': tripId,
-        'arrived' : false,
+        'arrived': false,
         'confirmedAt': FieldValue.serverTimestamp(),
       });
 
@@ -160,24 +160,36 @@ class _RequestPageState extends State<RequestPage> {
         backgroundColor: Colors.blue,
         title: Text('Requests Page'),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              setState(() {
-                if (value == 'requests') {
-                  showArrivedDrivers = false;
-                } else if (value == 'arrivedDrivers') {
-                  showArrivedDrivers = true;
-                }
-              });
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'requests',
-                child: Text('Requests'),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {});
+                },
+                icon: Icon(Icons.refresh),
+                color: Colors.white,
               ),
-              PopupMenuItem(
-                value: 'arrivedDrivers',
-                child: Text('Arrived Drivers'),
+              PopupMenuButton<String>(
+                color: Color.fromRGBO(255, 255, 255, 1),
+                onSelected: (value) {
+                  setState(() {
+                    if (value == 'requests') {
+                      showArrivedDrivers = false;
+                    } else if (value == 'arrivedDrivers') {
+                      showArrivedDrivers = true;
+                    }
+                  });
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'requests',
+                    child: Text('Requests'),
+                  ),
+                  PopupMenuItem(
+                    value: 'arrivedDrivers',
+                    child: Text('Arrived Drivers'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -248,7 +260,8 @@ class _RequestPageState extends State<RequestPage> {
                                             },
                                           ),
                                           title: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 '${index + 1}. ${driverData['name']} - ${driverData['numberPlate']}',
@@ -256,12 +269,12 @@ class _RequestPageState extends State<RequestPage> {
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
-
                                               SizedBox(
                                                 height: 4,
                                               ),
                                               SingleChildScrollView(
-                                                scrollDirection: Axis.horizontal,
+                                                scrollDirection:
+                                                    Axis.horizontal,
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.start,
@@ -269,27 +282,31 @@ class _RequestPageState extends State<RequestPage> {
                                                     Text(
                                                       'Passenger ${tripData['no_of_person']}',
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                          fontSize: 14,
                                                           fontWeight:
-                                                              FontWeight.w400),  maxLines:
+                                                              FontWeight.w400),
+                                                      maxLines:
                                                           null, // Allow multiple lines
                                                       softWrap:
                                                           true, // Enable text wrapping
-                                                      overflow: TextOverflow
-                                                          .visible, 
-                                                    // Ensure text overflows correctly
+                                                      overflow:
+                                                          TextOverflow.visible,
+                                                      // Ensure text overflows correctly
                                                     ),
                                                     SizedBox(
                                                       width: 10,
                                                     ),
-                                                    Icon(Icons.info_outline,size: 14,),
+                                                    Icon(
+                                                      Icons.info_outline,
+                                                      size: 14,
+                                                    ),
                                                     SizedBox(
                                                       width: 10,
                                                     ),
                                                     Text(
                                                       '${tripData['vehicle_mode']}',
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                          fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w400),
                                                       maxLines:
@@ -316,28 +333,26 @@ class _RequestPageState extends State<RequestPage> {
                                               ),
                                               Text(
                                                   'सम्पर्क: ${driverData['phone']}'),
-                                                  Divider(),
+                                              Divider(),
                                               Text(
                                                   'ब्राण्ड: ${driverData['brand']}'),
-                                                  Divider(),
+                                              Divider(),
                                               Text(
                                                   'रङ: ${driverData['color']}'),
-                                                  Divider(),
+                                              Divider(),
                                               Text(
                                                   'चालकको ठेगाना: ${driverData['address']}'),
-                                              
-                                                  Divider(),
+                                              Divider(),
                                               Text(
                                                   'उठाउने स्थान: ${tripData['pickupLocation'] ?? 'N/A'}'),
-                                                  Divider(),
+                                              Divider(),
                                               Text(
                                                   'डेलिभरी स्थान: ${tripData['deliveryLocation'] ?? 'N/A'}'),
-Divider(),
-                                                  Text(
+                                              Divider(),
+                                              Text(
                                                   'दूरी: ${tripData['distance'] ?? 'N/A'}'),
-
-Divider(),
-                                                  Text(
+                                              Divider(),
+                                              Text(
                                                   'भाडा: ${tripData['fare'] ?? 'N/A'}'),
                                             ],
                                           ),
@@ -456,7 +471,7 @@ Divider(),
                                           title: Column(
                                             children: [
                                               Text(
-                                                '${index+1} . $name - $numberPlate',
+                                                '${index + 1} . $name - $numberPlate',
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -468,7 +483,8 @@ Divider(),
                                                     .visible, // Ensure text overflows correctly
                                               ),
                                               SingleChildScrollView(
-                                                scrollDirection: Axis.horizontal,
+                                                scrollDirection:
+                                                    Axis.horizontal,
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.start,
@@ -476,7 +492,7 @@ Divider(),
                                                     Text(
                                                       'Passenger $noOfPerson',
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                          fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w400),
                                                       maxLines:
@@ -489,14 +505,17 @@ Divider(),
                                                     SizedBox(
                                                       width: 10,
                                                     ),
-                                                    Icon(Icons.info_outline,size: 13,),
+                                                    Icon(
+                                                      Icons.info_outline,
+                                                      size: 13,
+                                                    ),
                                                     SizedBox(
                                                       width: 10,
                                                     ),
                                                     Text(
                                                       '$vehicleMode',
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                          fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w400),
                                                       maxLines:

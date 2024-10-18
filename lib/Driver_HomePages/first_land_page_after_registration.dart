@@ -176,64 +176,86 @@
 
 //   // Other existing methods...
 //   Future<void> _fetchTrips() async {
-//   if (_isLoading || !_hasMore) return; // Check if already loading or no more trips
-//   setState(() => _isLoading = true); // Set loading state to true
+//     if (_isLoading || !_hasMore)
+//       return; // Check if already loading or no more trips
+//     setState(() => _isLoading = true); // Set loading state to true
 
-//   Query query = FirebaseFirestore.instance
-//       .collection('trips')
-//       .orderBy(_getSortField(), descending: _getSortDescending())
-//       .limit(_itemsPerPage); // Limit results to items per page
+//     Query query = FirebaseFirestore.instance
+//         .collection('trips')
+//         .orderBy(_getSortField(), descending: _getSortDescending())
+//         .limit(_itemsPerPage); // Limit results to items per page
 
-//   if (_lastDocument != null) {
-//     query = query.startAfterDocument(_lastDocument!); // Start after last fetched document
+//     if (_lastDocument != null) {
+//       query = query.startAfterDocument(
+//           _lastDocument!); // Start after last fetched document
+//     }
+
+//     try {
+//       final querySnapshot = await query.get();
+//       if (querySnapshot.docs.isEmpty) {
+//         setState(() => _hasMore = false); // No more trips to load
+//         await _loadButtonStates();
+//       } else {
+//         _lastDocument = querySnapshot.docs.last; // Update last document
+//         var newTrips = querySnapshot.docs.map((doc) {
+//           var data = doc.data() as Map<String, dynamic>;
+//           data['distance'] =
+//               double.tryParse(data['distance'] as String ?? '') ?? 0.0;
+//           data['fare'] = double.tryParse(data['fare'] as String ?? '') ?? 0.0;
+//           data['tripId'] = doc.id; // Get trip ID
+//           return TripModel.fromJson(data);
+//         }).toList();
+
+//         _tripDataList.addAll(newTrips); // Add new trips to the list
+
+//         // Initialize button states for newly added trips
+//         for (var trip in newTrips) {
+//           _isButtonDisabledList.add(false); // Set initial state as enabled
+//         }
+
+//         // Load button states after new trips are fetched
+//         await _loadButtonStates();
+
+//         // Sort the complete trip list
+//         _tripDataList.sort((a, b) => _sortTrips(a, b));
+
+//         if (mounted) setState(() {}); // Update UI
+//       }
+//     } catch (e) {
+//       print('Error fetching trips: $e'); // Handle any errors
+//     } finally {
+//       if (mounted)
+//         setState(() => _isLoading = false); // Set loading state to false
+//     }
 //   }
 
-//   try {
-//     final querySnapshot = await query.get();
-//     if (querySnapshot.docs.isEmpty) {
-//       setState(() => _hasMore = false); // No more trips to load
-//     } else {
-//       _lastDocument = querySnapshot.docs.last; // Update last document
-//       var newTrips = querySnapshot.docs.map((doc) {
-//         var data = doc.data() as Map<String, dynamic>;
-//         data['distance'] = double.tryParse(data['distance'] as String ?? '') ?? 0.0;
-//         data['fare'] = double.tryParse(data['fare'] as String ?? '') ?? 0.0;
-//         data['tripId'] = doc.id; // Get trip ID
-//         return TripModel.fromJson(data);
-//       }).toList();
+//   Future<void> _loadButtonStates() async {
+//     final driverId = widget.driverEmail;
 
-//       _tripDataList.addAll(newTrips); // Add new trips to the list
+//     for (int i = 0; i < _tripDataList.length; i++) {
+//       final tripId = _tripDataList[i].tripId!;
 
-//       // Initialize button states for newly added trips
-//       for (var trip in newTrips) {
-//         _isButtonDisabledList.add(false); // Set initial state as enabled
+//       final docSnapshot = await FirebaseFirestore.instance
+//           .collection('driverButtonStates')
+//           .doc(driverId)
+//           .collection('trips')
+//           .doc(tripId)
+//           .get();
+
+//       bool isDisabled = false;
+//       if (docSnapshot.exists) {
+//         isDisabled = docSnapshot.data()?['isButtonDisabled'] ?? false;
 //       }
 
-//       // Load button states after new trips are fetched
-//       await _loadButtonStates();
-
-//       // Sort the complete trip list
-//       _tripDataList.sort((a, b) => _sortTrips(a, b));
-
-//       if (mounted) setState(() {}); // Update UI
+//       // Ensure the list is long enough
+//       if (i < _isButtonDisabledList.length) {
+//         _isButtonDisabledList[i] = isDisabled;
+//       } else {
+//         _isButtonDisabledList.add(isDisabled);
+//       }
 //     }
-//   } catch (e) {
-//     print('Error fetching trips: $e'); // Handle any errors
-//   } finally {
-//     if (mounted) setState(() => _isLoading = false); // Set loading state to false
-//   }
-// }
 
-//   _loadButtonStates() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     _isButtonDisabledList
-//         .clear(); // Clear the existing list to avoid duplicates
-//     for (var trip in _tripDataList) {
-//       final isDisabled =
-//           prefs.getBool(trip.tripId!) ?? false; // Fetch the state for each trip
-//       _isButtonDisabledList.add(isDisabled); // Add the state to the list
-//     }
-//     setState(() {});
+//     setState(() {}); // Update the UI after loading the states
 //   }
 
 //   @override
@@ -249,55 +271,121 @@
 //     });
 //   }
 
-// void _setButtonState(int index) async {
-//   setState(() {
-//     _isButtonDisabledList[index] = true; // Disable the button
-//   });
+//   void _setButtonState(int index) async {
+//     final tripId = _tripDataList[index].tripId!;
+//     final driverId = widget.driverEmail;
 
-//   final prefs = await SharedPreferences.getInstance();
-//   await prefs.setBool(_tripDataList[index].tripId!, true); // Save state in SharedPreferences
-// }
+//     // Save the button state to Firestore
+//     await FirebaseFirestore.instance
+//         .collection('driverButtonStates')
+//         .doc(driverId)
+//         .collection('trips')
+//         .doc(tripId)
+//         .set({'isButtonDisabled': true});
+
+//     setState(() {
+//       _isButtonDisabledList[index] =
+//           true; // Update the local state for immediate UI feedback
+//     });
+//   }
 
 //   void _onMenuItemSelected(String value) {
 //     switch (value) {
 //       case 'accepted_trips':
 //         Navigator.push(
 //           context,
-//           MaterialPageRoute(
-//             builder: (context) => DriverAcceptedPage(
-//               driverEmail: widget.driverEmail,
-//               driverId: widget.driverEmail,
-//             ),
+//           PageRouteBuilder(
+//             pageBuilder: (context, animation, secondaryAnimation) =>
+//                 DriverAcceptedPage(driverId: widget.driverEmail),
+//             transitionsBuilder:
+//                 (context, animation, secondaryAnimation, child) {
+//               const begin = Offset(1.0, 0.0); // Slide in from the right
+//               const end = Offset.zero;
+//               const curve = Curves.decelerate;
+
+//               var tween =
+//                   Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+//               var offsetAnimation = animation.drive(tween);
+
+//               return SlideTransition(
+//                 position: offsetAnimation,
+//                 child: child,
+//               );
+//             },
 //           ),
 //         );
+
 //         break;
 //       case 'driver_filter':
 //         Navigator.push(
 //           context,
-//           MaterialPageRoute(
-//             builder: (context) => DriverFilterPage(
-//               driverId: widget.driverEmail,
-//             ),
+//           PageRouteBuilder(
+//             pageBuilder: (context, animation, secondaryAnimation) =>
+//                 DriverFilterPage(driverId: widget.driverEmail),
+//             transitionsBuilder:
+//                 (context, animation, secondaryAnimation, child) {
+//               const begin = Offset(1.0, 0.0); // Slide in from the right
+//               const end = Offset.zero;
+//               const curve = Curves.decelerate;
+
+//               var tween =
+//                   Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+//               var offsetAnimation = animation.drive(tween);
+
+//               return SlideTransition(
+//                 position: offsetAnimation,
+//                 child: child,
+//               );
+//             },
 //           ),
 //         );
+
 //         break;
 //       case 'successful_trips':
 //         Navigator.push(
 //           context,
-//           MaterialPageRoute(
-//             builder: (context) => DriverSuccessfulTrips(
-//               driverId: widget.driverEmail,
-//             ),
+//           PageRouteBuilder(
+//             pageBuilder: (context, animation, secondaryAnimation) =>
+//                 DriverSuccessfulTrips(driverId: widget.driverEmail),
+//             transitionsBuilder:
+//                 (context, animation, secondaryAnimation, child) {
+//               const begin = Offset(1.0, 0.0); // Slide in from the right
+//               const end = Offset.zero;
+//               const curve = Curves.decelerate;
+
+//               var tween =
+//                   Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+//               var offsetAnimation = animation.drive(tween);
+
+//               return SlideTransition(
+//                 position: offsetAnimation,
+//                 child: child,
+//               );
+//             },
 //           ),
 //         );
 //         break;
 //       case 'view_messages':
 //         Navigator.push(
 //           context,
-//           MaterialPageRoute(
-//             builder: (context) => DriverChatPage(
-//               driverId: widget.driverEmail,
-//             ),
+//           PageRouteBuilder(
+//             pageBuilder: (context, animation, secondaryAnimation) =>
+//                 DriverChatPage(driverId: widget.driverEmail),
+//             transitionsBuilder:
+//                 (context, animation, secondaryAnimation, child) {
+//               const begin = Offset(1.0, 0.0); // Slide in from the right
+//               const end = Offset.zero;
+//               const curve = Curves.decelerate;
+
+//               var tween =
+//                   Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+//               var offsetAnimation = animation.drive(tween);
+
+//               return SlideTransition(
+//                 position: offsetAnimation,
+//                 child: child,
+//               );
+//             },
 //           ),
 //         );
 //         break;
@@ -323,35 +411,84 @@
 //           Row(
 //             children: [
 //               IconButton(
-//   icon: Icon(Icons.refresh),
-//   onPressed: () {
-//     setState(() {
-//       // Add any necessary state changes here before navigation
-//     });
+//                 icon: Icon(Icons.refresh),
+//                 onPressed: () {
+//                   setState(() {
+//                     // Add any necessary state changes here before navigation
+//                   });
 
-//     // Navigate with pushReplacement to DriverHomePage
-//     Navigator.pushReplacement(
-//       context,
-//       MaterialPageRoute(builder: (context) => DriverHomePage(driverEmail: widget.driverEmail,)),
-//     );
-//   },
-// ),
-
+//                   // Navigate with pushReplacement to DriverHomePage
+//                   Navigator.pushReplacement(
+//                     context,
+//                     MaterialPageRoute(
+//                         builder: (context) => DriverHomePage(
+//                               driverEmail: widget.driverEmail,
+//                             )),
+//                   );
+//                 },
+//               ),
 //               PopupMenuButton<String>(
 //                 icon: const Icon(Icons.sort_rounded),
 //                 onSelected: _onMenuItemSelected,
 //                 itemBuilder: (BuildContext context) {
 //                   return [
 //                     const PopupMenuItem(
-//                         value: 'accepted_trips', child: Text('Accepted Trips')),
+//                         value: 'accepted_trips',
+//                         child: Row(
+//                           mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                           children: [
+//                             Text('Accepted Trips'),
+//                             Icon(
+//                               Icons.done,
+//                               size: 16,
+//                             ),
+//                           ],
+//                         )),
 //                     const PopupMenuItem(
-//                         value: 'driver_filter', child: Text('Driver Filter Page')),
+//                         value: 'driver_filter',
+//                         child: Row(
+//                           mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                           children: [
+//                             Text('Filter Trips'),
+//                             Icon(
+//                               Icons.filter_alt_outlined,
+//                               size: 16,
+//                             ),
+//                           ],
+//                         )),
 //                     const PopupMenuItem(
-//                         value: 'successful_trips', child: Text('Successful Trips')),
+//                         value: 'successful_trips',
+//                         child: Row(
+//                           mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                           children: [
+//                             Text('Successful Trips'),
+//                             Icon(
+//                               Icons.check_circle_outline,
+//                               size: 16,
+//                             )
+//                           ],
+//                         )),
 //                     const PopupMenuItem(
-//                         value: 'view_messages', child: Text('View Messages')),
+//                         value: 'view_messages',
+//                         child: Row(
+//                           mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                           children: [
+//                             Text('View Messages'),
+//                             Icon(
+//                               Icons.chat_bubble_outline_outlined,
+//                               size: 16,
+//                             ),
+//                           ],
+//                         )),
 //                     const PopupMenuItem(
-//                         value: 'passenger_mode', child: Text('Passenger Mode')),
+//                         value: 'passenger_mode', child: Row(
+//                                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+//                           children: [
+//                             Text('Passenger Mode'),
+//                             Icon(Icons.person_outline_sharp)
+//                           ],
+//                         )),
 //                   ];
 //                 },
 //               ),
@@ -362,12 +499,17 @@
 //       body: _isLoading && _tripDataList.isEmpty
 //           ? const Center(child: CircularProgressIndicator())
 //           : ListView.builder(
-//                     controller: _scrollController,
-//                             itemCount: _tripDataList.length + (_hasMore ? 1 : 0), // Loading indicator if more trips are available
+//               controller: _scrollController,
+//               itemCount: _tripDataList.length +
+//                   (_hasMore
+//                       ? 1
+//                       : 0), // Loading indicator if more trips are available
 //               itemBuilder: (context, index) {
-//                  if (index == _tripDataList.length) {
-//           return Center(child: CircularProgressIndicator()); // Loading indicator at the end
-//         }
+//                 if (index == _tripDataList.length) {
+//                   return Center(
+//                       child:
+//                           CircularProgressIndicator()); // Loading indicator at the end
+//                 }
 //                 final tripData = _tripDataList[index];
 //                 // Check the index against the length of _isButtonDisabledList
 //                 final isButtonDisabled = index < _isButtonDisabledList.length
@@ -377,20 +519,21 @@
 //                 return TripCardWidget(
 //                   tripData: _tripDataList[index],
 //                   onPhoneTap: () {
-
-//                     if (tripData.phoneNumber != null && tripData.phoneNumber!.isNotEmpty) {
+//                     if (tripData.phoneNumber != null &&
+//                         tripData.phoneNumber!.isNotEmpty) {
 //                       _launchPhoneNumber(tripData.phoneNumber!);
 //                     } else {
 //                       ScaffoldMessenger.of(context).showSnackBar(
 //                         SnackBar(content: Text('Phone number not available')),
 //                       );
 //                     }
-
 //                   },
-//                   onMapTap: () => _launchOpenStreetMapWithDirections(tripData.tripId!),
+//                   onMapTap: () =>
+//                       _launchOpenStreetMapWithDirections(tripData.tripId!),
 //                   onRequestTap: () {
 //                     _setButtonState(index); // Call to disable the button
-//                     showTripAndUserIdInSnackBar(_tripDataList[index], context, index);
+//                     showTripAndUserIdInSnackBar(
+//                         _tripDataList[index], context, index);
 //                   },
 //                   index: index,
 //                   isButtonDisabled:
@@ -402,21 +545,21 @@
 //   }
 
 //   Future<void> showTripAndUserIdInSnackBar(
-//     TripModel tripData, BuildContext context, int index) async {
-//   final tripId = tripData.tripId ?? 'No Trip ID';
-//   final userId = tripData.userId ?? 'No User ID';
-//   final driverId = widget.driverEmail;
+//       TripModel tripData, BuildContext context, int index) async {
+//     final tripId = tripData.tripId ?? 'No Trip ID';
+//     final userId = tripData.userId ?? 'No User ID';
+//     final driverId = widget.driverEmail;
 
-//   if (tripId == 'No Trip ID' || userId == 'No User ID') {
-//     // Show error if tripId or userId is missing
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text('Invalid Trip or User ID.'),
-//         duration: Duration(seconds: 3),
-//       ),
-//     );
-//     return;
-//   }
+//     if (tripId == 'No Trip ID' || userId == 'No User ID') {
+//       // Show error if tripId or userId is missing
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(
+//           content: Text('Invalid Trip or User ID.'),
+//           duration: Duration(seconds: 3),
+//         ),
+//       );
+//       return;
+//     }
 
 //     try {
 //       // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
@@ -449,13 +592,12 @@
 //         ),
 //       );
 //     }
-
-// }
-
+//   }
 // }
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
 import 'package:final_menu/Driver_HomePages/sorting_pages.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
@@ -773,7 +915,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
         break;
       case 'driver_filter':
-        
         Navigator.push(
           context,
           PageRouteBuilder(
@@ -863,44 +1004,27 @@ class _DriverHomePageState extends State<DriverHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Driver Home'),
+        backgroundColor: Colors.teal.shade500,
+        title: Center(child: const Text('Driver HomePage',style: TextStyle(color: Colors.white,fontSize: 18),)),
         actions: [
           Row(
             children: [
-              IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: () {
-                  setState(() {
-                    // Add any necessary state changes here before navigation
-                  });
-
-                  // Navigate with pushReplacement to DriverHomePage
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DriverHomePage(
-                              driverEmail: widget.driverEmail,
-                            )),
-                  );
-                },
-              ),
+              
               PopupMenuButton<String>(
                 icon: const Icon(Icons.sort_rounded),
                 onSelected: _onMenuItemSelected,
                 itemBuilder: (BuildContext context) {
                   return [
+                    
                     const PopupMenuItem(
-                        value: 'accepted_trips', child: Text('Accepted Trips')),
-                    const PopupMenuItem(
-                        value: 'driver_filter',
-                        child: Text('Driver Filter Page')),
-                    const PopupMenuItem(
-                        value: 'successful_trips',
-                        child: Text('Successful Trips')),
-                    const PopupMenuItem(
-                        value: 'view_messages', child: Text('View Messages')),
-                    const PopupMenuItem(
-                        value: 'passenger_mode', child: Text('Passenger Mode')),
+                        value: 'passenger_mode',
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text('Passenger Mode'),
+                            Icon(Icons.person_outline_sharp)
+                          ],
+                        )),
                   ];
                 },
               ),

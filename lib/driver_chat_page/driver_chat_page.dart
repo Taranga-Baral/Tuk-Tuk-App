@@ -1,4 +1,3 @@
-
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:flutter/material.dart';
 
@@ -111,37 +110,37 @@
 //                   final tripDetails = detailsSnapshot.data![0] as Map<String, dynamic>?;
 //                   final userDetails = detailsSnapshot.data![1] as Map<String, dynamic>?;
 
-//                   return Card(
-//                     elevation: 5,
-//                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-//                     child: Padding(
-//                       padding: const EdgeInsets.all(12.0),
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           if (tripDetails != null) ...[
-//                             Text('Pickup Location: ${tripDetails['pickupLocation']}'),
-//                             Text('Delivery Location: ${tripDetails['deliveryLocation']}'),
-//                             Text('Distance: ${tripDetails['distance']} km'),
-//                             Text('Fare: \$${tripDetails['fare']}'),
-//                           ] else
-//                             Text('Trip details not available'),
-//                           SizedBox(height: 8),
-//                           if (userDetails != null) ...[
-//                             Text('User: ${userDetails['username']}'),
-//                             Text('Phone: ${userDetails['phone_number']}'),
-//                           ] else
-//                             Text('User details not available'),
-//                           SizedBox(height: 8),
-//                           Text('Latest Message: ${chatData['message']}'),
-//                           SizedBox(height: 8),
-//                           Text(
-//                             'Timestamp: ${chatData['timestamp'] != null ? chatData['timestamp'].toDate().toString() : 'Unknown'}',
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   );
+// return Card(
+//   elevation: 5,
+//   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+//   child: Padding(
+//     padding: const EdgeInsets.all(12.0),
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         if (tripDetails != null) ...[
+//           Text('Pickup Location: ${tripDetails['pickupLocation']}'),
+//           Text('Delivery Location: ${tripDetails['deliveryLocation']}'),
+//           Text('Distance: ${tripDetails['distance']} km'),
+//           Text('Fare: \$${tripDetails['fare']}'),
+//         ] else
+//           Text('Trip details not available'),
+//         SizedBox(height: 8),
+//         if (userDetails != null) ...[
+//           Text('User: ${userDetails['username']}'),
+//           Text('Phone: ${userDetails['phone_number']}'),
+//         ] else
+//           Text('User details not available'),
+//         SizedBox(height: 8),
+//         Text('Latest Message: ${chatData['message']}'),
+//         SizedBox(height: 8),
+//         Text(
+//           'Timestamp: ${chatData['timestamp'] != null ? chatData['timestamp'].toDate().toString() : 'Unknown'}',
+//         ),
+//       ],
+//     ),
+//   ),
+// );
 //                 },
 //               );
 //             },
@@ -156,21 +155,83 @@ import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:final_menu/driver_chat_page/chat_detail_page.dart';
 import 'package:flutter/material.dart';
 
-class DriverChatPage extends StatelessWidget {
+class DriverChatPage extends StatefulWidget {
   final String driverId;
 
   const DriverChatPage({super.key, required this.driverId});
 
-  Future<Map<String, dynamic>?> fetchTripDetails(String tripId) async {
-    final tripSnapshot =
-        await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
-    return tripSnapshot.data();
+  @override
+  _DriverChatPageState createState() => _DriverChatPageState();
+}
+
+class _DriverChatPageState extends State<DriverChatPage> {
+  final int pageSize = 10;
+  bool isLoadingMore = false;
+  bool hasMoreData = true;
+  DocumentSnapshot? lastDocument;
+  List<QueryDocumentSnapshot> allDocuments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInitialData();
   }
 
-  Future<Map<String, dynamic>?> fetchUserDetails(String userId) async {
-    final userSnapshot =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return userSnapshot.data();
+  Future<void> fetchInitialData() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('userChats')
+          .where('driverId', isEqualTo: widget.driverId)
+          .orderBy('timestamp', descending: true)
+          .limit(pageSize)
+          .get();
+
+      setState(() {
+        allDocuments = querySnapshot.docs;
+        if (querySnapshot.docs.length < pageSize) {
+          hasMoreData = false; // No more data to load
+        }
+        if (querySnapshot.docs.isNotEmpty) {
+          lastDocument = querySnapshot.docs.last;
+        }
+      });
+    } catch (e) {
+      print('Error fetching initial data: $e');
+    }
+  }
+
+  Future<void> fetchMoreData() async {
+    if (isLoadingMore || !hasMoreData) return;
+
+    setState(() {
+      isLoadingMore = true;
+    });
+
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('userChats')
+          .where('driverId', isEqualTo: widget.driverId)
+          .orderBy('timestamp', descending: true)
+          .startAfterDocument(lastDocument!)
+          .limit(pageSize)
+          .get();
+
+      setState(() {
+        allDocuments.addAll(querySnapshot.docs);
+        if (querySnapshot.docs.length < pageSize) {
+          hasMoreData = false; // No more data to load
+        }
+        if (querySnapshot.docs.isNotEmpty) {
+          lastDocument = querySnapshot.docs.last;
+        }
+      });
+    } catch (e) {
+      print('Error fetching more data: $e');
+    } finally {
+      setState(() {
+        isLoadingMore = false;
+      });
+    }
   }
 
   @override
@@ -182,143 +243,234 @@ class DriverChatPage extends StatelessWidget {
           Icons.arrow_back,
           Icons.info_outline,
         ],
-        title: 'Accepted Requests',
-        driverId: driverId, // Pass the driverId
+        title: 'View Messages',
+        driverId: widget.driverId,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('userChats')
-            .where('driverId', isEqualTo: driverId)
-            .orderBy('timestamp', descending: true) // Sort by latest message
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('No chats available.'));
-          }
-
-          // Grouping messages by tripId and userId
-          Map<String, Map<String, QueryDocumentSnapshot>> groupedMessages = {};
-
-          for (var doc in snapshot.data!.docs) {
-            var chatData = doc.data() as Map<String, dynamic>;
-            String tripId = chatData['tripId'];
-            String userId = chatData['userId'];
-
-            // Create a unique key for each tripId + userId combination
-            String key = '${tripId}_$userId';
-
-            // Keep only the latest message for each group (since we ordered by timestamp)
-            if (!groupedMessages.containsKey(tripId)) {
-              groupedMessages[tripId] = {};
-            }
-
-            if (!groupedMessages[tripId]!.containsKey(userId)) {
-              groupedMessages[tripId]![userId] = doc;
-            }
-          }
-
-          return ListView.builder(
-            itemCount: groupedMessages.length,
-            itemBuilder: (context, index) {
-              var tripId = groupedMessages.keys.elementAt(index);
-              var userChats = groupedMessages[tripId]!;
-
-              var latestChatDoc = userChats.values.first; // Latest chat message
-              var chatData = latestChatDoc.data() as Map<String, dynamic>;
-              String userId = chatData['userId'];
-
-              return FutureBuilder(
-                future: Future.wait([
-                  fetchTripDetails(tripId),
-                  fetchUserDetails(userId),
-                ]),
-                builder: (context, AsyncSnapshot<List<dynamic>> detailsSnapshot) {
-                  if (detailsSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Card(
-                      elevation: 5,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    );
+      body: allDocuments.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) {
+                if (scrollInfo.metrics.pixels ==
+                        scrollInfo.metrics.maxScrollExtent &&
+                    !isLoadingMore) {
+                  fetchMoreData(); // Load more data when scrolled to bottom
+                }
+                return false;
+              },
+              child: ListView.builder(
+                itemCount: allDocuments.length + (isLoadingMore ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == allDocuments.length) {
+                    return Center(
+                        child:
+                            CircularProgressIndicator()); // Loading indicator
                   }
 
-                  if (detailsSnapshot.hasError) {
-                    return Card(
-                      elevation: 5,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text('Error loading details'),
-                      ),
-                    );
-                  }
+                  var chatData =
+                      allDocuments[index].data() as Map<String, dynamic>;
+                  String tripId = chatData['tripId'];
+                  String userId = chatData['userId'];
 
-                  final tripDetails = detailsSnapshot.data![0] as Map<String, dynamic>?;
-                  final userDetails = detailsSnapshot.data![1] as Map<String, dynamic>?;
-
-                  return Card(
-                    elevation: 5,
-                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (userDetails != null) ...[
-                            Text('User: ${userDetails['username']}'),
-                            Text('Phone: ${userDetails['phone_number']}'),
-                          ] else
-                            Text('User details not available'),
-                          if (tripDetails != null) ...[
-                            Text('Pickup Location: ${tripDetails['pickupLocation']}'),
-                            Text('Delivery Location: ${tripDetails['deliveryLocation']}'),
-                            Text('Distance: ${tripDetails['distance']} km'),
-                            Text('Fare:NPR ${tripDetails['fare']}'),
-                          ] else
-                            Text('Trip details not available'),
-                          SizedBox(height: 8),
-                          
-                        ],
-                      ),
-                      subtitle: Text('Latest Message: ${chatData['message']}'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.chat),
-                        onPressed: () {
-                          // Navigate to ChatDetailPage with driverId, tripId, and userId
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DriverChatDisplayPage(
-                                driverId: driverId,
-                                tripId: tripId,
-                                userId: userId, 
-                              ),
+                  return FutureBuilder(
+                    future: Future.wait([
+                      fetchTripDetails(tripId),
+                      fetchUserDetails(userId),
+                    ]),
+                    builder: (context,
+                        AsyncSnapshot<List<dynamic>> detailsSnapshot) {
+                      if (detailsSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Card(
+                          elevation: 5,
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Center(
+                              child: CircularProgressIndicator(),
                             ),
-                          );
-                        },
+                          ),
+                        );
+                      }
+
+                      if (detailsSnapshot.hasError) {
+                        return Card(
+                          elevation: 5,
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text('Error loading details'),
+                          ),
+                        );
+                      }
+
+                      final tripDetails =
+                          detailsSnapshot.data![0] as Map<String, dynamic>?;
+                      final userDetails =
+                          detailsSnapshot.data![1] as Map<String, dynamic>?;
+
+                      return Card(
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12.0), // Rounded corners
+  ),
+  elevation: 5,
+  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+  child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8),
+                  if (userDetails != null) ...[
+                    Text(
+                      'User: ${userDetails['username']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal[800],
                       ),
                     ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Phone: ${userDetails['phone_number']}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ] else
+                    Text(
+                      'User details not available',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  SizedBox(height: 12),
+                  if (tripDetails != null) ...[
+                    Text(
+                      'Pickup Location: ${tripDetails['pickupLocation']}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Delivery Location: ${tripDetails['deliveryLocation']}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Distance: ${tripDetails['distance']} km',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Fare: \$${tripDetails['fare']}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ] else
+                    Text(
+                      'Trip details not available',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Latest Message: ${chatData['message']}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Timestamp: ${chatData['timestamp'] != null ? chatData['timestamp'].toDate().toString() : 'Unknown'}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        DriverChatDisplayPage(
+                      driverId: widget.driverId,
+                      tripId: tripId,
+                      userId: userId,
+                    ),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0); // Slide in from the right
+                      const end = Offset.zero;
+                      const curve = Curves.decelerate;
+
+                      var tween =
+                          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
+              icon: Icon(Icons.chat, color: Colors.teal),
+              tooltip: 'Chat with driver',
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);
+
+                    },
                   );
                 },
-              );
-            },
-          );
-        },
-      ),
+              ),
+            ),
     );
+  }
+
+  Future<Map<String, dynamic>?> fetchTripDetails(String tripId) async {
+    final tripSnapshot =
+        await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
+    return tripSnapshot.data();
+  }
+
+  Future<Map<String, dynamic>?> fetchUserDetails(String userId) async {
+    final userSnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userSnapshot.data();
   }
 }

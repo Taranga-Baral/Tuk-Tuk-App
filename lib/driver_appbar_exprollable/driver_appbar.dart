@@ -1,3 +1,5 @@
+import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
+import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,7 +19,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(60.0);
+  Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
 
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
@@ -45,7 +47,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
       backgroundColor: widget.appBarColor,
       title: Text(
         widget.title,
-        style: const TextStyle(color: Colors.white, fontSize: 20),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: MediaQuery.of(context).size.width * 0.05, // Responsive font size
+        ),
       ),
       centerTitle: true,
       actions: [
@@ -57,12 +62,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           },
         ),
       ],
-      leading: IconButton(
-        icon: Icon(widget.appBarIcons[0], color: Colors.white),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
+     
     );
   }
 
@@ -106,62 +106,57 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 title: Text(
                   'Driver Info',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: MediaQuery.of(context).size.width * 0.06, // Responsive title font size
                     fontWeight: FontWeight.bold,
                     color: widget.appBarColor,
                   ),
                 ),
                 content: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  width: MediaQuery.of(context).size.width * 0.8, // Responsive dialog width
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundImage: NetworkImage(
-                              data['profilePictureUrl'] ?? '',
-                            ),
-                          ),
-                          Divider(thickness: 2,color: Colors.grey,),
-                          Text(
-                            data['name'] ?? 'Unknown',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: widget.appBarColor,
-                            ),
-                          ),
-                          Divider(),
-                          Text(
-                            'Address: ${data['address'] ?? 'Unknown Address'}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                          Divider(),
-                          Text(
-                            'Number Plate: ${data['numberPlate'] ?? 'Unknown'}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                          Divider(),
-                          Text(
-                            'Vehicle: ${data['vehicleType'] ?? 'Unknown'}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                          Divider(),
-                          Text(
-                            'Phone: ${data['phone'] ?? 'Unknown'}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                        ],
+                      CircleAvatar(
+                        radius: MediaQuery.of(context).size.width * 0.1, // Responsive avatar size
+                        backgroundImage: NetworkImage(
+                          data['profilePictureUrl'] ?? '',
+                        ),
                       ),
+                     
+                      Text(
+                        data['name'] ?? 'Unknown',
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.045, // Responsive text size
+                          fontWeight: FontWeight.bold,
+                          color: widget.appBarColor,
+                        ),
+                      ),
+                      Divider(),
+                      Text(
+                        'Address: ${data['address'] ?? 'Unknown Address'}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.black54),
+                      ),
+                      Divider(),
+                      Text(
+                        'Number Plate: ${data['numberPlate'] ?? 'Unknown'}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.black54),
+                      ),
+                      Divider(),
+                      Text(
+                        'Vehicle: ${data['vehicleType'] ?? 'Unknown'}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.black54),
+                      ),
+                      Divider(),
+                      Text(
+                        'Phone: ${data['phone'] ?? 'Unknown'}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.black54),
+                      ),
+                      Divider(),
                     ],
                   ),
                 ),
