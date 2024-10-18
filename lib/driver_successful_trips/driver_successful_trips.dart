@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:flutter/material.dart';
 
 class DriverSuccessfulTrips extends StatefulWidget {
@@ -62,8 +63,14 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Successful Trips'),
+      appBar: CustomAppBar(
+        appBarColor: Colors.teal,
+        appBarIcons: const [
+          Icons.arrow_back,
+          Icons.info_outline,
+        ],
+        title: 'Accepted Requests',
+        driverId: widget.driverId, // Pass the driverId
       ),
       body: isDataLoaded
           ? ListView.builder(

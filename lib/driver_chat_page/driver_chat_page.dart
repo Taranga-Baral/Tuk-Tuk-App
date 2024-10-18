@@ -152,6 +152,7 @@
 //   }
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:final_menu/driver_chat_page/chat_detail_page.dart';
 import 'package:flutter/material.dart';
 
@@ -175,8 +176,14 @@ class DriverChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Driver Chat for $driverId'),
+      appBar: CustomAppBar(
+        appBarColor: Colors.teal,
+        appBarIcons: const [
+          Icons.arrow_back,
+          Icons.info_outline,
+        ],
+        title: 'Accepted Requests',
+        driverId: driverId, // Pass the driverId
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
