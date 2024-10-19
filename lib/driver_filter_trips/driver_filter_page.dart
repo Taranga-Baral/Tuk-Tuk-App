@@ -671,6 +671,10 @@ Stream<List<Map<String, dynamic>>> _getTripsStream() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+        padding: const EdgeInsets.only(left: 20,top: 2),
+        child: Image(image: AssetImage("assets/only_tuk_tuk.png"),opacity: AlwaysStoppedAnimation(0.97),),
+      ),
         title: Center(child: Text('Driver Filter Page',style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.height *0.023),)),
         backgroundColor: Colors.teal,
         actions: [
@@ -808,7 +812,7 @@ Stream<List<Map<String, dynamic>>> _getTripsStream() {
                   final trips = snapshot.data ?? [];
                   if (trips.isEmpty) {
                     return Center(
-                        child: Text('Either the Trips are booked an hour Earlier or the Passengers are Inactive'));
+                        child: Text('Click Dropdown to start Filtering and Note the Trips which is Older than 1 hour is Dismissed from Our Server',textAlign: TextAlign.center,));
                   }
                   return ListView.builder(
                     itemCount: trips.length,

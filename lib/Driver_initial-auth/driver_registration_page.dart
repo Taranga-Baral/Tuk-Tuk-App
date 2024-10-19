@@ -271,7 +271,6 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
           content: Text(
               'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?'),
           actions: <Widget>[
-            
             TextButton(
               onPressed: () {
                 // Clear the saved email to log in with a different account
@@ -282,16 +281,31 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
             ),
             TextButton(
               onPressed: () {
-                // Log in with the saved account
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          BottomNavBarPage(driverEmail: savedEmail)),
-                  (Route<dynamic> route) =>
-                      false, // This removes all previous routes from the stack
-                );
-              },
+  // Log in with the saved account
+  Navigator.pushAndRemoveUntil(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          BottomNavBarPage(driverEmail: savedEmail),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide in from the right
+        const end = Offset.zero;
+        const curve = Curves.decelerate;
+
+        var tween = Tween(begin: begin, end: end)
+            .chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+    ),
+    (route) => false, // This ensures all previous routes are removed
+  );
+},
+
               child: const Text('Log In'),
             ),
           ],
@@ -339,12 +353,30 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('driverEmail', email);
 
-          Navigator.pushAndRemoveUntil(
-  context,
-  MaterialPageRoute(builder: (context) => DriverHomePage(driverEmail: email)),
-  (Route<dynamic> route) => false,  // This removes all previous routes from the stack
-);
+          
+  // Log in with the saved account
+  Navigator.pushAndRemoveUntil(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          BottomNavBarPage(driverEmail: email),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide in from the right
+        const end = Offset.zero;
+        const curve = Curves.decelerate;
 
+        var tween = Tween(begin: begin, end: end)
+            .chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+    ),
+    (route) => false, // This ensures all previous routes are removed
+  );
         } else {
           _showErrorMessage(
               'No matching driver found. Please check your email and Password.');
@@ -417,12 +449,10 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                   filled: true,
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.teal),
+                    borderSide: BorderSide(color: Colors.teal),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.teal),
+                    borderSide: BorderSide(color: Colors.teal),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -446,12 +476,10 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                   filled: true,
                   fillColor: Colors.white,
                   enabledBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.teal),
+                    borderSide: BorderSide(color: Colors.teal),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.teal),
+                    borderSide: BorderSide(color: Colors.teal),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(18)),

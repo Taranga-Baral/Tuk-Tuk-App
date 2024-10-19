@@ -44,7 +44,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: widget.appBarColor,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 20,top: 2),
+        child: Image(image: AssetImage("assets/only_tuk_tuk.png")),
+      ),
+      // backgroundColor: widget.appBarColor,
+      backgroundColor: Colors.teal,
+      elevation: 0,
+
       title: Text(
         widget.title,
         style: TextStyle(
@@ -122,6 +129,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         backgroundImage: NetworkImage(
                           data['profilePictureUrl'] ?? '',
                         ),
+                      ),
+                      SizedBox(
+                        height: 10,
                       ),
                      
                       Text(
