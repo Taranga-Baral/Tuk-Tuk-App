@@ -448,6 +448,10 @@ class _RequestPageState extends State<RequestPage> {
 
                                 final fare = tripData['fare'] ?? 'N/A';
                                 final distance = tripData['distance'] ?? 'N/A';
+                                final distance_between_driver_and_passenger =
+                                    tripData[
+                                            'distance_between_driver_and_passenger'] ??
+                                        'N/A';
 
                                 return Card(
                                   elevation: 5,
@@ -529,18 +533,31 @@ class _RequestPageState extends State<RequestPage> {
                                                 ),
                                               ),
                                               SizedBox(
-                                                height: 8,
+                                                height: 5,
                                               ),
                                             ],
                                           ),
-                                          subtitle: Text(
-                                            'सवारी साधन : $brand $vehicleType ($color)',
-                                            maxLines:
-                                                null, // Allow multiple lines
-                                            softWrap:
-                                                true, // Enable text wrapping
-                                            overflow: TextOverflow
-                                                .visible, // Ensure text overflows correctly
+                                          subtitle: Column(
+                                            children: [
+                                              Text(
+                                                '$vehicleType $brand ($color)',
+                                                maxLines:
+                                                    null, // Allow multiple lines
+                                                softWrap:
+                                                    true, // Enable text wrapping
+                                                overflow: TextOverflow
+                                                    .visible, // Ensure text overflows correctly
+                                              ),
+                                              Text(
+                                                'चालकको कुल दुरी : ${distance_between_driver_and_passenger.toStringAsFixed(1)} किमि',
+                                                maxLines:
+                                                    null, // Allow multiple lines
+                                                softWrap:
+                                                    true, // Enable text wrapping
+                                                overflow: TextOverflow
+                                                    .visible, // Ensure text overflows correctly
+                                              ),
+                                            ],
                                           ),
                                           trailing: IconButton(
                                             icon: Icon(_expandedStates[index]

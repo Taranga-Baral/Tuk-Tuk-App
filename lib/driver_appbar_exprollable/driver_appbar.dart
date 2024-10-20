@@ -46,7 +46,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return AppBar(
       leading: Padding(
         padding: const EdgeInsets.only(left: 20,top: 2),
-        child: Image(image: AssetImage("assets/only_tuk_tuk.png")),
+        child: Image(image: AssetImage("assets/fordriverlogo.png")),
       ),
       // backgroundColor: widget.appBarColor,
       backgroundColor: Colors.teal,

@@ -673,7 +673,7 @@ Stream<List<Map<String, dynamic>>> _getTripsStream() {
       appBar: AppBar(
         leading: Padding(
         padding: const EdgeInsets.only(left: 20,top: 2),
-        child: Image(image: AssetImage("assets/only_tuk_tuk.png"),opacity: AlwaysStoppedAnimation(0.97),),
+        child: Image(image: AssetImage("assets/fordriverlogo.png"),opacity: AlwaysStoppedAnimation(0.97),),
       ),
         title: Center(child: Text('Driver Filter Page',style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.height *0.023),)),
         backgroundColor: Colors.teal,

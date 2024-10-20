@@ -225,230 +225,212 @@
 //           }
 //           return true;
 //         },
-    //     child: ListView.builder(
-    //         itemCount: requests.length,
-    //         itemBuilder: (context, index) {
-    //           final request = requests[index];
-    //           final userId = request['userId'];
-    //           final tripId = request['tripId'];
+//     child: ListView.builder(
+//         itemCount: requests.length,
+//         itemBuilder: (context, index) {
+//           final request = requests[index];
+//           final userId = request['userId'];
+//           final tripId = request['tripId'];
 
-    //           return FutureBuilder<List<Map<String, dynamic>>>(
-    //             future: Future.wait([
-    //               _fetchUserDetails(userId),
-    //               _fetchTripDetails(tripId),
-    //               _fetchButtonStates(tripId),
-    //             ]),
-    //             builder: (context,
-    //                 AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-    //               if (snapshot.connectionState == ConnectionState.waiting) {
-    //                 return Center(child: CircularProgressIndicator());
-    //               }
+//           return FutureBuilder<List<Map<String, dynamic>>>(
+//             future: Future.wait([
+//               _fetchUserDetails(userId),
+//               _fetchTripDetails(tripId),
+//               _fetchButtonStates(tripId),
+//             ]),
+//             builder: (context,
+//                 AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+//               if (snapshot.connectionState == ConnectionState.waiting) {
+//                 return Center(child: CircularProgressIndicator());
+//               }
 
-    //               if (!snapshot.hasData) {
-    //                 return Center(child: Text('Error loading details'));
-    //               }
+//               if (!snapshot.hasData) {
+//                 return Center(child: Text('Error loading details'));
+//               }
 
-    //               final userDetails = snapshot.data![0];
-    //               final tripDetails = snapshot.data![1];
-    //               final buttonStates = snapshot.data![2];
-    //               final isSendButtonPressed =
-    //                   buttonStates['isSendButtonPressed'] ?? false;
-    //               final isDoneButtonPressed =
-    //                   buttonStates['isDoneButtonPressed'] ?? false;
+//               final userDetails = snapshot.data![0];
+//               final tripDetails = snapshot.data![1];
+//               final buttonStates = snapshot.data![2];
+//               final isSendButtonPressed =
+//                   buttonStates['isSendButtonPressed'] ?? false;
+//               final isDoneButtonPressed =
+//                   buttonStates['isDoneButtonPressed'] ?? false;
 
-    //               return Card(
-    //                 color: Colors.teal.shade50,
-    //                 elevation: 5,
-    //                 margin: EdgeInsets.all(10),
-    //                 child: ListTile(
-    //                   title: Text('Username: ${userDetails['username']}'),
-    //                   subtitle: Column(
-    //                     crossAxisAlignment: CrossAxisAlignment.start,
-    //                     children: [
-    //                       Text('Phone: ${userDetails['phone_number']}'),
-    //                       Text(
-    //                           'Pickup Location: ${tripDetails['pickupLocation']}'),
-    //                       Text(
-    //                           'Delivery Location: ${tripDetails['deliveryLocation']}'),
-    //                       Text('Fare: ${tripDetails['fare']}'),
-    //                       Text('Distance: ${tripDetails['distance']}'),
-    //                       Row(
-    //                         mainAxisAlignment: MainAxisAlignment.end,
-    //                         children: [
-    //                           IconButton(
-    //                             icon: Icon(Icons.chat),
-    //                             onPressed: () {
-    //                               Navigator.push(
-    //                                 context,
-    //                                 MaterialPageRoute(
-    //                                   builder: (BuildContext context) =>
-    //                                       DriverChatDisplayPage(
-    //                                           driverId: widget.driverId,
-    //                                           tripId: tripId,
-    //                                           userId: userId),
-    //                                 ),
-    //                               );
-    //                             },
-    //                           ),
-    //                           IconButton(
-    //                             icon: Icon(Icons.phone),
-    //                             onPressed: () {
-    //                               final phoneNumber =
-    //                                   userDetails['phone_number'];
-    //                               if (phoneNumber != null &&
-    //                                   phoneNumber.isNotEmpty) {
-    //                                 _launchPhoneNumber(phoneNumber);
-    //                               } else {
-    //                                 ScaffoldMessenger.of(context).showSnackBar(
-    //                                   SnackBar(
-    //                                     content:
-    //                                         Text('Phone number unavailable'),
-    //                                   ),
-    //                                 );
-    //                               }
-    //                             },
-    //                           ),
-    //                           IconButton(
-    //                             icon: Icon(Icons.map),
-    //                             onPressed: () {
-    //                               final pickupLocation =
-    //                                   tripDetails['pickupLocation'] ?? '';
-    //                               final deliveryLocation =
-    //                                   tripDetails['deliveryLocation'] ?? '';
-    //                               if (pickupLocation.isNotEmpty &&
-    //                                   deliveryLocation.isNotEmpty) {
-    //                                 _launchOpenStreetMapWithDirections(
-    //                                     pickupLocation, deliveryLocation);
-    //                               }
-    //                             },
-    //                           ),
-    //                           IconButton(
-    //                             icon: Icon(Icons.send),
-    //                             color: isSendButtonPressed
-    //                                 ? Colors.grey
-    //                                 : Colors.teal,
-    //                             onPressed: isSendButtonPressed
-    //                                 ? null
-    //                                 : () async {
-    //                                     final isNetworkAvailable =
-    //                                         await _checkNetworkStatus();
-    //                                     if (isNetworkAvailable) {
-    //                                       try {
-    //                                         await FirebaseFirestore.instance
-    //                                             .collection('arrivedDrivers')
-    //                                             .add({
-    //                                           'tripId': tripId,
-    //                                           'driverId': widget.driverId,
-    //                                           'userId': userId,
-    //                                           'timestamp':
-    //                                               FieldValue.serverTimestamp(),
-    //                                         });
+//               return Card(
+//                 color: Colors.teal.shade50,
+//                 elevation: 5,
+//                 margin: EdgeInsets.all(10),
+//                 child: ListTile(
+//                   title: Text('Username: ${userDetails['username']}'),
+//                   subtitle: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text('Phone: ${userDetails['phone_number']}'),
+//                       Text(
+//                           'Pickup Location: ${tripDetails['pickupLocation']}'),
+//                       Text(
+//                           'Delivery Location: ${tripDetails['deliveryLocation']}'),
+//                       Text('Fare: ${tripDetails['fare']}'),
+//                       Text('Distance: ${tripDetails['distance']}'),
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.end,
+//                         children: [
+//                           IconButton(
+//                             icon: Icon(Icons.chat),
+//                             onPressed: () {
+//                               Navigator.push(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                   builder: (BuildContext context) =>
+//                                       DriverChatDisplayPage(
+//                                           driverId: widget.driverId,
+//                                           tripId: tripId,
+//                                           userId: userId),
+//                                 ),
+//                               );
+//                             },
+//                           ),
+//                           IconButton(
+//                             icon: Icon(Icons.phone),
+//                             onPressed: () {
+//                               final phoneNumber =
+//                                   userDetails['phone_number'];
+//                               if (phoneNumber != null &&
+//                                   phoneNumber.isNotEmpty) {
+//                                 _launchPhoneNumber(phoneNumber);
+//                               } else {
+//                                 ScaffoldMessenger.of(context).showSnackBar(
+//                                   SnackBar(
+//                                     content:
+//                                         Text('Phone number unavailable'),
+//                                   ),
+//                                 );
+//                               }
+//                             },
+//                           ),
+//                           IconButton(
+//                             icon: Icon(Icons.map),
+//                             onPressed: () {
+//                               final pickupLocation =
+//                                   tripDetails['pickupLocation'] ?? '';
+//                               final deliveryLocation =
+//                                   tripDetails['deliveryLocation'] ?? '';
+//                               if (pickupLocation.isNotEmpty &&
+//                                   deliveryLocation.isNotEmpty) {
+//                                 _launchOpenStreetMapWithDirections(
+//                                     pickupLocation, deliveryLocation);
+//                               }
+//                             },
+//                           ),
+//                           IconButton(
+//                             icon: Icon(Icons.send),
+//                             color: isSendButtonPressed
+//                                 ? Colors.grey
+//                                 : Colors.teal,
+//                             onPressed: isSendButtonPressed
+//                                 ? null
+//                                 : () async {
+//                                     final isNetworkAvailable =
+//                                         await _checkNetworkStatus();
+//                                     if (isNetworkAvailable) {
+//                                       try {
+//                                         await FirebaseFirestore.instance
+//                                             .collection('arrivedDrivers')
+//                                             .add({
+//                                           'tripId': tripId,
+//                                           'driverId': widget.driverId,
+//                                           'userId': userId,
+//                                           'timestamp':
+//                                               FieldValue.serverTimestamp(),
+//                                         });
 
-    //                                         // Update button states when send is pressed
-    //                                         await _updateButtonStates(
-    //                                             tripId, true, false);
-    //                                         setState(() {});
+//                                         // Update button states when send is pressed
+//                                         await _updateButtonStates(
+//                                             tripId, true, false);
+//                                         setState(() {});
 
-    //                                         ScaffoldMessenger.of(context)
-    //                                             .showSnackBar(
-    //                                           SnackBar(
-    //                                               content: Text(
-    //                                                   'Driver request sent successfully')),
-    //                                         );
-    //                                       } catch (e) {
-    //                                         ScaffoldMessenger.of(context)
-    //                                             .showSnackBar(
-    //                                           SnackBar(
-    //                                               content: Text(
-    //                                                   'Failed to send driver. Try again.')),
-    //                                         );
-    //                                       }
-    //                                     } else {
-    //                                       ScaffoldMessenger.of(context)
-    //                                           .showSnackBar(
-    //                                         SnackBar(
-    //                                             content: Text(
-    //                                                 'No network connection available')),
-    //                                       );
-    //                                     }
-    //                                   },
-    //                           ),
-    //                           IconButton(
-    //                             icon: Icon(Icons.done_all),
-    //                             color:
-    //                                 isSendButtonPressed && !isDoneButtonPressed
-    //                                     ? Colors.teal
-    //                                     : Colors.grey,
-    //                             onPressed:
-    //                                 isSendButtonPressed && !isDoneButtonPressed
-    //                                     ? () async {
-    //                                         // When done_all button is pressed, mark both buttons as unpressable
-    //                                         await _updateButtonStates(
-    //                                             tripId, true, true);
+//                                         ScaffoldMessenger.of(context)
+//                                             .showSnackBar(
+//                                           SnackBar(
+//                                               content: Text(
+//                                                   'Driver request sent successfully')),
+//                                         );
+//                                       } catch (e) {
+//                                         ScaffoldMessenger.of(context)
+//                                             .showSnackBar(
+//                                           SnackBar(
+//                                               content: Text(
+//                                                   'Failed to send driver. Try again.')),
+//                                         );
+//                                       }
+//                                     } else {
+//                                       ScaffoldMessenger.of(context)
+//                                           .showSnackBar(
+//                                         SnackBar(
+//                                             content: Text(
+//                                                 'No network connection available')),
+//                                       );
+//                                     }
+//                                   },
+//                           ),
+//                           IconButton(
+//                             icon: Icon(Icons.done_all),
+//                             color:
+//                                 isSendButtonPressed && !isDoneButtonPressed
+//                                     ? Colors.teal
+//                                     : Colors.grey,
+//                             onPressed:
+//                                 isSendButtonPressed && !isDoneButtonPressed
+//                                     ? () async {
+//                                         // When done_all button is pressed, mark both buttons as unpressable
+//                                         await _updateButtonStates(
+//                                             tripId, true, true);
 
-    //                                         await FirebaseFirestore.instance
-    //                                             .collection('successfulTrips')
-    //                                             .add({
-    //                                           'tripId': tripId,
-    //                                           'driverId': widget.driverId,
-    //                                           'userId': userId,
-    //                                           'timestamp':
-    //                                               FieldValue.serverTimestamp(),
-    //                                         });
+//                                         await FirebaseFirestore.instance
+//                                             .collection('successfulTrips')
+//                                             .add({
+//                                           'tripId': tripId,
+//                                           'driverId': widget.driverId,
+//                                           'userId': userId,
+//                                           'timestamp':
+//                                               FieldValue.serverTimestamp(),
+//                                         });
 
-    //                                         setState(() {});
+//                                         setState(() {});
 
-    //                                         ScaffoldMessenger.of(context)
-    //                                             .showSnackBar(
-    //                                           SnackBar(
-    //                                               content: Text(
-    //                                                   'Request completed and deleted.')),
-    //                                         );
-    //                                       }
-    //                                     : null,
-    //                           ),
-    //                         ],
-    //                       ),
-    //                     ],
-    //                   ),
-    //                 ),
-    //               );
-    //             },
-    //           );
-    //         },
-    //       ),
-    //   ),
-    // );
+//                                         ScaffoldMessenger.of(context)
+//                                             .showSnackBar(
+//                                           SnackBar(
+//                                               content: Text(
+//                                                   'Request completed and deleted.')),
+//                                         );
+//                                       }
+//                                     : null,
+//                           ),
+//                         ],
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             },
+//           );
+//         },
+//       ),
+//   ),
+// );
 //   }
 
-
-
-
-
-
-
-  //  Future<void> _launchPhoneNumber(String phoneNumber) async {
-  //   final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
-  //   if (await canLaunchUrl(launchUri)) {
-  //     await launchUrl(launchUri);
-  //   } else {
-  //     print('Could not launch $launchUri');
-  //   }
-  // }
-
-
-
+//  Future<void> _launchPhoneNumber(String phoneNumber) async {
+//   final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+//   if (await canLaunchUrl(launchUri)) {
+//     await launchUrl(launchUri);
+//   } else {
+//     print('Could not launch $launchUri');
+//   }
 // }
 
-
-
-
-
-
-
-
-
-
+// }
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
@@ -458,6 +440,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
 
 class DriverAcceptedPage extends StatefulWidget {
   final String driverId;
@@ -477,6 +460,8 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
   bool isLoadingMore = false;
   bool hasMoreData = true;
   DocumentSnapshot? lastDocument; // Track last loaded document
+
+
 
   Future<Map<String, dynamic>> _fetchUserDetails(String userId) async {
     final userDoc =
@@ -676,54 +661,58 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
           }
           return true;
         },
-       child: ListView.builder(
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final request = requests[index];
-              final userId = request['userId'];
-              final tripId = request['tripId'];
+        child: ListView.builder(
+          itemCount: requests.length,
+          itemBuilder: (context, index) {
+            final request = requests[index];
+            final userId = request['userId'];
+            final tripId = request['tripId'];
 
-              return FutureBuilder<List<Map<String, dynamic>>>(
-                future: Future.wait([
-                  _fetchUserDetails(userId),
-                  _fetchTripDetails(tripId),
-                  _fetchButtonStates(tripId),
-                ]),
-                builder: (context,
-                    AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return (Center(child: Image(image: AssetImage("assets/logo.png")),));
-                  }
+            return FutureBuilder<List<Map<String, dynamic>>>(
+              future: Future.wait([
+                _fetchUserDetails(userId),
+                _fetchTripDetails(tripId),
+                _fetchButtonStates(tripId),
+              ]),
+              builder: (context,
+                  AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return (Center(
+                    child: Image(image: AssetImage("assets/logo.png")),
+                  ));
+                }
 
-                  if (!snapshot.hasData) {
-                    return Center(child: Text('Error loading details'));
-                  }
+                if (!snapshot.hasData) {
+                  return Center(child: Text('Error loading details'));
+                }
 
-                  final userDetails = snapshot.data![0];
-                  final tripDetails = snapshot.data![1];
-                  final buttonStates = snapshot.data![2];
-                  final isSendButtonPressed =
-                      buttonStates['isSendButtonPressed'] ?? false;
-                  final isDoneButtonPressed =
-                      buttonStates['isDoneButtonPressed'] ?? false;
+                final userDetails = snapshot.data![0];
+                final tripDetails = snapshot.data![1];
+                final buttonStates = snapshot.data![2];
+                final isSendButtonPressed =
+                    buttonStates['isSendButtonPressed'] ?? false;
+                final isDoneButtonPressed =
+                    buttonStates['isDoneButtonPressed'] ?? false;
 
-                  return Card(
-                    color: Colors.teal.shade50,
-                    elevation: 5,
-                    margin: EdgeInsets.all(10),
-                    child: ListTile(
-                      title: Text('Username: ${userDetails['username']}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Phone: ${userDetails['phone_number']}'),
-                          Text(
-                              'Pickup Location: ${tripDetails['pickupLocation']}'),
-                          Text(
-                              'Delivery Location: ${tripDetails['deliveryLocation']}'),
-                          Text('Fare: ${tripDetails['fare']}'),
-                          Text('Distance: ${tripDetails['distance']}'),
-                          Row(
+                return Card(
+                  color: Colors.teal.shade50,
+                  elevation: 5,
+                  margin: EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Text('Username: ${userDetails['username']}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Phone: ${userDetails['phone_number']}'),
+                        Text(
+                            'Pickup Location: ${tripDetails['pickupLocation']}'),
+                        Text(
+                            'Delivery Location: ${tripDetails['deliveryLocation']}'),
+                        Text('Fare: ${tripDetails['fare']}'),
+                        Text('Distance: ${tripDetails['distance']}'),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
@@ -785,6 +774,8 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                             await _checkNetworkStatus();
                                         if (isNetworkAvailable) {
                                           try {
+                                          
+
                                             await FirebaseFirestore.instance
                                                 .collection('arrivedDrivers')
                                                 .add({
@@ -860,18 +851,20 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              );
-            },
-          ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
-     Future<void> _launchPhoneNumber(String phoneNumber) async {
+
+  Future<void> _launchPhoneNumber(String phoneNumber) async {
     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
@@ -880,9 +873,3 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
     }
   }
 }
-
-
-
-
-
-

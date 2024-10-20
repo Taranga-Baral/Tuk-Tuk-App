@@ -1004,6 +1004,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+        padding: const EdgeInsets.only(left: 20,top: 2),
+        child: Image(image: AssetImage("assets/fordriverlogo.png")),
+      ),
         backgroundColor: Colors.teal.shade500,
         title: Center(child: const Text('Driver HomePage',style: TextStyle(color: Colors.white,fontSize: 18),)),
         actions: [
@@ -1053,6 +1057,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     : false; // Default to false if index is out of bounds
 
                 return TripCardWidget(
+                  driverId: widget.driverEmail,
+                  userId: tripData.userId.toString(),
+                  tripId: tripData.tripId.toString(),
                   tripData: _tripDataList[index],
                   onPhoneTap: () {
                     if (tripData.phoneNumber != null &&
@@ -1073,7 +1080,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   },
                   index: index,
                   isButtonDisabled:
-                      isButtonDisabled, // Use the checked value here
+                      isButtonDisabled,  // Use the checked value here
                 );
               },
             ),
@@ -1082,7 +1089,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   Future<void> showTripAndUserIdInSnackBar(
       TripModel tripData, BuildContext context, int index) async {
-    final tripId = tripData.tripId ?? 'No Trip ID';
+    final  tripId = tripData.tripId ?? 'No Trip ID';
     final userId = tripData.userId ?? 'No User ID';
     final driverId = widget.driverEmail;
 

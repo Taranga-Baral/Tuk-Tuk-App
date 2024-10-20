@@ -42,10 +42,24 @@ class _HomePageState extends State<HomePage> {
   final List<String> modes = ['Petrol', 'Electric'];
 
   @override
+  
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () => setState(() => _isLoading = false));
+    _initializePage();
   }
+
+  Future<void> _initializePage() async {
+    await _requestLocationPermission();
+              // Simulate clicking the location button in the web view
+              if (webView != null) {
+                await webView!.evaluateJavascript(source: """
+          document.querySelector('.control-button.control-button-last').click();
+        """);
+              }
+  }
+
+  
 
   Future<String> _getDistanceFromAPI(String loc1, String loc2) async {
     final apiUrl =
