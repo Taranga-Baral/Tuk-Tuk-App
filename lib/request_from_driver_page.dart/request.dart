@@ -1,6 +1,10 @@
+import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/chat/chat_display_page.dart';
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RequestPage extends StatefulWidget {
@@ -43,19 +47,16 @@ class _RequestPageState extends State<RequestPage> {
           .collection('requestsofDrivers')
           .where('userId', isEqualTo: widget.userId)
           .orderBy('requestTimestamp', descending: true)
-          .limit(30) // Load first 30 documents
+          .limit(20) // Load first 20 documents
           .get();
-
-      print('Requests loaded: ${requestsSnapshot.docs.length}');
 
       print('Fetching arrived drivers...');
       final arrivedDriversSnapshot = await FirebaseFirestore.instance
           .collection('arrivedDrivers')
           .where('userId', isEqualTo: widget.userId)
-          .orderBy('timestamp', descending: true) // Sort by timestamp
+          .orderBy('timestamp', descending: true)
+          .limit(20)
           .get();
-
-      print('Arrived drivers loaded: ${arrivedDriversSnapshot.docs.length}');
 
       // Debugging: Print retrieved documents
       for (var doc in requestsSnapshot.docs) {
@@ -216,7 +217,9 @@ class _RequestPageState extends State<RequestPage> {
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {
                                   return Center(
-                                      child: CircularProgressIndicator());
+                                      child: Center(
+                                        child: Image(image: AssetImage("assets/logo.png")),
+                                      ));
                                 }
 
                                 final driverData =
@@ -224,155 +227,257 @@ class _RequestPageState extends State<RequestPage> {
                                 final tripData = snapshot.data!['trip'] ?? {};
 
                                 return Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 12, right: 5, left: 5),
-                                  child: Card(
-                                    margin: EdgeInsets.all(10),
-                                    child: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        ListTile(
-                                          // leading: CircleAvatar(
-                                          //     radius: 20,
-                                          //     backgroundImage: driverData['profilePictureUrl'] !=
-                                          //             null
-                                          //         ? NetworkImage(driverData['profilePictureUrl'])
-                                          //         : AssetImage(
-                                          //                 'assets/tuktuk.jpg')
-                                          //             as ImageProvider, // Fallback image if no URL
-                                          //   ),
-                                          trailing: GestureDetector(
-                                            child: Icon(Icons.phone),
-                                            onTap: () {
-                                              final phoneNumber =
-                                                  driverData['phone'];
-                                              if (phoneNumber != null &&
-                                                  phoneNumber.isNotEmpty) {
-                                                _launchPhoneNumber(phoneNumber);
-                                              } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                      content: Text(
-                                                          'Phone number is unavailable')),
-                                                );
-                                              }
-                                            },
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 15),
+                                  child: AnimatedContainer(
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                    child: FlipCard(
+                                      direction: FlipDirection.HORIZONTAL,
+                                      front: Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        shadowColor:
+                                            Colors.grey.withOpacity(0.5),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  
+                                                  
+                                                  CircleAvatar(
+                                                    radius: 25,
+                                                    backgroundImage: driverData[
+                                                                'profilePictureUrl'] !=
+                                                            null
+                                                        ? NetworkImage(driverData[
+                                                            'profilePictureUrl'])
+                                                        : AssetImage(
+                                                                'assets/tuktuk.jpg')
+                                                            as ImageProvider,
+                                                  ),
+                                                  SizedBox(width: 15),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        '${driverData['name'] ?? 'Unknown'}',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 18,
+                                                          color: Colors.black87,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'Plate: ${driverData['numberPlate'] ?? 'N/A'}',
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color:
+                                                              Colors.grey[700],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              Divider(
+                                                  height: 20,
+                                                  color: Colors.grey[300]),
+                                              SizedBox(height: 10),
+                                              _buildInfoRow(
+                                                  'Passenger:',
+                                                  tripData['no_of_person']
+                                                          .toString() ??
+                                                      'N/A'),
+                                              _buildInfoRow(
+                                                  'Pickup:',
+                                                  tripData['pickupLocation'] ??
+                                                      'N/A'),
+                                              _buildInfoRow(
+                                                  'Delivery:',
+                                                  tripData[
+                                                          'deliveryLocation'] ??
+                                                      'N/A'),
+                                              _buildInfoRow(
+                                                  'Vehicle:',
+                                                  tripData['vehicle_mode'] ??
+                                                      'N/A'),
+                                            ],
                                           ),
-                                          title: Column(
+                                        ),
+                                      ),
+                                      back: Card(
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        shadowColor:
+                                            Colors.grey.withOpacity(0.5),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                '${index + 1}. ${driverData['name']} - ${driverData['numberPlate']}',
+                                                'Driver Contact:',
                                                 style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              SizedBox(
-                                                height: 4,
-                                              ),
-                                              SingleChildScrollView(
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Passenger ${tripData['no_of_person']}',
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                      maxLines:
-                                                          null, // Allow multiple lines
-                                                      softWrap:
-                                                          true, // Enable text wrapping
-                                                      overflow:
-                                                          TextOverflow.visible,
-                                                      // Ensure text overflows correctly
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    Icon(
-                                                      Icons.info_outline,
-                                                      size: 14,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    Text(
-                                                      '${tripData['vehicle_mode']}',
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                      maxLines:
-                                                          null, // Allow multiple lines
-                                                      softWrap:
-                                                          true, // Enable text wrapping
-                                                      overflow: TextOverflow
-                                                          .visible, // Ensure text overflows correctly
-                                                    ),
-                                                  ],
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: Colors.black87,
                                                 ),
                                               ),
-                                              SizedBox(
-                                                height: 4,
+                                              SizedBox(height: 10),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    '${driverData['phone'] ?? 'N/A'}',
+                                                    style:
+                                                        TextStyle(fontSize: 16),
+                                                  ),
+                                                  Spacer(),
+                                                  Row(
+                                                    children: [
+                                                      IconButton(
+                                                        icon: Icon(Icons.phone,
+                                                            color:
+                                                                Colors.green),
+                                                        onPressed: () {
+                                                          final phoneNumber =
+                                                              driverData[
+                                                                  'phone'];
+                                                          if (phoneNumber !=
+                                                                  null &&
+                                                              phoneNumber
+                                                                  .isNotEmpty) {
+                                                            _launchPhoneNumber(
+                                                                phoneNumber);
+                                                          } else {
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                  content: Text(
+                                                                      'Phone number is unavailable')),
+                                                            );
+                                                          }
+                                                        },
+                                                      ),
+                                                      IconButton(
+                                                        icon: Icon(Icons.chat,
+                                                            color: Colors.blue),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .push(
+                                                            PageRouteBuilder(
+                                                              pageBuilder: (context,
+                                                                  animation,
+                                                                  secondaryAnimation) {
+                                                                return FadeScaleTransition(
+                                                                  animation:
+                                                                      animation,
+                                                                  child:
+                                                                      ChatDetailPage(
+                                                                    userId: widget
+                                                                        .userId,
+                                                                    driverId:
+                                                                        driverId,
+                                                                    tripId:
+                                                                        tripId,
+                                                                    driverName:
+                                                                        driverData[
+                                                                            'name'],
+                                                                    pickupLocation:
+                                                                        tripData[
+                                                                            'pickupLocation'],
+                                                                    deliveryLocation:
+                                                                        tripData[
+                                                                            'deliveryLocation'],
+                                                                    distance:
+                                                                        tripData[
+                                                                            'distance'],
+                                                                    no_of_person:
+                                                                        tripData[
+                                                                            'no_of_person'],
+                                                                    vehicle_mode:
+                                                                        tripData[
+                                                                            'vehicle_mode'],
+                                                                    fare: tripData[
+                                                                        'fare'],
+                                                                  ),
+                                                                );
+                                                              },
+                                                              transitionsBuilder:
+                                                                  (context,
+                                                                      animation,
+                                                                      secondaryAnimation,
+                                                                      child) {
+                                                                const begin =
+                                                                    Offset(1.0,
+                                                                        0.0);
+                                                                const end =
+                                                                    Offset.zero;
+                                                                const curve =
+                                                                    Curves
+                                                                        .easeInOut;
+
+                                                                var tween = Tween(
+                                                                    begin:
+                                                                        begin,
+                                                                    end: end);
+                                                                var offsetAnimation =
+                                                                    animation.drive(tween.chain(
+                                                                        CurveTween(
+                                                                            curve:
+                                                                                curve)));
+
+                                                                return SlideTransition(
+                                                                    position:
+                                                                        offsetAnimation,
+                                                                    child:
+                                                                        child);
+                                                              },
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              _buildInfoRow('Brand:',
+                                                  driverData['brand'] ?? 'N/A'),
+                                              _buildInfoRow('Color:',
+                                                  driverData['color'] ?? 'N/A'),
+                                              Divider(),
+                                              _buildInfoRow('Distance:',
+                                                  '${tripData['distance'] ?? 'N/A'} km'),
+                                              _buildInfoRow('Fare:',
+                                                  '${tripData['fare'] ?? 'N/A'}'),
+                                              _buildInfoRow(
+                                                'Timestamp:',
+                                                tripData['timestamp'] != null &&
+                                                        tripData['timestamp']
+                                                            is Timestamp
+                                                    ? _formatTimestamp(
+                                                        tripData['timestamp'])
+                                                    : 'N/A',
                                               ),
                                             ],
                                           ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              Text(
-                                                  'सम्पर्क: ${driverData['phone']}'),
-                                              Divider(),
-                                              Text(
-                                                  'ब्राण्ड: ${driverData['brand']}'),
-                                              Divider(),
-                                              Text(
-                                                  'रङ: ${driverData['color']}'),
-                                              Divider(),
-                                              Text(
-                                                  'चालकको ठेगाना: ${driverData['address']}'),
-                                              Divider(),
-                                              Text(
-                                                  'उठाउने स्थान: ${tripData['pickupLocation'] ?? 'N/A'}'),
-                                              Divider(),
-                                              Text(
-                                                  'डेलिभरी स्थान: ${tripData['deliveryLocation'] ?? 'N/A'}'),
-                                              Divider(),
-                                              Text(
-                                                  'दूरी: ${tripData['distance'] ?? 'N/A'}'),
-                                              Divider(),
-                                              Text(
-                                                  'भाडा: ${tripData['fare'] ?? 'N/A'}'),
-                                            ],
-                                          ),
                                         ),
-                                        Positioned(
-                                          top: -20,
-                                          right: -10,
-                                          child: CircleAvatar(
-                                            radius: 21,
-                                            backgroundImage: driverData[
-                                                        'profilePictureUrl'] !=
-                                                    null
-                                                ? NetworkImage(driverData[
-                                                    'profilePictureUrl'])
-                                                : AssetImage(
-                                                        'assets/tuktuk.jpg')
-                                                    as ImageProvider,
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -407,7 +512,10 @@ class _RequestPageState extends State<RequestPage> {
                                       snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return Text('Loading ...');
+                                  return Center(
+                                      child: Image(
+                                    image: AssetImage('assets/logo.png'),
+                                  ));
                                 }
 
                                 if (snapshot.hasError || !snapshot.hasData) {
@@ -448,349 +556,199 @@ class _RequestPageState extends State<RequestPage> {
 
                                 final fare = tripData['fare'] ?? 'N/A';
                                 final distance = tripData['distance'] ?? 'N/A';
+                                final timestamp =
+                                    tripData['requestTimestamp'] ?? 'NA';
                                 final distance_between_driver_and_passenger =
                                     tripData[
                                             'distance_between_driver_and_passenger'] ??
                                         'N/A';
 
-                                return Card(
-                                  elevation: 5,
-                                  margin: EdgeInsets.all(10),
-                                  child: AnimatedContainer(
-                                    duration: Duration(milliseconds: 300),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ListTile(
-                                          leading: CircleAvatar(
-                                            radius: 20,
-                                            backgroundImage: profilePicture !=
-                                                    null
-                                                ? NetworkImage(profilePicture)
-                                                : AssetImage(
-                                                        'assets/tuktuk.jpg')
-                                                    as ImageProvider, // Fallback image if no URL
-                                          ),
-                                          title: Column(
+                                return FlipCard(
+                                  flipOnTouch:
+                                      true, // Flip animation on card tap
+                                  direction: FlipDirection
+                                      .HORIZONTAL, // Horizontal flip
+                                  back: Card(
+                                    elevation: 5,
+                                    margin: EdgeInsets.all(10),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              'Pickup Location: $pickupLocation',
+                                              style: TextStyle(fontSize: 14)),
+                                          Divider(),
+                                          Text(
+                                              'Delivery Location: $deliveryLocation',
+                                              style: TextStyle(fontSize: 14)),
+                                          Divider(),
+                                          Text('Fare: $fare',
+                                              style: TextStyle(fontSize: 14)),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
                                             children: [
-                                              Text(
-                                                '${index + 1} . $name - $numberPlate',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                                maxLines:
-                                                    null, // Allow multiple lines
-                                                softWrap:
-                                                    true, // Enable text wrapping
-                                                overflow: TextOverflow
-                                                    .visible, // Ensure text overflows correctly
+                                              SizedBox(width: 20),
+                                              GestureDetector(
+                                                child: Icon(Icons.phone,
+                                                    color: Colors.green),
+                                                onTap: () {
+                                                  final phoneNumber =
+                                                      vehicleData['phone'];
+                                                  if (phoneNumber != null &&
+                                                      phoneNumber.isNotEmpty) {
+                                                    _launchPhoneNumber(
+                                                        phoneNumber);
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              'Phone number is unavailable')),
+                                                    );
+                                                  }
+                                                },
                                               ),
-                                              SingleChildScrollView(
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Passenger $noOfPerson',
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                      maxLines:
-                                                          null, // Allow multiple lines
-                                                      softWrap:
-                                                          true, // Enable text wrapping
-                                                      overflow: TextOverflow
-                                                          .visible, // Ensure text overflows correctly
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    Icon(
-                                                      Icons.info_outline,
-                                                      size: 13,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    Text(
-                                                      '$vehicleMode',
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                      maxLines:
-                                                          null, // Allow multiple lines
-                                                      softWrap:
-                                                          true, // Enable text wrapping
-                                                      overflow: TextOverflow
-                                                          .visible, // Ensure text overflows correctly
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                            ],
-                                          ),
-                                          subtitle: Column(
-                                            children: [
-                                              Text(
-                                                '$vehicleType $brand ($color)',
-                                                maxLines:
-                                                    null, // Allow multiple lines
-                                                softWrap:
-                                                    true, // Enable text wrapping
-                                                overflow: TextOverflow
-                                                    .visible, // Ensure text overflows correctly
-                                              ),
-                                              Text(
-                                                'चालकको कुल दुरी : ${distance_between_driver_and_passenger.toStringAsFixed(1)} किमि',
-                                                maxLines:
-                                                    null, // Allow multiple lines
-                                                softWrap:
-                                                    true, // Enable text wrapping
-                                                overflow: TextOverflow
-                                                    .visible, // Ensure text overflows correctly
-                                              ),
-                                            ],
-                                          ),
-                                          trailing: IconButton(
-                                            icon: Icon(_expandedStates[index]
-                                                ? Icons.expand_less
-                                                : Icons.expand_more),
-                                            onPressed: () {
-                                              setState(() {
-                                                _expandedStates[index] =
-                                                    !_expandedStates[
-                                                        index]; // Toggle expansion
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        if (_expandedStates[index])
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 20, left: 18),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'सम्पर्क : ',
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                    ),
-                                                    Expanded(
-                                                      // Wrap the phone text to ensure it fits
-                                                      child: Text(
-                                                        '$phone',
-                                                        maxLines:
-                                                            null, // Allow multiple lines
-                                                        softWrap:
-                                                            true, // Enable text wrapping
-                                                        overflow: TextOverflow
-                                                            .visible, // Ensure text overflows correctly
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 2),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'चालकको ठेगाना : ',
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                    ),
-                                                    Expanded(
-                                                      // Wrap the address text to ensure it fits
-                                                      child: Text(
-                                                        '$address',
-                                                        maxLines:
-                                                            null, // Allow multiple lines
-                                                        softWrap:
-                                                            true, // Enable text wrapping
-                                                        overflow: TextOverflow
-                                                            .visible, // Ensure text overflows correctly
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 2),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'उठाउने स्थान : ',
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                    ),
-                                                    Expanded(
-                                                      // Wrap the pickup location text to ensure it fits
-                                                      child: Text(
-                                                        '$pickupLocation',
-                                                        maxLines:
-                                                            null, // Allow multiple lines
-                                                        softWrap:
-                                                            true, // Enable text wrapping
-                                                        overflow: TextOverflow
-                                                            .visible, // Ensure text overflows correctly
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 2),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'डेलिभरी स्थान : ',
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                    ),
-                                                    Expanded(
-                                                      // Wrap the delivery location text to ensure it fits
-                                                      child: Text(
-                                                        '$deliveryLocation',
-                                                        maxLines:
-                                                            null, // Allow multiple lines
-                                                        softWrap:
-                                                            true, // Enable text wrapping
-                                                        overflow: TextOverflow
-                                                            .visible, // Ensure text overflows correctly
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 2),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'भाडा : ',
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                    ),
-                                                    Expanded(
-                                                      // Wrap the fare text to ensure it fits
-                                                      child: Text(
-                                                        '$fare',
-                                                        maxLines:
-                                                            null, // Allow multiple lines
-                                                        softWrap:
-                                                            true, // Enable text wrapping
-                                                        overflow: TextOverflow
-                                                            .visible, // Ensure text overflows correctly
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 2),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      'दूरी : ',
-                                                      style: TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                    ),
-                                                    Expanded(
-                                                      // Wrap the distance text to ensure it fits
-                                                      child: Text(
-                                                        '$distance km',
-                                                        maxLines:
-                                                            null, // Allow multiple lines
-                                                        softWrap:
-                                                            true, // Enable text wrapping
-                                                        overflow: TextOverflow
-                                                            .visible, // Ensure text overflows correctly
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 5),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    ElevatedButton(
-                                                      onPressed: _buttonStates[
-                                                                  tripId] ==
+                                              SizedBox(width: 20),
+                                              ElevatedButton(
+                                                onPressed:
+                                                    _buttonStates[tripId] ==
+                                                            true
+                                                        ? null
+                                                        : () {
+                                                            confirmRequest(
+                                                                userId,
+                                                                driverId,
+                                                                tripId);
+                                                          },
+                                                style: ElevatedButton.styleFrom(
+                                                  foregroundColor: Colors.white,
+                                                  backgroundColor:
+                                                      _buttonStates[tripId] ==
                                                               true
-                                                          ? null
-                                                          : () {
-                                                              confirmRequest(
-                                                                  userId,
-                                                                  driverId,
-                                                                  tripId);
-                                                            },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            _buttonStates[
-                                                                        tripId] ==
-                                                                    true
-                                                                ? Colors.grey
-                                                                : null,
-                                                      ),
-                                                      child: Text(
-                                                        _buttonStates[tripId] ==
-                                                                true
-                                                            ? 'Confirmed'
-                                                            : 'Confirm',
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 20),
-                                                    GestureDetector(
-                                                      child: Icon(Icons.phone),
-                                                      onTap: () {
-                                                        final phoneNumber =
-                                                            phone;
-                                                        if (phoneNumber !=
-                                                                null &&
-                                                            phoneNumber
-                                                                .isNotEmpty) {
-                                                          _launchPhoneNumber(
-                                                              phoneNumber);
-                                                        } else {
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                            SnackBar(
-                                                                content: Text(
-                                                                    'Phone number is unavailable')),
-                                                          );
-                                                        }
-                                                      },
-                                                    ),
-                                                  ],
+                                                          ? Colors.grey
+                                                          : Colors.blue,
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 24,
+                                                      vertical:
+                                                          12), // Padding for button
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8), // Rounded corners
+                                                  ),
                                                 ),
-                                              ],
-                                            ),
+                                                // child: Text(
+                                                //   'Confirm',
+                                                // style: TextStyle(
+                                                //   fontSize:
+                                                //       16, // Font size for the text
+                                                //   fontWeight: FontWeight
+                                                //       .bold, // Bold text
+                                                // ),
+                                                // ),
+
+                                                child: Text(
+                                                  _buttonStates[tripId] == true
+                                                      ? 'Confirmed'
+                                                      : 'Confirm',
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        16, // Font size for the text
+                                                    fontWeight: FontWeight
+                                                        .bold, // Bold text
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                      ],
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  front: Card(
+                                    
+                                    elevation: 5,
+                                    margin: EdgeInsets.all(10),
+                                    child: Container(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(15.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ListTile(
+                                              leading: CircleAvatar(
+                                                radius: 25,
+                                                backgroundImage: profilePicture !=
+                                                        null
+                                                    ? NetworkImage(
+                                                        profilePicture)
+                                                    : AssetImage(
+                                                            'assets/tuktuk.jpg')
+                                                        as ImageProvider,
+                                              ),
+                                              
+                                                  
+                                              title: Text(
+                                                '$name - $numberPlate',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                              ),
+                                              subtitle: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'Passenger: $noOfPerson | Mode: $vehicleMode',
+                                                    style:
+                                                        TextStyle(fontSize: 14),
+                                                  ),
+                                                  Text(
+                                                      '$vehicleType $brand ($color)',
+                                                      maxLines: 1),
+                                                ],
+                                              ),
+                                            ),
+                                            Divider(),
+                                            Text(
+                                              'Contact: $phone',
+                                              style: TextStyle(fontSize: 14),
+                                              softWrap: true,
+                                              overflow: TextOverflow.visible,
+                                              maxLines: null,
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              'Trip Distance: ${distance} km',
+                                              softWrap: true,
+                                              overflow: TextOverflow.visible,
+                                              maxLines: null,
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              'Driver is ${distance_between_driver_and_passenger} km far from your Pickup Place',
+                                              style: TextStyle(fontSize: 14),
+                                              softWrap: true,
+                                              overflow: TextOverflow.visible,
+                                              maxLines: null,
+                                            ),
+                                            SizedBox(height: 5),
+                                            Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: Icon(Icons.arrow_forward_ios_rounded,
+                                                  color: Colors
+                                                      .blue), // Flip prompt
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 );
@@ -804,7 +762,7 @@ class _RequestPageState extends State<RequestPage> {
                 );
               },
             )
-          : Center(child: CircularProgressIndicator()),
+          : Center(child: Image(image: AssetImage("assets/logo.png"))),
     );
   }
 
@@ -821,5 +779,41 @@ class _RequestPageState extends State<RequestPage> {
       'driver': driverSnapshot.data(),
       'trip': tripSnapshot.data(),
     };
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Text(
+            '$label',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              overflow: TextOverflow.visible,
+              textAlign: TextAlign.start,
+              softWrap: true,
+              maxLines: null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatTimestamp(Timestamp timestamp) {
+    final dateTime =
+        timestamp.toDate(); // Convert Firestore Timestamp to DateTime
+    return DateFormat('yyyy-MM-dd HH:mm')
+        .format(dateTime); // Customize the format as needed
   }
 }

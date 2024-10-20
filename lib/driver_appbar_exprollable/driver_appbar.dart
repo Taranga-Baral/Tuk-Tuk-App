@@ -45,7 +45,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       leading: Padding(
-        padding: const EdgeInsets.only(left: 20,top: 2),
+        padding: const EdgeInsets.only(left: 20, top: 2),
         child: Image(image: AssetImage("assets/fordriverlogo.png")),
       ),
       // backgroundColor: widget.appBarColor,
@@ -56,7 +56,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
         widget.title,
         style: TextStyle(
           color: Colors.white,
-          fontSize: MediaQuery.of(context).size.width * 0.05, // Responsive font size
+          fontSize:
+              MediaQuery.of(context).size.width * 0.05, // Responsive font size
         ),
       ),
       centerTitle: true,
@@ -69,7 +70,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
           },
         ),
       ],
-     
     );
   }
 
@@ -113,31 +113,68 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 title: Text(
                   'Driver Info',
                   style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width * 0.06, // Responsive title font size
+                    fontSize: MediaQuery.of(context).size.width *
+                        0.06, // Responsive title font size
                     fontWeight: FontWeight.bold,
                     color: widget.appBarColor,
                   ),
                 ),
                 content: Container(
-                  width: MediaQuery.of(context).size.width * 0.8, // Responsive dialog width
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  width: MediaQuery.of(context).size.width *
+                      0.8, // Responsive dialog width
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircleAvatar(
-                        radius: MediaQuery.of(context).size.width * 0.1, // Responsive avatar size
-                        backgroundImage: NetworkImage(
-                          data['profilePictureUrl'] ?? '',
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 15,
+                            ),
+                            CircleAvatar(
+                              radius: MediaQuery.of(context).size.width *
+                                  0.1, // Responsive avatar size
+                              backgroundImage: NetworkImage(
+                                data['profilePictureUrl'] ?? '',
+                              ),
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            CircleAvatar(
+                              radius: MediaQuery.of(context).size.width *
+                                  0.1, // Responsive avatar size
+                              backgroundImage: NetworkImage(
+                                data['selfieWithCitizenshipUrl'] ?? '',
+                              ),
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            CircleAvatar(
+                              radius: MediaQuery.of(context).size.width *
+                                  0.1, // Responsive avatar size
+                              backgroundImage: NetworkImage(
+                                data['selfieWithLicenseUrl'] ?? '',
+                              ),
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(
                         height: 10,
                       ),
-                     
                       Text(
                         data['name'] ?? 'Unknown',
                         style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * 0.045, // Responsive text size
+                          fontSize: MediaQuery.of(context).size.width *
+                              0.045, // Responsive text size
                           fontWeight: FontWeight.bold,
                           color: widget.appBarColor,
                         ),
