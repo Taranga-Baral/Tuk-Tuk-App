@@ -773,59 +773,187 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   // Other existing methods...
-  Future<void> _fetchTrips() async {
-    if (_isLoading || !_hasMore)
-      return; // Check if already loading or no more trips
-    setState(() => _isLoading = true); // Set loading state to true
+Future<void> _fetchTrips() async {
+  if (_isLoading || !_hasMore) return; // Check if already loading or no more trips
+  setState(() => _isLoading = true); // Set loading state to true
 
-    Query query = FirebaseFirestore.instance
-        .collection('trips')
-        .orderBy(_getSortField(), descending: _getSortDescending())
-        .limit(_itemsPerPage); // Limit results to items per page
+  // Get the current time and the cutoff time (1 hour ago)
+  DateTime now = DateTime.now();
+  DateTime cutoffTime = now.subtract(Duration(hours: 1));
 
-    if (_lastDocument != null) {
-      query = query.startAfterDocument(
-          _lastDocument!); // Start after last fetched document
-    }
+  Query query = FirebaseFirestore.instance
+      .collection('trips')
+      .where('timestamp', isGreaterThan: Timestamp.fromDate(cutoffTime)) // Filter for trips within the last hour
+      .orderBy(_getSortField(), descending: _getSortDescending())
+      .limit(_itemsPerPage); // Limit results to items per page
 
-    try {
-      final querySnapshot = await query.get();
-      if (querySnapshot.docs.isEmpty) {
-        setState(() => _hasMore = false); // No more trips to load
-        await _loadButtonStates();
-      } else {
-        _lastDocument = querySnapshot.docs.last; // Update last document
-        var newTrips = querySnapshot.docs.map((doc) {
-          var data = doc.data() as Map<String, dynamic>;
-          data['distance'] =
-              double.tryParse(data['distance'] as String ?? '') ?? 0.0;
-          data['fare'] = double.tryParse(data['fare'] as String ?? '') ?? 0.0;
-          data['tripId'] = doc.id; // Get trip ID
-          return TripModel.fromJson(data);
-        }).toList();
-
-        _tripDataList.addAll(newTrips); // Add new trips to the list
-
-        // Initialize button states for newly added trips
-        for (var trip in newTrips) {
-          _isButtonDisabledList.add(false); // Set initial state as enabled
-        }
-
-        // Load button states after new trips are fetched
-        await _loadButtonStates();
-
-        // Sort the complete trip list
-        _tripDataList.sort((a, b) => _sortTrips(a, b));
-
-        if (mounted) setState(() {}); // Update UI
-      }
-    } catch (e) {
-      print('Error fetching trips: $e'); // Handle any errors
-    } finally {
-      if (mounted)
-        setState(() => _isLoading = false); // Set loading state to false
-    }
+  if (_lastDocument != null) {
+    query = query.startAfterDocument(_lastDocument!); // Start after last fetched document
   }
+
+  try {
+    print('Fetching trips...'); // Debugging print
+    final querySnapshot = await query.get();
+    if (querySnapshot.docs.isEmpty) {
+      setState(() => _hasMore = false); // No more trips to load
+      await _loadButtonStates();
+    } else {
+      _lastDocument = querySnapshot.docs.last; // Update last document
+
+      // Step 1: Get driverEmail from widget
+      String driverEmail = widget.driverEmail; // Assuming driverEmail is available in the widget
+
+      // Step 2: Fetch vehicleData for the specific driverEmail
+      var vehicleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('vehicleData')
+          .where('email', isEqualTo: driverEmail) // Match the driver email in vehicleData
+          .get();
+
+      // Step 3: Create a map of vehicleData for the specific driverEmail
+      Map<String, dynamic>? vehicleData;
+      if (vehicleQuerySnapshot.docs.isNotEmpty) {
+        vehicleData = vehicleQuerySnapshot.docs.first.data(); // Get vehicle data for this driver
+        print('Fetched vehicleData for driver: $vehicleData'); // Debugging print
+      } else {
+        print('No vehicleData found for driverEmail: $driverEmail'); // Debugging print
+      }
+
+      // Step 4: Filter trips based on vehicleType match
+      var newTrips = querySnapshot.docs.map((doc) {
+        var tripData = doc.data() as Map<String, dynamic>;
+        String? vehicleTypeFromVehicleData = vehicleData?['vehicleType'] as String?;
+        String? vehicleTypeFromTrips = tripData['vehicleType'] as String?;
+
+        if (vehicleTypeFromVehicleData != null && vehicleTypeFromTrips != null) {
+          // Only add the trip if the vehicle types match
+          if (vehicleTypeFromVehicleData == vehicleTypeFromTrips) {
+            tripData['distance'] =
+                double.tryParse(tripData['distance'] as String? ?? '') ?? 0.0;
+            tripData['fare'] =
+                double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
+            tripData['tripId'] = doc.id; // Add trip ID
+            return TripModel.fromJson(tripData);
+          }
+        }
+        return null; // Return null if the types don't match
+      }).where((trip) => trip != null).toList().cast<TripModel>();
+
+      print('Fetched and filtered trips: $newTrips'); // Debugging print
+
+      // Add new trips to the list
+      _tripDataList.addAll(newTrips);
+
+      // Initialize button states for newly added trips
+      for (var trip in newTrips) {
+        _isButtonDisabledList.add(false); // Set initial state as enabled
+      }
+
+      // Load button states after new trips are fetched
+      await _loadButtonStates();
+
+      // Sort the complete trip list
+      _tripDataList.sort((a, b) => _sortTrips(a, b));
+
+      if (mounted) setState(() {}); // Update UI
+    }
+  } catch (e) {
+    print('Error fetching trips: $e'); // Handle any errors
+  } finally {
+    if (mounted) setState(() => _isLoading = false); // Set loading state to false
+  }
+}
+
+
+
+
+
+//   Future<void> _fetchTrips() async {
+//   if (_isLoading || !_hasMore) return; // Check if already loading or no more trips
+//   setState(() => _isLoading = true); // Set loading state to true
+
+//   Query query = FirebaseFirestore.instance
+//       .collection('trips')
+//       .orderBy(_getSortField(), descending: _getSortDescending())
+//       .limit(_itemsPerPage); // Limit results to items per page
+
+//   if (_lastDocument != null) {
+//     query = query.startAfterDocument(_lastDocument!); // Start after last fetched document
+//   }
+
+//   try {
+//     final querySnapshot = await query.get();
+//     if (querySnapshot.docs.isEmpty) {
+//       setState(() => _hasMore = false); // No more trips to load
+//       await _loadButtonStates();
+//     } else {
+//       _lastDocument = querySnapshot.docs.last; // Update last document
+//       var newTrips = <TripModel>[];
+
+//       for (var doc in querySnapshot.docs) {
+//         var tripData = doc.data() as Map<String, dynamic>;
+
+//         // Ensure driverId exists and is not null
+//         String? driverId = tripData['driverId'] as String?;
+//         if (driverId == null || driverId.isEmpty) {
+//           print('Skipping trip: driverId is null or empty');
+//           continue; // Skip this trip if driverId is missing
+//         }
+
+//         // Fetch the vehicleData based on the driverId
+//         var vehicleSnapshot = await FirebaseFirestore.instance
+//             .collection('vehicleData')
+//             .doc(driverId)
+//             .get();
+
+//         if (vehicleSnapshot.exists) {
+//           var vehicleData = vehicleSnapshot.data() as Map<String, dynamic>;
+
+//           // Ensure vehicleType exists in both collections
+//           String? vehicleTypeFromVehicleData = vehicleData['vehicleType'] as String?;
+//           String? vehicleTypeFromTrips = tripData['vehicleType'] as String?;
+
+//           if (vehicleTypeFromVehicleData == null || vehicleTypeFromTrips == null) {
+//             print('Skipping trip: vehicleType is missing in either collection');
+//             continue; // Skip this trip if vehicleType is missing
+//           }
+
+//           // Only add the trip if the vehicle types match
+//           if (vehicleTypeFromVehicleData == vehicleTypeFromTrips) {
+//             tripData['distance'] =
+//                 double.tryParse(tripData['distance'] as String? ?? '') ?? 0.0;
+//             tripData['fare'] =
+//                 double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
+//             tripData['tripId'] = doc.id; // Add trip ID
+
+//             newTrips.add(TripModel.fromJson(tripData));
+//           }
+//         }
+//       }
+
+//       // Add new trips to the list
+//       _tripDataList.addAll(newTrips);
+
+//       // Initialize button states for newly added trips
+//       for (var trip in newTrips) {
+//         _isButtonDisabledList.add(false); // Set initial state as enabled
+//       }
+
+//       // Load button states after new trips are fetched
+//       await _loadButtonStates();
+
+//       // Sort the complete trip list
+//       _tripDataList.sort((a, b) => _sortTrips(a, b));
+
+//       if (mounted) setState(() {}); // Update UI
+//     }
+//   } catch (e) {
+//     print('Error fetching trips: $e'); // Handle any errors
+//   } finally {
+//     if (mounted) setState(() => _isLoading = false); // Set loading state to false
+//   }
+// }
+
+
 
   Future<void> _loadButtonStates() async {
     final driverId = widget.driverEmail;

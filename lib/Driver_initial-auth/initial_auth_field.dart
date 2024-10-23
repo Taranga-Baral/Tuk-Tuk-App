@@ -527,7 +527,9 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                                 });
                               },
                               items: <String>[
-                                'Tuk Tuk'
+                                'Tuk Tuk',
+                                'Motor Bike',
+                                'Taxi'
                               ].map<DropdownMenuItem<String>>((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,

@@ -101,20 +101,82 @@ class _TripCardWidgetState extends State<TripCardWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '${widget.index + 1}.  ${widget.tripData.username}  -  ${widget.tripData.noofPerson} Passenger  -  ${widget.tripData.vehicleMode}',
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${widget.index + 1}. ${widget.tripData.username}',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                ),
+
+                
+
+                Text(
+                  'NPR ${widget.tripData.fare}',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                ),
+
+                Text(
+                  '${widget.tripData.distance.toStringAsFixed(1)} Km',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                ),
+
+
+              ],
             ),
             Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: widget.tripData.vehicleType == 'Tuk Tuk'
+                              ? AssetImage('assets/homepage_tuktuk.png')
+                              : widget.tripData.vehicleType == 'Motor Bike'
+                                  ? AssetImage('assets/homepage_motorbike.png')
+                                  : AssetImage('assets/homepage_taxi.png'))),
+                ),
+
+
+
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: widget.tripData.noofPerson == 1
+                              ? AssetImage('assets/driver_1_passenger.png')
+                              : widget.tripData.noofPerson == 2
+                                  ? AssetImage('assets/driver_2_passenger.png')
+                                  : widget.tripData.noofPerson == 3 ? AssetImage('assets/driver_3_passenger.png')
+                                  : widget.tripData.noofPerson == 4 ? AssetImage('assets/driver_4_passenger.png')
+                                  : AssetImage('assets/driver_5_passenger.png')
+                                  
+                                  )),
+                ),
+
+                
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: widget.tripData.vehicleMode == 'Electric'
+                              ? AssetImage(
+                                  'assets/driver_homepage_electric.png')
+                              : AssetImage(
+                                  'assets/driver_homepage_petrol.png'))),
+                ),
+              ],
+            ),
             Text('Pickup Location: ${widget.tripData.pickupLocation}'),
             Divider(),
             Text('Delivery Location: ${widget.tripData.deliveryLocation}'),
             Divider(),
             Text('Municipality: ${widget.tripData.municipalityDropdown}'),
-            Divider(),
-            Text('Fare: ${widget.tripData.fare}'),
-            Divider(),
-            Text('Distance: ${widget.tripData.distance}'),
             Divider(),
             Text('Timestamp: ${widget.tripData.timestamp}'),
             Row(

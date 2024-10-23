@@ -9,6 +9,7 @@ class TripModel {
   String? pickupLocation;
   String? deliveryLocation;
   String? vehicleMode;
+  String? vehicleType;
   String? municipalityDropdown;
   int? noofPerson;
   double fare;
@@ -24,6 +25,7 @@ class TripModel {
     this.deliveryLocation,
     this.municipalityDropdown,
     this.vehicleMode,
+    this.vehicleType,
     this.noofPerson,
     required this.fare,
     required this.distance,
@@ -39,6 +41,7 @@ class TripModel {
       pickupLocation: json['pickupLocation'] as String?,
       deliveryLocation: json['deliveryLocation'] as String?,
       vehicleMode: json['vehicle_mode'] as String?,
+      vehicleType: json['vehicleType'] as String?,
       municipalityDropdown: json['municipalityDropdown'] as String?,
       noofPerson: json['no_of_person'] as int?,
       fare: (json['fare'] as num).toDouble(),

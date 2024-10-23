@@ -276,25 +276,50 @@ class _HomePage1State extends State<HomePage1> {
                     ),
                     SizedBox(height: 20),
                     Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.05),
-                      child: _buildCard(
-                        context: context,
-                        title: 'बाहिर निस्किने ?',
-                        subtitle: 'Signout Safely',
-                        icon: Icons.logout,
-                        isFullWidth: true,
-                        onTap: () {
-                          FirebaseAuth.instance.signOut();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SignInPage(),
-                            ),
-                          );
-                        },
-                      ),
+  padding: EdgeInsets.symmetric(horizontal: constraints.maxWidth * 0.05),
+  child: _buildCard(
+    context: context,
+    title: 'बाहिर निस्किने ?',
+    subtitle: 'Signout Safely',
+    icon: Icons.logout,
+    isFullWidth: true,
+    onTap: () {
+      // Show confirmation dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirm Sign Out'),
+            content: Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Sign out and navigate to the SignInPage
+                  FirebaseAuth.instance.signOut();
+                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SignInPage(),
                     ),
+                  );
+                },
+                child: Text('Sign Out'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  ),
+)
+
                   ],
                 ),
               );

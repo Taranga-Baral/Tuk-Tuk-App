@@ -381,7 +381,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Fare: \$${tripDetails['fare']}',
+                      'Fare: NPR ${tripDetails['fare']}',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
