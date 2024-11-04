@@ -1136,14 +1136,14 @@ Future<void> _fetchTrips() async {
         padding: const EdgeInsets.only(left: 20,top: 2),
         child: Image(image: AssetImage("assets/fordriverlogo.png")),
       ),
-        backgroundColor: Colors.teal.shade500,
-        title: Center(child: const Text('Driver HomePage',style: TextStyle(color: Colors.white,fontSize: 18),)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Center(child: const Text('Driver HomePage',style: TextStyle(color: Colors.black54,fontSize: 18,),)),
         actions: [
           Row(
             children: [
-              
               PopupMenuButton<String>(
-                icon: const Icon(Icons.sort_rounded),
+                icon: const Icon(Icons.login_outlined),
                 onSelected: _onMenuItemSelected,
                 itemBuilder: (BuildContext context) {
                   return [

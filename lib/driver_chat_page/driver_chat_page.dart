@@ -311,10 +311,11 @@ class _DriverChatPageState extends State<DriverChatPage> {
                           detailsSnapshot.data![1] as Map<String, dynamic>?;
 
                       return Card(
+                        
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(12.0), // Rounded corners
   ),
-  elevation: 5,
+  elevation: 0,
   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
   child: Padding(
     padding: const EdgeInsets.all(16.0),
@@ -401,7 +402,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                     'Latest Message: ${chatData['message']}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[700],
+                      color: Colors.redAccent,
                     ),
                   ),
                   SizedBox(height: 8),
@@ -444,7 +445,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                   ),
                 );
               },
-              icon: Icon(Icons.chat, color: Colors.teal),
+              icon: Icon(Icons.chat, color: Colors.redAccent.shade100),
               tooltip: 'Chat with driver',
             ),
           ],

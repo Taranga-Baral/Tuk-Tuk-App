@@ -312,7 +312,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           color: Colors.orange,
                           screenWidth: screenWidth,
                         ),
-                        SizedBox(height: screenHeight * 0.02),
+                        SizedBox(height: 50),
                         SizedBox(
                           height: screenHeight * 0.3, // Make chart height responsive
                           child: PieChart(
@@ -369,7 +369,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               child: Text(
                 title,
                 style: TextStyle(
-                  fontSize: screenWidth * 0.045, // Responsive font size
+                  fontSize: 18, // Responsive font size
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -377,7 +377,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             Text(
               value,
               style: TextStyle(
-                fontSize: screenWidth * 0.045, // Responsive font size
+                fontSize: 18, // Responsive font size
                 fontWeight: FontWeight.bold,
                 color: color,
               ),

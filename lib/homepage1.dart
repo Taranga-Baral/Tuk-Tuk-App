@@ -22,8 +22,6 @@ class HomePage1 extends StatefulWidget {
 
 class _HomePage1State extends State<HomePage1> {
   String mapsearchedplace = '';
-  final String deliveryLatitude = '27.6098';
-  final String deliveryLongitude = '84.5119';
 
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
@@ -93,6 +91,7 @@ class _HomePage1State extends State<HomePage1> {
 
         return Scaffold(
           appBar: AppBar(
+            
             elevation: 0,
             actions:  [
               Row(
@@ -125,6 +124,7 @@ class _HomePage1State extends State<HomePage1> {
             ),
           ),
           body: LayoutBuilder(
+            
             builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
                 child: Column(
@@ -314,6 +314,7 @@ class _HomePage1State extends State<HomePage1> {
               ),
             ],
           );
+          
         },
       );
     },

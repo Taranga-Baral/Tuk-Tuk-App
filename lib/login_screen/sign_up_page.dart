@@ -99,19 +99,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
         preferredSize: Size(screenWidth, screenHeight * 0.2),
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(28),
-              bottomRight: Radius.circular(28)),
+              bottomLeft: Radius.circular(0),
+              bottomRight: Radius.circular(0)),
           child: Container(
-            height: screenHeight * 0.42,
+            height: screenHeight * 0.39,
             width: screenWidth,
-            color: const Color.fromARGB(255, 200, 54, 244),
+            decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/signup_container_image.png"),fit: BoxFit.cover,opacity: 1)),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
-                  radius: 20,
+                  radius: MediaQuery.of(context).size.height *0.05,
                   backgroundImage: AssetImage('assets/signin_signup_logo.jpg'),
                 ),
                   SizedBox(
@@ -127,9 +127,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     child: const Text(
                       ' Already? Sign In Here.',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w600,
-                          decoration: TextDecoration.underline,
                           decorationColor: Colors.white),
                     ),
                   ),
@@ -154,8 +153,39 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+//               RichText(
+//   text: TextSpan(
+//     children: const [
+//       TextSpan(
+//         text: 'Sign ',
+//         style: TextStyle(
+//           color: Color.fromARGB(255, 163, 66, 192), // Purple color
+//           fontSize: 30,
+//           fontWeight: FontWeight.w600,
+//         ),
+//       ),
+//       TextSpan(
+//         text: 'Up',
+//         style: TextStyle(
+//           color: Colors.redAccent, // Adjust color as needed
+//           fontSize: 30,
+//           fontWeight: FontWeight.w600,
+//         ),
+//       ),
+//       TextSpan(
+//         text: '.',
+//         style: TextStyle(
+//           color: Colors.redAccent, // Adjust color as needed
+//           fontSize: 30,
+//           fontWeight: FontWeight.w900,
+//         ),
+//       ),
+//     ],
+//   ),
+// ),
+
               SizedBox(
-                height: 5,
+                height: 18,
               ),
               Padding(
                 padding: EdgeInsets.all(12),
@@ -311,7 +341,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         child: GestureDetector(
                           onTap: _register,
                           child: Container(
-                            height: screenHeight * 0.07,
+                            height: screenHeight * 0.08,
                             width: screenWidth,
                             color: _color,
                             child: const Center(
@@ -319,7 +349,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 'Register',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 26,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

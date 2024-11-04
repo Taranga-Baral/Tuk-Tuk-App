@@ -131,15 +131,16 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerPr
           // Simulate refresh
         },
         child: Icon(Icons.refresh,color: Colors.white,),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.redAccent.shade200,
       ),
     );
   }
 
   Widget _buildCustomBottomNavBar(BuildContext context) {
-  // Use MediaQuery to make the layout responsive
-  double iconSize = MediaQuery.of(context).size.width * 0.07; // Responsive icon size
-  double labelSize = MediaQuery.of(context).size.width * 0.03; // Responsive label size
+  // double iconSize = MediaQuery.of(context).size.width * 0.07; // Responsive icon size
+  // double labelSize = MediaQuery.of(context).size.width * 0.03; // Responsive label size
+  double iconSize = 18;
+  double labelSize = 18;
 
   return Column(
     mainAxisSize: MainAxisSize.min, // Ensures the bottom nav bar takes minimal space
@@ -183,14 +184,14 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerPr
             child: Icon(
               icon,
               size: isSelected ? iconSize + 5 : iconSize,
-              color: isSelected ? Colors.teal : Colors.grey,
+              color: isSelected ? Colors.redAccent.shade200 : Colors.grey,
             ),
           ),
           Text(
             label,
             style: TextStyle(
               fontSize: labelSize,
-              color: isSelected ? Colors.teal : Colors.grey,
+              color: isSelected ? Colors.redAccent : Colors.grey,
             ),
           ),
         ],

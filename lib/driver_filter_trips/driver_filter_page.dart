@@ -166,15 +166,17 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
             child: Text(
           'Driver Filter Page',
           style: TextStyle(
-              color: Colors.white,
-              fontSize: MediaQuery.of(context).size.height * 0.023),
+              color: Colors.black54,
+              fontSize: 18
+              ),
         )),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(
               _showDropdowns ? Icons.expand_less : Icons.expand_more,
-              color: Colors.white,
+              color: Colors.black87,
             ),
             onPressed: () {
               setState(() {
@@ -195,7 +197,7 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.teal.shade400, // Text color
+                  backgroundColor: Colors.redAccent.shade200.withOpacity(0.9), // Text color
                   padding: EdgeInsets.symmetric(
                       horizontal: 32, vertical: 16), // Button padding
                   shape: RoundedRectangleBorder(
@@ -211,6 +213,7 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
                     SizedBox(width: 8), // Space between icon and text
                     Text(
                       "Filter Trips",
+                      
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),

@@ -361,25 +361,27 @@ class _SignInPageState extends State<SignInPage> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(screenHeight * 0.2),
+        preferredSize: Size.fromHeight(screenHeight * 0.25),
         child: ClipRRect(
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(28),
-            bottomRight: Radius.circular(24),
+            bottomLeft: Radius.circular(0),
+            bottomRight: Radius.circular(0),
           ),
           child: Container(
             height: screenHeight * 0.39,
             width: screenWidth,
-            color: const Color.fromARGB(255, 200, 54, 244),
+            
+            // color: const Color.fromARGB(255, 200, 54, 244),
+            decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/signin_container_image.png",),fit: BoxFit.cover,opacity: 1)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: 20,
+                  radius: MediaQuery.of(context).size.height *0.05,
                   backgroundImage: AssetImage('assets/signin_signup_logo.jpg'),
                 ),
                 const SizedBox(height: 12),
-                InkWell(
+                GestureDetector(
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
@@ -390,9 +392,8 @@ class _SignInPageState extends State<SignInPage> {
                   child: const Text(
                     'Not Yet IN? Sign Up Here.',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black87,
                       fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline,
                       decorationColor: Colors.white,
                     ),
                   ),
@@ -488,7 +489,7 @@ class _SignInPageState extends State<SignInPage> {
                       child: GestureDetector(
                         onTap: _signIn,
                         child: Container(
-                          height: screenHeight * 0.07,
+                          height: screenHeight * 0.08,
                           width: screenWidth,
                           color: _color,
                           child: const Center(
@@ -496,7 +497,7 @@ class _SignInPageState extends State<SignInPage> {
                               'Sign In',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 26,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -542,14 +543,14 @@ class _SignInPageState extends State<SignInPage> {
                                 color: const Color.fromARGB(255, 200, 54, 244),
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Sign in or register as a driver to access driver-specific features.',
-                              style: GoogleFonts.amaticSc(
-                                fontSize: screenHeight * 0.025,
-                                color: const Color.fromARGB(255, 182, 116, 194),
-                              ),
-                            ),
+                            // const SizedBox(height: 8),
+                            // Text(
+                            //   'Sign in or register as a driver to access driver-specific features.',
+                            //   style: GoogleFonts.amaticSc(
+                            //     fontSize: screenHeight * 0.025,
+                            //     color: const Color.fromARGB(255, 182, 116, 194),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),

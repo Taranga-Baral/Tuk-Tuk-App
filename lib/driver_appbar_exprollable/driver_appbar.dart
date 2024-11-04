@@ -49,21 +49,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
         child: Image(image: AssetImage("assets/fordriverlogo.png")),
       ),
       // backgroundColor: widget.appBarColor,
-      backgroundColor: Colors.teal,
+      backgroundColor: Colors.transparent,
+      
       elevation: 0,
 
       title: Text(
         widget.title,
+        
         style: TextStyle(
-          color: Colors.white,
-          fontSize:
-              MediaQuery.of(context).size.width * 0.05, // Responsive font size
+          fontSize: 18,
+          color: Colors.black54,
         ),
       ),
       centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(widget.appBarIcons[1], color: Colors.white),
+          icon: Icon(widget.appBarIcons[1], color: Colors.black54),
           onPressed: () {
             // Show driver info in a dialog
             _showDriverInfoDialog(context);

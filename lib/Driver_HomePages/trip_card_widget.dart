@@ -108,20 +108,14 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   '${widget.index + 1}. ${widget.tripData.username}',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                 ),
-
-                
-
-                Text(
-                  'NPR ${widget.tripData.fare}',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-                ),
-
                 Text(
                   '${widget.tripData.distance.toStringAsFixed(1)} Km',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                 ),
-
-
+                Text(
+                  'NPR ${widget.tripData.fare}',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                ),
               ],
             ),
             Divider(),
@@ -139,9 +133,6 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                                   ? AssetImage('assets/homepage_motorbike.png')
                                   : AssetImage('assets/homepage_taxi.png'))),
                 ),
-
-
-
                 Container(
                   height: MediaQuery.of(context).size.height * 0.07,
                   width: MediaQuery.of(context).size.width * 0.35,
@@ -151,14 +142,15 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                               ? AssetImage('assets/driver_1_passenger.png')
                               : widget.tripData.noofPerson == 2
                                   ? AssetImage('assets/driver_2_passenger.png')
-                                  : widget.tripData.noofPerson == 3 ? AssetImage('assets/driver_3_passenger.png')
-                                  : widget.tripData.noofPerson == 4 ? AssetImage('assets/driver_4_passenger.png')
-                                  : AssetImage('assets/driver_5_passenger.png')
-                                  
-                                  )),
+                                  : widget.tripData.noofPerson == 3
+                                      ? AssetImage(
+                                          'assets/driver_3_passenger.png')
+                                      : widget.tripData.noofPerson == 4
+                                          ? AssetImage(
+                                              'assets/driver_4_passenger.png')
+                                          : AssetImage(
+                                              'assets/driver_5_passenger.png'))),
                 ),
-
-                
                 Container(
                   height: MediaQuery.of(context).size.height * 0.07,
                   width: MediaQuery.of(context).size.width * 0.25,
@@ -176,9 +168,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
             Divider(),
             Text('Delivery Location: ${widget.tripData.deliveryLocation}'),
             Divider(),
-            Text('Municipality: ${widget.tripData.municipalityDropdown}'),
+            Text('${widget.tripData.municipalityDropdown}'),
             Divider(),
-            Text('Timestamp: ${widget.tripData.timestamp}'),
+            Text('Timestamp: ${widget.tripData.timestamp}',style: TextStyle(fontSize: 12,color: Colors.grey),),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
