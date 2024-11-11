@@ -1,9 +1,9 @@
-import 'dart:ffi';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -19,6 +19,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   InAppWebViewController? webView;
+  List<String> searchResults = [];
+  List<String> searchResultsDelivery = [];
+  TextEditingController pickupTextController = TextEditingController();
+  TextEditingController deliveryTextController = TextEditingController();
   bool _isLoading = true;
   String? selectedMunicipality;
   int? previousPassengers;
@@ -30,6 +34,373 @@ class _HomePageState extends State<HomePage> {
   int previousPassengersForTaxi = 1; // To store previous selection for Taxi
   double fare = 0.0;
   bool isBookingInProgress = false; // Add this variable
+  bool isPickupTextFieldEnabled = true;
+  bool isDeliveryTextFieldEnabled = true;
+
+// void fetchLocationSuggestionsPickup(String query) async {
+//   final url = Uri.parse(
+//       'https://nominatim.openstreetmap.org/search?q=$query,chitwan&format=json&addressdetails=1&limit=30');
+//   final response = await http.get(url);
+
+//   if (response.statusCode == 200) {
+//     final List<dynamic> data = json.decode(response.body);
+//     setState(() {
+//       searchResults =
+//           data.map((place) => place['display_name'].toString()).toList();
+//     });
+
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('Search Results'),
+//         content: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: searchResults.map((result) {
+//             return SingleChildScrollView(
+//               child: ListTile(
+//                 title: Text(result),
+//                 onTap: () async {
+//                   // Set selected result in the Flutter TextField (for Pickup)
+//                   pickupTextController.text = result;
+
+//                   // Inject the selected result into the OSM input field for route_from (Pickup)
+//                   print('Setting Pickup Location: $result'); // Debugging
+
+//                   await webView!.evaluateJavascript(
+//                     source: '''
+//                       let osmInput = document.getElementById("route_from");
+//                       osmInput.value = "$result";
+
+//                       // Trigger input event to notify the WebView
+//                       let inputEvent = new Event('input', { bubbles: true });
+//                       osmInput.dispatchEvent(inputEvent);
+//                     ''',
+//                   );
+
+//                   // Close the dialog
+//                   Navigator.pop(context);
+//                 },
+//               ),
+//             );
+//           }).toList(),
+//         ),
+//       ),
+//     );
+//   } else {
+//     print('Failed to load suggestions');
+//   }
+// }
+
+// void fetchLocationSuggestionsDelivery(String query) async {
+//   final url = Uri.parse(
+//       'https://nominatim.openstreetmap.org/search?q=$query,chitwan&format=json&addressdetails=1&limit=30');
+//   final response = await http.get(url);
+
+//   if (response.statusCode == 200) {
+//     final List<dynamic> data = json.decode(response.body);
+//     setState(() {
+//       searchResultsDelivery =
+//           data.map((place) => place['display_name'].toString()).toList();
+//     });
+
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('Search Results'),
+//         content: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: searchResultsDelivery.map((result) {
+//             return SingleChildScrollView(
+//               child: ListTile(
+//                 title: Text(result),
+//                 onTap: () async {
+//                   // Set selected result in the Flutter TextField (for Delivery)
+//                   deliveryTextController.text = result;
+
+//                   // Inject the selected result into the OSM input field for route_to (Delivery)
+//                   print('Setting Delivery Location: $result'); // Debugging
+
+//                   await webView!.evaluateJavascript(
+//                     source: '''
+//                       let osmInputDelivery = document.getElementById("route_to");
+//                       osmInputDelivery.value = "$result";
+
+//                       // Trigger input event to notify the WebView
+//                       let inputEventDelivery = new Event('input', { bubbles: true });
+//                       osmInputDelivery.dispatchEvent(inputEventDelivery);
+//                     ''',
+//                   );
+
+//                   // Close the dialog
+//                   Navigator.pop(context);
+//                 },
+//               ),
+//             );
+//           }).toList(),
+//         ),
+//       ),
+//     );
+//   } else {
+//     print('Failed to load suggestions');
+//   }
+// }
+
+// // Function to fetch location suggestions for Pickup
+// void fetchLocationSuggestionsPickup(String query) async {
+//   final url = Uri.parse(
+//       'https://nominatim.openstreetmap.org/search?q=$query&format=json&addressdetails=1&limit=30');
+//   final response = await http.get(url);
+
+//   if (response.statusCode == 200) {
+//     final List<dynamic> data = json.decode(response.body);
+//     setState(() {
+//       List<String> searchResults =
+//           data.map((place) => place['display_name'].toString()).toList();
+
+//       showDialog(
+//         context: context,
+//         barrierDismissible: false,
+//         builder: (context) => AlertDialog(
+//           title: Text('Search Results'),
+//           content: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: searchResults.map((result) {
+//               return SingleChildScrollView(
+//                 child: ListTile(
+//                   title: Text(result),
+//                   onTap: () async {
+//                     // Set selected result in the Flutter TextField (for Pickup)
+//                     pickupTextController.text = result;
+
+//                     // Disable Pickup TextField
+//                     setState(() {
+//                       isPickupTextFieldEnabled = false;
+//                     });
+
+//                     // Inject the selected result into the OSM input field for route_from (Pickup)
+//                     await webView!.evaluateJavascript(source:'''
+//                       var osmInput = document.getElementById("route_from");
+//                       if (osmInput) {
+//                         osmInput.value = "$result";
+//                         osmInput.dispatchEvent(new Event('input', { bubbles: true }));
+//                       }
+//                     ''');
+
+//                     // Close the dialog
+//                     Navigator.pop(context);
+//                   },
+//                 ),
+//               );
+//             }).toList(),
+//           ),
+//         ),
+//       );
+//     });
+//   } else {
+//     print('Failed to load suggestions');
+//   }
+// }
+
+// // Function to fetch location suggestions for Delivery
+// void fetchLocationSuggestionsDelivery(String query) async {
+//   final url = Uri.parse(
+//       'https://nominatim.openstreetmap.org/search?q=$query&format=json&addressdetails=1&limit=30');
+//   final response = await http.get(url);
+
+//   if (response.statusCode == 200) {
+//     final List<dynamic> data = json.decode(response.body);
+//     setState(() {
+//       List<String> searchResults =
+//           data.map((place) => place['display_name'].toString()).toList();
+
+//       showDialog(
+//         context: context,
+//         barrierDismissible: false,
+//         builder: (context) => AlertDialog(
+//           title: Text('Search Results'),
+//           content: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: searchResults.map((result) {
+//               return SingleChildScrollView(
+//                 child: ListTile(
+//                   title: Text(result),
+//                   onTap: () async {
+//                     // Set selected result in the Flutter TextField (for Delivery)
+//                     deliveryTextController.text = result;
+
+//                     // Disable Delivery TextField
+//                     setState(() {
+//                       isDeliveryTextFieldEnabled = false;
+//                     });
+
+//                     // Inject the selected result into the OSM input field for route_to (Delivery)
+//                     await webView!.evaluateJavascript(source:'''
+//                       var osmInputDelivery = document.getElementById("route_to");
+//                       if (osmInputDelivery) {
+//                         osmInputDelivery.value = "$result";
+//                         osmInputDelivery.dispatchEvent(new Event('input', { bubbles: true }));
+//                       }
+//                     ''');
+
+//                     // Close the dialog
+//                     Navigator.pop(context);
+//                   },
+//                 ),
+//               );
+//             }).toList(),
+//           ),
+//         ),
+//       );
+//     });
+//   } else {
+//     print('Failed to load suggestions');
+//   }
+// }
+
+// Function to fetch location suggestions for Pickup
+  void fetchLocationSuggestionsPickup(String query) async {
+    final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/search?q=$query&format=json&addressdetails=1&limit=30');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        List<String> searchResults =
+            data.map((place) => place['display_name'].toString()).toList();
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Text('Search Results'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: searchResults.map((result) {
+                return SingleChildScrollView(
+                  child: ListTile(
+                    title: Text(result),
+                    onTap: () async {
+                      // Set selected result in the Flutter TextField (for Pickup)
+                      pickupTextController.text = result;
+
+                      // Disable Pickup TextField
+                      setState(() {
+                        isPickupTextFieldEnabled = false;
+                      });
+
+                      // Inject the selected result into the OSM input field for route_from (Pickup)
+                      await webView!.evaluateJavascript(source: '''
+                      var osmInput = document.getElementById("route_from");
+                      if (osmInput) {
+                        osmInput.value = "$result";
+                        osmInput.dispatchEvent(new Event('input', { bubbles: true }));
+                      }
+                    ''');
+
+                      // Reload the whole WebView content
+                      await webView!.reload();
+
+                      // Close the dialog
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      });
+    } else {
+      print('Failed to load suggestions');
+    }
+  }
+
+// Function to fetch location suggestions for Delivery
+  void fetchLocationSuggestionsDelivery(String query) async {
+    final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/search?q=$query&format=json&addressdetails=1&limit=30');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        List<String> searchResults =
+            data.map((place) => place['display_name'].toString()).toList();
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Text('Search Results'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: searchResults.map((result) {
+                return SingleChildScrollView(
+                  child: ListTile(
+                    title: Text(result),
+                    onTap: () async {
+                      // Set selected result in the Flutter TextField (for Delivery)
+                      deliveryTextController.text = result;
+
+                      // Disable Delivery TextField
+                      setState(() {
+                        isDeliveryTextFieldEnabled = false;
+                      });
+
+                      // Inject the selected result into the OSM input field for route_to (Delivery)
+                      await webView!.evaluateJavascript(source: '''
+                      var osmInputDelivery = document.getElementById("route_to");
+                      if (osmInputDelivery) {
+                        osmInputDelivery.value = "$result";
+                        osmInputDelivery.dispatchEvent(new Event('input', { bubbles: true }));
+                      }
+                    ''');
+
+                      // Reload the whole WebView content
+                      await webView!.reload();
+
+                      // Close the dialog
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      });
+    } else {
+      print('Failed to load suggestions');
+    }
+  }
+
+  void executeJavaScriptOnOSM() async {
+    if (webView != null) {
+      // Execute JavaScript to trigger the reverse directions button first
+      await webView!.evaluateJavascript(source: '''
+        var reverseButton = document.querySelector('button.reverse_directions');
+        if (reverseButton) {
+          reverseButton.click();
+        }
+      ''');
+
+      await webView!.evaluateJavascript(source: '''
+        var reverseButton = document.querySelector('button.reverse_directions');
+        if (reverseButton) {
+          reverseButton.click();
+        }
+      ''');
+
+      // Then trigger the submit button
+      await webView!.evaluateJavascript(source: '''
+        var submitButton = document.querySelector('input[name="commit"]');
+        if (submitButton) {
+          submitButton.click();
+        }
+      ''');
+    }
+  }
 
   final List<Map<String, dynamic>> municipalitySections = [
     {
@@ -300,7 +671,7 @@ class _HomePageState extends State<HomePage> {
   // }
 
   void _showSnackbar(String message, BuildContext context) {
-    if (message == "Enter Proper Address") {
+    if (message == 'Enter Proper Address') {
       // Display alert with error sign
       AwesomeDialog(
         context: context,
@@ -310,7 +681,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               Text(
-                "Error",
+                'Error',
                 style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 22,
@@ -319,8 +690,11 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: 10,
               ),
+              SizedBox(
+                height: 10,
+              ),
               Text(
-                "Enter Proper Pickup & Delivery Address",
+                'Enter Proper Pickup & Delivery Address',
                 style: TextStyle(
                     fontWeight: FontWeight.w300,
                     fontSize: 14,
@@ -332,7 +706,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.35,
                 child: Image(
-                  image: AssetImage("assets/homepage_address_alert.gif"),
+                  image: AssetImage('assets/homepage_address_alert.gif'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -347,7 +721,7 @@ class _HomePageState extends State<HomePage> {
         alignment: Alignment.center,
         btnOkOnPress: () {},
       ).show();
-    } else if (message == "Select all of the Valid Option") {
+    } else if (message == 'Select all of the Valid Option') {
       AwesomeDialog(
         context: context,
         dialogType: DialogType.error,
@@ -356,7 +730,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               Text(
-                "Error",
+                'Error',
                 style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 22,
@@ -366,7 +740,7 @@ class _HomePageState extends State<HomePage> {
                 height: 10,
               ),
               Text(
-                "Select all of the Booking options",
+                'Select all of the Booking options',
                 style: TextStyle(
                     fontWeight: FontWeight.w300,
                     fontSize: 14,
@@ -378,7 +752,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.35,
                 child: Image(
-                  image: AssetImage("assets/homepage_booking_confirmed.gif"),
+                  image: AssetImage('assets/homepage_booking_confirmed.gif'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -393,7 +767,7 @@ class _HomePageState extends State<HomePage> {
         alignment: Alignment.center,
         btnOkOnPress: () {},
       ).show();
-    } else if (message == "Booking confirmed!") {
+    } else if (message == 'Booking confirmed!') {
       // AwesomeDialog(
       //   context: context,
       //   dialogType: DialogType.success,
@@ -426,7 +800,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: const [
               Text(
-                "Success",
+                'Success',
                 style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 22,
@@ -482,7 +856,7 @@ class _HomePageState extends State<HomePage> {
       Future.delayed(Duration(seconds: 3), () {
         Navigator.of(context).pop(); // Close the overlay
       });
-    } else if (message == "Location permission granted") {
+    } else if (message == 'Location permission granted') {
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
@@ -555,9 +929,303 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  double containerHeight = 50.0;
+  bool locationOn = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          
+
+          
+
+
+
+
+
+          final pickupLocation = await webView?.evaluateJavascript(
+                  source: "document.getElementById('route_from').value") ??
+              'N/A';
+          final deliveryLocation = await webView?.evaluateJavascript(
+                  source: "document.getElementById('route_to').value") ??
+              'N/A';
+
+          if (pickupLocation.isEmpty || deliveryLocation.isEmpty) {
+            // ignore: use_build_context_synchronously
+            _showSnackbar('Enter Proper Address', context);
+            return;
+          }
+
+          final distance =
+              await _getDistanceFromAPI(pickupLocation, deliveryLocation);
+          _calculateFare(distance);
+          final confirmed = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => StatefulBuilder(
+              builder: (context, setState) {
+                return Dialog(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Confirm Booking',
+                                style: TextStyle(fontSize: 18)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child:
+                                _buildVehicleTypeSelector(distance, setState),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Pickup: $pickupLocation'),
+                          ),
+                          Divider(),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Delivery: $deliveryLocation'),
+                          ),
+                          Divider(),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropdownButton<String>(
+                              value: selectedMunicipality,
+                              hint: Text('Select Municipality'),
+                              isExpanded: true,
+                              items: municipalitySections.expand((section) {
+                                List<DropdownMenuItem<String>> items = [
+                                  DropdownMenuItem<String>(
+                                    enabled: false,
+                                    child: Text(
+                                      section['title'],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey),
+                                    ),
+                                  ),
+                                  ...section['municipalities']
+                                      .map<DropdownMenuItem<String>>(
+                                    (String municipality) {
+                                      return DropdownMenuItem<String>(
+                                        value: municipality,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: Text(municipality),
+                                        ),
+                                      );
+                                    },
+                                  ).toList(),
+                                ];
+                                return items;
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedMunicipality = newValue ?? '';
+                                });
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropdownButton<String>(
+                              value: selectedMode,
+                              hint: Text('Select Mode'),
+                              isExpanded: true,
+                              items: modes.map<DropdownMenuItem<String>>(
+                                (String mode) {
+                                  return DropdownMenuItem<String>(
+                                    value: mode,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(mode),
+                                    ),
+                                  );
+                                },
+                              ).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedMode = newValue ?? '';
+                                  _calculateFare(
+                                      distance); // Recalculate fare based on new mode
+                                });
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Select Number of Passengers:'),
+                          ),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: List.generate(
+                                  selectedVehicleType == 'Motor Bike' ? 1 : 5,
+                                  (index) {
+                                    int passengerCount = index + 1;
+                                    bool isSelectable =
+                                        selectedVehicleType != 'Motor Bike' ||
+                                            passengerCount == 1;
+
+                                    return ChoiceChip(
+                                      label: Text('$passengerCount'),
+                                      selected:
+                                          selectedPassengers == passengerCount,
+                                      onSelected: isSelectable
+                                          ? (selected) {
+                                              setState(() {
+                                                if (selectedVehicleType ==
+                                                    'Motor Bike') {
+                                                  selectedPassengers =
+                                                      1; // Set to 1 for Motor Bike
+                                                  _triggerPassengerSelection(
+                                                      1,
+                                                      double.tryParse(
+                                                              distance) ??
+                                                          0.0);
+                                                } else {
+                                                  selectedPassengers =
+                                                      passengerCount; // Set to selected passenger
+                                                }
+                                                _calculateFare(
+                                                    distance); // Recalculate fare based on the number of passengers
+                                              });
+                                            }
+                                          : null,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Divider(),
+                          SizedBox(height: 5),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                'Estimated Fare: NPR${fare.toStringAsFixed(2)}'),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.deepOrange.shade600
+                                      .withOpacity(0.7),
+                                ),
+                                onPressed: isBookingInProgress
+                                    ? null
+                                    : () async {
+                                        if (selectedMunicipality != null &&
+                                            selectedVehicleType != null &&
+                                            selectedMode != null &&
+                                            ((selectedVehicleType ==
+                                                        'Motor Bike' &&
+                                                    selectedPassengers == 1) ||
+                                                (selectedVehicleType ==
+                                                        'Tuk Tuk' &&
+                                                    (selectedPassengers >= 1 &&
+                                                        selectedPassengers <=
+                                                            5)) ||
+                                                (selectedVehicleType ==
+                                                        'Taxi' &&
+                                                    (selectedPassengers >= 1 &&
+                                                        selectedPassengers <=
+                                                            5)))) {
+                                          setState(() {
+                                            isBookingInProgress =
+                                                true; // Disable the button
+                                          });
+                                          final userDetails =
+                                              await _getUserDetails();
+                                          final user =
+                                              FirebaseAuth.instance.currentUser;
+                                          final bookingData = {
+                                            'vehicle_mode': selectedMode,
+                                            'vehicleType': selectedVehicleType,
+                                            'no_of_person': selectedPassengers,
+                                            'userId': user?.uid ?? 'N/A',
+                                            'municipalityDropdown':
+                                                selectedMunicipality,
+                                            'timestamp':
+                                                FieldValue.serverTimestamp(),
+                                            'fare': fare.toStringAsFixed(2),
+                                            'distance': distance,
+                                            'username':
+                                                userDetails['username'] ??
+                                                    'N/A',
+                                            'email':
+                                                userDetails['email'] ?? 'N/A',
+                                            'phone':
+                                                userDetails['phone_number'] ??
+                                                    'N/A',
+                                            'pickupLocation': pickupLocation,
+                                            'deliveryLocation':
+                                                deliveryLocation,
+                                          };
+
+                                          await _storeDataInFirestore(
+                                              bookingData);
+                                          Navigator.of(context).pop(true);
+                                          setState(() {
+                                            isBookingInProgress =
+                                                false; // Enable the button after completion
+                                          });
+                                        } else {
+                                          _showSnackbar(
+                                              'Select all of the Valid Option',
+                                              context);
+                                        }
+                                      },
+                                child: Text('Confirm'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+
+          if (confirmed == true) {
+            // ignore: use_build_context_synchronously
+            _showSnackbar('Booking confirmed!', context);
+          }
+        },
+        focusColor: Colors.deepOrange.shade400,
+        hoverColor: Colors.deepOrange,
+        backgroundColor: Colors.deepOrange.shade300,
+        child: Center(
+          child: FaIcon(
+            FontAwesomeIcons.car,
+            color: Colors.white,
+          ),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.deepOrange.shade500.withOpacity(0.8),
         title: Text('Home Page'),
@@ -585,6 +1253,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SafeArea(
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             if (!_isLoading)
               InAppWebView(
@@ -624,523 +1293,33 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             if (_isLoading) Center(child: CircularProgressIndicator()),
+            // Positioned(
+            //     bottom: 0,
+            //     child: ClipRRect(
+            //       borderRadius: BorderRadius.only(
+            //           topLeft: Radius.circular(40),
+            //           topRight: Radius.circular(40)),
+            //       child: Container(
+            //         color: Colors.white,
+            //         height: 70,
+            //         width: MediaQuery.of(context).size.width,
+            //       ),
+            //     )),
+
             Positioned(
-              bottom: 50,
-              right: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.deepOrange.shade300.withOpacity(0.6)),
-                onPressed: () async {
-                  final pickupLocation = await webView?.evaluateJavascript(
-                          source:
-                              "document.getElementById('route_from').value") ??
-                      'N/A';
-                  final deliveryLocation = await webView?.evaluateJavascript(
-                          source:
-                              "document.getElementById('route_to').value") ??
-                      'N/A';
-
-                  if (pickupLocation.isEmpty || deliveryLocation.isEmpty) {
-                    // ignore: use_build_context_synchronously
-                    _showSnackbar('Enter Proper Address', context);
-                    return;
-                  }
-
-                  final distance = await _getDistanceFromAPI(
-                      pickupLocation, deliveryLocation);
-                  _calculateFare(distance);
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) => StatefulBuilder(
-                      builder: (context, setState) {
-                        // return Dialog(
-                        //   child: SingleChildScrollView(
-                        //     child: Column(
-                        //       crossAxisAlignment: CrossAxisAlignment.center,
-                        //       mainAxisSize: MainAxisSize.min,
-                        //       children: [
-                        //         AlertDialog(
-                        //           title: Text('Confirm Booking'),
-                        //           content: Column(
-                        //             mainAxisSize: MainAxisSize.min,
-                        //             crossAxisAlignment:
-                        //                 CrossAxisAlignment.start,
-                        //             children: [
-                        //               SizedBox(
-                        //                 height: 10,
-                        //               ),
-                        //               _buildVehicleTypeSelector(
-                        //                   distance, setState),
-                        //               SizedBox(
-                        //                 height: 10,
-                        //               ),
-                        //               Text('Pickup: $pickupLocation'),
-                        //               Divider(),
-                        //               Text('Delivery: $deliveryLocation'),
-                        //               Divider(),
-                        //               DropdownButton<String>(
-                        //                 value: selectedMunicipality,
-                        //                 hint: Text('Select Municipality'),
-                        //                 isExpanded: true,
-                        //                 items: municipalitySections
-                        //                     .expand((section) {
-                        //                   return [
-                        //                     DropdownMenuItem<String>(
-                        //                         enabled: false,
-                        //                         child: Text(section['title'],
-                        //                             style: TextStyle(
-                        //                                 fontWeight:
-                        //                                     FontWeight.bold,
-                        //                                 color: Colors.grey)))
-                        //                   ].followedBy(
-                        //                     section['municipalities']
-                        //                         .map<DropdownMenuItem<String>>(
-                        //                             (String municipality) {
-                        //                       return DropdownMenuItem<String>(
-                        //                         value: municipality,
-                        //                         child: Padding(
-                        //                             padding:
-                        //                                 const EdgeInsets.only(
-                        //                                     left: 8.0),
-                        //                             child: Text(municipality)),
-                        //                       );
-                        //                     }),
-                        //                   );
-                        //                 }).toList(),
-                        //                 onChanged: (String? newValue) =>
-                        //                     setState(() =>
-                        //                         selectedMunicipality =
-                        //                             newValue),
-                        //               ),
-                        //               SizedBox(height: 10),
-                        //               DropdownButton<String>(
-                        //                 value: selectedMode,
-                        //                 hint: Text('Select Mode'),
-                        //                 isExpanded: true,
-                        //                 items: modes
-                        //                     .map<DropdownMenuItem<String>>(
-                        //                         (String mode) {
-                        //                   return DropdownMenuItem<String>(
-                        //                     value: mode,
-                        //                     child: Padding(
-                        //                         padding: const EdgeInsets.only(
-                        //                             left: 8.0),
-                        //                         child: Text(mode)),
-                        //                   );
-                        //                 }).toList(),
-                        //                 onChanged: (String? newValue) {
-                        //                   setState(() {
-                        //                     selectedMode = newValue;
-                        //                     // Recalculate fare based on new mode
-                        //                     _calculateFare(distance);
-                        //                   });
-                        //                 },
-                        //               ),
-                        //               SizedBox(height: 10),
-                        //               Text('Select Number of Passengers:'),
-                        //               SingleChildScrollView(
-                        //                 scrollDirection: Axis.horizontal,
-                        //                 child: Row(
-                        //                   mainAxisAlignment:
-                        //                       MainAxisAlignment.spaceEvenly,
-                        //                   children: List.generate(
-                        //                     selectedVehicleType == 'Motor Bike'
-                        //                         ? 1
-                        //                         : 5,
-                        //                     (index) {
-                        //                       int passengerCount = index + 1;
-
-                        //                       // Determine if the chip is selectable
-                        //                       bool isSelectable =
-                        //                           selectedVehicleType !=
-                        //                                   'Motor Bike' ||
-                        //                               passengerCount == 1;
-
-                        //                       return ChoiceChip(
-                        //                         label: Text('$passengerCount'),
-                        //                         selected: selectedPassengers ==
-                        //                             passengerCount,
-                        //                         onSelected: isSelectable
-                        //                             ? (selected) {
-                        //                                 setState(() {
-                        //                                   // If Motor Bike is selected, enforce only 1 passenger
-                        //                                   if (selectedVehicleType ==
-                        //                                       'Motor Bike') {
-                        //                                     previousPassengers =
-                        //                                         selectedPassengers; // Store previous selection
-                        //                                     selectedPassengers =
-                        //                                         1; // Set to 1 for Motor Bike
-
-                        //                                     // Ensure we trigger the selection event as if the button was actually touched
-                        //                                     double
-                        //                                         parsedDistance =
-                        //                                         double.tryParse(
-                        //                                                 distance) ??
-                        //                                             0.0;
-                        //                                     _triggerPassengerSelection(
-                        //                                         1,
-                        //                                         parsedDistance); // Trigger the selection of passenger 1
-                        //                                   } else {
-                        //                                     selectedPassengers =
-                        //                                         passengerCount; // Set to selected passenger
-                        //                                   }
-
-                        //                                   // Recalculate fare based on the number of passengers
-                        //                                   _calculateFare(
-                        //                                       distance); // Convert distance to double
-                        //                                 });
-                        //                               }
-                        //                             : null, // If not selectable, do nothing
-                        //                       );
-                        //                     },
-                        //                   ),
-                        //                 ),
-                        //               ),
-                        //               SizedBox(height: 5),
-                        //               Divider(),
-                        //               SizedBox(
-                        //                 height: 5,
-                        //               ),
-                        //               Text(
-                        //                   'Estimated Fare: NPR${fare.toStringAsFixed(2)}'),
-                        //             ],
-                        //           ),
-                        //           actions: <Widget>[
-                        //             TextButton(
-                        //                 child: Text('Cancel'),
-                        //                 onPressed: () =>
-                        //                     Navigator.of(context).pop(false)),
-                        //             TextButton(
-                        //               style: TextButton.styleFrom(
-                        //                 foregroundColor: Colors.white,
-                        //                 backgroundColor: Colors
-                        //                     .deepOrange.shade600
-                        //                     .withOpacity(0.7),
-                        //               ),
-                        //               onPressed: isBookingInProgress
-                        //                   ? null
-                        //                   : () async {
-                        //                       if (selectedMunicipality !=
-                        //                               null &&
-                        //                           selectedVehicleType != null &&
-                        //                           selectedMode != null &&
-                        //                           ((selectedVehicleType ==
-                        //                                       'Motor Bike' &&
-                        //                                   selectedPassengers ==
-                        //                                       1) ||
-                        //                               (selectedVehicleType ==
-                        //                                       'Tuk Tuk' &&
-                        //                                   (selectedPassengers == 1 ||
-                        //                                       selectedPassengers ==
-                        //                                           2 ||
-                        //                                       selectedPassengers ==
-                        //                                           3 ||
-                        //                                       selectedPassengers ==
-                        //                                           4 ||
-                        //                                       selectedPassengers ==
-                        //                                           5)) ||
-                        //                               (selectedVehicleType ==
-                        //                                       'Taxi' &&
-                        //                                   (selectedPassengers == 1 ||
-                        //                                       selectedPassengers ==
-                        //                                           2 ||
-                        //                                       selectedPassengers ==
-                        //                                           3 ||
-                        //                                       selectedPassengers ==
-                        //                                           4 ||
-                        //                                       selectedPassengers ==
-                        //                                           5)))) {
-                        //                         setState(() {
-                        //                           isBookingInProgress =
-                        //                               true; // Disable the button
-                        //                         });
-                        //                         final userDetails =
-                        //                             await _getUserDetails();
-                        //                         final user = FirebaseAuth
-                        //                             .instance.currentUser;
-                        //                         final bookingData = {
-                        //                           'vehicle_mode': selectedMode,
-                        //                           'vehicleType':
-                        //                               selectedVehicleType,
-                        //                           'no_of_person':
-                        //                               selectedPassengers,
-                        //                           'userId': user?.uid ?? 'N/A',
-                        //                           'municipalityDropdown':
-                        //                               selectedMunicipality,
-                        //                           'timestamp': FieldValue
-                        //                               .serverTimestamp(),
-                        //                           'fare':
-                        //                               fare.toStringAsFixed(2),
-                        //                           'distance': distance,
-                        //                           'username':
-                        //                               userDetails['username'] ??
-                        //                                   'N/A',
-                        //                           'email':
-                        //                               userDetails['email'] ??
-                        //                                   'N/A',
-                        //                           'phone': userDetails[
-                        //                                   'phone_number'] ??
-                        //                               'N/A',
-                        //                           'pickupLocation':
-                        //                               pickupLocation,
-                        //                           'deliveryLocation':
-                        //                               deliveryLocation,
-                        //                         };
-                        //                         await _storeDataInFirestore(
-                        //                             bookingData);
-                        //                         Navigator.of(context).pop(true);
-                        //                         setState(() {
-                        //                           isBookingInProgress =
-                        //                               false; // Enable the button after completion
-                        //                         });
-                        //                       } else {
-                        //                         _showSnackbar(
-                        //                             'Select all of the Valid Option',
-                        //                             context);
-                        //                       }
-                        //                     },
-                        //               child: Text('Confirm'),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // );
-
-
-
-
-
-
-
-
-
-                        return Dialog(
-  child: SingleChildScrollView(
-    child: Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('Confirm Booking', style: TextStyle(fontSize: 18)),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildVehicleTypeSelector(distance, setState),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('Pickup: $pickupLocation'),
-          ),
-          Divider(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('Delivery: $deliveryLocation'),
-          ),
-          Divider(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:DropdownButton<String>(
-        value: selectedMunicipality,
-        hint: Text('Select Municipality'),
-        isExpanded: true,
-        items: municipalitySections.expand((section) {
-      List<DropdownMenuItem<String>> items = [
-        DropdownMenuItem<String>(
-          enabled: false,
-          child: Text(
-            section['title'],
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-          ),
-        ),
-        ...section['municipalities'].map<DropdownMenuItem<String>>(
-          (String municipality) {
-            return DropdownMenuItem<String>(
-              value: municipality,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(municipality),
-              ),
-            );
-          },
-        ).toList(),
-      ];
-      return items;
-        }).toList(),
-        onChanged: (String? newValue) {
-      setState(() {
-        selectedMunicipality = newValue ?? '';
-      });
-        },
-      ),
-      
-          ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButton<String>(
-              value: selectedMode,
-              hint: Text('Select Mode'),
-              isExpanded: true,
-              items: modes.map<DropdownMenuItem<String>>(
-                (String mode) {
-                  return DropdownMenuItem<String>(
-                    value: mode,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(mode),
-                    ),
-                  );
-                },
-              ).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedMode = newValue ?? '';
-                  _calculateFare(distance); // Recalculate fare based on new mode
-                });
-              },
-            ),
-          ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('Select Number of Passengers:'),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(
-                  selectedVehicleType == 'Motor Bike' ? 1 : 5,
-                  (index) {
-                    int passengerCount = index + 1;
-                    bool isSelectable = selectedVehicleType != 'Motor Bike' || passengerCount == 1;
-      
-                    return ChoiceChip(
-                      label: Text('$passengerCount'),
-                      selected: selectedPassengers == passengerCount,
-                      onSelected: isSelectable
-                          ? (selected) {
-                              setState(() {
-                                if (selectedVehicleType == 'Motor Bike') {
-                                  selectedPassengers = 1; // Set to 1 for Motor Bike
-                                  _triggerPassengerSelection(1, double.tryParse(distance) ?? 0.0);
-                                } else {
-                                  selectedPassengers = passengerCount; // Set to selected passenger
-                                }
-                                _calculateFare(distance); // Recalculate fare based on the number of passengers
-                              });
-                            }
-                          : null,
-                    );
-                  },
+              bottom: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          Divider(),
-          SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('Estimated Fare: NPR${fare.toStringAsFixed(2)}'),
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.deepOrange.shade600.withOpacity(0.7),
-                ),
-                onPressed: isBookingInProgress
-                    ? null
-                    : () async {
-                        if (selectedMunicipality!=null &&
-                            selectedVehicleType!=null &&
-                            selectedMode!=null &&
-                            ((selectedVehicleType == 'Motor Bike' &&
-                                    selectedPassengers == 1) ||
-                                (selectedVehicleType == 'Tuk Tuk' &&
-                                    (selectedPassengers >= 1 &&
-                                        selectedPassengers <= 5)) ||
-                                (selectedVehicleType == 'Taxi' &&
-                                    (selectedPassengers >= 1 &&
-                                        selectedPassengers <= 5)))) {
-                          setState(() {
-                            isBookingInProgress = true; // Disable the button
-                          });
-                          final userDetails = await _getUserDetails();
-                          final user = FirebaseAuth.instance.currentUser;
-                          final bookingData = {
-                            'vehicle_mode': selectedMode,
-                            'vehicleType': selectedVehicleType,
-                            'no_of_person': selectedPassengers,
-                            'userId': user?.uid ?? 'N/A',
-                            'municipalityDropdown': selectedMunicipality,
-                            'timestamp': FieldValue.serverTimestamp(),
-                            'fare': fare.toStringAsFixed(2),
-                            'distance': distance,
-                            'username': userDetails['username'] ?? 'N/A',
-                            'email': userDetails['email'] ?? 'N/A',
-                            'phone': userDetails['phone_number'] ?? 'N/A',
-                            'pickupLocation': pickupLocation,
-                            'deliveryLocation': deliveryLocation,
-                          };
-                          await _storeDataInFirestore(bookingData);
-                          Navigator.of(context).pop(true);
-                          setState(() {
-                            isBookingInProgress = false; // Enable the button after completion
-                          });
-                        } else {
-                          _showSnackbar('Select all of the Valid Option', context);
-                        }
-                      },
-                child: Text('Confirm'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
-  ),
-);
-
-
-
-
-
-
-
-
-
-
-
-                      },
-                    ),
-                  );
-
-                  if (confirmed == true) {
-                    // ignore: use_build_context_synchronously
-                    _showSnackbar('Booking confirmed!', context);
-                  }
-                },
-                child: Text(
-                  'Book a Ride',
-                  style: TextStyle(color: Colors.white),
+                child: Container(
+                  color: Colors.transparent,
+                  height: containerHeight * 0.8,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(
+                    clipBehavior: Clip.hardEdge,
+                  ),
                 ),
               ),
             ),
@@ -1179,7 +1358,7 @@ class _HomePageState extends State<HomePage> {
         itemCount: vehicleTypes.length,
         itemBuilder: (context, index) {
           bool isSelected = selectedVehicleType == vehicleTypes[index];
-    
+
           return GestureDetector(
             onTap: () {
               setState(() {

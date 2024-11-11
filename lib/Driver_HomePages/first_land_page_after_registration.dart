@@ -597,17 +597,16 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
 import 'package:final_menu/Driver_HomePages/sorting_pages.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
 import 'package:final_menu/driver_filter_trips/driver_filter_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'trip_model.dart';
 import 'trip_card_widget.dart';
@@ -1132,13 +1131,34 @@ Future<void> _fetchTrips() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        title: Center(
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('vehicleData')
+              .doc(widget.driverEmail)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Text('');
+            }
+
+            var displayName = snapshot.data!['name'];
+
+            return Text(
+              displayName ?? 'No Name',
+              style: GoogleFonts.josefinSans(color: Colors.black87, fontSize: 18),
+            );
+          },
+        ),
+      ),
         leading: Padding(
         padding: const EdgeInsets.only(left: 20,top: 2),
-        child: Image(image: AssetImage("assets/fordriverlogo.png")),
+        child: Image(image: AssetImage('assets/fordriverlogo.png')),
       ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Center(child: const Text('Driver HomePage',style: TextStyle(color: Colors.black54,fontSize: 18,),)),
+        
         actions: [
           Row(
             children: [

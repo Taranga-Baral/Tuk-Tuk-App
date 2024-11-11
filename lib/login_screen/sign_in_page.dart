@@ -372,7 +372,7 @@ class _SignInPageState extends State<SignInPage> {
             width: screenWidth,
             
             // color: const Color.fromARGB(255, 200, 54, 244),
-            decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/signin_container_image.png",),fit: BoxFit.cover,opacity: 1)),
+            decoration: BoxDecoration(image: DecorationImage(image: AssetImage('assets/signin_container_image.png',),fit: BoxFit.cover,opacity: 1)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

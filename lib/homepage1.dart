@@ -91,7 +91,9 @@ class _HomePage1State extends State<HomePage1> {
 
         return Scaffold(
           appBar: AppBar(
+            centerTitle: true,
             
+            backgroundColor: Colors.transparent,
             elevation: 0,
             actions:  [
               Row(
@@ -115,11 +117,19 @@ class _HomePage1State extends State<HomePage1> {
               ),
             ],
             title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: const [
                 SizedBox(
                   width: 10,
                 ),
-                Text('Tuk Tuk'),
+                Image(image: AssetImage("assets/signin_signup_logo.png",),height: 40, width: 40),
+
+                SizedBox(
+                  width: 10,
+                ),
+
+                
+                Text("Tuk Tuk"),
               ],
             ),
           ),
@@ -152,7 +162,7 @@ class _HomePage1State extends State<HomePage1> {
                               subtitle: 'Get a ride quickly',
                               icon: Icons.map_rounded,
                               onTap: () {
-                                String url = 'https://www.openstreetmap.org/';
+                                String url = 'https://www.openstreetmap.org/directions#map=8/28.401/84.430';
 
                                 Navigator.push(
                                   context,
@@ -363,8 +373,10 @@ class _HomePage1State extends State<HomePage1> {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        color: Colors.transparent,
-        elevation: 0,
+        // color: Colors.transparent,
+        elevation: 0.01,
+        
+        
         margin: const EdgeInsets.only(bottom: 20),
         child: Padding(
           padding: const EdgeInsets.all(16.0),

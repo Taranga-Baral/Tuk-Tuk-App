@@ -123,7 +123,10 @@ class _TripCardWidgetState extends State<TripCardWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.07,
+                  // height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height <= 500
+                      ? MediaQuery.of(context).size.height * 0.2
+                      : MediaQuery.of(context).size.height * 0.08,
                   width: MediaQuery.of(context).size.width * 0.25,
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -134,7 +137,11 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                                   : AssetImage('assets/homepage_taxi.png'))),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.07,
+                  // height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height <= 500
+                      ? MediaQuery.of(context).size.height * 0.2
+                      : MediaQuery.of(context).size.height * 0.08,
+
                   width: MediaQuery.of(context).size.width * 0.35,
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -152,7 +159,10 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                                               'assets/driver_5_passenger.png'))),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.07,
+                  // height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height <= 500
+                      ? MediaQuery.of(context).size.height * 0.2
+                      : MediaQuery.of(context).size.height * 0.08,
                   width: MediaQuery.of(context).size.width * 0.25,
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -164,18 +174,56 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 ),
               ],
             ),
-            Text('Pickup Location: ${widget.tripData.pickupLocation}'),
-            Divider(),
-            Text('Delivery Location: ${widget.tripData.deliveryLocation}'),
-            Divider(),
-            Text('${widget.tripData.municipalityDropdown}'),
-            Divider(),
-            Text('Timestamp: ${widget.tripData.timestamp}',style: TextStyle(fontSize: 12,color: Colors.grey),),
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                ),
+                SizedBox(width: 10),
+                Expanded(child: Text('${widget.tripData.pickupLocation}')),
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  color: Colors.green,
+                ),
+                SizedBox(width: 10),
+                Expanded(child: Text('${widget.tripData.deliveryLocation}')),
+              ],
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            Row(
+              children: [
+
+
+                Icon(
+                  Icons.holiday_village_sharp,
+                  color: Colors.orangeAccent,
+                ),
+                SizedBox(width: 10),
+
+
+                Expanded(child: Text('${widget.tripData.municipalityDropdown}')),
+              ],
+            ),
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: const Icon(
+                    Icons.send,
+                  ),
                   onPressed: widget.isButtonDisabled
                       ? null
                       : () async {
@@ -262,6 +310,16 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 IconButton(
                   icon: const Icon(Icons.map),
                   onPressed: widget.onMapTap,
+                ),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  '${widget.tripData.timestamp}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),

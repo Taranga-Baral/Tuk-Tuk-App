@@ -79,6 +79,9 @@ dependencies:
   cached_network_image: ^3.2.3
   awesome_dialog: ^3.2.1
   video_player: ^2.9.2
+  pull_to_refresh_flutter3: ^2.0.2
+  font_awesome_flutter: ^10.8.0
+  animated_card: ^2.0.0
   
   
   

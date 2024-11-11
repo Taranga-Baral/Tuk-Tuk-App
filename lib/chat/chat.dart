@@ -318,22 +318,24 @@ class _ChatPageState extends State<ChatPage> {
                         return Column(
                           children: [
                             Card(
-                              elevation: 8,
+                              elevation: 1,
+                              
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [Colors.white, Colors.grey[200]!],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
+                                // decoration: BoxDecoration(
+                                //   gradient: LinearGradient(
+                                //     colors: [Colors.white, Colors.grey[200]!],
+                                //     begin: Alignment.topLeft,
+                                //     end: Alignment.bottomRight,
+                                //   ),
+                                //   borderRadius: BorderRadius.circular(15),
+                                // ),
                                 child: ListTile(
                                   contentPadding: EdgeInsets.all(16),
                                   leading: CircleAvatar(
+                                    radius: 20,
                                     backgroundImage: profilePictureUrl.isNotEmpty
                                         ? NetworkImage(profilePictureUrl)
                                         : AssetImage('assets/loading_screen.gif') as ImageProvider,
@@ -341,17 +343,31 @@ class _ChatPageState extends State<ChatPage> {
                                   title: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('${index + 1}. Driver: ${data['driverName']}', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('${data['driverName']}', style: TextStyle(fontWeight: FontWeight.bold)),
+
+                                           Text('... ${index+1}',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),
                                       SizedBox(height: 8),
                                     ],
                                   ),
-                                  subtitle: Text(
-                                    'उठाउने स्थान : ${data['pickupLocation']}\n\n'
-                                    'डेलिभरी स्थान : ${data['deliveryLocation']}\n\n'
-                                    'सम्पर्क : ${data['driverPhone']}',
-                                    style: TextStyle(color: Colors.grey[600]),
-                                  ),
-                                  trailing: IconButton(
+                                  subtitle: Column(
+                                    children: [
+                                      Text(
+                                        'उठाउने स्थान : ${data['pickupLocation']}\n\n'
+                                        'डेलिभरी स्थान : ${data['deliveryLocation']}\n\n'
+                                        'सम्पर्क : ${data['driverPhone']}',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(color: Colors.grey[600],),
+                                      ),
+
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
                                     icon: Icon(Icons.chat, color: Colors.green),
                                     onPressed: () {
                                       // Navigate to ChatDetailPage with animation
@@ -388,6 +404,12 @@ class _ChatPageState extends State<ChatPage> {
                                       );
                                     },
                                   ),
+                                         
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  
                                 ),
                               ),
                             ),

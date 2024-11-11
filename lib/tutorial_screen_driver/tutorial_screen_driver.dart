@@ -1,6 +1,4 @@
-import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
-import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -104,7 +104,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: Container(
             height: screenHeight * 0.39,
             width: screenWidth,
-            decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/signup_container_image.png"),fit: BoxFit.cover,opacity: 1)),
+            decoration: BoxDecoration(image: DecorationImage(image: AssetImage('assets/signup_container_image.png'),fit: BoxFit.cover,opacity: 1)),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(

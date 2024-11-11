@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -68,26 +71,36 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
   void initState() {
     super.initState();
     _loadSendButtonState();
-      _fetchVehicleType(); // Fetch the vehicleType when the widget is initialized
+    _fetchVehicleType(); // Fetch the vehicleType when the widget is initialized
   }
-Future<void> _fetchVehicleType() async { // method that only fetches vehicleData field's value (if tuk tuk then only tuk tuk and also go on)
-  DocumentSnapshot document = await FirebaseFirestore.instance
-      .collection('vehicleData')
-      .doc(widget.driverId) // Fetch based on driverId
-      .get();
 
-  if (document.exists) {
-    setState(() {
-      _selectedVehicleType = document['vehicleType']; // Set the vehicleType
-    });
+  Future<void> _fetchVehicleType() async {
+    // method that only fetches vehicleData field's value (if tuk tuk then only tuk tuk and also go on)
+    DocumentSnapshot document = await FirebaseFirestore.instance
+        .collection('vehicleData')
+        .doc(widget.driverId) // Fetch based on driverId
+        .get();
+
+    if (document.exists) {
+      setState(() {
+        _selectedVehicleType = document['vehicleType']; // Set the vehicleType
+      });
+    }
   }
-}
+
   // Load send button state from shared preferences
   Future<void> _loadSendButtonState() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _isSendButtonDarkened = prefs.getBool('sendButtonState') ?? false;
     });
+  }
+
+//get current location of driver
+  Future<Position> _getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   // Save send button state to shared preferences
@@ -151,6 +164,79 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
     });
   }
 
+  void showTripAndUserIdInSnackBar(
+      Map<String, dynamic> tripData, BuildContext context) async {
+    // Extract tripId, userId, and driverId (driver's email)
+    final tripId = tripData['tripId'] ?? 'No Trip ID';
+    final userId = tripData['userId'] ?? 'No User ID';
+    final driverId = widget.driverId;
+    if (tripId == 'No Trip ID' || userId == 'No User ID') {
+      // Show error if tripId or userId is missing
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid Trip or User ID.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+    // Show confirmation dialog before adding the request to Firebase
+    bool confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Request ?'),
+          content: Text(
+            'Are you sure to send request to this user?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Cancel confirmation
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Confirm action
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      try {
+        // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
+        await FirebaseFirestore.instance.collection('requestsofDrivers').add({
+          'tripId': tripId,
+          'userId': userId,
+          'driverId': driverId,
+          'requestTimestamp':
+              FieldValue.serverTimestamp(), // Optional: Add a timestamp
+        });
+
+        // Step 2: Show a SnackBar with tripId, userId, and driverId
+
+        SnackBar(
+          content: Text(
+            'Request sent successfully!',
+          ),
+          duration: const Duration(seconds: 10), // Show for 10 seconds
+        );
+      } catch (e) {
+        SnackBar(
+          content: Text('Error sending request: $e'),
+          duration: const Duration(seconds: 3),
+        );
+      }
+    }
+  }
+
+  bool isButtonDisabled = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,18 +244,31 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
         leading: Padding(
           padding: const EdgeInsets.only(left: 20, top: 2),
           child: Image(
-            image: AssetImage("assets/fordriverlogo.png"),
+            image: AssetImage('assets/fordriverlogo.png'),
             opacity: AlwaysStoppedAnimation(0.97),
           ),
         ),
         title: Center(
-            child: Text(
-          'Driver Filter Page',
-          style: TextStyle(
-              color: Colors.black54,
-              fontSize: 18
-              ),
-        )),
+          child: StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('vehicleData')
+                .doc(widget.driverId)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Text('');
+              }
+
+              var displayName = snapshot.data!['name'];
+
+              return Text(
+                displayName ?? 'No Name',
+                style: GoogleFonts.josefinSans(
+                    color: Colors.black87, fontSize: 18),
+              );
+            },
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -197,7 +296,8 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.redAccent.shade200.withOpacity(0.9), // Text color
+                  backgroundColor:
+                      Colors.teal.shade200.withOpacity(0.9), // Text color
                   padding: EdgeInsets.symmetric(
                       horizontal: 32, vertical: 16), // Button padding
                   shape: RoundedRectangleBorder(
@@ -212,8 +312,7 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
                         color: Colors.white), // Add a filter icon
                     SizedBox(width: 8), // Space between icon and text
                     Text(
-                      "Filter Trips",
-                      
+                      'Filter Trips',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -294,18 +393,107 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.send, color: Colors.teal),
-                                    onPressed: () {
-                                      showTripAndUserIdInSnackBar(
-                                          trip, context);
-                                      setState(() {
-                                        _isSendButtonDarkened =
-                                            !_isSendButtonDarkened; // Toggle button state
-                                        _saveSendButtonState(
-                                            _isSendButtonDarkened); // Save state
-                                      });
-                                    },
-                                  ),
+                                      icon: Icon(
+                                        Icons.send,
+                                        color: isButtonDisabled
+                                            ? Colors.grey
+                                            : Colors.teal,
+                                      ),
+                                      onPressed: isButtonDisabled == true
+                                          ? null
+                                          : () async {
+                                              setState(() {
+                                                isButtonDisabled == true;
+                                              });
+                                              // Check location permission
+                                              LocationPermission permission =
+                                                  await Geolocator
+                                                      .checkPermission();
+                                              if (permission ==
+                                                  LocationPermission.denied) {
+                                                // Request permission
+                                                permission = await Geolocator
+                                                    .requestPermission();
+                                                if (permission !=
+                                                        LocationPermission
+                                                            .whileInUse &&
+                                                    permission !=
+                                                        LocationPermission
+                                                            .always) {
+                                                  // Permission denied
+                                                  // You can show a dialog or a Snackbar to inform the user
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                        content: Text(
+                                                            'Location permission is required to proceed.')),
+                                                  );
+                                                  return;
+                                                }
+                                              }
+
+                                              // Check if location services are enabled
+                                              if (!await Geolocator
+                                                  .isLocationServiceEnabled()) {
+                                                // Location services are not enabled
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                      content: Text(
+                                                          'Please enable location services.')),
+                                                );
+                                                return;
+                                              }
+
+                                              // 1. Get current location
+                                              Position userPosition =
+                                                  await _getCurrentLocation();
+
+                                              // 2. Fetch pickup location from Firestore
+                                              Map<String, dynamic> tripData =
+                                                  await _getPickupLocation(
+                                                      trip['tripId']);
+                                              var pickupLocation =
+                                                  tripData['pickupLocation'];
+
+                                              double pickupLatitude;
+                                              double pickupLongitude;
+
+                                              // 3. Check if pickupLocation is a GeoPoint (lat, long) or a place name
+                                              if (pickupLocation is GeoPoint) {
+                                                // If it's a GeoPoint, extract lat and long
+                                                pickupLatitude =
+                                                    pickupLocation.latitude;
+                                                pickupLongitude =
+                                                    pickupLocation.longitude;
+                                              } else {
+                                                // If it's a place name, convert to lat-long using Nominatim
+                                                Map<String, double> latLong =
+                                                    await _convertPlaceNameToLatLong(
+                                                        pickupLocation);
+                                                pickupLatitude =
+                                                    latLong['latitude']!;
+                                                pickupLongitude =
+                                                    latLong['longitude']!;
+                                              }
+
+                                              // 4. Calculate the distance between user's location and pickup location
+                                              double distance =
+                                                  _calculateDistance(
+                                                userPosition.latitude,
+                                                userPosition.longitude,
+                                                pickupLatitude,
+                                                pickupLongitude,
+                                              );
+
+                                              // 5. Upload the distance and other information to Firestore
+                                              await _uploadDistanceData(
+                                                tripId: trip['tripId'],
+                                                driverId: widget.driverId,
+                                                userId: trip['username'],
+                                                distance: distance,
+                                              );
+                                            }),
                                 ],
                               ),
                               SizedBox(height: 8),
@@ -446,84 +634,12 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
     }
   }
 
-  void showTripAndUserIdInSnackBar(
-      Map<String, dynamic> tripData, BuildContext context) async {
-    // Extract tripId, userId, and driverId (driver's email)
-    final tripId = tripData['tripId'] ?? 'No Trip ID';
-    final userId = tripData['userId'] ?? 'No User ID';
-    final driverId = widget.driverId;
-    if (tripId == 'No Trip ID' || userId == 'No User ID') {
-      // Show error if tripId or userId is missing
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid Trip or User ID.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-      return;
-    }
-
-    // Show confirmation dialog before adding the request to Firebase
-    bool confirm = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Request ?'),
-          content: Text(
-            'Are you sure to send request to this user?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // Cancel confirmation
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true); // Confirm action
-              },
-              child: const Text('Confirm'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirm == true) {
-      try {
-        // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
-        await FirebaseFirestore.instance.collection('requestsofDrivers').add({
-          'tripId': tripId,
-          'userId': userId,
-          'driverId': driverId,
-          'requestTimestamp':
-              FieldValue.serverTimestamp(), // Optional: Add a timestamp
-        });
-
-        // Step 2: Show a SnackBar with tripId, userId, and driverId
-
-        SnackBar(
-          content: Text(
-            'Request sent successfully!',
-          ),
-          duration: const Duration(seconds: 10), // Show for 10 seconds
-        );
-      } catch (e) {
-        SnackBar(
-          content: Text('Error sending request: $e'),
-          duration: const Duration(seconds: 3),
-        );
-      }
-    }
-  }
-
   showPopup(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Driver Filter"),
+          title: Text('Driver Filter'),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -636,14 +752,14 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
                             value: _selectedVehicleType,
                             hint: Text('Vehicle Type'),
                             underline: SizedBox(),
-                              items: _selectedVehicleType != null
-            ? [
-                DropdownMenuItem<String>(
-                  value: _selectedVehicleType,
-                  child: Text(_selectedVehicleType!),
-                )
-              ]
-            : [],
+                            items: _selectedVehicleType != null
+                                ? [
+                                    DropdownMenuItem<String>(
+                                      value: _selectedVehicleType,
+                                      child: Text(_selectedVehicleType!),
+                                    )
+                                  ]
+                                : [],
                             onChanged: (String? newValue) {
                               setState(() {
                                 _selectedVehicleType = newValue!;
@@ -672,11 +788,61 @@ Future<void> _fetchVehicleType() async { // method that only fetches vehicleData
               onPressed: () {
                 Navigator.of(context).pop(); // Closes the popup
               },
-              child: Text("OK"),
+              child: Text('OK'),
             ),
           ],
         );
       },
     );
+  }
+
+  Future<Map<String, dynamic>> _getPickupLocation(String tripId) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
+    return snapshot.data()!;
+  }
+
+  // Function to convert place name to lat-long using OSM Nominatim API
+  Future<Map<String, double>> _convertPlaceNameToLatLong(
+      String placeName) async {
+    final String url =
+        'https://nominatim.openstreetmap.org/search?q=$placeName&format=json&limit=1';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body);
+      if (data.isNotEmpty) {
+        final latitude = double.parse(data[0]['lat']);
+        final longitude = double.parse(data[0]['lon']);
+        return {'latitude': latitude, 'longitude': longitude};
+      } else {
+        throw Exception('Place not found');
+      }
+    } else {
+      throw Exception('Failed to fetch location data');
+    }
+  }
+
+  // Function to calculate the distance between two points
+  double _calculateDistance(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) {
+    return Geolocator.distanceBetween(
+            startLatitude, startLongitude, endLatitude, endLongitude) /
+        1000; // Convert to kilometers
+  }
+
+  // Function to upload data to Firestore
+  Future<void> _uploadDistanceData({
+    required String tripId,
+    required String driverId,
+    required String userId,
+    required double distance,
+  }) async {
+    await FirebaseFirestore.instance.collection('trips').doc(tripId).update({
+      'distance_between_driver_and_passenger': distance,
+      'driverId': driverId,
+      'userId': userId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 }

@@ -242,15 +242,15 @@
 // }
 
 // class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
-  // final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _passwordController = TextEditingController();
-  // bool _isLoading = false;
-  // Color _color = Colors.teal;
+// final TextEditingController _emailController = TextEditingController();
+// final TextEditingController _passwordController = TextEditingController();
+// bool _isLoading = false;
+// Color _color = Colors.teal;
 
 //   @override
 //   void initState() {
 //     super.initState();
-    // _checkLoginStatus();
+// _checkLoginStatus();
 //   }
 
 //   Future<void> _checkLoginStatus() async {
@@ -353,7 +353,6 @@
 //           SharedPreferences prefs = await SharedPreferences.getInstance();
 //           await prefs.setString('driverEmail', email);
 
-          
 //   // Log in with the saved account
 //   Navigator.pushAndRemoveUntil(
 //     context,
@@ -412,15 +411,6 @@
 //         title: const Text('Driver Registration'),
 //         backgroundColor: Colors.teal,
 //       ),
-
-
-
-
-
-
-
-
-
 
 //       body: SingleChildScrollView(
 //         child: Padding(
@@ -530,25 +520,20 @@
 //   }
 
 //   @override
-  // void dispose() {
-  //   _emailController.dispose();
-  //   _passwordController.dispose();
-  //   super.dispose();
-  // }
+// void dispose() {
+//   _emailController.dispose();
+//   _passwordController.dispose();
+//   super.dispose();
+// }
 // }
 
-
-
-
-
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:bcrypt/bcrypt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
-import 'package:final_menu/homepage1.dart';
-import 'package:final_menu/login_screen/sign_up_page.dart';
+import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -560,7 +545,7 @@ class DriverRegistrationPage extends StatefulWidget {
 }
 
 class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
-   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscureText = true;
@@ -571,10 +556,10 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
     super.initState();
 
     // Check if the user is already logged in
-        _checkLoginStatus();
+    _checkLoginStatus();
   }
 
-   Future<void> _checkLoginStatus() async {
+  Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? savedEmail = prefs.getString('driverEmail');
 
@@ -588,9 +573,9 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Account Found'),
+          title:  Text('Account Found',style: GoogleFonts.outfit(fontWeight: FontWeight.w400),),
           content: Text(
-              'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?'),
+              'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?',style: GoogleFonts.comicNeue(),),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -598,36 +583,37 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                 _clearSavedEmail();
                 Navigator.pop(context);
               },
-              child: const Text('Switch Account'),
+              child: const Text('Logout',style: TextStyle(color: Colors.red),),
             ),
             TextButton(
               onPressed: () {
-  // Log in with the saved account
-  Navigator.pushAndRemoveUntil(
-    context,
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          BottomNavBarPage(driverEmail: savedEmail),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0); // Slide in from the right
-        const end = Offset.zero;
-        const curve = Curves.decelerate;
+                // Log in with the saved account
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        BottomNavBarPage(driverEmail: savedEmail),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0); // Slide in from the right
+                      const end = Offset.zero;
+                      const curve = Curves.decelerate;
 
-        var tween = Tween(begin: begin, end: end)
-            .chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
 
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
-        );
-      },
-    ),
-    (route) => false, // This ensures all previous routes are removed
-  );
-},
-
-              child: const Text('Log In'),
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                  (route) =>
+                      false, // This ensures all previous routes are removed
+                );
+              },
+              child: const Text('Log In',style: TextStyle(color: Colors.green),),
             ),
           ],
         );
@@ -674,30 +660,30 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('driverEmail', email);
 
-          
-  // Log in with the saved account
-  Navigator.pushAndRemoveUntil(
-    context,
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          BottomNavBarPage(driverEmail: email),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0); // Slide in from the right
-        const end = Offset.zero;
-        const curve = Curves.decelerate;
+          // Log in with the saved account
+          Navigator.pushAndRemoveUntil(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  BottomNavBarPage(driverEmail: email),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0); // Slide in from the right
+                const end = Offset.zero;
+                const curve = Curves.decelerate;
 
-        var tween = Tween(begin: begin, end: end)
-            .chain(CurveTween(curve: curve));
-        var offsetAnimation = animation.drive(tween);
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
 
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
-        );
-      },
-    ),
-    (route) => false, // This ensures all previous routes are removed
-  );
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+            ),
+            (route) => false, // This ensures all previous routes are removed
+          );
         } else {
           _showErrorMessage(
               'No matching driver found. Please check your email and Password.');
@@ -720,11 +706,39 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
     }
   }
 
+  // void _showErrorMessage(String message) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(content: Text(message)),
+  //   );
+  // }
+
   void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+  String dialogTitle = 'Error';
+  String dialogMessage = message;
+
+  if (message == 'Please enter both email and Password.') {
+    dialogTitle = 'Error';
+  } else if (message == 'No matching driver found. Please check your email and Password.') {
+    dialogTitle = 'Driver Not Found';
+  } else if (message == 'No matching driver found. Please check your email.') {
+    dialogTitle = 'Driver Not Found';
+  } else {
+    dialogTitle = 'Error Validating Driver';
   }
+
+  AwesomeDialog(
+    context: context,
+    dialogType: DialogType.error,
+    animType: AnimType.topSlide,
+    title: dialogTitle,
+    desc: '\t $dialogMessage \t',
+    btnOkOnPress: () {},
+  ).show();
+}
+
+
+
+
 
 
   @override
@@ -743,23 +757,30 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
           child: Container(
             height: screenHeight * 0.39,
             width: screenWidth,
-            
+
             // color: const Color.fromARGB(255, 200, 54, 244),
-            decoration: BoxDecoration(image: DecorationImage(image: AssetImage("assets/driver_register_image.png",),fit: BoxFit.cover,opacity: 0.9)),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(
+                      'assets/driver_register_image.png',
+                    ),
+                    fit: BoxFit.cover,
+                    opacity: 0.9)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: MediaQuery.of(context).size.height *0.05,
-                  backgroundImage: AssetImage('assets/signin_signup_logo.jpg',),
+                  radius: MediaQuery.of(context).size.height * 0.05,
+                  backgroundImage: AssetImage(
+                    'assets/signin_signup_logo.jpg',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => DriverAuthPage()),
+                      MaterialPageRoute(builder: (context) => DriverAuthPage()),
                     );
                   },
                   child: const Text(
@@ -800,8 +821,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
-                        prefixIconColor:
-                            Color.fromARGB(255, 190, 170, 173),
+                        prefixIconColor: Color.fromARGB(174, 255, 89, 117),
                         labelText: 'Enter your E-mail',
                         prefixIcon: Icon(Icons.email),
                         hintText: 'johndoe@gmail.com',
@@ -825,10 +845,9 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                       controller: _passwordController,
                       obscureText: _obscureText,
                       decoration: InputDecoration(
-                        suffixIconColor:
-                            Color.fromARGB(174, 255, 89, 117),
+                        suffixIconColor: Color.fromARGB(174, 255, 89, 117),
                         prefixIconColor:
-                            const Color.fromARGB(255, 190, 170, 173),
+                            const Color.fromARGB(174, 255, 89, 117),
                         labelText: 'Enter your Password',
                         prefixIcon: const Icon(Icons.password),
                         filled: true,
@@ -883,8 +902,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                       onTap: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => DriverAuthPage()),
+                          MaterialPageRoute(builder: (context) => SignInPage()),
                         );
                       },
                       child: Container(
@@ -909,7 +927,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Driver Mode',
+                              'Passenger Mode',
                               style: GoogleFonts.amaticSc(
                                 fontSize: screenHeight * 0.04,
                                 fontWeight: FontWeight.bold,
@@ -937,6 +955,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
       ),
     );
   }
+
   @override
   void dispose() {
     _emailController.dispose();

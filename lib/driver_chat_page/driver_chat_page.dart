@@ -154,6 +154,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:final_menu/driver_chat_page/chat_detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DriverChatPage extends StatefulWidget {
   final String driverId;
@@ -331,18 +332,24 @@ class _DriverChatPageState extends State<DriverChatPage> {
                 children: [
                   SizedBox(height: 8),
                   if (userDetails != null) ...[
-                    Text(
-                      'User: ${userDetails['username']}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.teal[800],
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${userDetails['username']}',
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal[800],
+                          ),
+                        ),
+                        Text('... ${index+1}',style: TextStyle(color: Colors.black87,fontWeight: FontWeight.w500),),
+                      ],
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Phone: ${userDetails['phone_number']}',
-                      style: TextStyle(
+                      '${userDetails['phone_number']}',
+                      style: GoogleFonts.comicNeue(
                         fontSize: 14,
                         color: Colors.grey[700],
                       ),
@@ -357,38 +364,100 @@ class _DriverChatPageState extends State<DriverChatPage> {
                     ),
                   SizedBox(height: 12),
                   if (tripDetails != null) ...[
-                    Text(
-                      'Pickup Location: ${tripDetails['pickupLocation']}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blueAccent,
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on,color: Colors.red,),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${tripDetails['pickupLocation']}',
+                            style: GoogleFonts.comicNeue(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      'Delivery Location: ${tripDetails['deliveryLocation']}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blueAccent,
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on,color: Colors.green,),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${tripDetails['deliveryLocation']}',
+                            style: GoogleFonts.comicNeue(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      'Distance: ${tripDetails['distance']} km',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.linear_scale_rounded,color: Colors.teal,),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${double.tryParse(tripDetails['distance'])?.toStringAsFixed(2)} km',
+                            style: GoogleFonts.comicNeue(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      'Fare: NPR ${tripDetails['fare']}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.money,color: Colors.blueAccent,),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'NPR ${tripDetails['fare']}',
+                            style: GoogleFonts.comicNeue(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+
+
+                    SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.call_end,color: Colors.amber,),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${tripDetails['phone']}',
+                            style: GoogleFonts.comicNeue(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+
+
                   ] else
                     Text(
                       'Trip details not available',
@@ -402,7 +471,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                     'Latest Message: ${chatData['message']}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.redAccent,
+                      color: Colors.red,
                     ),
                   ),
                   SizedBox(height: 8),

@@ -1,9 +1,11 @@
 import 'package:animations/animations.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/chat/chat_display_page.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -47,7 +49,7 @@ class _RequestPageState extends State<RequestPage> {
           .collection('requestsofDrivers')
           .where('userId', isEqualTo: widget.userId)
           .orderBy('requestTimestamp', descending: true)
-          .limit(20) // Load first 20 documents
+          .limit(1000) // Load first 20 documents
           .get();
 
       print('Fetching arrived drivers...');
@@ -55,7 +57,7 @@ class _RequestPageState extends State<RequestPage> {
           .collection('arrivedDrivers')
           .where('userId', isEqualTo: widget.userId)
           .orderBy('timestamp', descending: true)
-          .limit(20)
+          .limit(1000)
           .get();
 
       // Debugging: Print retrieved documents
@@ -112,12 +114,15 @@ class _RequestPageState extends State<RequestPage> {
   Future<void> confirmRequest(
       String userId, String driverId, String tripId) async {
     if (!_isOnline) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No internet connection.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.topSlide,
+        title: 'Error',
+        desc: 'No internet connection.',
+        btnOkOnPress: () {},
+      ).show();
+
       return;
     }
 
@@ -134,23 +139,35 @@ class _RequestPageState extends State<RequestPage> {
         _buttonStates[tripId] = true; // Darken and disable the button
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Request confirmed and stored in Firebase.'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Request confirmed and stored in Firebase.'),
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
+
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.topSlide,
+        title: 'Success',
+        desc: 'Request confirmed and stored in Firebase.',
+        btnOkOnPress: () {},
+      ).show();
     } catch (e) {
       setState(() {
         _buttonStates[tripId] = false; // Re-enable button if error occurs
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error confirming request: $e'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.topSlide,
+        title: 'Error',
+        desc: 'Error confirming request: $e',
+        btnOkText: 'OK',
+        btnOkOnPress: () {},
+      ).show();
     }
   }
 
@@ -158,7 +175,7 @@ class _RequestPageState extends State<RequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blueAccent,
         title: Text('Requests Page'),
         actions: [
           Row(
@@ -205,6 +222,7 @@ class _RequestPageState extends State<RequestPage> {
                     if (showArrivedDrivers) ...[
                       Flexible(
                         child: ListView.builder(
+                          physics: _buildCustomScrollPhysics(),
                           itemCount: arrivedDrivers.length,
                           itemBuilder: (context, index) {
                             final driver = arrivedDrivers[index];
@@ -218,8 +236,9 @@ class _RequestPageState extends State<RequestPage> {
                                 if (!snapshot.hasData) {
                                   return Center(
                                       child: Center(
-                                        child: Image(image: AssetImage("assets/logo.png")),
-                                      ));
+                                    child: Image(
+                                        image: AssetImage('assets/logo.png')),
+                                  ));
                                 }
 
                                 final driverData =
@@ -235,7 +254,7 @@ class _RequestPageState extends State<RequestPage> {
                                     child: FlipCard(
                                       direction: FlipDirection.HORIZONTAL,
                                       front: Card(
-                                        elevation: 5,
+                                        elevation: 1,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(15),
@@ -250,8 +269,6 @@ class _RequestPageState extends State<RequestPage> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  
-                                                  
                                                   CircleAvatar(
                                                     radius: 25,
                                                     backgroundImage: driverData[
@@ -264,29 +281,42 @@ class _RequestPageState extends State<RequestPage> {
                                                             as ImageProvider,
                                                   ),
                                                   SizedBox(width: 15),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        '${driverData['name'] ?? 'Unknown'}',
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 18,
-                                                          color: Colors.black87,
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          '${driverData['name'] ?? 'Unknown'}',
+                                                          style: GoogleFonts
+                                                              .outfit(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 18,
+                                                            color:
+                                                                Colors.black87,
+                                                          ),
+                                                          maxLines: 2,
+                                                          softWrap: true,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
-                                                      ),
-                                                      Text(
-                                                        'Plate: ${driverData['numberPlate'] ?? 'N/A'}',
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color:
-                                                              Colors.grey[700],
+                                                        Text(
+                                                          'Plate: ${driverData['numberPlate'] ?? 'N/A'}',
+                                                          style: GoogleFonts
+                                                              .comicNeue(
+                                                            fontSize: 14,
+                                                            color: Colors
+                                                                .grey[700],
+                                                          ),
+                                                          maxLines: 2,
+                                                          softWrap: true,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -300,7 +330,7 @@ class _RequestPageState extends State<RequestPage> {
                                                           .toString() ??
                                                       'N/A'),
                                               _buildInfoRow(
-                                                  'Pickup:',
+                                                  'Pickup  :',
                                                   tripData['pickupLocation'] ??
                                                       'N/A'),
                                               _buildInfoRow(
@@ -309,15 +339,28 @@ class _RequestPageState extends State<RequestPage> {
                                                           'deliveryLocation'] ??
                                                       'N/A'),
                                               _buildInfoRow(
-                                                  'Vehicle:',
+                                                  'Vehicle :',
                                                   tripData['vehicle_mode'] ??
                                                       'N/A'),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Text('... ${index + 1}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 20,
+                                                          color:
+                                                              Colors.black54))
+                                                ],
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ),
                                       back: Card(
-                                        elevation: 5,
+                                        elevation: 1,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(15),
@@ -332,19 +375,20 @@ class _RequestPageState extends State<RequestPage> {
                                             children: [
                                               Text(
                                                 'Driver Contact:',
-                                                style: TextStyle(
+                                                style: GoogleFonts.comicNeue(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 18,
                                                   color: Colors.black87,
                                                 ),
                                               ),
-                                              SizedBox(height: 10),
+                                              SizedBox(height: 2),
                                               Row(
                                                 children: [
                                                   Text(
                                                     '${driverData['phone'] ?? 'N/A'}',
                                                     style:
-                                                        TextStyle(fontSize: 16),
+                                                        GoogleFonts.comicNeue(
+                                                            fontSize: 16),
                                                   ),
                                                   Spacer(),
                                                   Row(
@@ -364,13 +408,27 @@ class _RequestPageState extends State<RequestPage> {
                                                             _launchPhoneNumber(
                                                                 phoneNumber);
                                                           } else {
-                                                            ScaffoldMessenger
-                                                                    .of(context)
-                                                                .showSnackBar(
-                                                              SnackBar(
-                                                                  content: Text(
-                                                                      'Phone number is unavailable')),
-                                                            );
+                                                            // ScaffoldMessenger
+                                                            //         .of(context)
+                                                            //     .showSnackBar(
+                                                            //   SnackBar(
+                                                            //       content: Text(
+                                                            //           'Phone number is unavailable')),
+                                                            // );
+                                                            AwesomeDialog(
+                                                              context: context,
+                                                              dialogType:
+                                                                  DialogType
+                                                                      .error,
+                                                              animType: AnimType
+                                                                  .topSlide,
+                                                              title:
+                                                                  'Phone Number Unavailable',
+                                                              desc:
+                                                                  'The phone number is currently unavailable.',
+                                                              btnOkOnPress:
+                                                                  () {},
+                                                            ).show();
                                                           }
                                                         },
                                                       ),
@@ -489,6 +547,7 @@ class _RequestPageState extends State<RequestPage> {
                     ] else ...[
                       Flexible(
                         child: ListView.builder(
+                          physics: _buildCustomScrollPhysics(),
                           itemCount: requests.length,
                           itemBuilder: (context, index) {
                             final request = requests[index];
@@ -558,10 +617,9 @@ class _RequestPageState extends State<RequestPage> {
                                 final distance = tripData['distance'] ?? 'N/A';
                                 final timestamp =
                                     tripData['requestTimestamp'] ?? 'NA';
-                                final distance_between_driver_and_passenger =
-                                    tripData[
-                                            'distance_between_driver_and_passenger'] ??
-                                        'N/A';
+                                final distanceBetweenDriverAndPassenger = tripData[
+                                        'distance_between_driver_and_passenger'] ??
+                                    'N/A';
 
                                 return FlipCard(
                                   flipOnTouch:
@@ -569,7 +627,7 @@ class _RequestPageState extends State<RequestPage> {
                                   direction: FlipDirection
                                       .HORIZONTAL, // Horizontal flip
                                   back: Card(
-                                    elevation: 5,
+                                    elevation: 1,
                                     margin: EdgeInsets.all(10),
                                     child: Padding(
                                       padding: const EdgeInsets.all(15.0),
@@ -577,16 +635,60 @@ class _RequestPageState extends State<RequestPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                              'Pickup Location: $pickupLocation',
-                                              style: TextStyle(fontSize: 14)),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on,
+                                                color: Colors.green,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Expanded(
+                                                child: Text('$pickupLocation',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ),
+                                            ],
+                                          ),
                                           Divider(),
-                                          Text(
-                                              'Delivery Location: $deliveryLocation',
-                                              style: TextStyle(fontSize: 14)),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on,
+                                                color: Colors.red,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Expanded(
+                                                child: Text('$deliveryLocation',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ),
+                                            ],
+                                          ),
                                           Divider(),
-                                          Text('Fare: $fare',
-                                              style: TextStyle(fontSize: 14)),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.money,
+                                                color:
+                                                    Colors.blueAccent.shade200,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Expanded(
+                                                child: Text('NPR $fare',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                              ),
+                                            ],
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.end,
@@ -603,13 +705,18 @@ class _RequestPageState extends State<RequestPage> {
                                                     _launchPhoneNumber(
                                                         phoneNumber);
                                                   } else {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                          content: Text(
-                                                              'Phone number is unavailable')),
-                                                    );
+                                                    AwesomeDialog(
+                                                      context: context,
+                                                      dialogType:
+                                                          DialogType.error,
+                                                      animType:
+                                                          AnimType.topSlide,
+                                                      title:
+                                                          'Phone Number Unavailable',
+                                                      desc:
+                                                          'The phone number is currently unavailable.',
+                                                      btnOkOnPress: () {},
+                                                    ).show();
                                                   }
                                                 },
                                               ),
@@ -671,10 +778,9 @@ class _RequestPageState extends State<RequestPage> {
                                     ),
                                   ),
                                   front: Card(
-                                    
-                                    elevation: 5,
+                                    elevation: 1,
                                     margin: EdgeInsets.all(10),
-                                    child: Container(
+                                    child: SizedBox(
                                       child: Padding(
                                         padding: const EdgeInsets.all(15.0),
                                         child: Column(
@@ -692,11 +798,9 @@ class _RequestPageState extends State<RequestPage> {
                                                             'assets/tuktuk.jpg')
                                                         as ImageProvider,
                                               ),
-                                              
-                                                  
                                               title: Text(
                                                 '$name - $numberPlate',
-                                                style: TextStyle(
+                                                style: GoogleFonts.outfit(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16),
                                               ),
@@ -707,44 +811,95 @@ class _RequestPageState extends State<RequestPage> {
                                                   Text(
                                                     'Passenger: $noOfPerson | Mode: $vehicleMode',
                                                     style:
-                                                        TextStyle(fontSize: 14),
+                                                        GoogleFonts.comicNeue(
+                                                            fontSize: 14),
                                                   ),
                                                   Text(
-                                                      '$vehicleType $brand ($color)',
-                                                      maxLines: 1),
+                                                    '$vehicleType $brand ($color)',
+                                                    style:
+                                                        GoogleFonts.comicNeue(),
+                                                    maxLines: null,
+                                                    softWrap: true,
+                                                  ),
                                                 ],
                                               ),
                                             ),
                                             Divider(),
-                                            Text(
-                                              'Contact: $phone',
-                                              style: TextStyle(fontSize: 14),
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                              maxLines: null,
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.call_end_sharp,
+                                                  color: Colors.green,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Expanded(
+                                                  child: Text(
+                                                    '$phone',
+                                                    style:
+                                                        GoogleFonts.comicNeue(
+                                                            fontSize: 14),
+                                                    softWrap: true,
+                                                    overflow:
+                                                        TextOverflow.visible,
+                                                    maxLines: null,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                             SizedBox(height: 5),
-                                            Text(
-                                              'Trip Distance: ${distance} km',
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                              maxLines: null,
-                                              style: TextStyle(fontSize: 14),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.linear_scale_rounded,
+                                                  color: Colors.orange,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  '${double.tryParse(distance)?.toStringAsFixed(1)} km',
+                                                  softWrap: true,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                  maxLines: null,
+                                                  style: GoogleFonts.comicNeue(
+                                                      fontSize: 14),
+                                                ),
+                                              ],
                                             ),
                                             SizedBox(height: 5),
-                                            Text(
-                                              'Driver is ${distance_between_driver_and_passenger} km far from your Pickup Place',
-                                              style: TextStyle(fontSize: 14),
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                              maxLines: null,
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.people_sharp,
+                                                  color: Colors
+                                                      .pinkAccent.shade200,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  'Driver is ${(distanceBetweenDriverAndPassenger).toStringAsFixed(1)} km away',
+                                                  style: GoogleFonts.comicNeue(
+                                                      fontSize: 14),
+                                                  softWrap: true,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                  maxLines: null,
+                                                ),
+                                              ],
                                             ),
-                                            SizedBox(height: 5),
                                             Align(
                                               alignment: Alignment.bottomRight,
-                                              child: Icon(Icons.arrow_forward_ios_rounded,
-                                                  color: Colors
-                                                      .blue), // Flip prompt
+                                              child: Text(
+                                                '... ${index + 1}',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 20,
+                                                    color: Colors.black54),
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -762,7 +917,7 @@ class _RequestPageState extends State<RequestPage> {
                 );
               },
             )
-          : Center(child: Image(image: AssetImage("assets/logo.png"))),
+          : Center(child: Image(image: AssetImage('assets/logo.png'))),
     );
   }
 
@@ -787,8 +942,8 @@ class _RequestPageState extends State<RequestPage> {
       child: Row(
         children: [
           Text(
-            '$label',
-            style: TextStyle(
+            label,
+            style: GoogleFonts.outfit(
               fontWeight: FontWeight.w500,
               fontSize: 14,
               color: Colors.black87,
@@ -815,5 +970,41 @@ class _RequestPageState extends State<RequestPage> {
         timestamp.toDate(); // Convert Firestore Timestamp to DateTime
     return DateFormat('yyyy-MM-dd HH:mm')
         .format(dateTime); // Customize the format as needed
+  }
+
+  ScrollPhysics _buildCustomScrollPhysics() {
+    final ScrollController _scrollController = ScrollController();
+    final double _maxScrollSpeed = 1.0; // Adjust as needed
+    return AlwaysScrollableScrollPhysics().applyTo(
+      ClampingScrollPhysics(
+        parent: _LimitedScrollPhysics(maxScrollSpeed: _maxScrollSpeed),
+      ),
+    );
+  }
+}
+
+class _LimitedScrollPhysics extends ScrollPhysics {
+  final double maxScrollSpeed;
+
+  const _LimitedScrollPhysics({
+    required this.maxScrollSpeed,
+    ScrollPhysics? parent,
+  }) : super(parent: parent);
+
+  @override
+  _LimitedScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return _LimitedScrollPhysics(
+      maxScrollSpeed: maxScrollSpeed,
+      parent: buildParent(ancestor),
+    );
+  }
+
+  @override
+  Simulation? createBallisticSimulation(
+      ScrollMetrics position, double velocity) {
+    if (velocity.abs() > maxScrollSpeed) {
+      velocity = velocity.sign * maxScrollSpeed;
+    }
+    return super.createBallisticSimulation(position, velocity);
   }
 }
