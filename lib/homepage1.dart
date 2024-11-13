@@ -122,14 +122,14 @@ class _HomePage1State extends State<HomePage1> {
                 SizedBox(
                   width: 10,
                 ),
-                Image(image: AssetImage("assets/signin_signup_logo.png",),height: 40, width: 40),
+                Image(image: AssetImage('assets/signin_signup_logo.png',),height: 40, width: 40),
 
                 SizedBox(
                   width: 10,
                 ),
 
                 
-                Text("Tuk Tuk"),
+                Text('Tuk Tuk'),
               ],
             ),
           ),

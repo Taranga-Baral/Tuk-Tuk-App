@@ -14,6 +14,8 @@
 
 // class _ChatPageState extends State<ChatPage> {
 //   List<Map<String, dynamic>> confirmedDriversData = [];
+//   DocumentSnapshot? lastDocument; // For pagination
+//   bool isLoadingMore = false; // To track loading state
 
 //   @override
 //   void initState() {
@@ -21,54 +23,68 @@
 //     fetchConfirmedDriversData();
 //   }
 
-//   Future<void> fetchConfirmedDriversData() async {
+//   Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
 //     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-//     // Query confirmedDrivers where userId matches
-//     QuerySnapshot confirmedDriversSnapshot = await firestore
+//     Query query = firestore
 //         .collection('confirmedDrivers')
 //         .where('userId', isEqualTo: widget.userId)
-//         .get();
+//         .orderBy('confirmedAt', descending: true)
+//         .limit(isLoadMore ? 10 : 10); // Load 10 cards at a time
 
-//     List<Map<String, dynamic>> fetchedData = [];
-
-//     for (var doc in confirmedDriversSnapshot.docs) {
-//       var confirmedDriverData = doc.data() as Map<String, dynamic>;
-
-//       // Fetch details from trips using tripId
-//       DocumentSnapshot tripSnapshot = await firestore
-//           .collection('trips')
-//           .doc(confirmedDriverData['tripId'])
-//           .get();
-//       var tripData = tripSnapshot.data() as Map<String, dynamic>;
-
-//       // Fetch details from vehicleData using driverId
-//       DocumentSnapshot driverSnapshot = await firestore
-//           .collection('vehicleData')
-//           .doc(confirmedDriverData['driverId'])
-//           .get();
-//       var driverData = driverSnapshot.data() as Map<String, dynamic>;
-
-//       // Combine the data from both collections and include profile picture
-//       fetchedData.add({
-//         'id': doc.id,
-//         'pickupLocation': tripData['pickupLocation'],
-//         'deliveryLocation': tripData['deliveryLocation'],
-//         'distance': tripData['distance'],
-//         'fare': tripData['fare'],
-//         'driverName': driverData['name'],
-//         'driverPhone': driverData['phone'],
-//         'profilePictureUrl': driverData['profilePictureUrl'] ?? '', // Fetch profile picture
-//         'driverId': confirmedDriverData['driverId'],
-//         'tripId': confirmedDriverData['tripId'],
-//         'no_of_person':tripData['no_of_person'],
-//         'vehicle_mode':tripData['vehicle_mode'],
-//       });
+//     if (isLoadMore && lastDocument != null) {
+//       query = query.startAfterDocument(lastDocument!);
 //     }
 
-//     setState(() {
-//       confirmedDriversData = fetchedData;
-//     });
+//     QuerySnapshot confirmedDriversSnapshot = await query.get();
+
+//     if (confirmedDriversSnapshot.docs.isNotEmpty) {
+//       List<Map<String, dynamic>> fetchedData = [];
+
+//       for (var doc in confirmedDriversSnapshot.docs) {
+//         var confirmedDriverData = doc.data() as Map<String, dynamic>;
+
+//         // Fetch details from trips using tripId
+//         DocumentSnapshot tripSnapshot = await firestore
+//             .collection('trips')
+//             .doc(confirmedDriverData['tripId'])
+//             .get();
+//         var tripData = tripSnapshot.data() as Map<String, dynamic>;
+
+//         // Fetch details from vehicleData using driverId
+//         DocumentSnapshot driverSnapshot = await firestore
+//             .collection('vehicleData')
+//             .doc(confirmedDriverData['driverId'])
+//             .get();
+//         var driverData = driverSnapshot.data() as Map<String, dynamic>;
+
+//         // Combine the data from both collections and include profile picture
+//         fetchedData.add({
+//           'id': doc.id,
+//           'pickupLocation': tripData['pickupLocation'],
+//           'deliveryLocation': tripData['deliveryLocation'],
+//           'distance': tripData['distance'],
+//           'fare': tripData['fare'],
+//           'driverName': driverData['name'],
+//           'driverPhone': driverData['phone'],
+//           'profilePictureUrl': driverData['profilePictureUrl'] ?? '',
+//           'driverId': confirmedDriverData['driverId'],
+//           'tripId': confirmedDriverData['tripId'],
+//           'no_of_person': tripData['no_of_person'],
+//           'vehicle_mode': tripData['vehicle_mode'],
+//           'timestamp': confirmedDriverData['timestamp'], // Ensure this field exists
+//         });
+//       }
+
+//       setState(() {
+//         if (isLoadMore) {
+//           confirmedDriversData.addAll(fetchedData);
+//         } else {
+//           confirmedDriversData = fetchedData;
+//         }
+//         lastDocument = confirmedDriversSnapshot.docs.last; // Update the last document
+//       });
+//     }
 //   }
 
 //   @override
@@ -82,128 +98,144 @@
 //           ? Center(child: CircularProgressIndicator())
 //           : Padding(
 //               padding: const EdgeInsets.all(12.0),
-//               child: ListView.builder(
-//                 itemCount: confirmedDriversData.length,
-//                 itemBuilder: (context, index) {
-//                   var data = confirmedDriversData[index];
-//                   String driverId = data['driverId'];
-//                   String tripId = data['tripId'];
-//                   String profilePictureUrl = data['profilePictureUrl'];
+//               child: Column(
+//                 children: [
+//                   Expanded(
+//                     child: ListView.builder(
+//                       itemCount: confirmedDriversData.length,
+//                       itemBuilder: (context, index) {
+//                         var data = confirmedDriversData[index];
+//                         String driverId = data['driverId'];
+//                         String tripId = data['tripId'];
+//                         String profilePictureUrl = data['profilePictureUrl'];
 
-//                   return Column(
-//                     children: [
-//                       Card(
-//   elevation: 8,
-//   shape: RoundedRectangleBorder(
-//     borderRadius: BorderRadius.circular(15),
-//   ),
-//   child: Container(
-//     decoration: BoxDecoration(
-//       gradient: LinearGradient(
-//         colors: [Colors.white, Colors.grey[200]!],
-//         begin: Alignment.topLeft,
-//         end: Alignment.bottomRight,
+// return Column(
+//   children: [
+//     Card(
+//       elevation: 1,
+
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(15),
 //       ),
-//       borderRadius: BorderRadius.circular(15),
-//     ),
-//     child: ListTile(
-//       contentPadding: EdgeInsets.all(16),
-//       leading: CircleAvatar(
-//         backgroundImage: profilePictureUrl.isNotEmpty
-//             ? NetworkImage(profilePictureUrl)
-//             : AssetImage('assets/loading_screen.gif') as ImageProvider,
-//       ),
-//       title: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text('${index + 1}. Driver: ${data['driverName']}', style: TextStyle(fontWeight: FontWeight.bold)),
-//             SizedBox(
-//               height: 8,
-//             ),
-//           // Row(
-//           //   mainAxisAlignment: MainAxisAlignment.start,
-//           //   children: [
-//           //     Text(data['no_of_person'].toString()),
+//       child: Container(
+//         // decoration: BoxDecoration(
+//         //   gradient: LinearGradient(
+//         //     colors: [Colors.white, Colors.grey[200]!],
+//         //     begin: Alignment.topLeft,
+//         //     end: Alignment.bottomRight,
+//         //   ),
+//         //   borderRadius: BorderRadius.circular(15),
+//         // ),
+//         child: ListTile(
+//           contentPadding: EdgeInsets.all(16),
+//           leading: CircleAvatar(
+//             radius: 20,
+//             backgroundImage: profilePictureUrl.isNotEmpty
+//                 ? NetworkImage(profilePictureUrl)
+//                 : AssetImage('assets/loading_screen.gif') as ImageProvider,
+//           ),
+//           title: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Text('${data['driverName']}', style: TextStyle(fontWeight: FontWeight.bold)),
 
-//           //     SizedBox(
-//           //       width: 8,
-//           //     ),
+//                    Text('... ${index+1}',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+//                 ],
+//               ),
+//               SizedBox(height: 8),
+//             ],
+//           ),
+//           subtitle: Column(
+//             children: [
+//               Text(
+//                 'उठाउने स्थान : ${data['pickupLocation']}\n\n'
+//                 'डेलिभरी स्थान : ${data['deliveryLocation']}\n\n'
+//                 'सम्पर्क : ${data['driverPhone']}',
+//                 textAlign: TextAlign.left,
+//                 style: TextStyle(color: Colors.grey[600],),
+//               ),
 
-//           //       Icon(Icons.info_outline,size: 14,),
-
-//           //     SizedBox(
-//           //       width: 8,
-//           //     ),
-
-//           //     Text(data['vehicle_mode']),
-
-//           //     SizedBox(
-//           //       height: 30,
-//           //     ),
-
-
-//           //   ],
-//           // )
-//         ],
-//       ),
-//       subtitle: Text(
-//         'उठाउने स्थान : ${data['pickupLocation']}\n\n'
-//         'डेलिभरी स्थान : ${data['deliveryLocation']}\n\n'
-//         'सम्पर्क : ${data['driverPhone']}',
-//         style: TextStyle(color: Colors.grey[600]),
-//       ),
-//       trailing: IconButton(
-//         icon: Icon(Icons.chat, color: Colors.green),
-//         onPressed: () {
-//           // Navigate to ChatDetailPage with animation
-//           Navigator.of(context).push(
-//             PageRouteBuilder(
-//               pageBuilder: (context, animation, secondaryAnimation) {
-//                 return FadeScaleTransition(
-//                   animation: animation,
-//                   child: ChatDetailPage(
-//                     userId: widget.userId,
-//                     driverId: driverId,
-//                     tripId: tripId,
-//                     driverName: data['driverName'],
-//                     pickupLocation: data['pickupLocation'],
-//                     deliveryLocation: data['deliveryLocation'],
-//                     distance: data['distance'],
-//                     no_of_person: data['no_of_person'],
-//                     vehicle_mode: data['vehicle_mode'],
-//                     fare: data['fare'],
-//                   ),
-//                 );
-//               },
-//               transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//                 const begin = Offset(1.0, 0.0);
-//                 const end = Offset.zero;
-//                 const curve = Curves.easeInOut;
-
-//                 var tween = Tween(begin: begin, end: end);
-//                 var offsetAnimation = animation.drive(tween.chain(CurveTween(curve: curve)));
-
-//                 return SlideTransition(position: offsetAnimation, child: child);
-//               },
-//             ),
-//           );
-//         },
-//       ),
-//     ),
-//   ),
-// ),
-
-//                       SizedBox(
-//                         height: 10,
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.end,
+//                 children: [
+//                   IconButton(
+//             icon: Icon(Icons.chat, color: Colors.green),
+//             onPressed: () {
+//               // Navigate to ChatDetailPage with animation
+//               Navigator.of(context).push(
+//                 PageRouteBuilder(
+//                   pageBuilder: (context, animation, secondaryAnimation) {
+//                     return FadeScaleTransition(
+//                       animation: animation,
+//                       child: ChatDetailPage(
+//                         userId: widget.userId,
+//                         driverId: driverId,
+//                         tripId: tripId,
+//                         driverName: data['driverName'],
+//                         pickupLocation: data['pickupLocation'],
+//                         deliveryLocation: data['deliveryLocation'],
+//                         distance: data['distance'],
+//                         no_of_person: data['no_of_person'],
+//                         vehicle_mode: data['vehicle_mode'],
+//                         fare: data['fare'],
 //                       ),
-//                     ],
-//                   );
-//                 },
+//                     );
+//                   },
+//                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+//                     const begin = Offset(1.0, 0.0);
+//                     const end = Offset.zero;
+//                     const curve = Curves.easeInOut;
+
+//                     var tween = Tween(begin: begin, end: end);
+//                     var offsetAnimation = animation.drive(tween.chain(CurveTween(curve: curve)));
+
+//                     return SlideTransition(position: offsetAnimation, child: child);
+//                   },
+//                 ),
+//               );
+//             },
+//           ),
+
+//                 ],
+//               ),
+//                                     ],
+//                                   ),
+
+//                                 ),
+//                               ),
+//                             ),
+//                             SizedBox(height: 10),
+//                           ],
+//                         );
+//                       },
+//                     ),
+//                   ),
+//                   if (isLoadingMore) CircularProgressIndicator(), // Show loading indicator
+//                   ElevatedButton(
+//                     onPressed: () {
+//                       if (!isLoadingMore) {
+//                         setState(() {
+//                           isLoadingMore = true;
+//                         });
+//                         fetchConfirmedDriversData(isLoadMore: true).then((_) {
+//                           setState(() {
+//                             isLoadingMore = false; // Reset loading state
+//                           });
+//                         });
+//                       }
+//                     },
+//                     child: Text('Load More'),
+//                   ),
+//                 ],
 //               ),
 //             ),
 //     );
 //   }
 // }
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/chat/chat_display_page.dart';
 import 'package:flutter/material.dart';
@@ -232,6 +264,9 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+    // Calculate time 1 hour ago
+    DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 1));
+
     Query query = firestore
         .collection('confirmedDrivers')
         .where('userId', isEqualTo: widget.userId)
@@ -243,7 +278,7 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     QuerySnapshot confirmedDriversSnapshot = await query.get();
-    
+
     if (confirmedDriversSnapshot.docs.isNotEmpty) {
       List<Map<String, dynamic>> fetchedData = [];
 
@@ -255,31 +290,48 @@ class _ChatPageState extends State<ChatPage> {
             .collection('trips')
             .doc(confirmedDriverData['tripId'])
             .get();
-        var tripData = tripSnapshot.data() as Map<String, dynamic>;
 
-        // Fetch details from vehicleData using driverId
-        DocumentSnapshot driverSnapshot = await firestore
-            .collection('vehicleData')
-            .doc(confirmedDriverData['driverId'])
-            .get();
-        var driverData = driverSnapshot.data() as Map<String, dynamic>;
+        // Check if the trip exists and is within the last hour
+        if (tripSnapshot.exists) {
+          var tripData = tripSnapshot.data() as Map<String, dynamic>;
+          var tripTimestamp = (tripData['timestamp'] as Timestamp).toDate();
 
-        // Combine the data from both collections and include profile picture
-        fetchedData.add({
-          'id': doc.id,
-          'pickupLocation': tripData['pickupLocation'],
-          'deliveryLocation': tripData['deliveryLocation'],
-          'distance': tripData['distance'],
-          'fare': tripData['fare'],
-          'driverName': driverData['name'],
-          'driverPhone': driverData['phone'],
-          'profilePictureUrl': driverData['profilePictureUrl'] ?? '',
-          'driverId': confirmedDriverData['driverId'],
-          'tripId': confirmedDriverData['tripId'],
-          'no_of_person': tripData['no_of_person'],
-          'vehicle_mode': tripData['vehicle_mode'],
-          'timestamp': confirmedDriverData['timestamp'], // Ensure this field exists
-        });
+          // Compare tripTimestamp with oneHourAgo
+          if (tripTimestamp.isAfter(oneHourAgo)) {
+            // Trip is within the last hour, include it in fetchedData
+            // Fetch details from vehicleData using driverId
+            DocumentSnapshot driverSnapshot = await firestore
+                .collection('vehicleData')
+                .doc(confirmedDriverData['driverId'])
+                .get();
+            var driverData = driverSnapshot.data() as Map<String, dynamic>;
+
+            // Combine the data from both collections and include profile picture
+            fetchedData.add({
+              'id': doc.id,
+              'pickupLocation': tripData['pickupLocation'],
+              'deliveryLocation': tripData['deliveryLocation'],
+              'distance': tripData['distance'],
+              'fare': tripData['fare'],
+              'driverName': driverData['name'],
+              'driverPhone': driverData['phone'],
+              'profilePictureUrl': driverData['profilePictureUrl'] ?? '',
+              'driverId': confirmedDriverData['driverId'],
+              'tripId': confirmedDriverData['tripId'],
+              'no_of_person': tripData['no_of_person'],
+              'vehicle_mode': tripData['vehicle_mode'],
+              'timestamp':
+                  confirmedDriverData['timestamp'], // Ensure this field exists
+            });
+          } else {
+            // Trip is older than 1 hour, skip processing
+            print(
+                'Skipping trip ${confirmedDriverData['tripId']} as it is older than 1 hour.');
+          }
+        } else {
+          print(
+              'Trip ${confirmedDriverData['tripId']} does not exist or has no data.');
+        }
       }
 
       setState(() {
@@ -288,7 +340,8 @@ class _ChatPageState extends State<ChatPage> {
         } else {
           confirmedDriversData = fetchedData;
         }
-        lastDocument = confirmedDriversSnapshot.docs.last; // Update the last document
+        lastDocument =
+            confirmedDriversSnapshot.docs.last; // Update the last document
       });
     }
   }
@@ -319,7 +372,6 @@ class _ChatPageState extends State<ChatPage> {
                           children: [
                             Card(
                               elevation: 1,
-                              
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -336,19 +388,30 @@ class _ChatPageState extends State<ChatPage> {
                                   contentPadding: EdgeInsets.all(16),
                                   leading: CircleAvatar(
                                     radius: 20,
-                                    backgroundImage: profilePictureUrl.isNotEmpty
-                                        ? NetworkImage(profilePictureUrl)
-                                        : AssetImage('assets/loading_screen.gif') as ImageProvider,
+                                    backgroundImage:
+                                        profilePictureUrl.isNotEmpty
+                                            ? NetworkImage(profilePictureUrl)
+                                            : AssetImage(
+                                                    'assets/loading_screen.gif')
+                                                as ImageProvider,
                                   ),
                                   title: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text('${data['driverName']}', style: TextStyle(fontWeight: FontWeight.bold)),
-
-                                           Text('... ${index+1}',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                          Text('${data['driverName']}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                            '... ${index + 1}',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          ),
                                         ],
                                       ),
                                       SizedBox(height: 8),
@@ -361,55 +424,76 @@ class _ChatPageState extends State<ChatPage> {
                                         'डेलिभरी स्थान : ${data['deliveryLocation']}\n\n'
                                         'सम्पर्क : ${data['driverPhone']}',
                                         textAlign: TextAlign.left,
-                                        style: TextStyle(color: Colors.grey[600],),
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                        ),
                                       ),
-
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
                                           IconButton(
-                                    icon: Icon(Icons.chat, color: Colors.green),
-                                    onPressed: () {
-                                      // Navigate to ChatDetailPage with animation
-                                      Navigator.of(context).push(
-                                        PageRouteBuilder(
-                                          pageBuilder: (context, animation, secondaryAnimation) {
-                                            return FadeScaleTransition(
-                                              animation: animation,
-                                              child: ChatDetailPage(
-                                                userId: widget.userId,
-                                                driverId: driverId,
-                                                tripId: tripId,
-                                                driverName: data['driverName'],
-                                                pickupLocation: data['pickupLocation'],
-                                                deliveryLocation: data['deliveryLocation'],
-                                                distance: data['distance'],
-                                                no_of_person: data['no_of_person'],
-                                                vehicle_mode: data['vehicle_mode'],
-                                                fare: data['fare'],
-                                              ),
-                                            );
-                                          },
-                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                            const begin = Offset(1.0, 0.0);
-                                            const end = Offset.zero;
-                                            const curve = Curves.easeInOut;
+                                            icon: Icon(Icons.chat,
+                                                color: Colors.green),
+                                            onPressed: () {
+                                              // Navigate to ChatDetailPage with animation
+                                              Navigator.of(context).push(
+                                                PageRouteBuilder(
+                                                  pageBuilder: (context,
+                                                      animation,
+                                                      secondaryAnimation) {
+                                                    return FadeScaleTransition(
+                                                      animation: animation,
+                                                      child: ChatDetailPage(
+                                                        userId: widget.userId,
+                                                        driverId: driverId,
+                                                        tripId: tripId,
+                                                        driverName:
+                                                            data['driverName'],
+                                                        pickupLocation: data[
+                                                            'pickupLocation'],
+                                                        deliveryLocation: data[
+                                                            'deliveryLocation'],
+                                                        distance:
+                                                            data['distance'],
+                                                        no_of_person: data[
+                                                            'no_of_person'],
+                                                        vehicle_mode: data[
+                                                            'vehicle_mode'],
+                                                        fare: data['fare'],
+                                                      ),
+                                                    );
+                                                  },
+                                                  transitionsBuilder: (context,
+                                                      animation,
+                                                      secondaryAnimation,
+                                                      child) {
+                                                    const begin =
+                                                        Offset(1.0, 0.0);
+                                                    const end = Offset.zero;
+                                                    const curve =
+                                                        Curves.easeInOut;
 
-                                            var tween = Tween(begin: begin, end: end);
-                                            var offsetAnimation = animation.drive(tween.chain(CurveTween(curve: curve)));
+                                                    var tween = Tween(
+                                                        begin: begin, end: end);
+                                                    var offsetAnimation =
+                                                        animation.drive(tween
+                                                            .chain(CurveTween(
+                                                                curve: curve)));
 
-                                            return SlideTransition(position: offsetAnimation, child: child);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                         
+                                                    return SlideTransition(
+                                                        position:
+                                                            offsetAnimation,
+                                                        child: child);
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
                                         ],
                                       ),
                                     ],
                                   ),
-                                  
                                 ),
                               ),
                             ),
@@ -419,7 +503,8 @@ class _ChatPageState extends State<ChatPage> {
                       },
                     ),
                   ),
-                  if (isLoadingMore) CircularProgressIndicator(), // Show loading indicator
+                  if (isLoadingMore)
+                    CircularProgressIndicator(), // Show loading indicator
                   ElevatedButton(
                     onPressed: () {
                       if (!isLoadingMore) {

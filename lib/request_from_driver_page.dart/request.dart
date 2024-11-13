@@ -26,7 +26,7 @@ class _RequestPageState extends State<RequestPage> {
   bool _isOnline = true; // Track connectivity status
   final Map<String, bool> _buttonStates =
       {}; // Track button states per trip using tripId (String)
-  List<bool> _expandedStates = []; // Track expanded state for each card
+  List<bool> _expandedStates = [];
 
   @override
   void initState() {
@@ -49,15 +49,7 @@ class _RequestPageState extends State<RequestPage> {
           .collection('requestsofDrivers')
           .where('userId', isEqualTo: widget.userId)
           .orderBy('requestTimestamp', descending: true)
-          .limit(1000) // Load first 20 documents
-          .get();
-
-      print('Fetching arrived drivers...');
-      final arrivedDriversSnapshot = await FirebaseFirestore.instance
-          .collection('arrivedDrivers')
-          .where('userId', isEqualTo: widget.userId)
-          .orderBy('timestamp', descending: true)
-          .limit(1000)
+          .limit(1000) // Limit the number of documents to load
           .get();
 
       // Debugging: Print retrieved documents
@@ -65,18 +57,44 @@ class _RequestPageState extends State<RequestPage> {
         print('Request: ${doc.data()}');
       }
 
-      for (var doc in arrivedDriversSnapshot.docs) {
-        print('Arrived driver: ${doc.data()}');
-      }
-
       // Check if requests exist before continuing
-      if (requestsSnapshot.docs.isEmpty &&
-          arrivedDriversSnapshot.docs.isEmpty) {
-        print('No requests or arrived drivers found for this user.');
+      if (requestsSnapshot.docs.isEmpty) {
+        print('No requests found for this user.');
+        return; // Exit if no requests found
       }
 
-      // Check the state of each request in Firestore to see if it's confirmed
-      for (var request in requestsSnapshot.docs) {
+      // Initialize variables to hold the documents with distance information
+      List<DocumentSnapshot> filteredRequests = [];
+
+      // Filter requests with 'distance_between_driver_and_passenger' field
+      for (var requestDoc in requestsSnapshot.docs) {
+        final request = requestDoc.data();
+        final tripId = request['tripId'];
+        final driverId = request['driverId'];
+        final userId = request['userId'];
+
+        // Fetch distance data from 'distance_between_driver_and_passenger' collection
+        final distanceSnapshot = await FirebaseFirestore.instance
+            .collection('distance_between_driver_and_passenger')
+            .where('tripId', isEqualTo: tripId)
+            .where('driverId', isEqualTo: driverId)
+            .where('userId', isEqualTo: userId)
+            .get();
+
+        // Merge data from 'requestsofDrivers' and 'distance_between_driver_and_passenger'
+        if (distanceSnapshot.docs.isNotEmpty) {
+          final distanceData = distanceSnapshot.docs.first.data();
+          request['distance_between_driver_and_passenger'] =
+              distanceData['distance'] ?? 'N/A';
+        } else {
+          request['distance_between_driver_and_passenger'] = 'N/A';
+        }
+
+        filteredRequests.add(requestDoc);
+      }
+
+      // Process the filtered requests to check if confirmed in another collection
+      for (var request in filteredRequests) {
         final tripId = request['tripId'];
         final confirmedSnapshot = await FirebaseFirestore.instance
             .collection('confirmedDrivers')
@@ -84,21 +102,21 @@ class _RequestPageState extends State<RequestPage> {
             .get();
 
         setState(() {
-          _buttonStates[tripId] = confirmedSnapshot
-              .docs.isNotEmpty; // Button is darkened if confirmed
+          _buttonStates[tripId] =
+              confirmedSnapshot.docs.isNotEmpty; // Update button states
         });
       }
 
       // Initialize the _expandedStates list with false values for all requests
-      _expandedStates = List.filled(requestsSnapshot.docs.length, false);
+      _expandedStates = List.filled(filteredRequests.length, false);
 
       setState(() {
-        requests = requestsSnapshot.docs;
-        arrivedDrivers = arrivedDriversSnapshot.docs;
+        requests = filteredRequests;
         isDataLoaded = true;
       });
     } catch (e) {
       print('Error loading data: $e');
+      // Handle errors gracefully, e.g., show a snackbar or alert dialog
     }
   }
 
@@ -546,8 +564,396 @@ class _RequestPageState extends State<RequestPage> {
                       ),
                     ] else ...[
                       Flexible(
+//                         child: ListView.builder(
+//                           itemCount: requests.length,
+//                           physics: _buildCustomScrollPhysics(),
+//                           itemBuilder: (context, index) {
+//                             final request = requests[index];
+//                             final tripId = request['tripId'];
+//                             final driverId = request['driverId'];
+//                             final userId = request['userId'];
+
+//                             return FutureBuilder(
+//                               future: Future.wait([
+//                                 FirebaseFirestore.instance
+//                                     .collection('vehicleData')
+//                                     .doc(driverId)
+//                                     .get(),
+//                                 FirebaseFirestore.instance
+//                                     .collection('trips')
+//                                     .doc(tripId)
+//                                     .get(),
+//                                 FirebaseFirestore.instance
+//                                     .collection(
+//                                         'distance_between_driver_and_passenger')
+//                                     .where('tripId', isEqualTo: tripId)
+//                                     .where('userId', isEqualTo: userId)
+//                                     .get(),
+//                               ]),
+//                               builder: (context,
+//                                   AsyncSnapshot<List<Object>> snapshot) {
+//                                 if (snapshot.connectionState ==
+//                                     ConnectionState.waiting) {
+//                                   return Center(
+//                                       child: Image(
+//                                     image: AssetImage('assets/logo.png'),
+//                                   ));
+//                                 }
+
+//                                 if (snapshot.hasError || !snapshot.hasData) {
+//                                   return Text('Error loading data');
+//                                 }
+
+//                                 if (snapshot.data == null) {
+//                                   return Text('No any user data');
+//                                 }
+
+//                                // Accessing documents from the snapshot
+//     final vehicleDataSnapshot = snapshot.data![0];
+//     final tripDataSnapshot = snapshot.data![1];
+//     final distanceSnapshot = snapshot.data![2];
+
+// // Checking if distanceSnapshot contains any documents
+//     if (distanceSnapshot.docs.isEmpty) {
+//       return Text('No distance data found');
+//     }
+
+//     // Accessing the first document from distanceSnapshot
+//     final distanceDoc = distanceSnapshot.docs.first;
+//     final distanceData = distanceDoc.data() as Map<String, dynamic>;
+
+//                                 // Access data from DocumentSnapshot using data() method
+//                                 Map<String, dynamic> vehicleData =
+//                                     vehicleDataSnapshot.data()
+//                                         as Map<String, dynamic>;
+//                                 Map<String, dynamic> tripData = tripDataSnapshot
+//                                     .data() as Map<String, dynamic>;
+
+//                                     Map<String, dynamic> distanceData = tripDataSnapshot
+//                                     .data() as Map<String, dynamic>;
+
+//                                 final phone = vehicleData['phone'] ?? 'N/A';
+//                                 final address = vehicleData['address'] ?? 'N/A';
+//                                 final brand = vehicleData['brand'] ?? 'N/A';
+//                                 final profilePicture =
+//                                     vehicleData['profilePictureUrl'] ?? 'N/A';
+//                                 final color = vehicleData['color'] ?? 'N/A';
+//                                 final name = vehicleData['name'] ?? 'N/A';
+//                                 final numberPlate =
+//                                     vehicleData['numberPlate'] ?? 'N/A';
+//                                 final vehicleType =
+//                                     vehicleData['vehicleType'] ?? 'N/A';
+
+//                                 final pickupLocation =
+//                                     tripData['pickupLocation'] ?? 'N/A';
+//                                 final deliveryLocation =
+//                                     tripData['deliveryLocation'] ?? 'N/A';
+
+//                                 final noOfPerson =
+//                                     tripData['no_of_person'] ?? 'N/A';
+
+//                                 final vehicleMode =
+//                                     tripData['vehicle_mode'] ?? 'N/A';
+
+//                                 final fare = tripData['fare'] ?? 'N/A';
+//                                 final distance = tripData['distance'] ?? 'N/A';
+//                                 final timestamp =
+//                                     tripData['requestTimestamp'] ?? 'NA';
+//                                 final distanceBetweenDriverAndPassenger = distanceData[
+//                                         'distance_between_driver_and_passenger'] ??
+//                                     'N/A';
+
+//                                 return FlipCard(
+//                                   flipOnTouch:
+//                                       true, // Flip animation on card tap
+//                                   direction: FlipDirection
+//                                       .HORIZONTAL, // Horizontal flip
+//                                   back: Card(
+//                                     elevation: 1,
+//                                     margin: EdgeInsets.all(10),
+//                                     child: Padding(
+//                                       padding: const EdgeInsets.all(15.0),
+//                                       child: Column(
+//                                         crossAxisAlignment:
+//                                             CrossAxisAlignment.start,
+//                                         children: [
+//                                           Row(
+//                                             children: [
+//                                               Icon(
+//                                                 Icons.location_on,
+//                                                 color: Colors.green,
+//                                               ),
+//                                               SizedBox(
+//                                                 width: 10,
+//                                               ),
+//                                               Expanded(
+//                                                 child: Text('$pickupLocation',
+//                                                     style: TextStyle(
+//                                                         fontWeight:
+//                                                             FontWeight.bold)),
+//                                               ),
+//                                             ],
+//                                           ),
+//                                           Divider(),
+//                                           Row(
+//                                             children: [
+//                                               Icon(
+//                                                 Icons.location_on,
+//                                                 color: Colors.red,
+//                                               ),
+//                                               SizedBox(
+//                                                 width: 10,
+//                                               ),
+//                                               Expanded(
+//                                                 child: Text('$deliveryLocation',
+//                                                     style: TextStyle(
+//                                                         fontWeight:
+//                                                             FontWeight.bold)),
+//                                               ),
+//                                             ],
+//                                           ),
+//                                           Divider(),
+//                                           Row(
+//                                             children: [
+//                                               Icon(
+//                                                 Icons.money,
+//                                                 color:
+//                                                     Colors.blueAccent.shade200,
+//                                               ),
+//                                               SizedBox(
+//                                                 width: 10,
+//                                               ),
+//                                               Expanded(
+//                                                 child: Text('NPR $fare',
+//                                                     style: TextStyle(
+//                                                         fontWeight:
+//                                                             FontWeight.w500)),
+//                                               ),
+//                                             ],
+//                                           ),
+                        // Row(
+                        //   mainAxisAlignment:
+                        //       MainAxisAlignment.end,
+                        //   children: [
+                        //     SizedBox(width: 20),
+                        //     GestureDetector(
+                        //       child: Icon(Icons.phone,
+                        //           color: Colors.green),
+                        //       onTap: () {
+                        //         final phoneNumber =
+                        //             vehicleData['phone'];
+                        //         if (phoneNumber != null &&
+                        //             phoneNumber.isNotEmpty) {
+                        //           _launchPhoneNumber(
+                        //               phoneNumber);
+                        //         } else {
+                        //           AwesomeDialog(
+                        //             context: context,
+                        //             dialogType:
+                        //                 DialogType.error,
+                        //             animType:
+                        //                 AnimType.topSlide,
+                        //             title:
+                        //                 'Phone Number Unavailable',
+                        //             desc:
+                        //                 'The phone number is currently unavailable.',
+                        //             btnOkOnPress: () {},
+                        //           ).show();
+                        //         }
+                        //       },
+                        //     ),
+                        //     SizedBox(width: 20),
+                        //     ElevatedButton(
+                        //       onPressed:
+                        //           _buttonStates[tripId] ==
+                        //                   true
+                        //               ? null
+                        //               : () {
+                        //                   confirmRequest(
+                        //                       userId,
+                        //                       driverId,
+                        //                       tripId);
+                        //                 },
+                        //       style: ElevatedButton.styleFrom(
+                        //         foregroundColor: Colors.white,
+                        //         backgroundColor:
+                        //             _buttonStates[tripId] ==
+                        //                     true
+                        //                 ? Colors.grey
+                        //                 : Colors.blue,
+                        //         padding: EdgeInsets.symmetric(
+                        //             horizontal: 24,
+                        //             vertical:
+                        //                 12), // Padding for button
+                        //         shape: RoundedRectangleBorder(
+                        //           borderRadius:
+                        //               BorderRadius.circular(
+                        //                   8), // Rounded corners
+                        //         ),
+                        //       ),
+                        //       child: Text(
+                        //         'Confirm',
+                        //       style: TextStyle(
+                        //         fontSize:
+                        //             16, // Font size for the text
+                        //         fontWeight: FontWeight
+                        //             .bold, // Bold text
+                        //       ),
+                        //       ),
+
+                        //       child: Text(
+                        //         _buttonStates[tripId] == true
+                        //             ? 'Confirmed'
+                        //             : 'Confirm',
+                        //         style: TextStyle(
+                        //           fontSize:
+                        //               16, // Font size for the text
+                        //           fontWeight: FontWeight
+                        //               .bold, // Bold text
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+//                                   front: Card(
+//                                     elevation: 1,
+//                                     margin: EdgeInsets.all(10),
+//                                     child: SizedBox(
+//                                       child: Padding(
+//                                         padding: const EdgeInsets.all(15.0),
+//                                         child: Column(
+//                                           crossAxisAlignment:
+//                                               CrossAxisAlignment.start,
+//                                           children: [
+//                                             ListTile(
+//                                               leading: CircleAvatar(
+//                                                 radius: 25,
+//                                                 backgroundImage: profilePicture !=
+//                                                         null
+//                                                     ? NetworkImage(
+//                                                         profilePicture)
+//                                                     : AssetImage(
+//                                                             'assets/tuktuk.jpg')
+//                                                         as ImageProvider,
+//                                               ),
+//                                               title: Text(
+//                                                 '$name - $numberPlate',
+//                                                 style: GoogleFonts.outfit(
+//                                                     fontWeight: FontWeight.bold,
+//                                                     fontSize: 16),
+//                                               ),
+//                                               subtitle: Column(
+//                                                 crossAxisAlignment:
+//                                                     CrossAxisAlignment.start,
+//                                                 children: [
+//                                                   Text(
+//                                                     'Passenger: $noOfPerson | Mode: $vehicleMode',
+//                                                     style:
+//                                                         GoogleFonts.comicNeue(
+//                                                             fontSize: 14),
+//                                                   ),
+//                                                   Text(
+//                                                     '$vehicleType $brand ($color)',
+//                                                     style:
+//                                                         GoogleFonts.comicNeue(),
+//                                                     maxLines: null,
+//                                                     softWrap: true,
+//                                                   ),
+//                                                 ],
+//                                               ),
+//                                             ),
+//                                             Divider(),
+//                                             Row(
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.call_end_sharp,
+//                                                   color: Colors.green,
+//                                                 ),
+//                                                 SizedBox(
+//                                                   width: 10,
+//                                                 ),
+//                                                 Expanded(
+//                                                   child: Text(
+//                                                     '$phone',
+//                                                     style:
+//                                                         GoogleFonts.comicNeue(
+//                                                             fontSize: 14),
+//                                                     softWrap: true,
+//                                                     overflow:
+//                                                         TextOverflow.visible,
+//                                                     maxLines: null,
+//                                                   ),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                             SizedBox(height: 5),
+//                                             Row(
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.linear_scale_rounded,
+//                                                   color: Colors.orange,
+//                                                 ),
+//                                                 SizedBox(
+//                                                   width: 10,
+//                                                 ),
+//                                                 Text(
+//                                                   '${double.tryParse(distance)?.toStringAsFixed(1)} km',
+//                                                   softWrap: true,
+//                                                   overflow:
+//                                                       TextOverflow.visible,
+//                                                   maxLines: null,
+//                                                   style: GoogleFonts.comicNeue(
+//                                                       fontSize: 14),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                             SizedBox(height: 5),
+//                                             Row(
+//                                               children: [
+//                                                 Icon(
+//                                                   Icons.people_sharp,
+//                                                   color: Colors
+//                                                       .pinkAccent.shade200,
+//                                                 ),
+//                                                 SizedBox(
+//                                                   width: 10,
+//                                                 ),
+//                                                 Text(
+//                                                   'Driver is ${(distanceBetweenDriverAndPassenger).toStringAsFixed(1)} km away',
+//                                                   style: GoogleFonts.comicNeue(
+//                                                       fontSize: 14),
+//                                                   softWrap: true,
+//                                                   overflow:
+//                                                       TextOverflow.visible,
+//                                                   maxLines: null,
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                             Align(
+//                                               alignment: Alignment.bottomRight,
+//                                               child: Text(
+//                                                 '... ${index + 1}',
+//                                                 style: TextStyle(
+//                                                     fontWeight: FontWeight.w500,
+//                                                     fontSize: 20,
+//                                                     color: Colors.black54),
+//                                               ),
+//                                             ),
+//                                           ],
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 );
+//                               },
+//                             );
+//                           },
+//                         ),
                         child: ListView.builder(
-                          physics: _buildCustomScrollPhysics(),
                           itemCount: requests.length,
                           itemBuilder: (context, index) {
                             final request = requests[index];
@@ -565,40 +971,55 @@ class _RequestPageState extends State<RequestPage> {
                                     .collection('trips')
                                     .doc(tripId)
                                     .get(),
+                                FirebaseFirestore.instance
+                                    .collection(
+                                        'distance_between_driver_and_passenger')
+                                    .where('tripId', isEqualTo: tripId)
+                                    .where('driverId', isEqualTo: driverId)
+                                    .where('userId', isEqualTo: userId)
+                                    .get(),
                               ]),
                               builder: (context,
-                                  AsyncSnapshot<List<DocumentSnapshot>>
-                                      snapshot) {
+                                  AsyncSnapshot<List<dynamic>> snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
                                   return Center(
-                                      child: Image(
-                                    image: AssetImage('assets/logo.png'),
-                                  ));
+                                    child: CircularProgressIndicator(),
+                                  );
                                 }
 
-                                if (snapshot.hasError || !snapshot.hasData) {
+                                if (snapshot.hasError ||
+                                    !snapshot.hasData ||
+                                    snapshot.data == null) {
                                   return Text('Error loading data');
                                 }
 
-                                if (snapshot.data == null) {
-                                  return Text('No any user data');
-                                }
-
-                                final vehicleData = snapshot.data![0].data()
+                                     final vehicleData = snapshot.data![0].data()
                                     as Map<String, dynamic>;
                                 final tripData = snapshot.data![1].data()
                                     as Map<String, dynamic>;
 
+                                // Check for distance data from distance_between_driver_and_passenger collection
+                                String distanceBetweenDriverAndPassenger =
+                                    'N/A';
+                                if (snapshot.data![2].docs.isNotEmpty) {
+                                  final distanceDoc =
+                                      snapshot.data![2].docs.first;
+                                  final distanceData = distanceDoc.data()
+                                      as Map<String, dynamic>;
+                                  distanceBetweenDriverAndPassenger = distanceData[
+                                              'distance_between_driver_and_passenger']
+                                          .toString() ??
+                                      'N/A';
+                                }
+
+                                // Extracting necessary data from vehicleData and tripData
                                 final phone = vehicleData['phone'] ?? 'N/A';
-                                final address = vehicleData['address'] ?? 'N/A';
-                                final brand = vehicleData['brand'] ?? 'N/A';
-                                final profilePicture =
-                                    vehicleData['profilePictureUrl'] ?? 'N/A';
-                                final color = vehicleData['color'] ?? 'N/A';
                                 final name = vehicleData['name'] ?? 'N/A';
                                 final numberPlate =
                                     vehicleData['numberPlate'] ?? 'N/A';
+                                final profilePicture =
+                                    vehicleData['profilePictureUrl'] ?? 'N/A';
                                 final vehicleType =
                                     vehicleData['vehicleType'] ?? 'N/A';
 
@@ -606,26 +1027,13 @@ class _RequestPageState extends State<RequestPage> {
                                     tripData['pickupLocation'] ?? 'N/A';
                                 final deliveryLocation =
                                     tripData['deliveryLocation'] ?? 'N/A';
-
-                                final noOfPerson =
-                                    tripData['no_of_person'] ?? 'N/A';
-
-                                final vehicleMode =
-                                    tripData['vehicle_mode'] ?? 'N/A';
-
                                 final fare = tripData['fare'] ?? 'N/A';
                                 final distance = tripData['distance'] ?? 'N/A';
-                                final timestamp =
-                                    tripData['requestTimestamp'] ?? 'NA';
-                                final distanceBetweenDriverAndPassenger = tripData[
-                                        'distance_between_driver_and_passenger'] ??
-                                    'N/A';
 
+                                // Return your custom widget here
                                 return FlipCard(
-                                  flipOnTouch:
-                                      true, // Flip animation on card tap
-                                  direction: FlipDirection
-                                      .HORIZONTAL, // Horizontal flip
+                                  flipOnTouch: true,
+                                  direction: FlipDirection.HORIZONTAL,
                                   back: Card(
                                     elevation: 1,
                                     margin: EdgeInsets.all(10),
@@ -641,14 +1049,14 @@ class _RequestPageState extends State<RequestPage> {
                                                 Icons.location_on,
                                                 color: Colors.green,
                                               ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
+                                              SizedBox(width: 10),
                                               Expanded(
-                                                child: Text('$pickupLocation',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
+                                                child: Text(
+                                                  '$pickupLocation',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -659,14 +1067,14 @@ class _RequestPageState extends State<RequestPage> {
                                                 Icons.location_on,
                                                 color: Colors.red,
                                               ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
+                                              SizedBox(width: 10),
                                               Expanded(
-                                                child: Text('$deliveryLocation',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
+                                                child: Text(
+                                                  '$deliveryLocation',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -678,14 +1086,14 @@ class _RequestPageState extends State<RequestPage> {
                                                 color:
                                                     Colors.blueAccent.shade200,
                                               ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
+                                              SizedBox(width: 10),
                                               Expanded(
-                                                child: Text('NPR $fare',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500)),
+                                                child: Text(
+                                                  'NPR $fare',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -749,19 +1157,9 @@ class _RequestPageState extends State<RequestPage> {
                                                             8), // Rounded corners
                                                   ),
                                                 ),
-                                                // child: Text(
-                                                //   'Confirm',
-                                                // style: TextStyle(
-                                                //   fontSize:
-                                                //       16, // Font size for the text
-                                                //   fontWeight: FontWeight
-                                                //       .bold, // Bold text
-                                                // ),
-                                                // ),
-
                                                 child: Text(
                                                   _buttonStates[tripId] == true
-                                                      ? 'Confirmed'
+                                                      ? 'Trip Booked'
                                                       : 'Confirm',
                                                   style: TextStyle(
                                                     fontSize:
@@ -800,7 +1198,7 @@ class _RequestPageState extends State<RequestPage> {
                                               ),
                                               title: Text(
                                                 '$name - $numberPlate',
-                                                style: GoogleFonts.outfit(
+                                                style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16),
                                               ),
@@ -809,17 +1207,9 @@ class _RequestPageState extends State<RequestPage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'Passenger: $noOfPerson | Mode: $vehicleMode',
+                                                    'Vehicle Type: $vehicleType',
                                                     style:
-                                                        GoogleFonts.comicNeue(
-                                                            fontSize: 14),
-                                                  ),
-                                                  Text(
-                                                    '$vehicleType $brand ($color)',
-                                                    style:
-                                                        GoogleFonts.comicNeue(),
-                                                    maxLines: null,
-                                                    softWrap: true,
+                                                        TextStyle(fontSize: 14),
                                                   ),
                                                 ],
                                               ),
@@ -831,19 +1221,15 @@ class _RequestPageState extends State<RequestPage> {
                                                   Icons.call_end_sharp,
                                                   color: Colors.green,
                                                 ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
+                                                SizedBox(width: 10),
                                                 Expanded(
                                                   child: Text(
                                                     '$phone',
                                                     style:
-                                                        GoogleFonts.comicNeue(
-                                                            fontSize: 14),
+                                                        TextStyle(fontSize: 14),
                                                     softWrap: true,
                                                     overflow:
                                                         TextOverflow.visible,
-                                                    maxLines: null,
                                                   ),
                                                 ),
                                               ],
@@ -855,17 +1241,11 @@ class _RequestPageState extends State<RequestPage> {
                                                   Icons.linear_scale_rounded,
                                                   color: Colors.orange,
                                                 ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
+                                                SizedBox(width: 10),
                                                 Text(
                                                   '${double.tryParse(distance)?.toStringAsFixed(1)} km',
-                                                  softWrap: true,
-                                                  overflow:
-                                                      TextOverflow.visible,
-                                                  maxLines: null,
-                                                  style: GoogleFonts.comicNeue(
-                                                      fontSize: 14),
+                                                  style:
+                                                      TextStyle(fontSize: 14),
                                                 ),
                                               ],
                                             ),
@@ -877,29 +1257,13 @@ class _RequestPageState extends State<RequestPage> {
                                                   color: Colors
                                                       .pinkAccent.shade200,
                                                 ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
+                                                SizedBox(width: 10),
                                                 Text(
-                                                  'Driver is ${(distanceBetweenDriverAndPassenger).toStringAsFixed(1)} km away',
-                                                  style: GoogleFonts.comicNeue(
-                                                      fontSize: 14),
-                                                  softWrap: true,
-                                                  overflow:
-                                                      TextOverflow.visible,
-                                                  maxLines: null,
+                                                  'Driver is $distanceBetweenDriverAndPassenger km away',
+                                                  style:
+                                                      TextStyle(fontSize: 14),
                                                 ),
                                               ],
-                                            ),
-                                            Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: Text(
-                                                '... ${index + 1}',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 20,
-                                                    color: Colors.black54),
-                                              ),
                                             ),
                                           ],
                                         ),
@@ -907,6 +1271,9 @@ class _RequestPageState extends State<RequestPage> {
                                     ),
                                   ),
                                 );
+
+                                
+                            
                               },
                             );
                           },
@@ -973,11 +1340,11 @@ class _RequestPageState extends State<RequestPage> {
   }
 
   ScrollPhysics _buildCustomScrollPhysics() {
-    final ScrollController _scrollController = ScrollController();
-    final double _maxScrollSpeed = 1.0; // Adjust as needed
+    final ScrollController scrollController = ScrollController();
+    const double maxScrollSpeed = 1.0; // Adjust as needed
     return AlwaysScrollableScrollPhysics().applyTo(
       ClampingScrollPhysics(
-        parent: _LimitedScrollPhysics(maxScrollSpeed: _maxScrollSpeed),
+        parent: _LimitedScrollPhysics(maxScrollSpeed: maxScrollSpeed),
       ),
     );
   }
@@ -988,8 +1355,8 @@ class _LimitedScrollPhysics extends ScrollPhysics {
 
   const _LimitedScrollPhysics({
     required this.maxScrollSpeed,
-    ScrollPhysics? parent,
-  }) : super(parent: parent);
+    super.parent,
+  });
 
   @override
   _LimitedScrollPhysics applyTo(ScrollPhysics? ancestor) {

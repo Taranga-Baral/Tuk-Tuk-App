@@ -105,7 +105,6 @@ class _HistoryPageState extends State<HistoryPage> {
                           ),
                         ),
                         SizedBox(height: 8),
-                        
                         Row(
                           children: [
                             Icon(
@@ -136,43 +135,13 @@ class _HistoryPageState extends State<HistoryPage> {
                         Row(
                           children: [
                             Icon(
-                              Icons.linear_scale_rounded,
-                              color: Colors.orange,
+                              Icons.info,
+                              color: Colors.indigo.shade400,
                             ),
                             SizedBox(width: 10),
                             Expanded(
-                                child:
-                                    Text('${double.tryParse(trip['distance'])?.toStringAsFixed(2)} कि.मि')),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: [
-                            Icon(Icons.car_crash,color: Colors.deepOrangeAccent.shade200,),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                                '${trip['vehicleType']}, ${trip['vehicle_mode']}'),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: [
-                            Icon(Icons.person,color: Colors.lime,),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                                '${(trip['no_of_person'] as int).toDouble().toStringAsFixed(0)}'),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: [
-                            Icon(Icons.money,color: Colors.blueAccent.shade200,),
-                            SizedBox(width: 10,),
-                            Expanded(child: Text('${trip['fare']} रुपैय')),
+                                child: Text(
+                                    '${double.tryParse(trip['distance'])?.toStringAsFixed(2)} कि.मि, ${trip['vehicleType']}, ${trip['vehicle_mode']}, ${trip['no_of_person']}, ${trip['fare']} रुपैय')),
                           ],
                         ),
                       ],
@@ -183,7 +152,13 @@ class _HistoryPageState extends State<HistoryPage> {
             );
           }
 
-          return const Center(child: Text('No trips found.'));
+          return Center(
+            child: Image(
+              image: AssetImage("assets/no_data_found.gif"),
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width * 0.7,
+            ),
+          );
         },
       ),
     );

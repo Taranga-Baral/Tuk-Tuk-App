@@ -17,6 +17,7 @@ class DriverAcceptedPage extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _DriverAcceptedPageState createState() => _DriverAcceptedPageState();
 }
 
@@ -205,15 +206,8 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
     }
   }
 
-  final ScrollController _scrollController = ScrollController();
+
   final double _maxScrollSpeed = 1.0; // Adjust as needed
-
-  ScrollPhysics _scrollPhysics(bool canScrollDown) {
-    return canScrollDown
-        ? const AlwaysScrollableScrollPhysics()
-        : const ClampingScrollPhysics();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -533,16 +527,18 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                     await _updateButtonStates(
                                                         tripId, true, false);
                                                     ScaffoldMessenger.of(
+                                                            // ignore: use_build_context_synchronously
                                                             context)
                                                         .showSnackBar(
                                                       const SnackBar(
                                                           content: Text(
-                                                              'Driver request sent successfully')),
+                                                              'Driver Arrival Recorded')),
                                                     );
 
                                                     setState(() {});
                                                   } catch (e) {
                                                     ScaffoldMessenger.of(
+                                                            // ignore: use_build_context_synchronously
                                                             context)
                                                         .showSnackBar(
                                                       const SnackBar(
@@ -551,6 +547,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                     );
                                                   }
                                                 } else {
+                                                  // ignore: use_build_context_synchronously
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(
                                                     const SnackBar(
@@ -583,11 +580,12 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                       .serverTimestamp(),
                                                 });
 
+                                                // ignore: use_build_context_synchronously
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   const SnackBar(
                                                       content: Text(
-                                                          'Request completed and deleted.')),
+                                                          'Request completed and added to your Trips Collection')),
                                                 );
                                                 setState(() {});
                                               }
@@ -645,8 +643,8 @@ class _LimitedScrollPhysics extends ScrollPhysics {
 
   const _LimitedScrollPhysics({
     required this.maxScrollSpeed,
-    ScrollPhysics? parent,
-  }) : super(parent: parent);
+    super.parent,
+  });
 
   @override
   _LimitedScrollPhysics applyTo(ScrollPhysics? ancestor) {

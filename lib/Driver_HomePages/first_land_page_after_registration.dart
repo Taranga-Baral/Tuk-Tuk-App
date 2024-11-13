@@ -613,7 +613,6 @@ import 'trip_card_widget.dart';
 
 class DriverHomePage extends StatefulWidget {
   final String driverEmail;
-
   const DriverHomePage({super.key, required this.driverEmail});
 
   @override
@@ -717,6 +716,29 @@ class _DriverHomePageState extends State<DriverHomePage> {
       print('Error fetching trip details: $e');
     }
   }
+
+
+
+
+    Future<bool> _checkRequestExists(
+      String tripId, String userId, String driverId) async {
+    // Query the "requestsofDrivers" collection to check if the request already exists
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('requestsofDrivers')
+        .where('tripId', isEqualTo: tripId)
+        .where('userId', isEqualTo: userId)
+        .where('driverId', isEqualTo: driverId)
+        .get();
+
+    return snapshot
+        .docs.isNotEmpty; // Return true if any matching document is found
+  }
+
+
+
+
+
 
   Map<String, double>? _parseCoordinates(String location) {
     final parts = location.split(',');
@@ -1254,7 +1276,20 @@ Future<void> _fetchTrips() async {
 
     try {
       // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
-      await FirebaseFirestore.instance.collection('requestsofDrivers').add({
+      bool requestExists =
+          await _checkRequestExists(tripId, userId, widget.driverEmail);
+
+
+
+          if (requestExists) {
+        // Show a SnackBar indicating request already sent
+        SnackBar(
+          content: Text('Request already sent.'),
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }else{
+        await FirebaseFirestore.instance.collection('requestsofDrivers').add({
         'tripId': tripId,
         'userId': userId,
         'driverId': driverId,
@@ -1274,6 +1309,9 @@ Future<void> _fetchTrips() async {
           duration: const Duration(seconds: 10), // Show for 10 seconds
         ),
       );
+      }
+
+      
     } catch (e) {
       // Handle error (e.g., if something goes wrong during the Firebase write)
       ScaffoldMessenger.of(context).showSnackBar(

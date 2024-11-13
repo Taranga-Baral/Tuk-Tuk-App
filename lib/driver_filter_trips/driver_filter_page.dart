@@ -164,56 +164,37 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     });
   }
 
-  void showTripAndUserIdInSnackBar(
-      Map<String, dynamic> tripData, BuildContext context) async {
+  void showTripAndUserIdInSnackBar(Map<String, dynamic> tripData,
+      BuildContext context, double distance) async {
     // Extract tripId, userId, and driverId (driver's email)
     final tripId = tripData['tripId'] ?? 'No Trip ID';
     final userId = tripData['userId'] ?? 'No User ID';
-    final driverId = widget.driverId;
     if (tripId == 'No Trip ID' || userId == 'No User ID') {
       // Show error if tripId or userId is missing
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid Trip or User ID.'),
-          duration: Duration(seconds: 3),
-        ),
+      SnackBar(
+        content: Text('Invalid Trip or User ID.'),
+        duration: Duration(seconds: 3),
       );
       return;
     }
-    // Show confirmation dialog before adding the request to Firebase
-    bool confirm = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Request ?'),
-          content: Text(
-            'Are you sure to send request to this user?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // Cancel confirmation
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true); // Confirm action
-              },
-              child: const Text('Confirm'),
-            ),
-          ],
-        );
-      },
-    );
 
-    if (confirm == true) {
-      try {
-        // Step 1: Add the userId, driverId, and tripId to the new "requestsofDrivers" collection
+    try {
+      // Check if the request already exists
+      bool requestExists =
+          await _checkRequestExists(tripId, userId, widget.driverId);
+      if (requestExists) {
+        // Show a SnackBar indicating request already sent
+        SnackBar(
+          content: Text('Request already sent.'),
+          duration: Duration(seconds: 3),
+        );
+        return;
+      } else {
         await FirebaseFirestore.instance.collection('requestsofDrivers').add({
           'tripId': tripId,
           'userId': userId,
-          'driverId': driverId,
+          'driverId': widget.driverId,
+          'distance_between_driver_and_passenger': distance,
           'requestTimestamp':
               FieldValue.serverTimestamp(), // Optional: Add a timestamp
         });
@@ -224,15 +205,36 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
           content: Text(
             'Request sent successfully!',
           ),
-          duration: const Duration(seconds: 10), // Show for 10 seconds
-        );
-      } catch (e) {
-        SnackBar(
-          content: Text('Error sending request: $e'),
           duration: const Duration(seconds: 3),
         );
       }
+
+      // Step 1: Add the userId, driverId, and tripId to the "requestsofDrivers" collection
+    } catch (e) {
+      // Handle error sending request
+
+      SnackBar(
+        content: Text('Error sending request: $e'),
+        duration: const Duration(seconds: 3),
+      );
+
+      print('Error sending Request: $e');
     }
+  }
+
+  Future<bool> _checkRequestExists(
+      String tripId, String userId, String driverId) async {
+    // Query the "requestsofDrivers" collection to check if the request already exists
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('requestsofDrivers')
+        .where('tripId', isEqualTo: tripId)
+        .where('userId', isEqualTo: userId)
+        .where('driverId', isEqualTo: driverId)
+        .get();
+
+    return snapshot
+        .docs.isNotEmpty; // Return true if any matching document is found
   }
 
   bool isButtonDisabled = false;
@@ -393,133 +395,237 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                     },
                                   ),
                                   IconButton(
-                                      icon: Icon(
-                                        Icons.send,
-                                        color: isButtonDisabled
-                                            ? Colors.grey
-                                            : Colors.teal,
-                                      ),
-                                      onPressed: isButtonDisabled == true
-                                          ? null
-                                          : () async {
-                                              setState(() {
-                                                isButtonDisabled == true;
-                                              });
-                                              // Check location permission
-                                              LocationPermission permission =
-                                                  await Geolocator
-                                                      .checkPermission();
-                                              if (permission ==
-                                                  LocationPermission.denied) {
-                                                // Request permission
-                                                permission = await Geolocator
-                                                    .requestPermission();
-                                                if (permission !=
-                                                        LocationPermission
-                                                            .whileInUse &&
-                                                    permission !=
-                                                        LocationPermission
-                                                            .always) {
-                                                  // Permission denied
-                                                  // You can show a dialog or a Snackbar to inform the user
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            'Location permission is required to proceed.')),
-                                                  );
-                                                  return;
-                                                }
-                                              }
+                                    icon: Icon(
+                                      Icons.send,
+                                      color: isButtonDisabled
+                                          ? Colors.grey
+                                          : Colors.teal,
+                                    ),
+                                    onPressed: () async {
+                                      // Show the initial loading dialog
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: const [
+                                                  CircularProgressIndicator(),
+                                                  SizedBox(height: 20),
+                                                  Text('Processing...'),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
 
-                                              // Check if location services are enabled
-                                              if (!await Geolocator
-                                                  .isLocationServiceEnabled()) {
-                                                // Location services are not enabled
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                      content: Text(
-                                                          'Please enable location services.')),
-                                                );
-                                                return;
-                                              }
+                                      try {
+                                        // Check location permission
+                                        LocationPermission permission =
+                                            await Geolocator.checkPermission();
+                                        if (permission ==
+                                            LocationPermission.denied) {
+                                          // Request permission
+                                          permission = await Geolocator
+                                              .requestPermission();
+                                          if (permission !=
+                                                  LocationPermission
+                                                      .whileInUse &&
+                                              permission !=
+                                                  LocationPermission.always) {
+                                            // Permission denied
+                                            Navigator.pop(
+                                                context); // Close the dialog
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    'Location permission is required to proceed.'),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                        }
 
-                                              // 1. Get current location
-                                              Position userPosition =
-                                                  await _getCurrentLocation();
+                                        // Check if location services are enabled
+                                        if (!await Geolocator
+                                            .isLocationServiceEnabled()) {
+                                          // Location services are not enabled
+                                          Navigator.pop(
+                                              context); // Close the dialog
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Please enable location services.'),
+                                            ),
+                                          );
+                                          return;
+                                        }
 
-                                              // 2. Fetch pickup location from Firestore
-                                              Map<String, dynamic> tripData =
-                                                  await _getPickupLocation(
-                                                      trip['tripId']);
-                                              var pickupLocation =
-                                                  tripData['pickupLocation'];
+                                        // Get current location
+                                        Position userPosition =
+                                            await _getCurrentLocation();
 
-                                              double pickupLatitude;
-                                              double pickupLongitude;
+                                        // Fetch pickup location from Firestore
+                                        Map<String, dynamic> tripData =
+                                            await _getPickupLocation(
+                                                trip['tripId']);
+                                        var pickupLocation =
+                                            tripData['pickupLocation'];
 
-                                              // 3. Check if pickupLocation is a GeoPoint (lat, long) or a place name
-                                              if (pickupLocation is GeoPoint) {
-                                                // If it's a GeoPoint, extract lat and long
-                                                pickupLatitude =
-                                                    pickupLocation.latitude;
-                                                pickupLongitude =
-                                                    pickupLocation.longitude;
-                                              } else {
-                                                // If it's a place name, convert to lat-long using Nominatim
-                                                Map<String, double> latLong =
-                                                    await _convertPlaceNameToLatLong(
-                                                        pickupLocation);
-                                                pickupLatitude =
-                                                    latLong['latitude']!;
-                                                pickupLongitude =
-                                                    latLong['longitude']!;
-                                              }
+                                        Map<String, dynamic> tripData1 = {
+                                          'tripId': trip['tripId'],
+                                          'userId': trip['userId'],
+                                        };
 
-                                              // 4. Calculate the distance between user's location and pickup location
-                                              double distance =
-                                                  _calculateDistance(
-                                                userPosition.latitude,
-                                                userPosition.longitude,
-                                                pickupLatitude,
-                                                pickupLongitude,
-                                              );
+                                        double pickupLatitude;
+                                        double pickupLongitude;
 
-                                              // 5. Upload the distance and other information to Firestore
-                                              await _uploadDistanceData(
-                                                tripId: trip['tripId'],
-                                                driverId: widget.driverId,
-                                                userId: trip['username'],
-                                                distance: distance,
-                                              );
-                                            }),
+                                        // Check if pickupLocation is a GeoPoint (lat, long) or a place name
+                                        if (pickupLocation is GeoPoint) {
+                                          // If it's a GeoPoint, extract lat and long
+                                          pickupLatitude =
+                                              pickupLocation.latitude;
+                                          pickupLongitude =
+                                              pickupLocation.longitude;
+                                        } else {
+                                          // If it's a place name, convert to lat-long using Nominatim
+                                          Map<String, double> latLong =
+                                              await _convertPlaceNameToLatLong(
+                                                  pickupLocation);
+                                          pickupLatitude = latLong['latitude']!;
+                                          pickupLongitude =
+                                              latLong['longitude']!;
+                                        }
+
+                                        // Calculate the distance between user's location and pickup location
+                                        double distance = _calculateDistance(
+                                          userPosition.latitude,
+                                          userPosition.longitude,
+                                          pickupLatitude,
+                                          pickupLongitude,
+                                        );
+
+                                        // Show distance and other information in SnackBar
+                                        showTripAndUserIdInSnackBar(
+                                            tripData1, context, distance);
+
+                                        // Upload the distance and other information to Firestore
+                                        await _uploadDistanceData(
+                                          tripId: trip['tripId'],
+                                          driverId: widget.driverId,
+                                          userId: trip['userId'],
+                                          distance: distance,
+                                        );
+
+                                        // Success message (optional)
+                                        print('Distance successfully uploaded');
+                                      } catch (e) {
+                                        // Handle errors
+                                        print('Error: $e');
+                                        // Show error message
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'An error occurred. Please try again later.'),
+                                          ),
+                                        );
+                                      } finally {
+                                        // Close the loading dialog if still open
+                                        if (Navigator.canPop(context)) {
+                                          Navigator.pop(context);
+                                        }
+                                      }
+                                    },
+                                  ),
                                 ],
                               ),
                               SizedBox(height: 8),
-                              Text(
-                                'Pickup: ${trip['pickupLocation'] ?? 'No pickup location'}',
-                                style: TextStyle(fontSize: 14),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${trip['pickupLocation'] ?? 'No pickup location'}',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
                               ),
                               Divider(),
-                              Text(
-                                'Delivery: ${trip['deliveryLocation'] ?? 'No delivery location'}',
-                                style: TextStyle(fontSize: 14),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    color: Colors.green,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${trip['deliveryLocation'] ?? 'No delivery location'}',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
                               ),
                               Divider(),
-                              Text(
-                                'Distance: ${double.parse(trip['distance']).toStringAsFixed(0)} km',
-                                style: TextStyle(fontSize: 14),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.linear_scale_rounded,
+                                    color: Colors.teal,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${double.parse(trip['distance']).toStringAsFixed(0)} km',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
                               ),
                               Divider(),
-                              Text(
-                                'Fare: NPR ${double.parse(trip['fare']).toStringAsFixed(1)}',
-                                style: TextStyle(fontSize: 14),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.money,
+                                    color: Colors.blueAccent.shade200,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      'NPR ${double.parse(trip['fare']).toStringAsFixed(1)}',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Divider(),
+                              SizedBox(
+                                height: 10,
+                              ),
                               Text(
-                                'TimeStamp: ${formatTimestamp(trip['timestamp'])}',
-                                style: TextStyle(fontSize: 14),
+                                formatTimestamp(trip['timestamp']),
+                                style:
+                                    TextStyle(fontSize: 11, color: Colors.grey),
                               ),
                             ],
                           ),
@@ -832,17 +938,26 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
   }
 
   // Function to upload data to Firestore
+  //unused method that updates data to trips
   Future<void> _uploadDistanceData({
     required String tripId,
     required String driverId,
     required String userId,
     required double distance,
   }) async {
-    await FirebaseFirestore.instance.collection('trips').doc(tripId).update({
-      'distance_between_driver_and_passenger': distance,
-      'driverId': driverId,
+    Map<String, dynamic> distanceData = {
+      'tripId': tripId,
       'userId': userId,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+      'driverId': driverId,
+      'distance_between_driver_and_passenger': distance,
+    };
+
+    // Reference to the new collection
+    CollectionReference distanceCollection = FirebaseFirestore.instance
+        .collection('distance_between_driver_and_passenger');
+
+    // Add or update the document in the new collection
+    await distanceCollection.add(distanceData);
+    setState(() {});
   }
 }

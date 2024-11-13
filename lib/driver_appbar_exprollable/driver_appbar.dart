@@ -246,12 +246,12 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String driverId;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.appBarColor,
     required this.appBarIcons,
     required this.title,
     required this.driverId,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);

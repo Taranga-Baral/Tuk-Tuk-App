@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
+import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +45,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   }
 
   // Function to calculate the distance between two points
+
   double _calculateDistance(double startLatitude, double startLongitude,
       double endLatitude, double endLongitude) {
     return Geolocator.distanceBetween(
@@ -77,20 +81,65 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     }
   }
 
-  // Function to upload data to Firestore
-  Future<void> _uploadDistanceData({
-    required String tripId,
-    required String driverId,
-    required String userId,
-    required double distance,
-  }) async {
-    await FirebaseFirestore.instance.collection('trips').doc(tripId).update({
-      'distance_between_driver_and_passenger': distance,
-      'driverId': driverId,
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to upload data to Firestore
+Future<void> _uploadDistanceData({
+  required String tripId,
+  required String driverId,
+  required String userId,
+  required double distance,
+}) async {
+  try {
+    // Prepare the data to be stored in the new collection
+    Map<String, dynamic> distanceData = {
+      'tripId': tripId,
       'userId': userId,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+      'driverId': driverId,
+      'distance_between_driver_and_passenger': distance,
+    };
+
+    // Reference to the new collection
+    CollectionReference distanceCollection =
+        FirebaseFirestore.instance.collection('distance_between_driver_and_passenger');
+
+    // Add or update the document in the new collection
+    await distanceCollection.add(distanceData);
+
+    print('Distance data uploaded successfully.');
+  } catch (e) {
+    // Handle any errors
+    print('Error uploading distance data: $e');
+    throw e; // Re-throw the error for potential further handling
   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,16 +154,19 @@ class _TripCardWidgetState extends State<TripCardWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${widget.index + 1}. ${widget.tripData.username}',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                  '${widget.tripData.username}',
+                  style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w400, fontSize: 16),
                 ),
                 Text(
                   '${widget.tripData.distance.toStringAsFixed(1)} Km',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                  style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w400, fontSize: 16),
                 ),
                 Text(
                   'NPR ${widget.tripData.fare}',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                  style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w400, fontSize: 16),
                 ),
               ],
             ),
@@ -181,11 +233,15 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   color: Colors.red,
                 ),
                 SizedBox(width: 10),
-                Expanded(child: Text('${widget.tripData.pickupLocation}')),
+                Expanded(
+                    child: Text(
+                  '${widget.tripData.pickupLocation}',
+                  style: GoogleFonts.comicNeue(),
+                )),
               ],
             ),
             SizedBox(
-              height: 10,
+              height: 5,
             ),
             Row(
               children: [
@@ -194,29 +250,30 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   color: Colors.green,
                 ),
                 SizedBox(width: 10),
-                Expanded(child: Text('${widget.tripData.deliveryLocation}')),
+                Expanded(
+                    child: Text(
+                  '${widget.tripData.deliveryLocation}',
+                  style: GoogleFonts.comicNeue(),
+                )),
               ],
             ),
-
             SizedBox(
-              height: 10,
+              height: 5,
             ),
-
             Row(
               children: [
-
-
                 Icon(
                   Icons.holiday_village_sharp,
                   color: Colors.orangeAccent,
                 ),
                 SizedBox(width: 10),
-
-
-                Expanded(child: Text('${widget.tripData.municipalityDropdown}')),
+                Expanded(
+                    child: Text(
+                  '${widget.tripData.municipalityDropdown}',
+                  style: GoogleFonts.comicNeue(),
+                )),
               ],
             ),
-            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -227,79 +284,130 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   onPressed: widget.isButtonDisabled
                       ? null
                       : () async {
-                          // Check location permission
-                          LocationPermission permission =
-                              await Geolocator.checkPermission();
-                          if (permission == LocationPermission.denied) {
-                            // Request permission
-                            permission = await Geolocator.requestPermission();
-                            if (permission != LocationPermission.whileInUse &&
-                                permission != LocationPermission.always) {
-                              // Permission denied
-                              // You can show a dialog or a Snackbar to inform the user
+                          // Show the initial loading dialog
+                          showDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (BuildContext context) {
+                              // Show the dialog
+                              return Dialog(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      CircularProgressIndicator(), // Display a loading indicator
+                                      SizedBox(height: 20),
+                                      Text(
+                                          'Processing...'), // Text to inform user about the process
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+
+// Close the dialog after 5 seconds
+                          Future.delayed(Duration(seconds: 5), () {
+                            if (Navigator.canPop(context)) {
+                              Navigator.pop(context);
+                            }
+                          });
+
+                          try {
+                            // Check location permission
+                            LocationPermission permission =
+                                await Geolocator.checkPermission();
+                            if (permission == LocationPermission.denied) {
+                              // Request permission
+                              permission = await Geolocator.requestPermission();
+                              if (permission != LocationPermission.whileInUse &&
+                                  permission != LocationPermission.always) {
+                                // Permission denied
+                                Navigator.pop(context); // Close the dialog
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Location permission is required to proceed.'),
+                                  ),
+                                );
+                                return;
+                              }
+                            }
+
+                            // Check if location services are enabled
+                            if (!await Geolocator.isLocationServiceEnabled()) {
+                              // Location services are not enabled
+                              Navigator.pop(context); // Close the dialog
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content: Text(
-                                        'Location permission is required to proceed.')),
+                                  content:
+                                      Text('Please enable location services.'),
+                                ),
                               );
                               return;
                             }
-                          }
 
-                          // Check if location services are enabled
-                          if (!await Geolocator.isLocationServiceEnabled()) {
-                            // Location services are not enabled
+                            // 1. Get current location
+                            Position userPosition = await _getCurrentLocation();
+
+                            // 2. Fetch pickup location from Firestore
+                            Map<String, dynamic> tripData =
+                                await _getPickupLocation(widget.tripId);
+                            var pickupLocation = tripData['pickupLocation'];
+
+                            double pickupLatitude;
+                            double pickupLongitude;
+
+                            // 3. Check if pickupLocation is a GeoPoint (lat, long) or a place name
+                            if (pickupLocation is GeoPoint) {
+                              // If it's a GeoPoint, extract lat and long
+                              pickupLatitude = pickupLocation.latitude;
+                              pickupLongitude = pickupLocation.longitude;
+                            } else {
+                              // If it's a place name, convert to lat-long using Nominatim
+                              Map<String, double> latLong =
+                                  await _convertPlaceNameToLatLong(
+                                      pickupLocation);
+                              pickupLatitude = latLong['latitude']!;
+                              pickupLongitude = latLong['longitude']!;
+                            }
+
+                            widget.onRequestTap();
+
+                            // 4. Calculate the distance between user's location and pickup location
+                            double distance = _calculateDistance(
+                              userPosition.latitude,
+                              userPosition.longitude,
+                              pickupLatitude,
+                              pickupLongitude,
+                            );
+
+
+                            // 5. Upload the distance and other information to Firestore
+                            await _uploadDistanceData(
+                              tripId: widget.tripId,
+                              driverId: widget.driverId,
+                              userId: widget.userId,
+                              distance: distance,
+                            );
+
+                            print('Distance successfully uploaded');
+                          } catch (e) {
+                            // Handle error if needed
+                            print('Error: $e');
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content:
-                                      Text('Please enable location services.')),
+                                content: Text(
+                                    'An error occurred. Please try again later.'),
+                              ),
                             );
-                            return;
+                          } finally {
+                            // Close the loading dialog if it's still open
+                            setState(() {
+                              setState(() {});
+                            });
                           }
-
-                          // 1. Get current location
-                          Position userPosition = await _getCurrentLocation();
-
-                          // 2. Fetch pickup location from Firestore
-                          Map<String, dynamic> tripData =
-                              await _getPickupLocation(widget.tripId);
-                          var pickupLocation = tripData['pickupLocation'];
-
-                          double pickupLatitude;
-                          double pickupLongitude;
-
-                          // 3. Check if pickupLocation is a GeoPoint (lat, long) or a place name
-                          if (pickupLocation is GeoPoint) {
-                            // If it's a GeoPoint, extract lat and long
-                            pickupLatitude = pickupLocation.latitude;
-                            pickupLongitude = pickupLocation.longitude;
-                          } else {
-                            // If it's a place name, convert to lat-long using Nominatim
-                            Map<String, double> latLong =
-                                await _convertPlaceNameToLatLong(
-                                    pickupLocation);
-                            pickupLatitude = latLong['latitude']!;
-                            pickupLongitude = latLong['longitude']!;
-                          }
-
-                          // 4. Calculate the distance between user's location and pickup location
-                          double distance = _calculateDistance(
-                            userPosition.latitude,
-                            userPosition.longitude,
-                            pickupLatitude,
-                            pickupLongitude,
-                          );
-
-                          // 5. Upload the distance and other information to Firestore
-                          await _uploadDistanceData(
-                            tripId: widget.tripId,
-                            driverId: widget.driverId,
-                            userId: widget.userId,
-                            distance: distance,
-                          );
-
-                          print('Distance successfully uploaded');
-                          widget.onRequestTap();
                         },
                   color: widget.isButtonDisabled ? Colors.grey : Colors.blue,
                 ),
@@ -313,13 +421,18 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 ),
               ],
             ),
-
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '${widget.tripData.timestamp}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style:
+                      GoogleFonts.comicNeue(fontSize: 12, color: Colors.grey),
+                ),
+                Text(
+                  '... ${widget.index + 1}',
+                  style:
+                      GoogleFonts.outfit(fontSize: 20, color: Colors.black54),
                 ),
               ],
             ),
