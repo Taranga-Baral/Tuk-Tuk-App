@@ -52,14 +52,29 @@ class _RequestPageState extends State<RequestPage> {
           .limit(1000) // Limit the number of documents to load
           .get();
 
+          print('Fetching arrived drivers...');
+      final arrivedDriversSnapshot = await FirebaseFirestore.instance
+          .collection('arrivedDrivers')
+          .where('userId', isEqualTo: widget.userId)
+          .orderBy('timestamp', descending: true)
+          .limit(20)
+          .get();
+
       // Debugging: Print retrieved documents
       for (var doc in requestsSnapshot.docs) {
         print('Request: ${doc.data()}');
       }
 
+
+       for (var doc in arrivedDriversSnapshot.docs) {
+        print('Arrived driver: ${doc.data()}');
+      }
+
+
       // Check if requests exist before continuing
-      if (requestsSnapshot.docs.isEmpty) {
-        print('No requests found for this user.');
+      if (requestsSnapshot.docs.isEmpty &&
+          arrivedDriversSnapshot.docs.isEmpty) {
+        print('No requests or Arrived Drivers Found for this User.');
         return; // Exit if no requests found
       }
 
@@ -112,6 +127,7 @@ class _RequestPageState extends State<RequestPage> {
 
       setState(() {
         requests = filteredRequests;
+                arrivedDrivers = arrivedDriversSnapshot.docs;
         isDataLoaded = true;
       });
     } catch (e) {

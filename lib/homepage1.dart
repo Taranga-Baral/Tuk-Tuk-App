@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:final_menu/splash_screen/splash_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
@@ -118,7 +119,7 @@ class _HomePage1State extends State<HomePage1> {
             ],
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
+              children: [
                 SizedBox(
                   width: 10,
                 ),
@@ -129,7 +130,7 @@ class _HomePage1State extends State<HomePage1> {
                 ),
 
                 
-                Text('Tuk Tuk'),
+                Text('Tuk Tuk',style: GoogleFonts.comicNeue(fontSize: 20,fontWeight: FontWeight.bold),),
               ],
             ),
           ),
@@ -393,7 +394,7 @@ class _HomePage1State extends State<HomePage1> {
                   Flexible(
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                       // Remove the overflow property to allow the text to wrap
                     ),
@@ -403,7 +404,7 @@ class _HomePage1State extends State<HomePage1> {
               const SizedBox(height: 8),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 16),
+                style: GoogleFonts.comicNeue(fontSize: 16),
                 overflow: TextOverflow.ellipsis, // Subtitle can still overflow
               ),
             ],
@@ -577,7 +578,7 @@ class _HomePage1State extends State<HomePage1> {
             // Row for avatar and welcome message
             Text(
               '$username!',
-              style: TextStyle(
+              style: GoogleFonts.outfit(
                 fontSize: 24,
                 color: Colors.black87,
                 fontWeight: FontWeight.bold,

@@ -4,6 +4,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -976,7 +977,7 @@ class _HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text('Confirm Booking',
-                                style: TextStyle(fontSize: 18)),
+                                style: GoogleFonts.outfit(fontSize: 20)),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -984,13 +985,29 @@ class _HomePageState extends State<HomePage> {
                                 _buildVehicleTypeSelector(distance, setState),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Pickup: $pickupLocation'),
+                            padding:  EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.location_on,color: Colors.green,),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(child: Text('$pickupLocation',textAlign: TextAlign.start,)),
+                              ],
+                            ),
                           ),
                           Divider(),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Delivery: $deliveryLocation'),
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.location_on,color: Colors.red,),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(child: Text('$deliveryLocation',textAlign: TextAlign.start,)),
+                              ],
+                            ),
                           ),
                           Divider(),
                           Padding(
@@ -1389,7 +1406,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 8),
                   Text(
                     vehicleTypes[index],
-                    style: TextStyle(
+                    style: GoogleFonts.comicNeue(
                       color: isSelected ? Colors.teal : Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
