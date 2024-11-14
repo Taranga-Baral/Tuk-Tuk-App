@@ -230,7 +230,7 @@ Future<void> _uploadDistanceData({
               children: [
                 Icon(
                   Icons.location_on,
-                  color: Colors.red,
+                  color: Colors.green,
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -247,7 +247,7 @@ Future<void> _uploadDistanceData({
               children: [
                 Icon(
                   Icons.location_on,
-                  color: Colors.green,
+                  color: Colors.red,
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -307,8 +307,8 @@ Future<void> _uploadDistanceData({
                             },
                           );
 
-// Close the dialog after 5 seconds
-                          Future.delayed(Duration(seconds: 5), () {
+// Close the dialog after 10 seconds
+                          Future.delayed(Duration(seconds: 10), () {
                             if (Navigator.canPop(context)) {
                               Navigator.pop(context);
                             }

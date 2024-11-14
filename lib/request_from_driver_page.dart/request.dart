@@ -52,7 +52,7 @@ class _RequestPageState extends State<RequestPage> {
           .limit(1000) // Limit the number of documents to load
           .get();
 
-          print('Fetching arrived drivers...');
+      print('Fetching arrived drivers...');
       final arrivedDriversSnapshot = await FirebaseFirestore.instance
           .collection('arrivedDrivers')
           .where('userId', isEqualTo: widget.userId)
@@ -65,11 +65,9 @@ class _RequestPageState extends State<RequestPage> {
         print('Request: ${doc.data()}');
       }
 
-
-       for (var doc in arrivedDriversSnapshot.docs) {
+      for (var doc in arrivedDriversSnapshot.docs) {
         print('Arrived driver: ${doc.data()}');
       }
-
 
       // Check if requests exist before continuing
       if (requestsSnapshot.docs.isEmpty &&
@@ -127,7 +125,7 @@ class _RequestPageState extends State<RequestPage> {
 
       setState(() {
         requests = filteredRequests;
-                arrivedDrivers = arrivedDriversSnapshot.docs;
+        arrivedDrivers = arrivedDriversSnapshot.docs;
         isDataLoaded = true;
       });
     } catch (e) {
@@ -210,7 +208,7 @@ class _RequestPageState extends State<RequestPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Requests Page'),
+        title: Text('Requests Page',style: GoogleFonts.outfit(),),
         actions: [
           Row(
             children: [
@@ -271,7 +269,8 @@ class _RequestPageState extends State<RequestPage> {
                                   return Center(
                                       child: Center(
                                     child: Image(
-                                        image: AssetImage('assets/logo.png')),
+                                        image: AssetImage(
+                                            'assets/no_data_found.gif')),
                                   ));
                                 }
 
@@ -1010,7 +1009,7 @@ class _RequestPageState extends State<RequestPage> {
                                   return Text('Error loading data');
                                 }
 
-                                     final vehicleData = snapshot.data![0].data()
+                                final vehicleData = snapshot.data![0].data()
                                     as Map<String, dynamic>;
                                 final tripData = snapshot.data![1].data()
                                     as Map<String, dynamic>;
@@ -1275,7 +1274,7 @@ class _RequestPageState extends State<RequestPage> {
                                                 ),
                                                 SizedBox(width: 10),
                                                 Text(
-                                                  'Driver is $distanceBetweenDriverAndPassenger km away',
+                                                  'Driver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
                                                   style:
                                                       TextStyle(fontSize: 14),
                                                 ),
@@ -1287,9 +1286,6 @@ class _RequestPageState extends State<RequestPage> {
                                     ),
                                   ),
                                 );
-
-                                
-                            
                               },
                             );
                           },
@@ -1300,7 +1296,12 @@ class _RequestPageState extends State<RequestPage> {
                 );
               },
             )
-          : Center(child: Image(image: AssetImage('assets/logo.png'))),
+          : Center(
+              child: Image(
+              image: AssetImage('assets/no_data_found.gif'),
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width * 0.7,
+            )),
     );
   }
 

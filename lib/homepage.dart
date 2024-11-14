@@ -1245,7 +1245,7 @@ class _HomePageState extends State<HomePage> {
       ),
       appBar: AppBar(
         backgroundColor: Colors.deepOrange.shade500.withOpacity(0.8),
-        title: Text('Home Page'),
+        title: Text('Home Page',style: GoogleFonts.outfit(),),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),

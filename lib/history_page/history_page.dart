@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HistoryPage extends StatefulWidget {
   final String userId;
@@ -65,7 +66,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber.shade300,
-        title: const Text('Trip History'),
+        title: Text('Trip History',style: GoogleFonts.outfit(),),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchTrips(),
@@ -109,7 +110,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           children: [
                             Icon(
                               Icons.location_on,
-                              color: Colors.red,
+                              color: Colors.green,
                             ),
                             SizedBox(
                               width: 10,
@@ -122,7 +123,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           children: [
                             Icon(
                               Icons.location_on,
-                              color: Colors.green,
+                              color: Colors.red,
                             ),
                             SizedBox(
                               width: 10,

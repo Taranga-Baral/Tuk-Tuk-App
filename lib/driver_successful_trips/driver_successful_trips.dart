@@ -261,7 +261,7 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
                             children: [
                               Icon(
                                 Icons.location_on,
-                                color: Colors.red,
+                                color: Colors.green,
                               ),
                               SizedBox(
                                 width: 10,
@@ -278,7 +278,7 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
                             children: [
                               Icon(
                                 Icons.location_on,
-                                color: Colors.green,
+                                color: Colors.red,
                               ),
                               SizedBox(
                                 width: 10,

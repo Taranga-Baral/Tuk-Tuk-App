@@ -239,7 +239,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/chat/chat_display_page.dart';
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart'; // Import the animations package
+import 'package:animations/animations.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import the animations package
 
 class ChatPage extends StatefulWidget {
   final String userId;
@@ -350,11 +351,19 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat with Drivers'),
+        title: Text(
+          'Chat with Drivers',
+          style: GoogleFonts.outfit(),
+        ),
         backgroundColor: Colors.greenAccent.shade200.withOpacity(0.9),
       ),
       body: confirmedDriversData.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Image(
+              image: AssetImage('assets/no_data_found.gif'),
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width * 0.7,
+            ))
           : Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -368,6 +377,7 @@ class _ChatPageState extends State<ChatPage> {
                         String tripId = data['tripId'];
                         String profilePictureUrl = data['profilePictureUrl'];
 
+                        // Case: Data available
                         return Column(
                           children: [
                             Card(
@@ -376,14 +386,6 @@ class _ChatPageState extends State<ChatPage> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Container(
-                                // decoration: BoxDecoration(
-                                //   gradient: LinearGradient(
-                                //     colors: [Colors.white, Colors.grey[200]!],
-                                //     begin: Alignment.topLeft,
-                                //     end: Alignment.bottomRight,
-                                //   ),
-                                //   borderRadius: BorderRadius.circular(15),
-                                // ),
                                 child: ListTile(
                                   contentPadding: EdgeInsets.all(16),
                                   leading: CircleAvatar(
@@ -391,8 +393,7 @@ class _ChatPageState extends State<ChatPage> {
                                     backgroundImage:
                                         profilePictureUrl.isNotEmpty
                                             ? NetworkImage(profilePictureUrl)
-                                            : AssetImage(
-                                                    'assets/loading_screen.gif')
+                                            : AssetImage('assets/logo.png')
                                                 as ImageProvider,
                                   ),
                                   title: Column(
@@ -403,14 +404,17 @@ class _ChatPageState extends State<ChatPage> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text('${data['driverName']}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                            '${data['driverName']}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
                                           Text(
                                             '... ${index + 1}',
                                             style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold),
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -418,15 +422,15 @@ class _ChatPageState extends State<ChatPage> {
                                     ],
                                   ),
                                   subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'उठाउने स्थान : ${data['pickupLocation']}\n\n'
-                                        'डेलिभरी स्थान : ${data['deliveryLocation']}\n\n'
-                                        'सम्पर्क : ${data['driverPhone']}',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                        ),
+                                        'Pickup Location: ${data['pickupLocation']}\n\n'
+                                        'Delivery Location: ${data['deliveryLocation']}\n\n'
+                                        'Contact: ${data['driverPhone']}',
+                                        style:
+                                            TextStyle(color: Colors.grey[600]),
                                       ),
                                       Row(
                                         mainAxisAlignment:
@@ -482,9 +486,9 @@ class _ChatPageState extends State<ChatPage> {
                                                                 curve: curve)));
 
                                                     return SlideTransition(
-                                                        position:
-                                                            offsetAnimation,
-                                                        child: child);
+                                                      position: offsetAnimation,
+                                                      child: child,
+                                                    );
                                                   },
                                                 ),
                                               );

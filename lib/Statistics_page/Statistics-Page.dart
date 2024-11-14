@@ -196,6 +196,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class StatisticsPage extends StatefulWidget {
   final String userId;
@@ -280,7 +281,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Statistics Page'),
+        title: Text('Statistics Page',style: GoogleFonts.outfit(),),
         backgroundColor: Colors.lime,
       ),
       body: isLoading

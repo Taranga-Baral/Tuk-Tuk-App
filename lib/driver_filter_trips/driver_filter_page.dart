@@ -552,7 +552,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 children: [
                                   Icon(
                                     Icons.location_on,
-                                    color: Colors.red,
+                                    color: Colors.green,
                                   ),
                                   SizedBox(
                                     width: 10,
@@ -570,7 +570,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 children: [
                                   Icon(
                                     Icons.location_on,
-                                    color: Colors.green,
+                                    color: Colors.red,
                                   ),
                                   SizedBox(
                                     width: 10,

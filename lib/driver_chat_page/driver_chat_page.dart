@@ -366,7 +366,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                   if (tripDetails != null) ...[
                     Row(
                       children: [
-                        Icon(Icons.location_on,color: Colors.red,),
+                        Icon(Icons.location_on,color: Colors.green,),
                         SizedBox(
                           width: 10,
                         ),
@@ -384,7 +384,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                     SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.location_on,color: Colors.green,),
+                        Icon(Icons.location_on,color: Colors.red,),
                         SizedBox(
                           width: 10,
                         ),
