@@ -235,9 +235,9 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Color appBarColor;
@@ -300,7 +300,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
             return Text(
               displayName ?? 'No Name',
-              style: TextStyle(color: Colors.black87, fontSize: 18),
+              style: GoogleFonts.outfit(color: Colors.black87, fontSize: 18),
             );
           },
         ),
@@ -359,7 +359,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   width: MediaQuery.of(context).size.width * 0.8,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: SingleChildScrollView(
-                    
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

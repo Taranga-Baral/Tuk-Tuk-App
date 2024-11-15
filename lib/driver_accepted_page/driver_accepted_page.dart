@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:final_menu/driver_chat_page/chat_detail_page.dart';
@@ -206,7 +207,6 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
     }
   }
 
-
   final double _maxScrollSpeed = 1.0; // Adjust as needed
   @override
   Widget build(BuildContext context) {
@@ -252,8 +252,12 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                     builder: (context,
                         AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return (const Center(
-                          child: Image(image: AssetImage('assets/logo.png')),
+                        return (Center(
+                          child: Image(
+                            image: AssetImage('assets/loading_screen.gif'),
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                          ),
                         ));
                       }
 
@@ -396,7 +400,6 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  
                                   Row(
                                     children: [
                                       const Icon(Icons.location_on,
@@ -469,13 +472,52 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                               phoneNumber.isNotEmpty) {
                                             _launchPhoneNumber(phoneNumber);
                                           } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    'Phone number unavailable'),
+                                            // ScaffoldMessenger.of(context)
+                                            //     .showSnackBar(
+                                            //   const SnackBar(
+                                            //     content: Text(
+                                            //         'Phone number unavailable'),
+                                            //   ),
+                                            // );
+
+                                            AwesomeDialog(
+                                              context: context,
+                                              dialogType: DialogType.error,
+                                              animType: AnimType.topSlide,
+                                              body: Center(
+                                                child: Column(
+                                                  children: const [
+                                                    Text(
+                                                      'Phone Number Invalid',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 22,
+                                                          color: Colors.red),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Text(
+                                                      'Looks like Phone Number is not Provided by the User',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                          fontSize: 14,
+                                                          color: Colors.grey),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            );
+                                              btnOkColor: Colors
+                                                  .deepOrange.shade500
+                                                  .withOpacity(0.8),
+                                              alignment: Alignment.center,
+                                              btnOkOnPress: () {},
+                                            ).show();
                                           }
                                         },
                                       ),
@@ -526,21 +568,58 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
 
                                                     await _updateButtonStates(
                                                         tripId, true, false);
-                                                    ScaffoldMessenger.of(
-                                                            // ignore: use_build_context_synchronously
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                          content: Text(
-                                                              'Driver Arrival Recorded')),
-                                                    );
+
+                                                    AwesomeDialog(
+                                                      context: context,
+                                                      dialogType:
+                                                          DialogType.success,
+                                                      animType:
+                                                          AnimType.topSlide,
+                                                      body: Center(
+                                                        child: Column(
+                                                          children: const [
+                                                            Text(
+                                                              'Arrived',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 22,
+                                                                  color: Colors
+                                                                      .green),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Text(
+                                                              'Driver Arrival Recorded. Pickup your Passenger. ',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300,
+                                                                  fontSize: 14,
+                                                                  color: Colors
+                                                                      .grey),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      btnOkColor: Colors
+                                                          .deepOrange.shade500
+                                                          .withOpacity(0.8),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      btnOkOnPress: () {},
+                                                    ).show();
 
                                                     setState(() {});
                                                   } catch (e) {
                                                     ScaffoldMessenger.of(
-                                                            // ignore: use_build_context_synchronously
-                                                            context)
-                                                        .showSnackBar(
+                                                        // ignore: use_build_context_synchronously
+                                                        context).showSnackBar(
                                                       const SnackBar(
                                                           content: Text(
                                                               'Failed to send driver. Try again.')),
@@ -580,29 +659,67 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                       .serverTimestamp(),
                                                 });
 
-                                                // ignore: use_build_context_synchronously
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                      content: Text(
-                                                          'Request completed and added to your Trips Collection')),
-                                                );
+                                                AwesomeDialog(
+                                                  context: context,
+                                                  dialogType:
+                                                      DialogType.success,
+                                                  animType: AnimType.topSlide,
+                                                  body: Center(
+                                                    child: Column(
+                                                      children: const [
+                                                        Text(
+                                                          'Ride Master',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontSize: 22,
+                                                              color:
+                                                                  Colors.green),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Text(
+                                                          'Trips Added to your Collection.',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w300,
+                                                              fontSize: 14,
+                                                              color:
+                                                                  Colors.grey),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  btnOkColor: Colors
+                                                      .deepOrange.shade500
+                                                      .withOpacity(0.8),
+                                                  alignment: Alignment.center,
+                                                  btnOkOnPress: () {},
+                                                ).show();
                                                 setState(() {});
                                               }
                                             : null,
                                       ),
                                     ],
                                   ),
-
-
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Text('... ${index+1}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17,color: Colors.grey),),
+                                      Text(
+                                        '... ${index + 1}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                            color: Colors.grey),
+                                      ),
                                     ],
                                   ),
-
-
                                 ],
                               ),
                             ),

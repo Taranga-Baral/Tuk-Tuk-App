@@ -21,6 +21,8 @@ class HomePage1 extends StatefulWidget {
   _HomePage1State createState() => _HomePage1State();
 }
 
+late String userId;
+
 class _HomePage1State extends State<HomePage1> {
   String mapsearchedplace = '';
 
@@ -30,6 +32,16 @@ class _HomePage1State extends State<HomePage1> {
       await launchUrl(uri);
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  void initState() {
+    super.initState();
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      userId = currentUser.uid;
+    } else {
+      // Handle case where currentUser is null or userId initialization fails
     }
   }
 
@@ -48,7 +60,7 @@ class _HomePage1State extends State<HomePage1> {
     }
     IconData iconData;
     Color iconColor;
-    final String userId = currentUser.uid;
+    late String userId = currentUser.uid;
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -88,32 +100,32 @@ class _HomePage1State extends State<HomePage1> {
         String phoneNumber = data['phone_number'] ?? 'No Phone Number';
         String email = currentUser.email ?? 'No Email';
 
-        String avatarLetter = username.isNotEmpty ? username[0].toUpperCase() : 'U';
+        String avatarLetter =
+            username.isNotEmpty ? username[0].toUpperCase() : 'U';
 
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            
             backgroundColor: Colors.transparent,
             elevation: 0,
-            actions:  [
+            actions: [
               Row(
                 children: [
                   CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.white,
-                      child: Text(
-                        avatarLetter,
-                        style: TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    radius: 20,
+                    backgroundColor: Colors.white,
+                    child: Text(
+                      avatarLetter,
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(
-                      width: 10,
-                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
                 ],
               ),
             ],
@@ -123,19 +135,24 @@ class _HomePage1State extends State<HomePage1> {
                 SizedBox(
                   width: 10,
                 ),
-                Image(image: AssetImage('assets/signin_signup_logo.png',),height: 40, width: 40),
-
+                Image(
+                    image: AssetImage(
+                      'assets/signin_signup_logo.png',
+                    ),
+                    height: 40,
+                    width: 40),
                 SizedBox(
                   width: 10,
                 ),
-
-                
-                Text('Tuk Tuk',style: GoogleFonts.comicNeue(fontSize: 20,fontWeight: FontWeight.bold),),
+                Text(
+                  'Tuk Tuk',
+                  style: GoogleFonts.comicNeue(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
           ),
           body: LayoutBuilder(
-            
             builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
                 child: Column(
@@ -163,12 +180,16 @@ class _HomePage1State extends State<HomePage1> {
                               subtitle: 'Get a ride quickly',
                               icon: Icons.map_rounded,
                               onTap: () {
-                                String url = 'https://www.openstreetmap.org/directions#map=8/28.401/84.430';
+                                String url =
+                                    'https://www.openstreetmap.org/directions#map=8/28.401/84.430';
 
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => HomePage(url: url),
+                                    builder: (context) => HomePage(
+                                      url: url,
+                                      userId: userId,
+                                    ),
                                   ),
                                 );
                               },
@@ -287,51 +308,53 @@ class _HomePage1State extends State<HomePage1> {
                     ),
                     SizedBox(height: 20),
                     Padding(
-  padding: EdgeInsets.symmetric(horizontal: constraints.maxWidth * 0.05),
-  child: _buildCard(
-    context: context,
-    title: 'बाहिर निस्किने ?',
-    subtitle: 'Signout Safely',
-    icon: Icons.logout,
-    isFullWidth: true,
-    onTap: () {
-      // Show confirmation dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Confirm Sign Out'),
-            content: Text('Are you sure you want to sign out?'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Sign out and navigate to the SignInPage
-                  FirebaseAuth.instance.signOut();
-                  Navigator.of(context).pop(); // Close the dialog
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SignInPage(),
-                    ),
-                  );
-                },
-                child: Text('Sign Out'),
-              ),
-            ],
-          );
-          
-        },
-      );
-    },
-  ),
-)
-
+                      padding: EdgeInsets.symmetric(
+                          horizontal: constraints.maxWidth * 0.05),
+                      child: _buildCard(
+                        context: context,
+                        title: 'बाहिर निस्किने ?',
+                        subtitle: 'Signout Safely',
+                        icon: Icons.logout,
+                        isFullWidth: true,
+                        onTap: () {
+                          // Show confirmation dialog
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Confirm Sign Out'),
+                                content:
+                                    Text('Are you sure you want to sign out?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      // Sign out and navigate to the SignInPage
+                                      FirebaseAuth.instance.signOut();
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SignInPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text('Sign Out'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    )
                   ],
                 ),
               );
@@ -341,8 +364,6 @@ class _HomePage1State extends State<HomePage1> {
       },
     );
   }
-
-
 
   Widget _buildCard({
     required BuildContext context,
@@ -376,8 +397,7 @@ class _HomePage1State extends State<HomePage1> {
       child: Card(
         // color: Colors.transparent,
         elevation: 0.01,
-        
-        
+
         margin: const EdgeInsets.only(bottom: 20),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -394,8 +414,8 @@ class _HomePage1State extends State<HomePage1> {
                   Flexible(
                     child: Text(
                       title,
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       // Remove the overflow property to allow the text to wrap
                     ),
                   ),
@@ -413,7 +433,8 @@ class _HomePage1State extends State<HomePage1> {
       ),
     );
   }
-   Widget _buildUserDetailsCard({
+
+  Widget _buildUserDetailsCard({
     required BuildContext context,
     required String username,
     required String avatarLetter,
@@ -518,6 +539,7 @@ class _HomePage1State extends State<HomePage1> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => HomePage(
+                                  userId: userId,
                                   url:
                                       'https://www.openstreetmap.org/search?query=$mapsearchedplace'),
                             ),
@@ -591,7 +613,7 @@ class _HomePage1State extends State<HomePage1> {
                 color: Colors.black54,
               ),
             ),
-            
+
             SizedBox(height: 20),
             // Search field
             TextField(

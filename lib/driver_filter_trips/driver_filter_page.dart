@@ -199,14 +199,61 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
               FieldValue.serverTimestamp(), // Optional: Add a timestamp
         });
 
+        Map<String, dynamic> distanceData = {
+          'tripId': tripId,
+          'userId': userId,
+          'driverId': widget.driverId,
+          'distance_between_driver_and_passenger': distance,
+        };
+
+        // Reference to the new collection
+        CollectionReference distanceCollection = FirebaseFirestore.instance
+            .collection('distance_between_driver_and_passenger');
+
+        // Add or update the document in the new collection
+        await distanceCollection.add(distanceData);
+        setState(() {});
+
         // Step 2: Show a SnackBar with tripId, userId, and driverId
 
-        SnackBar(
-          content: Text(
-            'Request sent successfully!',
+        AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.topSlide,
+        body: Center(
+          child: Column(
+            children: const [
+              Text(
+                'Done',
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 22,
+                    color: Colors.green),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Request Sent Successfully. Wait for their Response.',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
           ),
-          duration: const Duration(seconds: 3),
-        );
+        ),
+        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        alignment: Alignment.center,
+        btnOkOnPress: () {},
+      ).show();
+
+
+
+
       }
 
       // Step 1: Add the userId, driverId, and tripId to the "requestsofDrivers" collection
@@ -329,7 +376,12 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                 stream: _getTripsStream(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                        child: Image(
+                      image: AssetImage("assets/loading_screen.gif"),
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      width: MediaQuery.of(context).size.width * 0.3,
+                    ));
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
@@ -413,10 +465,21 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                                   const EdgeInsets.all(20.0),
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
-                                                children: const [
-                                                  CircularProgressIndicator(),
-                                                  SizedBox(height: 20),
-                                                  Text('Processing...'),
+                                                children: [
+                                                  Image(
+                                                    image: AssetImage(
+                                                        "assets/loading_screen.gif"),
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.3,
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.3,
+                                                  )
                                                 ],
                                               ),
                                             ),
@@ -517,12 +580,6 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                             tripData1, context, distance);
 
                                         // Upload the distance and other information to Firestore
-                                        await _uploadDistanceData(
-                                          tripId: trip['tripId'],
-                                          driverId: widget.driverId,
-                                          userId: trip['userId'],
-                                          distance: distance,
-                                        );
 
                                         // Success message (optional)
                                         print('Distance successfully uploaded');
@@ -935,29 +992,5 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     return Geolocator.distanceBetween(
             startLatitude, startLongitude, endLatitude, endLongitude) /
         1000; // Convert to kilometers
-  }
-
-  // Function to upload data to Firestore
-  //unused method that updates data to trips
-  Future<void> _uploadDistanceData({
-    required String tripId,
-    required String driverId,
-    required String userId,
-    required double distance,
-  }) async {
-    Map<String, dynamic> distanceData = {
-      'tripId': tripId,
-      'userId': userId,
-      'driverId': driverId,
-      'distance_between_driver_and_passenger': distance,
-    };
-
-    // Reference to the new collection
-    CollectionReference distanceCollection = FirebaseFirestore.instance
-        .collection('distance_between_driver_and_passenger');
-
-    // Add or update the document in the new collection
-    await distanceCollection.add(distanceData);
-    setState(() {});
   }
 }

@@ -1,9 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:final_menu/request_from_driver_page.dart/request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,7 +14,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   final String url;
-  const HomePage({super.key, required this.url});
+  final String userId;
+  const HomePage({super.key, required this.url, required this.userId});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -37,226 +40,6 @@ class _HomePageState extends State<HomePage> {
   bool isBookingInProgress = false; // Add this variable
   bool isPickupTextFieldEnabled = true;
   bool isDeliveryTextFieldEnabled = true;
-
-// void fetchLocationSuggestionsPickup(String query) async {
-//   final url = Uri.parse(
-//       'https://nominatim.openstreetmap.org/search?q=$query,chitwan&format=json&addressdetails=1&limit=30');
-//   final response = await http.get(url);
-
-//   if (response.statusCode == 200) {
-//     final List<dynamic> data = json.decode(response.body);
-//     setState(() {
-//       searchResults =
-//           data.map((place) => place['display_name'].toString()).toList();
-//     });
-
-//     showDialog(
-//       context: context,
-//       builder: (context) => AlertDialog(
-//         title: Text('Search Results'),
-//         content: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: searchResults.map((result) {
-//             return SingleChildScrollView(
-//               child: ListTile(
-//                 title: Text(result),
-//                 onTap: () async {
-//                   // Set selected result in the Flutter TextField (for Pickup)
-//                   pickupTextController.text = result;
-
-//                   // Inject the selected result into the OSM input field for route_from (Pickup)
-//                   print('Setting Pickup Location: $result'); // Debugging
-
-//                   await webView!.evaluateJavascript(
-//                     source: '''
-//                       let osmInput = document.getElementById("route_from");
-//                       osmInput.value = "$result";
-
-//                       // Trigger input event to notify the WebView
-//                       let inputEvent = new Event('input', { bubbles: true });
-//                       osmInput.dispatchEvent(inputEvent);
-//                     ''',
-//                   );
-
-//                   // Close the dialog
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//             );
-//           }).toList(),
-//         ),
-//       ),
-//     );
-//   } else {
-//     print('Failed to load suggestions');
-//   }
-// }
-
-// void fetchLocationSuggestionsDelivery(String query) async {
-//   final url = Uri.parse(
-//       'https://nominatim.openstreetmap.org/search?q=$query,chitwan&format=json&addressdetails=1&limit=30');
-//   final response = await http.get(url);
-
-//   if (response.statusCode == 200) {
-//     final List<dynamic> data = json.decode(response.body);
-//     setState(() {
-//       searchResultsDelivery =
-//           data.map((place) => place['display_name'].toString()).toList();
-//     });
-
-//     showDialog(
-//       context: context,
-//       builder: (context) => AlertDialog(
-//         title: Text('Search Results'),
-//         content: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: searchResultsDelivery.map((result) {
-//             return SingleChildScrollView(
-//               child: ListTile(
-//                 title: Text(result),
-//                 onTap: () async {
-//                   // Set selected result in the Flutter TextField (for Delivery)
-//                   deliveryTextController.text = result;
-
-//                   // Inject the selected result into the OSM input field for route_to (Delivery)
-//                   print('Setting Delivery Location: $result'); // Debugging
-
-//                   await webView!.evaluateJavascript(
-//                     source: '''
-//                       let osmInputDelivery = document.getElementById("route_to");
-//                       osmInputDelivery.value = "$result";
-
-//                       // Trigger input event to notify the WebView
-//                       let inputEventDelivery = new Event('input', { bubbles: true });
-//                       osmInputDelivery.dispatchEvent(inputEventDelivery);
-//                     ''',
-//                   );
-
-//                   // Close the dialog
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//             );
-//           }).toList(),
-//         ),
-//       ),
-//     );
-//   } else {
-//     print('Failed to load suggestions');
-//   }
-// }
-
-// // Function to fetch location suggestions for Pickup
-// void fetchLocationSuggestionsPickup(String query) async {
-//   final url = Uri.parse(
-//       'https://nominatim.openstreetmap.org/search?q=$query&format=json&addressdetails=1&limit=30');
-//   final response = await http.get(url);
-
-//   if (response.statusCode == 200) {
-//     final List<dynamic> data = json.decode(response.body);
-//     setState(() {
-//       List<String> searchResults =
-//           data.map((place) => place['display_name'].toString()).toList();
-
-//       showDialog(
-//         context: context,
-//         barrierDismissible: false,
-//         builder: (context) => AlertDialog(
-//           title: Text('Search Results'),
-//           content: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: searchResults.map((result) {
-//               return SingleChildScrollView(
-//                 child: ListTile(
-//                   title: Text(result),
-//                   onTap: () async {
-//                     // Set selected result in the Flutter TextField (for Pickup)
-//                     pickupTextController.text = result;
-
-//                     // Disable Pickup TextField
-//                     setState(() {
-//                       isPickupTextFieldEnabled = false;
-//                     });
-
-//                     // Inject the selected result into the OSM input field for route_from (Pickup)
-//                     await webView!.evaluateJavascript(source:'''
-//                       var osmInput = document.getElementById("route_from");
-//                       if (osmInput) {
-//                         osmInput.value = "$result";
-//                         osmInput.dispatchEvent(new Event('input', { bubbles: true }));
-//                       }
-//                     ''');
-
-//                     // Close the dialog
-//                     Navigator.pop(context);
-//                   },
-//                 ),
-//               );
-//             }).toList(),
-//           ),
-//         ),
-//       );
-//     });
-//   } else {
-//     print('Failed to load suggestions');
-//   }
-// }
-
-// // Function to fetch location suggestions for Delivery
-// void fetchLocationSuggestionsDelivery(String query) async {
-//   final url = Uri.parse(
-//       'https://nominatim.openstreetmap.org/search?q=$query&format=json&addressdetails=1&limit=30');
-//   final response = await http.get(url);
-
-//   if (response.statusCode == 200) {
-//     final List<dynamic> data = json.decode(response.body);
-//     setState(() {
-//       List<String> searchResults =
-//           data.map((place) => place['display_name'].toString()).toList();
-
-//       showDialog(
-//         context: context,
-//         barrierDismissible: false,
-//         builder: (context) => AlertDialog(
-//           title: Text('Search Results'),
-//           content: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: searchResults.map((result) {
-//               return SingleChildScrollView(
-//                 child: ListTile(
-//                   title: Text(result),
-//                   onTap: () async {
-//                     // Set selected result in the Flutter TextField (for Delivery)
-//                     deliveryTextController.text = result;
-
-//                     // Disable Delivery TextField
-//                     setState(() {
-//                       isDeliveryTextFieldEnabled = false;
-//                     });
-
-//                     // Inject the selected result into the OSM input field for route_to (Delivery)
-//                     await webView!.evaluateJavascript(source:'''
-//                       var osmInputDelivery = document.getElementById("route_to");
-//                       if (osmInputDelivery) {
-//                         osmInputDelivery.value = "$result";
-//                         osmInputDelivery.dispatchEvent(new Event('input', { bubbles: true }));
-//                       }
-//                     ''');
-
-//                     // Close the dialog
-//                     Navigator.pop(context);
-//                   },
-//                 ),
-//               );
-//             }).toList(),
-//           ),
-//         ),
-//       );
-//     });
-//   } else {
-//     print('Failed to load suggestions');
-//   }
-// }
 
 // Function to fetch location suggestions for Pickup
   void fetchLocationSuggestionsPickup(String query) async {
@@ -769,34 +552,12 @@ class _HomePageState extends State<HomePage> {
         btnOkOnPress: () {},
       ).show();
     } else if (message == 'Booking confirmed!') {
-      // AwesomeDialog(
-      //   context: context,
-      //   dialogType: DialogType.success,
-      //   animType: AnimType.topSlide,
-      //   body: Center(
-      //     child: Column(
-      //       children: const [
-      //         Text("Success",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 22,color: Colors.green),),
-      //         SizedBox(
-      //           height: 10,
-      //         ),
-      //         Text('Booking Confirmed',style: TextStyle(fontWeight: FontWeight.w300,fontSize: 14,color: Colors.grey),),
-
-      //         SizedBox(
-      //           height: 10,
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      //   btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
-      //   alignment: Alignment.center,
-      //   btnOkOnPress: () {},
-      // ).show();
-
       AwesomeDialog(
         context: context,
         dialogType: DialogType.success,
         animType: AnimType.topSlide,
+        dismissOnTouchOutside: false,
+        dismissOnBackKeyPress: false,
         body: Center(
           child: Column(
             children: const [
@@ -825,7 +586,12 @@ class _HomePageState extends State<HomePage> {
         ),
         btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
         alignment: Alignment.center,
-        btnOkOnPress: () {},
+        btnOkOnPress: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RequestPage(userId: widget.userId)));
+        },
       ).show();
 
       // Show full-screen animated flowers overlay
@@ -842,7 +608,7 @@ class _HomePageState extends State<HomePage> {
               // Centered animated image
               Center(
                 child: Image.asset(
-                  'assets/bloom_booking.png', // Replace with your animated image asset
+                  'assets/bloom_booking.png',
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   fit: BoxFit.cover,
@@ -937,14 +703,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          
-
-          
-
-
-
-
-
           final pickupLocation = await webView?.evaluateJavascript(
                   source: "document.getElementById('route_from').value") ??
               'N/A';
@@ -985,14 +743,21 @@ class _HomePageState extends State<HomePage> {
                                 _buildVehicleTypeSelector(distance, setState),
                           ),
                           Padding(
-                            padding:  EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                Icon(Icons.location_on,color: Colors.green,),
+                                Icon(
+                                  Icons.location_on,
+                                  color: Colors.green,
+                                ),
                                 SizedBox(
                                   width: 10,
                                 ),
-                                Expanded(child: Text('$pickupLocation',textAlign: TextAlign.start,)),
+                                Expanded(
+                                    child: Text(
+                                  '$pickupLocation',
+                                  textAlign: TextAlign.start,
+                                )),
                               ],
                             ),
                           ),
@@ -1001,11 +766,18 @@ class _HomePageState extends State<HomePage> {
                             padding: EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                Icon(Icons.location_on,color: Colors.red,),
+                                Icon(
+                                  Icons.location_on,
+                                  color: Colors.red,
+                                ),
                                 SizedBox(
                                   width: 10,
                                 ),
-                                Expanded(child: Text('$deliveryLocation',textAlign: TextAlign.start,)),
+                                Expanded(
+                                    child: Text(
+                                  '$deliveryLocation',
+                                  textAlign: TextAlign.start,
+                                )),
                               ],
                             ),
                           ),
@@ -1245,7 +1017,10 @@ class _HomePageState extends State<HomePage> {
       ),
       appBar: AppBar(
         backgroundColor: Colors.deepOrange.shade500.withOpacity(0.8),
-        title: Text('Home Page',style: GoogleFonts.outfit(),),
+        title: Text(
+          'Home Page',
+          style: GoogleFonts.outfit(),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -1346,6 +1121,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+Future<void> _updateWebViewWithLocation(double latitude, double longitude) async {
+  if (webView != null) {
+    await webView!.evaluateJavascript(source: """
+      var inputField = document.getElementById('route_from');
+      if (inputField) {
+        inputField.value = '$latitude,$longitude';
+      }
+      // Simulate clicking the reverse directions button twice
+      var reverseButton = document.querySelector('.reverse_directions');
+      if (reverseButton) {
+        reverseButton.click();
+        reverseButton.click();
+      }
+    """);
+  }
+}
+
+
   Future<void> _requestLocationPermission() async {
     var status = await Permission.location.status;
     if (status.isDenied) {
@@ -1357,6 +1150,18 @@ class _HomePageState extends State<HomePage> {
         // ignore: use_build_context_synchronously
         _showSnackbar('Location permission denied', context);
       }
+    }
+
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
+      // Permission granted, get current location
+      Position position = await Geolocator.getCurrentPosition();
+      // Pass latitude and longitude to WebView or use it directly
+      _updateWebViewWithLocation(position.latitude, position.longitude);
+    } else {
+      // Handle permission denied
+      print('Location permission denied.');
     }
   }
 

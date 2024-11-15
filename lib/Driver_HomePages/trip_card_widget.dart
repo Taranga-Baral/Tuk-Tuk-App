@@ -93,6 +93,30 @@ class _TripCardWidgetState extends State<TripCardWidget> {
 
 
 
+
+// Function to check if a document exists in the requestsofDrivers collection
+Future<bool> checkRequestExists(String tripId, String userId, String driverId) async {
+  try {
+    // Reference to the requestsofDrivers collection
+    CollectionReference requestCollection =
+        FirebaseFirestore.instance.collection('requestsofDrivers');
+
+    // Query to check for any matching document
+    QuerySnapshot querySnapshot = await requestCollection
+        .where('tripId', isEqualTo: tripId)
+        .where('userId', isEqualTo: userId)
+        .where('driverId', isEqualTo: driverId)
+        .get();
+
+    // If there are any documents that match, return true
+    return querySnapshot.docs.isNotEmpty;
+  } catch (e) {
+    // Handle any errors
+    print('Error checking request existence: $e');
+    throw e;
+  }
+}
+
 // Function to upload data to Firestore
 Future<void> _uploadDistanceData({
   required String tripId,
@@ -101,28 +125,37 @@ Future<void> _uploadDistanceData({
   required double distance,
 }) async {
   try {
-    // Prepare the data to be stored in the new collection
-    Map<String, dynamic> distanceData = {
-      'tripId': tripId,
-      'userId': userId,
-      'driverId': driverId,
-      'distance_between_driver_and_passenger': distance,
-    };
+    // Check if a document matching the criteria exists in requestsofDrivers collection
+    bool requestExists = await checkRequestExists(tripId, userId, driverId);
 
-    // Reference to the new collection
-    CollectionReference distanceCollection =
-        FirebaseFirestore.instance.collection('distance_between_driver_and_passenger');
+    // If no matching document found, proceed to upload distance data
+    if (!requestExists) {
+      // Prepare the data to be stored in the new collection
+      Map<String, dynamic> distanceData = {
+        'tripId': tripId,
+        'userId': userId,
+        'driverId': driverId,
+        'distance_between_driver_and_passenger': distance,
+      };
 
-    // Add or update the document in the new collection
-    await distanceCollection.add(distanceData);
+      // Reference to the new collection
+      CollectionReference distanceCollection =
+          FirebaseFirestore.instance.collection('distance_between_driver_and_passenger');
 
-    print('Distance data uploaded successfully.');
+      // Add or update the document in the new collection
+      await distanceCollection.add(distanceData);
+
+      print('Distance data uploaded successfully.');
+    } else {
+      print('Matching request document found in requestsofDrivers collection. Skipping upload.');
+    }
   } catch (e) {
     // Handle any errors
     print('Error uploading distance data: $e');
     throw e; // Re-throw the error for potential further handling
   }
 }
+
 
 
 

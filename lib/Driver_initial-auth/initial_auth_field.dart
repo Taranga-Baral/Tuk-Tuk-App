@@ -333,915 +333,941 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vehicle Information Form'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DriverRegistrationPage()));
-              },
-              child: const Text(
-                ' Already? Sign In Here (Driver Mode)',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Color.fromARGB(255, 101, 12, 185)),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              // GestureDetector(
+              //   onTap: () {
+              //     Navigator.pushReplacement(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => DriverRegistrationPage()));
+              //   },
+              //   child: const Text(
+              //     ' Already? Sign In Here (Driver Mode)',
+              //     style: TextStyle(
+              //         color: Colors.black,
+              //         fontWeight: FontWeight.w600,
+              //         decoration: TextDecoration.underline,
+              //         decorationColor: Color.fromARGB(255, 101, 12, 185)),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 5,
+              // ),
+              // GestureDetector(
+              //   onTap: () {
+              //     Navigator.pushReplacement(context,
+              //         MaterialPageRoute(builder: (context) => SignInPage()));
+              //   },
+              //   child: const Text(
+              //     'Passenger Mode',
+              //     style: TextStyle(
+              //         color: Colors.black,
+              //         fontWeight: FontWeight.w600,
+              //         decoration: TextDecoration.underline,
+              //         decorationColor: Color.fromARGB(255, 101, 12, 185)),
+              //   ),
+              // ),
+
+              Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    IconButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DriverRegistrationPage()),
+        );
+      },
+      icon: Icon(Icons.local_taxi, color: Colors.pink),
+      tooltip: 'Already? Sign In Here (Driver Mode)',
+    ),
+    SizedBox(width: 20),
+    IconButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignInPage()),
+        );
+      },
+      icon: Icon(Icons.person, color: Colors.red),
+      
+      tooltip: 'Passenger Mode',
+    ),
+  ],
+),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width,
+                child: EasyStepper(
+                  
+                  activeStep: _activeStep,
+                  onStepReached: (index) {},
+                  steps: const [
+                    EasyStep(
+                      // title: 'Terms & Conditions',
+                      icon: Icon(Icons.assignment),
+                    ),
+                    EasyStep(
+                      // title: 'Vehicle Info',
+                      icon: Icon(Icons.car_rental_rounded),
+                    ),
+                    EasyStep(
+                      // title: 'Documents',
+                      icon: Icon(Icons.attach_file_outlined),
+                    ),
+                    EasyStep(
+                      // title: 'Personal Info',
+                      icon: Icon(Icons.person),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => SignInPage()));
-              },
-              child: const Text(
-                'Passenger Mode',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Color.fromARGB(255, 101, 12, 185)),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.2,
-              width: MediaQuery.of(context).size.width,
-              child: EasyStepper(
-                
-                activeStep: _activeStep,
-                onStepReached: (index) {},
-                steps: const [
-                  EasyStep(
-                    // title: 'Terms & Conditions',
-                    icon: Icon(Icons.assignment),
-                  ),
-                  EasyStep(
-                    // title: 'Vehicle Info',
-                    icon: Icon(Icons.car_rental_rounded),
-                  ),
-                  EasyStep(
-                    // title: 'Documents',
-                    icon: Icon(Icons.attach_file_outlined),
-                  ),
-                  EasyStep(
-                    // title: 'Personal Info',
-                    icon: Icon(Icons.person),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    if (_activeStep == 0) ...[
-                      // Terms haru
-                      Container(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Terms and Conditions',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const SizedBox(height: 10),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child: SizedBox(
-                                height: 400,
-                                child: ListView(
-                                  children: [
-                                    Text(
-                                      _termsAndConditionsText,
-                                      style: const TextStyle(fontSize: 14),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (_activeStep == 0) ...[
+                        // Terms haru
+                        Container(
+                          padding: const EdgeInsets.only(
+                              left: 20, right: 20, bottom: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height < 400 ? MediaQuery.of(context).size.height *0.15 : MediaQuery.of(context).size.height *0.5,
+                                
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: SizedBox(
+                                    height: 400,
+                                    child: ListView(
+                                      children: [
+                                        Text(
+                                          _termsAndConditionsText,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _termsAccepted,
-                                  onChanged: (bool? newValue) {
-                                    setState(() {
-                                      _termsAccepted = newValue ?? false;
-                                    });
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: _termsAccepted,
+                                    onChanged: (bool? newValue) {
+                                      setState(() {
+                                        _termsAccepted = newValue ?? false;
+                                      });
+                                    },
+                                  ),
+                                  const Text('Agree'),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              ClipRRect(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(12)),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (_termsAccepted) {
+                                      setState(() {
+                                        _activeStep =
+                                            1; // Move to Vehicle Info step
+                                      });
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Please accept the terms and conditions.')),
+                                      );
+                                    }
                                   },
-                                ),
-                                const Text('Agree'),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(12)),
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (_termsAccepted) {
-                                    setState(() {
-                                      _activeStep =
-                                          1; // Move to Vehicle Info step
-                                    });
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Please accept the terms and conditions.')),
-                                    );
-                                  }
-                                },
-                                child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.07,
-                                  width: MediaQuery.of(context).size.width,
-                                  color: _color,
-                                  child: const Center(
-                                    child: Text(
-                                      'Agree and Continue',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w600,
+                                  child: Container(
+                                    height:
+                                        MediaQuery.of(context).size.height * 0.07,
+                                    width: MediaQuery.of(context).size.width,
+                                    color: _color,
+                                    child: const Center(
+                                      child: Text(
+                                        'Agree and Continue',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    if (_activeStep == 1) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            child: Icon(Icons.arrow_back),
-                            onTap: () {
-                              setState(() {
-                                _activeStep = 0;
-                              });
-                            },
+                            ],
                           ),
-                        ],
-                      ),
-                      Form(
-                        key: _formKey, // Form key for validation
-                        child: Column(
+                        ),
+                      ],
+                      if (_activeStep == 1) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            // Vehicle Info Step
-                            DropdownButton<String>(
-                              value: _selectedVehicleType,
-                              onChanged: (String? newValue) {
+                            GestureDetector(
+                              child: Icon(Icons.arrow_back),
+                              onTap: () {
                                 setState(() {
-                                  _selectedVehicleType = newValue!;
+                                  _activeStep = 0;
                                 });
                               },
-                              items: <String>[
-                                'Tuk Tuk',
-                                'Motor Bike',
-                                'Taxi'
-                              ].map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
                             ),
-                            SizedBox(
-                              height: 5,
-                            ),
-
-                            // Number Plate TextFormField
-                            TextFormField(
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'This field is required';
-                                }
-                                return null; // Valid input
-                              },
-                              controller: _numberPlateController,
-                              decoration: const InputDecoration(
-                                labelText: 'Number Plate',
-                                prefixIcon: Icon(
-                                    Icons.format_list_numbered_rtl_outlined),
-                                filled: true,
-                                fillColor: Colors.white12,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117),
-                                  ),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(18)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-
-                            // Brand TextFormField
-                            TextFormField(
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'This field is required';
-                                }
-                                return null; // Valid input
-                              },
-                              controller: _brandController,
-                              decoration: const InputDecoration(
-                                labelText: 'Brand',
-                                prefixIcon:
-                                    Icon(Icons.electric_rickshaw_outlined),
-                                filled: true,
-                                fillColor: Colors.white12,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117),
-                                  ),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(18)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-
-                            // Color TextFormField
-                            TextFormField(
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'This field is required';
-                                }
-                                return null; // Valid input
-                              },
-                              controller: _colorController,
-                              decoration: const InputDecoration(
-                                labelText: 'Color',
-                                prefixIcon: Icon(Icons.color_lens_outlined),
-                                filled: true,
-                                fillColor: Colors.white12,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117),
-                                  ),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(18)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-
-                            TextFormField(
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'This field is required';
-                                }
-                                return null; // Valid input
-                              },
-                              controller: _licenseNumberController,
-                              decoration: const InputDecoration(
-                                labelText: 'License Number',
-                                prefixIcon: Icon(Icons.numbers),
-                                filled: true,
-                                fillColor: Colors.white12,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117),
-                                  ),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(18)),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            // Next Button
-                            ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(12)),
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (_formKey.currentState == null ||
-                                      !_formKey.currentState!.validate()) {
-                                    // If form is invalid, show a SnackBar and prevent navigation
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Please fill out all fields before proceeding.')),
-                                    );
-                                    return; // Prevent further execution
-                                  }
-
-                                  // Validate the form
-                                  if (_formKey.currentState!.validate()) {
-                                    // If the form is valid, proceed to the next step
-                                    setState(() {
-                                      _activeStep = 2;
-                                    });
-                                  } else {
-                                    // If validation fails, show the errors in the form
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Please fill out all fields')),
-                                    );
-                                  }
+                          ],
+                        ),
+                        Form(
+                          key: _formKey, // Form key for validation
+                          child: Column(
+                            children: [
+                              // Vehicle Info Step
+                              DropdownButton<String>(
+                                value: _selectedVehicleType,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _selectedVehicleType = newValue!;
+                                  });
                                 },
-                                child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.07,
-                                  width: MediaQuery.of(context).size.width,
-                                  color: _color,
-                                  child: const Center(
-                                    child: Text(
-                                      'Next',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.w600,
+                                items: <String>[
+                                  'Tuk Tuk',
+                                  'Motor Bike',
+                                  'Taxi'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+        
+                              // Number Plate TextFormField
+                              TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null; // Valid input
+                                },
+                                controller: _numberPlateController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Number Plate',
+                                  prefixIcon: Icon(
+                                      Icons.format_list_numbered_rtl_outlined),
+                                  filled: true,
+                                  fillColor: Colors.white12,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 255, 89, 117),
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(18)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+        
+                              // Brand TextFormField
+                              TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null; // Valid input
+                                },
+                                controller: _brandController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Brand',
+                                  prefixIcon:
+                                      Icon(Icons.electric_rickshaw_outlined),
+                                  filled: true,
+                                  fillColor: Colors.white12,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 255, 89, 117),
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(18)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+        
+                              // Color TextFormField
+                              TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null; // Valid input
+                                },
+                                controller: _colorController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Color',
+                                  prefixIcon: Icon(Icons.color_lens_outlined),
+                                  filled: true,
+                                  fillColor: Colors.white12,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 255, 89, 117),
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(18)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+        
+                              TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null; // Valid input
+                                },
+                                controller: _licenseNumberController,
+                                decoration: const InputDecoration(
+                                  labelText: 'License Number',
+                                  prefixIcon: Icon(Icons.numbers),
+                                  filled: true,
+                                  fillColor: Colors.white12,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 255, 89, 117),
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(18)),
+                                  ),
+                                ),
+                              ),
+        
+                              const SizedBox(height: 20),
+        
+                              // Next Button
+                              ClipRRect(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(12)),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (_formKey.currentState == null ||
+                                        !_formKey.currentState!.validate()) {
+                                      // If form is invalid, show a SnackBar and prevent navigation
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Please fill out all fields before proceeding.')),
+                                      );
+                                      return; // Prevent further execution
+                                    }
+        
+                                    // Validate the form
+                                    if (_formKey.currentState!.validate()) {
+                                      // If the form is valid, proceed to the next step
+                                      setState(() {
+                                        _activeStep = 2;
+                                      });
+                                    } else {
+                                      // If validation fails, show the errors in the form
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Please fill out all fields')),
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    height:
+                                        MediaQuery.of(context).size.height * 0.07,
+                                    width: MediaQuery.of(context).size.width,
+                                    color: _color,
+                                    child: const Center(
+                                      child: Text(
+                                        'Next',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
+                            ],
+                          ),
+                        )
+                      ],
+                      if (_activeStep == 2) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              child: Icon(Icons.arrow_back),
+                              onTap: () {
+                                setState(() {
+                                  _activeStep = 0;
+                                });
+                              },
                             ),
                           ],
                         ),
-                      )
-                    ],
-                    if (_activeStep == 2) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            child: Icon(Icons.arrow_back),
-                            onTap: () {
-                              setState(() {
-                                _activeStep = 0;
-                              });
-                            },
+        
+                        SizedBox(
+                          height: 20,
+                        ),
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () => _pickImage('bluebook'),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.055,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Upload BlueBook Photo',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
+                        ),
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+                        if (_bluebookPhoto != null) ...[
+                          Image.file(_bluebookPhoto!),
                         ],
-                      ),
-
-                      SizedBox(
-                        height: 20,
-                      ),
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () => _pickImage('bluebook'),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.055,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Upload BlueBook Photo',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+        
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () => _pickImage('citizenshipFront'),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.055,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Upload Citizenship Front Photo',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-
-                      SizedBox(
-                        height: 25,
-                      ),
-                      if (_bluebookPhoto != null) ...[
-                        Image.file(_bluebookPhoto!),
-                      ],
-
-                      SizedBox(
-                        height: 25,
-                      ),
-
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () => _pickImage('citizenshipFront'),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.055,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Upload Citizenship Front Photo',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
+                        SizedBox(
+                          height: 25,
                         ),
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      if (_citizenshipFrontPhoto != null) ...[
-                        Image.file(_citizenshipFrontPhoto!),
-                      ],
-
-                      SizedBox(
-                        height: 25,
-                      ),
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () => _pickImage('licenseFront'),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.055,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Upload License Front Photo',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
-                        height: 25,
-                      ),
-
-                      if (_licenseFrontPhoto != null) ...[
-                        Image.file(_licenseFrontPhoto!),
-                      ],
-
-                      SizedBox(
-                        height: 25,
-                      ),
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () => _pickImage('selfieWithCitizenship'),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.055,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Upload Selfie with Citizenship Photo',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
-                        height: 25,
-                      ),
-
-                      if (_selfieWithCitizenshipPhoto != null) ...[
-                        Image.file(_selfieWithCitizenshipPhoto!),
-                      ],
-                      // ElevatedButton(
-                      //   onPressed: () => _pickImage(''),
-                      //   child: const Text(''),
-                      // ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () => _pickImage('selfieWithLicense'),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.055,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Upload Selfie with License Photo',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
-                        height: 25,
-                      ),
-
-                      if (_selfieWithLicensePhoto != null) ...[
-                        Image.file(_selfieWithLicensePhoto!),
-                      ],
-
-                      SizedBox(
-                        height: 25,
-                      ),
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () => _pickImage('profilePicture'),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.055,
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Upload your Profile Picture',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
-                        height: 25,
-                      ),
-
-                      if (_profilePicturePhoto != null) ...[
-                        Image.file(_profilePicturePhoto!),
-                      ],
-
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _activeStep =
-                                3; // Move to Personal Information step
-                          });
-                        },
-                        child: const Text('Next'),
-                      ),
-                    ],
-                    if (_activeStep == 3) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            child: Icon(Icons.arrow_back),
-                            onTap: () {
-                              setState(() {
-                                _activeStep = 0;
-                              });
-                            },
-                          ),
+                        if (_citizenshipFrontPhoto != null) ...[
+                          Image.file(_citizenshipFrontPhoto!),
                         ],
-                      ),
-                      Column(
-                        children: [
-                          SizedBox(
-                            height: 20,
-                          ),
-                          TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null; // Return null if the input is valid
-                            },
-                            controller: _nameController,
-                            decoration: const InputDecoration(
-                              prefixIconColor:
-                                  Color.fromARGB(240, 255, 89, 117),
-                              labelText: 'Name',
-                              prefixIcon: Icon(Icons.person),
-                              filled: true,
-                              fillColor: Colors.white12,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(18)),
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () => _pickImage('licenseFront'),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.055,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Upload License Front Photo',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-
-                          SizedBox(
-                            height: 25,
+                        ),
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+        
+                        if (_licenseFrontPhoto != null) ...[
+                          Image.file(_licenseFrontPhoto!),
+                        ],
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () => _pickImage('selfieWithCitizenship'),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.055,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Upload Selfie with Citizenship Photo',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-
-                          TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null; // Return null if the input is valid
-                            },
-                            controller: _addressController,
-                            decoration: const InputDecoration(
-                              prefixIconColor:
-                                  Color.fromARGB(240, 255, 89, 117),
-                              labelText: 'Address',
-                              prefixIcon: Icon(Icons.place_outlined),
-                              filled: true,
-                              fillColor: Colors.white12,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(18)),
+                        ),
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+        
+                        if (_selfieWithCitizenshipPhoto != null) ...[
+                          Image.file(_selfieWithCitizenshipPhoto!),
+                        ],
+                        // ElevatedButton(
+                        //   onPressed: () => _pickImage(''),
+                        //   child: const Text(''),
+                        // ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () => _pickImage('selfieWithLicense'),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.055,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Upload Selfie with License Photo',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 25,
-                          ),
-
-                          TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null; // Return null if the input is valid
-                            },
-                            controller: _dobController,
-                            decoration: const InputDecoration(
-                              prefixIconColor:
-                                  Color.fromARGB(240, 255, 89, 117),
-                              labelText: 'Date of Birth',
-                              prefixIcon: Icon(Icons.date_range),
-                              filled: true,
-                              fillColor: Colors.white12,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(18)),
-                              ),
-                            ),
-                            readOnly: true,
-                            onTap: _selectDateOfBirth,
-                          ),
-
-                          SizedBox(
-                            height: 25,
-                          ),
-
-                          TextFormField(
-                            controller: _emailController,
-                            decoration: const InputDecoration(
-                              prefixIconColor:
-                                  Color.fromARGB(240, 255, 89, 117),
-                              labelText: 'Email',
-                              prefixIcon: Icon(Icons.email),
-                              filled: true,
-                              fillColor: Colors.white12,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 200, 54, 244)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(18)),
+                        ),
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+        
+                        if (_selfieWithLicensePhoto != null) ...[
+                          Image.file(_selfieWithLicensePhoto!),
+                        ],
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () => _pickImage('profilePicture'),
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.055,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Upload your Profile Picture',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              final emailRegex =
-                                  RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter an email address.';
-                              } else if (!emailRegex.hasMatch(value)) {
-                                return 'Please enter a valid email address.';
-                              }
-                              return null; // Return null if validation is successful
-                            },
                           ),
-
-                          SizedBox(
-                            height: 25,
-                          ),
-                          Form(
-                            key: _formKeylast,
-                            child: TextFormField(
-                              controller: _passwordController,
-                              obscureText:
-                                  _obscurePassword, // Obscure text if true
-                              decoration: InputDecoration(
+                        ),
+        
+                        SizedBox(
+                          height: 25,
+                        ),
+        
+                        if (_profilePicturePhoto != null) ...[
+                          Image.file(_profilePicturePhoto!),
+                        ],
+        
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _activeStep =
+                                  3; // Move to Personal Information step
+                            });
+                          },
+                          child: const Text('Next'),
+                        ),
+                      ],
+                      if (_activeStep == 3) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              child: Icon(Icons.arrow_back),
+                              onTap: () {
+                                setState(() {
+                                  _activeStep = 0;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'This field is required';
+                                }
+                                return null; // Return null if the input is valid
+                              },
+                              controller: _nameController,
+                              decoration: const InputDecoration(
                                 prefixIconColor:
-                                    const Color.fromARGB(240, 255, 89, 117),
-                                labelText: 'Password',
-                                prefixIcon: const Icon(Icons.password),
+                                    Color.fromARGB(240, 255, 89, 117),
+                                labelText: 'Name',
+                                prefixIcon: Icon(Icons.person),
                                 filled: true,
                                 fillColor: Colors.white12,
-                                enabledBorder: const OutlineInputBorder(
+                                enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                      color:
-                                          Color.fromARGB(110, 255, 89, 117)),
+                                      color: Color.fromARGB(110, 255, 89, 117)),
                                 ),
-                                focusedBorder: const OutlineInputBorder(
+                                focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color: Color.fromARGB(255, 255, 89, 117)),
                                 ),
-                                border: const OutlineInputBorder(
+                                border: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(18)),
                                 ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons
-                                            .visibility, // Show the correct icon
-                                    color: Color.fromARGB(240, 255, 89, 117)
-                                  ),
-                                  onPressed:
-                                      _togglePasswordVisibility, // Toggle password visibility
-                                ),
                               ),
+                            ),
+        
+                            SizedBox(
+                              height: 25,
+                            ),
+        
+                            TextFormField(
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'This field is required';
-                                } else if (value.length < 6) {
-                                  // Check for minimum length
-                                  return 'Password must be at least 6 characters';
+                                }
+                                return null; // Return null if the input is valid
+                              },
+                              controller: _addressController,
+                              decoration: const InputDecoration(
+                                prefixIconColor:
+                                    Color.fromARGB(240, 255, 89, 117),
+                                labelText: 'Address',
+                                prefixIcon: Icon(Icons.place_outlined),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 255, 89, 117)),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 25,
+                            ),
+        
+                            TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'This field is required';
+                                }
+                                return null; // Return null if the input is valid
+                              },
+                              controller: _dobController,
+                              decoration: const InputDecoration(
+                                prefixIconColor:
+                                    Color.fromARGB(240, 255, 89, 117),
+                                labelText: 'Date of Birth',
+                                prefixIcon: Icon(Icons.date_range),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 255, 89, 117)),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                              ),
+                              readOnly: true,
+                              onTap: _selectDateOfBirth,
+                            ),
+        
+                            SizedBox(
+                              height: 25,
+                            ),
+        
+                            TextFormField(
+                              controller: _emailController,
+                              decoration: const InputDecoration(
+                                prefixIconColor:
+                                    Color.fromARGB(240, 255, 89, 117),
+                                labelText: 'Email',
+                                prefixIcon: Icon(Icons.email),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 200, 54, 244)),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                final emailRegex =
+                                    RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter an email address.';
+                                } else if (!emailRegex.hasMatch(value)) {
+                                  return 'Please enter a valid email address.';
                                 }
                                 return null; // Return null if validation is successful
                               },
                             ),
-                          ),
-
-                          SizedBox(
-                            height: 25,
-                          ),
-                          TextFormField(
-                            controller: _phoneController,
-                            decoration: const InputDecoration(
-                              prefixIconColor:
-                                  Color.fromARGB(240, 255, 89, 117),
-                              labelText: 'Phone Number',
-                              prefixIcon: Icon(Icons.phone),
-                              filled: true,
-                              fillColor: Colors.white12,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(110, 255, 89, 117)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 255, 89, 117)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(18)),
+        
+                            SizedBox(
+                              height: 25,
+                            ),
+                            Form(
+                              key: _formKeylast,
+                              child: TextFormField(
+                                controller: _passwordController,
+                                obscureText:
+                                    _obscurePassword, // Obscure text if true
+                                decoration: InputDecoration(
+                                  prefixIconColor:
+                                      const Color.fromARGB(240, 255, 89, 117),
+                                  labelText: 'Password',
+                                  prefixIcon: const Icon(Icons.password),
+                                  filled: true,
+                                  fillColor: Colors.white12,
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color:
+                                            Color.fromARGB(110, 255, 89, 117)),
+                                  ),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Color.fromARGB(255, 255, 89, 117)),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(18)),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons
+                                              .visibility, // Show the correct icon
+                                      color: Color.fromARGB(240, 255, 89, 117)
+                                    ),
+                                    onPressed:
+                                        _togglePasswordVisibility, // Toggle password visibility
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  } else if (value.length < 6) {
+                                    // Check for minimum length
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null; // Return null if validation is successful
+                                },
                               ),
                             ),
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              final phoneNumber =
-                                  value?.replaceAll('+977 ', '') ?? '';
-                              final phoneNumberRegex = RegExp(r'^\d{10}$');
-                              if (!phoneNumberRegex.hasMatch(phoneNumber)) {
-                                return 'Phone number must be 10 digits excluding +977.';
+        
+                            SizedBox(
+                              height: 25,
+                            ),
+                            TextFormField(
+                              controller: _phoneController,
+                              decoration: const InputDecoration(
+                                prefixIconColor:
+                                    Color.fromARGB(240, 255, 89, 117),
+                                labelText: 'Phone Number',
+                                prefixIcon: Icon(Icons.phone),
+                                filled: true,
+                                fillColor: Colors.white12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(110, 255, 89, 117)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromARGB(255, 255, 89, 117)),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                              ),
+                              keyboardType: TextInputType.phone,
+                              validator: (value) {
+                                final phoneNumber =
+                                    value?.replaceAll('+977 ', '') ?? '';
+                                final phoneNumberRegex = RegExp(r'^\d{10}$');
+                                if (!phoneNumberRegex.hasMatch(phoneNumber)) {
+                                  return 'Phone number must be 10 digits excluding +977.';
+                                }
+                                return null; // Return null if validation is successful
+                              },
+                            ),
+        
+                            const SizedBox(height: 30),
+                            // ElevatedButton(
+                            //   onPressed: () {
+                            // if (_validateFields()) {
+                            //   _submitForm();
+                            // }
+                            //   },
+                            //   child: const Text('Submit'),
+                            // )
+                          ],
+                        ),
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: () {
+                              if (_formKeylast.currentState == null ||
+                                  !_formKeylast.currentState!.validate()) {
+                                // If form is invalid, show a SnackBar and prevent navigation
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Please fill out all fields before proceeding.')),
+                                );
+                                return; // Prevent further execution
                               }
-                              return null; // Return null if validation is successful
+        
+                              if (_validateFields()) {
+                                _submitForm(context);
+                              }
                             },
-                          ),
-
-                          const SizedBox(height: 30),
-                          // ElevatedButton(
-                          //   onPressed: () {
-                          // if (_validateFields()) {
-                          //   _submitForm();
-                          // }
-                          //   },
-                          //   child: const Text('Submit'),
-                          // )
-                        ],
-                      ),
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (_formKeylast.currentState == null ||
-                                !_formKeylast.currentState!.validate()) {
-                              // If form is invalid, show a SnackBar and prevent navigation
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Please fill out all fields before proceeding.')),
-                              );
-                              return; // Prevent further execution
-                            }
-
-                            if (_validateFields()) {
-                              _submitForm(context);
-                            }
-                          },
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.07,
-                            width: MediaQuery.of(context).size.width,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Submit',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w600,
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.07,
+                              width: MediaQuery.of(context).size.width,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1249,7 +1275,9 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
 
   String get _termsAndConditionsText {
     return '''
-    These Terms and Conditions ("Terms") govern your use of the Tuk Tuk Sawari Mobile application ("App"), operated by Tuk Tuk Sawari. By accessing or using our App, you agree to be bound by these Terms. If you do not agree to these Terms, please do not use the App.
+Terms And Condition : 
+
+These Terms and Conditions ("Terms") govern your use of the Tuk Tuk Sawari Mobile application ("App"), operated by Tuk Tuk Sawari. By accessing or using our App, you agree to be bound by these Terms. If you do not agree to these Terms, please do not use the App.
 1. Scope of Service
 
 1.1 Service Description: Tuk Tuk Ride facilitates transportation services within Chitwan district, aiming to provide reliable and fair rides.
@@ -1288,6 +1316,8 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
 By using the Tuk Tuk Ride App, you agree to abide by these Terms and Conditions. Thank you for choosing Tuk Tuk Sawari for your Transportation needs.
 
 Last Updated : 10/28/2024
+
+
     ''';
   }
 }

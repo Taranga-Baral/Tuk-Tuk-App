@@ -208,7 +208,10 @@ class _RequestPageState extends State<RequestPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Requests Page',style: GoogleFonts.outfit(),),
+        title: Text(
+          'Requests Page',
+          style: GoogleFonts.outfit(),
+        ),
         actions: [
           Row(
             children: [
@@ -999,7 +1002,15 @@ class _RequestPageState extends State<RequestPage> {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
                                   return Center(
-                                    child: CircularProgressIndicator(),
+                                    child: Image(
+                                      image: AssetImage(
+                                          'assets/loading_screen.gif'),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.3,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                    ),
                                   );
                                 }
 
@@ -1277,6 +1288,18 @@ class _RequestPageState extends State<RequestPage> {
                                                   'Driver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
                                                   style:
                                                       TextStyle(fontSize: 14),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  '... ${index + 1}',
+                                                  style: GoogleFonts.comicNeue(
+                                                      fontSize: 20,
+                                                      color: Colors.grey),
                                                 ),
                                               ],
                                             ),

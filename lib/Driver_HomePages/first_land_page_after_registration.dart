@@ -597,6 +597,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:final_menu/Driver_HomePages/sorting_pages.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
@@ -717,10 +718,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
-
-
-
-    Future<bool> _checkRequestExists(
+  Future<bool> _checkRequestExists(
       String tripId, String userId, String driverId) async {
     // Query the "requestsofDrivers" collection to check if the request already exists
     QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
@@ -734,11 +732,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     return snapshot
         .docs.isNotEmpty; // Return true if any matching document is found
   }
-
-
-
-
-
 
   Map<String, double>? _parseCoordinates(String location) {
     final parts = location.split(',');
@@ -794,99 +787,112 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   // Other existing methods...
-Future<void> _fetchTrips() async {
-  if (_isLoading || !_hasMore) return; // Check if already loading or no more trips
-  setState(() => _isLoading = true); // Set loading state to true
+  Future<void> _fetchTrips() async {
+    if (_isLoading || !_hasMore)
+      return; // Check if already loading or no more trips
+    setState(() => _isLoading = true); // Set loading state to true
 
-  // Get the current time and the cutoff time (1 hour ago)
-  DateTime now = DateTime.now();
-  DateTime cutoffTime = now.subtract(Duration(hours: 1));
+    // Get the current time and the cutoff time (1 hour ago)
+    DateTime now = DateTime.now();
+    DateTime cutoffTime = now.subtract(Duration(hours: 1));
 
-  Query query = FirebaseFirestore.instance
-      .collection('trips')
-      .where('timestamp', isGreaterThan: Timestamp.fromDate(cutoffTime)) // Filter for trips within the last hour
-      .orderBy(_getSortField(), descending: _getSortDescending())
-      .limit(_itemsPerPage); // Limit results to items per page
+    Query query = FirebaseFirestore.instance
+        .collection('trips')
+        .where('timestamp',
+            isGreaterThan: Timestamp.fromDate(
+                cutoffTime)) // Filter for trips within the last hour
+        .orderBy(_getSortField(), descending: _getSortDescending())
+        .limit(_itemsPerPage); // Limit results to items per page
 
-  if (_lastDocument != null) {
-    query = query.startAfterDocument(_lastDocument!); // Start after last fetched document
-  }
-
-  try {
-    print('Fetching trips...'); // Debugging print
-    final querySnapshot = await query.get();
-    if (querySnapshot.docs.isEmpty) {
-      setState(() => _hasMore = false); // No more trips to load
-      await _loadButtonStates();
-    } else {
-      _lastDocument = querySnapshot.docs.last; // Update last document
-
-      // Step 1: Get driverEmail from widget
-      String driverEmail = widget.driverEmail; // Assuming driverEmail is available in the widget
-
-      // Step 2: Fetch vehicleData for the specific driverEmail
-      var vehicleQuerySnapshot = await FirebaseFirestore.instance
-          .collection('vehicleData')
-          .where('email', isEqualTo: driverEmail) // Match the driver email in vehicleData
-          .get();
-
-      // Step 3: Create a map of vehicleData for the specific driverEmail
-      Map<String, dynamic>? vehicleData;
-      if (vehicleQuerySnapshot.docs.isNotEmpty) {
-        vehicleData = vehicleQuerySnapshot.docs.first.data(); // Get vehicle data for this driver
-        print('Fetched vehicleData for driver: $vehicleData'); // Debugging print
-      } else {
-        print('No vehicleData found for driverEmail: $driverEmail'); // Debugging print
-      }
-
-      // Step 4: Filter trips based on vehicleType match
-      var newTrips = querySnapshot.docs.map((doc) {
-        var tripData = doc.data() as Map<String, dynamic>;
-        String? vehicleTypeFromVehicleData = vehicleData?['vehicleType'] as String?;
-        String? vehicleTypeFromTrips = tripData['vehicleType'] as String?;
-
-        if (vehicleTypeFromVehicleData != null && vehicleTypeFromTrips != null) {
-          // Only add the trip if the vehicle types match
-          if (vehicleTypeFromVehicleData == vehicleTypeFromTrips) {
-            tripData['distance'] =
-                double.tryParse(tripData['distance'] as String? ?? '') ?? 0.0;
-            tripData['fare'] =
-                double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
-            tripData['tripId'] = doc.id; // Add trip ID
-            return TripModel.fromJson(tripData);
-          }
-        }
-        return null; // Return null if the types don't match
-      }).where((trip) => trip != null).toList().cast<TripModel>();
-
-      print('Fetched and filtered trips: $newTrips'); // Debugging print
-
-      // Add new trips to the list
-      _tripDataList.addAll(newTrips);
-
-      // Initialize button states for newly added trips
-      for (var trip in newTrips) {
-        _isButtonDisabledList.add(false); // Set initial state as enabled
-      }
-
-      // Load button states after new trips are fetched
-      await _loadButtonStates();
-
-      // Sort the complete trip list
-      _tripDataList.sort((a, b) => _sortTrips(a, b));
-
-      if (mounted) setState(() {}); // Update UI
+    if (_lastDocument != null) {
+      query = query.startAfterDocument(
+          _lastDocument!); // Start after last fetched document
     }
-  } catch (e) {
-    print('Error fetching trips: $e'); // Handle any errors
-  } finally {
-    if (mounted) setState(() => _isLoading = false); // Set loading state to false
+
+    try {
+      print('Fetching trips...'); // Debugging print
+      final querySnapshot = await query.get();
+      if (querySnapshot.docs.isEmpty) {
+        setState(() => _hasMore = false); // No more trips to load
+        await _loadButtonStates();
+      } else {
+        _lastDocument = querySnapshot.docs.last; // Update last document
+
+        // Step 1: Get driverEmail from widget
+        String driverEmail = widget
+            .driverEmail; // Assuming driverEmail is available in the widget
+
+        // Step 2: Fetch vehicleData for the specific driverEmail
+        var vehicleQuerySnapshot = await FirebaseFirestore.instance
+            .collection('vehicleData')
+            .where('email',
+                isEqualTo: driverEmail) // Match the driver email in vehicleData
+            .get();
+
+        // Step 3: Create a map of vehicleData for the specific driverEmail
+        Map<String, dynamic>? vehicleData;
+        if (vehicleQuerySnapshot.docs.isNotEmpty) {
+          vehicleData = vehicleQuerySnapshot.docs.first
+              .data(); // Get vehicle data for this driver
+          print(
+              'Fetched vehicleData for driver: $vehicleData'); // Debugging print
+        } else {
+          print(
+              'No vehicleData found for driverEmail: $driverEmail'); // Debugging print
+        }
+
+        // Step 4: Filter trips based on vehicleType match
+        var newTrips = querySnapshot.docs
+            .map((doc) {
+              var tripData = doc.data() as Map<String, dynamic>;
+              String? vehicleTypeFromVehicleData =
+                  vehicleData?['vehicleType'] as String?;
+              String? vehicleTypeFromTrips = tripData['vehicleType'] as String?;
+
+              if (vehicleTypeFromVehicleData != null &&
+                  vehicleTypeFromTrips != null) {
+                // Only add the trip if the vehicle types match
+                if (vehicleTypeFromVehicleData == vehicleTypeFromTrips) {
+                  tripData['distance'] =
+                      double.tryParse(tripData['distance'] as String? ?? '') ??
+                          0.0;
+                  tripData['fare'] =
+                      double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
+                  tripData['tripId'] = doc.id; // Add trip ID
+                  return TripModel.fromJson(tripData);
+                }
+              }
+              return null; // Return null if the types don't match
+            })
+            .where((trip) => trip != null)
+            .toList()
+            .cast<TripModel>();
+
+        print('Fetched and filtered trips: $newTrips'); // Debugging print
+
+        // Add new trips to the list
+        _tripDataList.addAll(newTrips);
+
+        // Initialize button states for newly added trips
+        for (var trip in newTrips) {
+          _isButtonDisabledList.add(false); // Set initial state as enabled
+        }
+
+        // Load button states after new trips are fetched
+        await _loadButtonStates();
+
+        // Sort the complete trip list
+        _tripDataList.sort((a, b) => _sortTrips(a, b));
+
+        if (mounted) setState(() {}); // Update UI
+      }
+    } catch (e) {
+      print('Error fetching trips: $e'); // Handle any errors
+    } finally {
+      if (mounted)
+        setState(() => _isLoading = false); // Set loading state to false
+    }
   }
-}
-
-
-
-
 
 //   Future<void> _fetchTrips() async {
 //   if (_isLoading || !_hasMore) return; // Check if already loading or no more trips
@@ -973,8 +979,6 @@ Future<void> _fetchTrips() async {
 //     if (mounted) setState(() => _isLoading = false); // Set loading state to false
 //   }
 // }
-
-
 
   Future<void> _loadButtonStates() async {
     final driverId = widget.driverEmail;
@@ -1155,32 +1159,32 @@ Future<void> _fetchTrips() async {
       appBar: AppBar(
         centerTitle: true,
         title: Center(
-        child: StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('vehicleData')
-              .doc(widget.driverEmail)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Text('');
-            }
+          child: StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('vehicleData')
+                .doc(widget.driverEmail)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Text('');
+              }
 
-            var displayName = snapshot.data!['name'];
+              var displayName = snapshot.data!['name'];
 
-            return Text(
-              displayName ?? 'No Name',
-              style: GoogleFonts.josefinSans(color: Colors.black87, fontSize: 18),
-            );
-          },
+              return Text(
+                displayName ?? 'No Name',
+                style: GoogleFonts.josefinSans(
+                    color: Colors.black87, fontSize: 18),
+              );
+            },
+          ),
         ),
-      ),
         leading: Padding(
-        padding: const EdgeInsets.only(left: 20,top: 2),
-        child: Image(image: AssetImage('assets/fordriverlogo.png')),
-      ),
+          padding: const EdgeInsets.only(left: 20, top: 2),
+          child: Image(image: AssetImage('assets/fordriverlogo.png')),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        
         actions: [
           Row(
             children: [
@@ -1189,7 +1193,6 @@ Future<void> _fetchTrips() async {
                 onSelected: _onMenuItemSelected,
                 itemBuilder: (BuildContext context) {
                   return [
-                    
                     const PopupMenuItem(
                         value: 'passenger_mode',
                         child: Row(
@@ -1207,7 +1210,7 @@ Future<void> _fetchTrips() async {
         ],
       ),
       body: _isLoading && _tripDataList.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: Image(image: AssetImage('assets/loading_screen.gif'),height: MediaQuery.of(context).size.height *0.3,width: MediaQuery.of(context).size.width *0.3,))
           : ListView.builder(
               controller: _scrollController,
               itemCount: _tripDataList.length +
@@ -1218,7 +1221,7 @@ Future<void> _fetchTrips() async {
                 if (index == _tripDataList.length) {
                   return Center(
                       child:
-                          CircularProgressIndicator()); // Loading indicator at the end
+                          SizedBox()); // Loading indicator at the end
                 }
                 final tripData = _tripDataList[index];
                 // Check the index against the length of _isButtonDisabledList
@@ -1250,7 +1253,7 @@ Future<void> _fetchTrips() async {
                   },
                   index: index,
                   isButtonDisabled:
-                      isButtonDisabled,  // Use the checked value here
+                      isButtonDisabled, // Use the checked value here
                 );
               },
             ),
@@ -1259,7 +1262,7 @@ Future<void> _fetchTrips() async {
 
   Future<void> showTripAndUserIdInSnackBar(
       TripModel tripData, BuildContext context, int index) async {
-    final  tripId = tripData.tripId ?? 'No Trip ID';
+    final tripId = tripData.tripId ?? 'No Trip ID';
     final userId = tripData.userId ?? 'No User ID';
     final driverId = widget.driverEmail;
 
@@ -1279,39 +1282,64 @@ Future<void> _fetchTrips() async {
       bool requestExists =
           await _checkRequestExists(tripId, userId, widget.driverEmail);
 
-
-
-          if (requestExists) {
+      if (requestExists) {
         // Show a SnackBar indicating request already sent
         SnackBar(
           content: Text('Request already sent.'),
           duration: Duration(seconds: 3),
         );
         return;
-      }else{
+      } else {
         await FirebaseFirestore.instance.collection('requestsofDrivers').add({
-        'tripId': tripId,
-        'userId': userId,
-        'driverId': driverId,
-        'requestTimestamp':
-            FieldValue.serverTimestamp(), // Optional: Add a timestamp
-      });
+          'tripId': tripId,
+          'userId': userId,
+          'driverId': driverId,
+          'requestTimestamp':
+              FieldValue.serverTimestamp(), // Optional: Add a timestamp
+        });
 
-      // Step 2: Darken the button and show a SnackBar
-      _setButtonState(index); // Call to disable the button after confirmation
+        // Step 2: Darken the button and show a SnackBar
+        _setButtonState(index); // Call to disable the button after confirmation
+        
 
-      // Show a SnackBar with tripId, userId, and driverId
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Request sent successfully!',
+        // Show a SnackBar with tripId, userId, and driverId
+        AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.topSlide,
+        body: Center(
+          child: Column(
+            children: const [
+              Text(
+                'Done',
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 22,
+                    color: Colors.green),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Request Sent Successfully',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
           ),
-          duration: const Duration(seconds: 10), // Show for 10 seconds
         ),
-      );
-      }
+        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        alignment: Alignment.center,
+        btnOkOnPress: () {},
+      ).show();
 
       
+      }
     } catch (e) {
       // Handle error (e.g., if something goes wrong during the Firebase write)
       ScaffoldMessenger.of(context).showSnackBar(

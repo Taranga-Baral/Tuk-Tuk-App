@@ -561,50 +561,52 @@ class ChatDetailPage extends StatelessWidget {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: Text('Trip Details'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .start, // Aligns children to the right
-                        children: [
-                          Text(
-                            'चालकको नाम : $driverName',
-                            textAlign: TextAlign.left,
-                          ),
-                          Divider(),
-                          Text(
-                            'उठाउने स्थान : $pickupLocation',
-                            textAlign: TextAlign.left,
-                          ),
-                          Divider(),
-                          Text(
-                            'डेलिभरी स्थान : $deliveryLocation',
-                            textAlign: TextAlign.left,
-                          ),
-                          Divider(),
-                          Text(
-                            'दूरी : $distance km',
-                            textAlign: TextAlign.left,
-                          ),
-                          Divider(),
-                          Text(
-                            'भाडा : NPR $fare',
-                            textAlign: TextAlign.left,
-                          ),
-                          Divider(),
-                          Text(
-                            'यात्री (हरू) : $no_of_person',
-                            textAlign: TextAlign.left,
-                          ),
-                          Divider(),
-                          Text(
-                            'सवारी साधनको प्रकार : $vehicle_mode',
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                    ],
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment
+                              .start, // Aligns children to the right
+                          children: [
+                            Text(
+                              'चालकको नाम : $driverName',
+                              textAlign: TextAlign.left,
+                            ),
+                            Divider(),
+                            Text(
+                              'उठाउने स्थान : $pickupLocation',
+                              textAlign: TextAlign.left,
+                            ),
+                            Divider(),
+                            Text(
+                              'डेलिभरी स्थान : $deliveryLocation',
+                              textAlign: TextAlign.left,
+                            ),
+                            Divider(),
+                            Text(
+                              'दूरी : $distance km',
+                              textAlign: TextAlign.left,
+                            ),
+                            Divider(),
+                            Text(
+                              'भाडा : NPR $fare',
+                              textAlign: TextAlign.left,
+                            ),
+                            Divider(),
+                            Text(
+                              'यात्री (हरू) : $no_of_person',
+                              textAlign: TextAlign.left,
+                            ),
+                            Divider(),
+                            Text(
+                              'सवारी साधनको प्रकार : $vehicle_mode',
+                              textAlign: TextAlign.left,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   actions: [
                     TextButton(

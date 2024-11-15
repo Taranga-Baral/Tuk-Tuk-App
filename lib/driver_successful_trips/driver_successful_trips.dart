@@ -350,7 +350,12 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
                   );
                 },
               )
-            : Center(child: CircularProgressIndicator()),
+            : Center(
+                child: Image(
+                image: AssetImage("assets/loading_screen.gif"),
+                height: MediaQuery.of(context).size.height * 0.3,
+                width: MediaQuery.of(context).size.width * 0.3,
+              )),
       ),
     );
   }
