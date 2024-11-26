@@ -378,7 +378,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                         child: Image(
-                      image: AssetImage("assets/loading_screen.gif"),
+                      image: AssetImage('assets/loading_screen.gif'),
                       height: MediaQuery.of(context).size.height * 0.3,
                       width: MediaQuery.of(context).size.width * 0.3,
                     ));
@@ -468,7 +468,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                                 children: [
                                                   Image(
                                                     image: AssetImage(
-                                                        "assets/loading_screen.gif"),
+                                                        'assets/loading_screen.gif'),
                                                     height:
                                                         MediaQuery.of(context)
                                                                 .size

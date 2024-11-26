@@ -290,57 +290,117 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        softWrap: true,
-                                        maxLines: null,
-                                        '${userDetails['username']}',
-                                        style: GoogleFonts.outfit(
-                                            fontSize: 21,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              // Icon(FontAwesomeIcons.rupeeSign),
+                                  // Row(
+                                  //   mainAxisAlignment:
+                                  //       MainAxisAlignment.spaceBetween,
+                                  //   children: [
+                                  //     Text(
+                                  //       softWrap: true,
+                                  //       maxLines: null,
+                                  //       '${userDetails['username']}',
+                                  //       style: GoogleFonts.outfit(
+                                  //           fontSize: 21,
+                                  //           fontWeight: FontWeight.w600),
+                                  //     ),
+                                  //     Column(
+                                  //       children: [
+                                  //         Row(
+                                  //           children: [
+                                  //             // Icon(FontAwesomeIcons.rupeeSign),
 
-                                              Text(
-                                                softWrap: true,
-                                                maxLines: null,
-                                                'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
-                                                style: GoogleFonts.fugazOne(
-                                                    color: const Color.fromARGB(
-                                                        155, 0, 0, 0),
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                        FontWeight.w100),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 6,
-                                          ),
-                                          Text(
-                                            softWrap: true,
-                                            maxLines: null,
-                                            '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
-                                            // style: const TextStyle(
-                                            //     fontWeight: FontWeight.w600,
-                                            //     fontSize: 14),
-                                            style: GoogleFonts.fugazOne(
-                                                color: const Color.fromARGB(
-                                                    155, 0, 0, 0),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                  //             Text(
+                                  //               softWrap: true,
+                                  //               maxLines: null,
+                                  //               'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
+                                  //               style: GoogleFonts.fugazOne(
+                                  //                   color: const Color.fromARGB(
+                                  //                       155, 0, 0, 0),
+                                  //                   fontSize: 14,
+                                  //                   fontWeight:
+                                  //                       FontWeight.w100),
+                                  //             ),
+                                  //           ],
+                                  //         ),
+                                  //         const SizedBox(
+                                  //           height: 6,
+                                  //         ),
+                                  //         Text(
+                                  //           softWrap: true,
+                                  //           maxLines: null,
+                                  //           '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
+                                  //           // style: const TextStyle(
+                                  //           //     fontWeight: FontWeight.w600,
+                                  //           //     fontSize: 14),
+                                  //           style: GoogleFonts.fugazOne(
+                                  //               color: const Color.fromARGB(
+                                  //                   155, 0, 0, 0),
+                                  //               fontSize: 14,
+                                  //               fontWeight: FontWeight.w500),
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //   ],
+                                  // ),
+
+
+
+
+
+
+
+
+
+                                  Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Expanded(
+      child: Text(
+        '${userDetails['username']}',
+        softWrap: true,
+        
+        style: TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+    SizedBox(width: 10), // Add spacing between texts
+    Expanded(
+      flex: 2, // Adjust flex value to control relative width of this column
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
+                softWrap: true,
+                style: TextStyle(
+                  color: const Color.fromARGB(155, 0, 0, 0),
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 6),
+          Text(
+            '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
+            softWrap: true,
+            style: TextStyle(
+              color: const Color.fromARGB(155, 0, 0, 0),
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ],
+),
+
                                   // const SizedBox(height: 2),
                                   Text(
                                     '${tripDetails['municipalityDropdown']}',

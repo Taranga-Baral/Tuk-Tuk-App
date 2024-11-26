@@ -788,8 +788,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   // Other existing methods...
   Future<void> _fetchTrips() async {
-    if (_isLoading || !_hasMore)
+    if (_isLoading || !_hasMore) {
       return; // Check if already loading or no more trips
+    }
     setState(() => _isLoading = true); // Set loading state to true
 
     // Get the current time and the cutoff time (1 hour ago)
@@ -889,8 +890,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
     } catch (e) {
       print('Error fetching trips: $e'); // Handle any errors
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() => _isLoading = false); // Set loading state to false
+      }
     }
   }
 

@@ -352,9 +352,9 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
               )
             : Center(
                 child: Image(
-                image: AssetImage("assets/loading_screen.gif"),
-                height: MediaQuery.of(context).size.height * 0.3,
-                width: MediaQuery.of(context).size.width * 0.3,
+                image: AssetImage('assets/no_data_found.gif'),
+                height: MediaQuery.of(context).size.height * 0.5,
+                width: MediaQuery.of(context).size.width * 0.5,
               )),
       ),
     );

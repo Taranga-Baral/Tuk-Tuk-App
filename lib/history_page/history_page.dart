@@ -65,8 +65,12 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,color: Colors.black,),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         backgroundColor: Colors.amber.shade300,
-        title: Text('Trip History',style: GoogleFonts.outfit(),),
+        title: Text('Trip History',style: GoogleFonts.outfit(color: Colors.black),),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchTrips(),
@@ -155,9 +159,9 @@ class _HistoryPageState extends State<HistoryPage> {
 
           return Center(
             child: Image(
-              image: AssetImage("assets/no_data_found.gif"),
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width * 0.7,
+              image: AssetImage('assets/no_data_found.gif'),
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.5,
             ),
           );
         },

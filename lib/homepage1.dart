@@ -35,6 +35,7 @@ class _HomePage1State extends State<HomePage1> {
     }
   }
 
+  @override
   void initState() {
     super.initState();
     User? currentUser = FirebaseAuth.instance.currentUser;
@@ -187,6 +188,7 @@ class _HomePage1State extends State<HomePage1> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => HomePage(
+                                      routeTo: '',
                                       url: url,
                                       userId: userId,
                                     ),
@@ -539,11 +541,16 @@ class _HomePage1State extends State<HomePage1> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => HomePage(
+                                
                                   userId: userId,
                                   url:
-                                      'https://www.openstreetmap.org/search?query=$mapsearchedplace'),
+                                      'https://www.openstreetmap.org/search?query=$mapsearchedplace'
+                                      ,routeTo: mapsearchedplace,
+                                      ),
                             ),
+                            
                           );
+                          print('Searched Name with URL IS :                     \n \n \n \t                  https://www.openstreetmap.org/search?query=$mapsearchedplace');
                         },
                       ),
                       Divider(),
@@ -552,6 +559,111 @@ class _HomePage1State extends State<HomePage1> {
                 },
               ),
             ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             actions: [
               Container(
                 decoration: BoxDecoration(

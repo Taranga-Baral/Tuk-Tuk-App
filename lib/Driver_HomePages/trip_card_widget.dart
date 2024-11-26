@@ -81,98 +81,69 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Function to check if a document exists in the requestsofDrivers collection
-Future<bool> checkRequestExists(String tripId, String userId, String driverId) async {
-  try {
-    // Reference to the requestsofDrivers collection
-    CollectionReference requestCollection =
-        FirebaseFirestore.instance.collection('requestsofDrivers');
+  Future<bool> checkRequestExists(
+      String tripId, String userId, String driverId) async {
+    try {
+      // Reference to the requestsofDrivers collection
+      CollectionReference requestCollection =
+          FirebaseFirestore.instance.collection('requestsofDrivers');
 
-    // Query to check for any matching document
-    QuerySnapshot querySnapshot = await requestCollection
-        .where('tripId', isEqualTo: tripId)
-        .where('userId', isEqualTo: userId)
-        .where('driverId', isEqualTo: driverId)
-        .get();
+      // Query to check for any matching document
+      QuerySnapshot querySnapshot = await requestCollection
+          .where('tripId', isEqualTo: tripId)
+          .where('userId', isEqualTo: userId)
+          .where('driverId', isEqualTo: driverId)
+          .get();
 
-    // If there are any documents that match, return true
-    return querySnapshot.docs.isNotEmpty;
-  } catch (e) {
-    // Handle any errors
-    print('Error checking request existence: $e');
-    throw e;
+      // If there are any documents that match, return true
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      // Handle any errors
+      print('Error checking request existence: $e');
+      rethrow;
+    }
   }
-}
 
 // Function to upload data to Firestore
-Future<void> _uploadDistanceData({
-  required String tripId,
-  required String driverId,
-  required String userId,
-  required double distance,
-}) async {
-  try {
-    // Check if a document matching the criteria exists in requestsofDrivers collection
-    bool requestExists = await checkRequestExists(tripId, userId, driverId);
+  Future<void> _uploadDistanceData({
+    required String tripId,
+    required String driverId,
+    required String userId,
+    required double distance,
+  }) async {
+    try {
+      // Check if a document matching the criteria exists in requestsofDrivers collection
+      bool requestExists = await checkRequestExists(tripId, userId, driverId);
 
-    // If no matching document found, proceed to upload distance data
-    if (!requestExists) {
-      // Prepare the data to be stored in the new collection
-      Map<String, dynamic> distanceData = {
-        'tripId': tripId,
-        'userId': userId,
-        'driverId': driverId,
-        'distance_between_driver_and_passenger': distance,
-      };
+      // If no matching document found, proceed to upload distance data
+      if (!requestExists) {
+        // Prepare the data to be stored in the new collection
+        Map<String, dynamic> distanceData = {
+          'tripId': tripId,
+          'userId': userId,
+          'driverId': driverId,
+          'distance_between_driver_and_passenger': distance,
+        };
 
-      // Reference to the new collection
-      CollectionReference distanceCollection =
-          FirebaseFirestore.instance.collection('distance_between_driver_and_passenger');
+        // Reference to the new collection
+        CollectionReference distanceCollection = FirebaseFirestore.instance
+            .collection('distance_between_driver_and_passenger');
 
-      // Add or update the document in the new collection
-      await distanceCollection.add(distanceData);
+        // Add or update the document in the new collection
+        await distanceCollection.add(distanceData);
 
-      print('Distance data uploaded successfully.');
-    } else {
-      print('Matching request document found in requestsofDrivers collection. Skipping upload.');
+        print('Distance data uploaded successfully.');
+      } else {
+        print(
+            'Matching request document found in requestsofDrivers collection. Skipping upload.');
+      }
+    } catch (e) {
+      // Handle any errors
+      print('Error uploading distance data: $e');
+      rethrow; // Re-throw the error for potential further handling
     }
-  } catch (e) {
-    // Handle any errors
-    print('Error uploading distance data: $e');
-    throw e; // Re-throw the error for potential further handling
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -183,82 +154,193 @@ Future<void> _uploadDistanceData({
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${widget.tripData.username}',
-                  style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w400, fontSize: 16),
-                ),
-                Text(
-                  '${widget.tripData.distance.toStringAsFixed(1)} Km',
-                  style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w400, fontSize: 16),
-                ),
-                Text(
-                  'NPR ${widget.tripData.fare}',
-                  style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w400, fontSize: 16),
-                ),
-              ],
-            ),
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  // height: MediaQuery.of(context).size.height * 0.1,
-                  height: MediaQuery.of(context).size.height <= 500
-                      ? MediaQuery.of(context).size.height * 0.2
-                      : MediaQuery.of(context).size.height * 0.08,
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: widget.tripData.vehicleType == 'Tuk Tuk'
-                              ? AssetImage('assets/homepage_tuktuk.png')
-                              : widget.tripData.vehicleType == 'Motor Bike'
-                                  ? AssetImage('assets/homepage_motorbike.png')
-                                  : AssetImage('assets/homepage_taxi.png'))),
-                ),
-                Container(
-                  // height: MediaQuery.of(context).size.height * 0.1,
-                  height: MediaQuery.of(context).size.height <= 500
-                      ? MediaQuery.of(context).size.height * 0.2
-                      : MediaQuery.of(context).size.height * 0.08,
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Text(
+            //       '${widget.tripData.username}',
+            //       style: GoogleFonts.outfit(
+            //           fontWeight: FontWeight.w400, fontSize: 16),
+            //     ),
+            //     Text(
+            //       '${widget.tripData.distance.toStringAsFixed(1)} Km',
+            //       style: GoogleFonts.outfit(
+            //           fontWeight: FontWeight.w400, fontSize: 16),
+            //     ),
+            //     Text(
+            //       'NPR ${widget.tripData.fare}',
+            //       style: GoogleFonts.outfit(
+            //           fontWeight: FontWeight.w400, fontSize: 16),
+            //     ),
+            //   ],
+            // ),
 
-                  width: MediaQuery.of(context).size.width * 0.35,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: widget.tripData.noofPerson == 1
-                              ? AssetImage('assets/driver_1_passenger.png')
-                              : widget.tripData.noofPerson == 2
-                                  ? AssetImage('assets/driver_2_passenger.png')
-                                  : widget.tripData.noofPerson == 3
-                                      ? AssetImage(
-                                          'assets/driver_3_passenger.png')
-                                      : widget.tripData.noofPerson == 4
-                                          ? AssetImage(
-                                              'assets/driver_4_passenger.png')
-                                          : AssetImage(
-                                              'assets/driver_5_passenger.png'))),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    '${widget.tripData.username}',
+                    textAlign:
+                        TextAlign.center, // Adjust text alignment if necessary
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
-                Container(
-                  // height: MediaQuery.of(context).size.height * 0.1,
-                  height: MediaQuery.of(context).size.height <= 500
-                      ? MediaQuery.of(context).size.height * 0.2
-                      : MediaQuery.of(context).size.height * 0.08,
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: widget.tripData.vehicleMode == 'Electric'
-                              ? AssetImage(
-                                  'assets/driver_homepage_electric.png')
-                              : AssetImage(
-                                  'assets/driver_homepage_petrol.png'))),
+                SizedBox(width: 10), // Add spacing between texts
+                Expanded(
+                  child: Text(
+                    '${widget.tripData.distance.toStringAsFixed(1)} Km',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'NPR ${widget.tripData.fare}',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
+
+            Divider(),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Container(
+            //       // height: MediaQuery.of(context).size.height * 0.1,
+            //       height: MediaQuery.of(context).size.height <= 500
+            //           ? MediaQuery.of(context).size.height * 0.2
+            //           : MediaQuery.of(context).size.height * 0.08,
+            //       width: MediaQuery.of(context).size.width * 0.25,
+            //       decoration: BoxDecoration(
+            //           image: DecorationImage(
+            //               image: widget.tripData.vehicleType == 'Tuk Tuk'
+            //                   ? AssetImage('assets/homepage_tuktuk.png')
+            //                   : widget.tripData.vehicleType == 'Motor Bike'
+            //                       ? AssetImage('assets/homepage_motorbike.png')
+            //                       : AssetImage('assets/homepage_taxi.png'))),
+            //     ),
+            //     Container(
+            //       // height: MediaQuery.of(context).size.height * 0.1,
+            //       height: MediaQuery.of(context).size.height <= 500
+            //           ? MediaQuery.of(context).size.height * 0.2
+            //           : MediaQuery.of(context).size.height * 0.08,
+
+            //       width: MediaQuery.of(context).size.width * 0.35,
+            //       decoration: BoxDecoration(
+            //           image: DecorationImage(
+            //               image: widget.tripData.noofPerson == 1
+            //                   ? AssetImage('assets/driver_1_passenger.png')
+            //                   : widget.tripData.noofPerson == 2
+            //                       ? AssetImage('assets/driver_2_passenger.png')
+            //                       : widget.tripData.noofPerson == 3
+            //                           ? AssetImage(
+            //                               'assets/driver_3_passenger.png')
+            //                           : widget.tripData.noofPerson == 4
+            //                               ? AssetImage(
+            //                                   'assets/driver_4_passenger.png')
+            //                               : AssetImage(
+            //                                   'assets/driver_5_passenger.png'))),
+            //     ),
+            //     Container(
+            //       // height: MediaQuery.of(context).size.height * 0.1,
+            //       height: MediaQuery.of(context).size.height <= 500
+            //           ? MediaQuery.of(context).size.height * 0.2
+            //           : MediaQuery.of(context).size.height * 0.08,
+            //       width: MediaQuery.of(context).size.width * 0.25,
+            //       decoration: BoxDecoration(
+            //           image: DecorationImage(
+            //               image: widget.tripData.vehicleMode == 'Electric'
+            //                   ? AssetImage(
+            //                       'assets/driver_homepage_electric.png')
+            //                   : AssetImage(
+            //                       'assets/driver_homepage_petrol.png'))),
+            //     ),
+            //   ],
+            // ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height <= 500
+                        ? MediaQuery.of(context).size.height * 0.2
+                        : MediaQuery.of(context).size.height * 0.08,
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit
+                            .contain, // Ensure image fits without overflow
+                        image: widget.tripData.vehicleType == 'Tuk Tuk'
+                            ? AssetImage('assets/homepage_tuktuk.png')
+                            : widget.tripData.vehicleType == 'Motor Bike'
+                                ? AssetImage('assets/homepage_motorbike.png')
+                                : AssetImage('assets/homepage_taxi.png'),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10), // Add spacing between containers
+                Flexible(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height <= 500
+                        ? MediaQuery.of(context).size.height * 0.2
+                        : MediaQuery.of(context).size.height * 0.08,
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit
+                            .contain, // Ensure image fits without overflow
+                        image: widget.tripData.noofPerson == 1
+                            ? AssetImage('assets/driver_1_passenger.png')
+                            : widget.tripData.noofPerson == 2
+                                ? AssetImage('assets/driver_2_passenger.png')
+                                : widget.tripData.noofPerson == 3
+                                    ? AssetImage(
+                                        'assets/driver_3_passenger.png')
+                                    : widget.tripData.noofPerson == 4
+                                        ? AssetImage(
+                                            'assets/driver_4_passenger.png')
+                                        : AssetImage(
+                                            'assets/driver_5_passenger.png'),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Flexible(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height <= 500
+                        ? MediaQuery.of(context).size.height * 0.2
+                        : MediaQuery.of(context).size.height * 0.08,
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit
+                            .contain, // Ensure image fits without overflow
+                        image: widget.tripData.vehicleMode == 'Electric'
+                            ? AssetImage('assets/driver_homepage_electric.png')
+                            : AssetImage('assets/driver_homepage_petrol.png'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
             Row(
               children: [
                 Icon(
@@ -317,12 +399,11 @@ Future<void> _uploadDistanceData({
                   onPressed: widget.isButtonDisabled
                       ? null
                       : () async {
-                          // Show the initial loading dialog
                           showDialog(
                             context: context,
-                            barrierDismissible: true,
+                            barrierDismissible:
+                                false, // Prevent user from dismissing the dialog
                             builder: (BuildContext context) {
-                              // Show the dialog
                               return Dialog(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
@@ -330,9 +411,8 @@ Future<void> _uploadDistanceData({
                                     mainAxisSize: MainAxisSize.min,
                                     children: const [
                                       CircularProgressIndicator(), // Display a loading indicator
-                                      SizedBox(height: 20),
-                                      Text(
-                                          'Processing...'), // Text to inform user about the process
+                                      SizedBox(height: 10),
+                                      Text('Processing ...')
                                     ],
                                   ),
                                 ),
@@ -340,8 +420,8 @@ Future<void> _uploadDistanceData({
                             },
                           );
 
-// Close the dialog after 10 seconds
-                          Future.delayed(Duration(seconds: 10), () {
+// Automatically close the dialog after 5 seconds
+                          Future.delayed(const Duration(seconds: 5), () {
                             if (Navigator.canPop(context)) {
                               Navigator.pop(context);
                             }
@@ -416,7 +496,6 @@ Future<void> _uploadDistanceData({
                               pickupLongitude,
                             );
 
-
                             // 5. Upload the distance and other information to Firestore
                             await _uploadDistanceData(
                               tripId: widget.tripId,
@@ -449,7 +528,7 @@ Future<void> _uploadDistanceData({
                   onPressed: widget.onPhoneTap,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.map),
+                  icon: const Icon(Icons.location_on),
                   onPressed: widget.onMapTap,
                 ),
               ],

@@ -281,7 +281,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Statistics Page',style: GoogleFonts.outfit(),),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,color: Colors.black,),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text('Statistics Page',style: GoogleFonts.outfit(color: Colors.black),),
         backgroundColor: Colors.lime,
       ),
       body: isLoading
@@ -405,7 +409,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       color: color,
       title: value.toStringAsFixed(2),
       titleStyle: TextStyle(
-        fontSize: 14,
+        fontSize: 0,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),

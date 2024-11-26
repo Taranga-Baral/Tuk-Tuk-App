@@ -207,10 +207,14 @@ class _RequestPageState extends State<RequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,color: Colors.black,),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         backgroundColor: Colors.blueAccent,
         title: Text(
-          'Requests Page',
-          style: GoogleFonts.outfit(),
+          'Requests',
+          style: GoogleFonts.outfit(color: Colors.black),
         ),
         actions: [
           Row(
@@ -222,7 +226,7 @@ class _RequestPageState extends State<RequestPage> {
                 icon: Icon(Icons.refresh),
                 color: Colors.white,
               ),
-              PopupMenuButton<String>(
+              PopupMenuButton<String>(iconColor: Colors.white,
                 color: Color.fromRGBO(255, 255, 255, 1),
                 onSelected: (value) {
                   setState(() {
@@ -1284,10 +1288,12 @@ class _RequestPageState extends State<RequestPage> {
                                                       .pinkAccent.shade200,
                                                 ),
                                                 SizedBox(width: 10),
-                                                Text(
-                                                  'Driver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
-                                                  style:
-                                                      TextStyle(fontSize: 14),
+                                                Expanded(
+                                                  child: Text(
+                                                    'Driver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
+                                                    style:
+                                                        TextStyle(fontSize: 14),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -1322,8 +1328,8 @@ class _RequestPageState extends State<RequestPage> {
           : Center(
               child: Image(
               image: AssetImage('assets/no_data_found.gif'),
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.5,
             )),
     );
   }

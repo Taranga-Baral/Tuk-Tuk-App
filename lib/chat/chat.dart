@@ -508,9 +508,13 @@ Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,color: Colors.black,),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           'Chat with Drivers',
-          style: GoogleFonts.outfit(),
+          style: GoogleFonts.outfit(color: Colors.black),
         ),
         backgroundColor: Colors.greenAccent.shade200.withOpacity(0.9),
       ),
@@ -518,8 +522,8 @@ Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
           ? Center(
               child: Image(
               image: AssetImage('assets/no_data_found.gif'),
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.5,
             ))
           : Padding(
               padding: const EdgeInsets.all(12.0),
@@ -561,10 +565,12 @@ Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            '${data['driverName']}',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
+                                          Expanded(
+                                            child: Text(
+                                              '${data['driverName']}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
                                           Text(
                                             '... ${index + 1}',

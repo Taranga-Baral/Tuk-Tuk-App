@@ -13,9 +13,14 @@ import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
+  final String routeTo;
   final String url;
   final String userId;
-  const HomePage({super.key, required this.url, required this.userId});
+  const HomePage(
+      {super.key,
+      required this.url,
+      required this.userId,
+      required this.routeTo});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -1018,17 +1023,17 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.deepOrange.shade500.withOpacity(0.8),
         title: Text(
-          'Home Page',
-          style: GoogleFonts.outfit(),
+          'Book a Ride',
+          style: GoogleFonts.outfit(color: Colors.white),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back,color: Colors.white,),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
             icon: Icon(
-              Icons.location_history,
+              Icons.location_on,
               color: Colors.white,
             ),
             onPressed: () async {
@@ -1115,29 +1120,57 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            
+
+
+
+
+
+
+
+
+
+
           ],
         ),
       ),
     );
   }
 
-Future<void> _updateWebViewWithLocation(double latitude, double longitude) async {
-  if (webView != null) {
-    await webView!.evaluateJavascript(source: """
-      var inputField = document.getElementById('route_from');
-      if (inputField) {
-        inputField.value = '$latitude,$longitude';
-      }
-      // Simulate clicking the reverse directions button twice
-      var reverseButton = document.querySelector('.reverse_directions');
-      if (reverseButton) {
-        reverseButton.click();
-        reverseButton.click();
-      }
-    """);
-  }
-}
+  Future<void> _updateWebViewWithLocation(
+      double latitude, double longitude) async {
+    // if (webView != null) {
+    //   await webView!.evaluateJavascript(source: """
+    //     var inputField = document.getElementById('route_from');
+    //     if (inputField) {
+    //       inputField.value = '$latitude,$longitude';
+    //     }
+    //     // Simulate clicking the reverse directions button twice
+    //     var reverseButton = document.querySelector('.reverse_directions');
+    //     if (reverseButton) {
+    //       reverseButton.click();
+    //       reverseButton.click();
+    //     }
+    //   """);
+    // }
 
+    if (webView != null) {
+      await webView!.evaluateJavascript(source: """
+    var inputFieldFrom = document.getElementById('route_from');
+    var inputFieldTo = document.getElementById('route_to');
+    if (inputFieldFrom && inputFieldTo) {
+      inputFieldFrom.value = '$latitude,$longitude';  // Set route_from value
+      inputFieldTo.value = '${widget.routeTo}';      // Set route_to value from Flutter app
+    }
+    // Simulate clicking the reverse directions button twice
+    var reverseButton = document.querySelector('.reverse_directions');
+    if (reverseButton) {
+      reverseButton.click();
+      reverseButton.click();
+    }
+  """);
+    }
+  }
 
   Future<void> _requestLocationPermission() async {
     var status = await Permission.location.status;
@@ -1173,57 +1206,131 @@ Future<void> _updateWebViewWithLocation(double latitude, double longitude) async
       'assets/homepage_taxi.png'
     ];
 
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: vehicleTypes.length,
-        itemBuilder: (context, index) {
-          bool isSelected = selectedVehicleType == vehicleTypes[index];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double itemWidth = constraints.maxWidth / vehicleTypes.length;
 
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedVehicleType = vehicleTypes[index];
-                print('Selected Vehicle Type: $selectedVehicleType');
-                _calculateFare(distance); // Recalculate fare after selection
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color:
-                            isSelected ? Colors.deepOrange : Colors.transparent,
-                        width: 3,
+        return SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: vehicleTypes.length,
+            itemBuilder: (context, index) {
+              bool isSelected = selectedVehicleType == vehicleTypes[index];
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedVehicleType = vehicleTypes[index];
+                    print('Selected Vehicle Type: $selectedVehicleType');
+                    _calculateFare(distance);
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: itemWidth - 20,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected
+                                ? Colors.deepOrange
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Image.asset(
+                          vehicleImages[index],
+                          height: 60,
+                          width: 60,
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Image.asset(
-                      vehicleImages[index],
-                      height: 60,
-                      width: 60,
-                    ),
+                      SizedBox(height: 8),
+                      Flexible(
+                        child: Text(
+                          vehicleTypes[index],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isSelected ? Colors.teal : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    vehicleTypes[index],
-                    style: GoogleFonts.comicNeue(
-                      color: isSelected ? Colors.teal : Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
+
+  // Widget _buildVehicleTypeSelector(String distance, StateSetter setState) {
+  //   final List<String> vehicleTypes = ['Tuk Tuk', 'Motor Bike', 'Taxi'];
+  //   final List<String> vehicleImages = [
+  //     'assets/homepage_tuktuk.png',
+  //     'assets/homepage_motorbike.png',
+  //     'assets/homepage_taxi.png'
+  //   ];
+
+  //   return SizedBox(
+  //     height: 100,
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: vehicleTypes.length,
+  //       itemBuilder: (context, index) {
+  //         bool isSelected = selectedVehicleType == vehicleTypes[index];
+
+  //         return GestureDetector(
+  //           onTap: () {
+  //             setState(() {
+  //               selectedVehicleType = vehicleTypes[index];
+  //               print('Selected Vehicle Type: $selectedVehicleType');
+  //               _calculateFare(distance); // Recalculate fare after selection
+  //             });
+  //           },
+  //           child: Padding(
+  //             padding: const EdgeInsets.symmetric(horizontal: 10.0),
+  //             child: Column(
+  //               children: [
+  //                 Container(
+  //                   decoration: BoxDecoration(
+  //                     border: Border.all(
+  //                       color:
+  //                           isSelected ? Colors.deepOrange : Colors.transparent,
+  //                       width: 3,
+  //                     ),
+  //                     borderRadius: BorderRadius.circular(12),
+  //                   ),
+  //                   child: Image.asset(
+  //                     vehicleImages[index],
+  //                     height: 60,
+  //                     width: 60,
+  //                   ),
+  //                 ),
+  //                 SizedBox(height: 8),
+  //                 Text(
+  //                   vehicleTypes[index],
+  //                   style: GoogleFonts.comicNeue(
+  //                     fontSize: 4,
+  //                     color: isSelected ? Colors.teal : Colors.black,
+  //                     fontWeight: FontWeight.bold,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   void _triggerPassengerSelection(int passengerCount, double distance) {
     setState(() {

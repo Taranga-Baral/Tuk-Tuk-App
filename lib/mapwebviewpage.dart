@@ -27,7 +27,7 @@ class _MapPageState extends State<MapPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(url: mapUrl,userId: userId,),
+          builder: (context) => HomePage(url: mapUrl,userId: userId,routeTo: '',),
         ),
       );
     } else {
