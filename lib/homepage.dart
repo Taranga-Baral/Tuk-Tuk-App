@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   final String routeTo;
@@ -213,6 +214,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () => setState(() => _isLoading = false));
+
     _initializePage();
   }
 
@@ -225,6 +227,7 @@ class _HomePageState extends State<HomePage> {
         """);
     }
   }
+
 
   Future<String> _getDistanceFromAPI(String loc1, String loc2) async {
     print('Location 1 is : $loc1');
@@ -1027,7 +1030,10 @@ class _HomePageState extends State<HomePage> {
           style: GoogleFonts.outfit(color: Colors.white),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,color: Colors.white,),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -1120,17 +1126,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            
-
-
-
-
-
-
-
-
-
-
           ],
         ),
       ),

@@ -509,14 +509,15 @@ Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,color: Colors.black,),
+          icon: Icon(Icons.arrow_back,color: Colors.white,),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Chat with Drivers',
-          style: GoogleFonts.outfit(color: Colors.black),
+          style: GoogleFonts.outfit(color: Colors.white),
         ),
-        backgroundColor: Colors.greenAccent.shade200.withOpacity(0.9),
+        // backgroundColor: Colors.greenAccent.shade200.withOpacity(0.9),
+        backgroundColor: Colors.blueAccent,
       ),
       body: confirmedDriversData.isEmpty
           ? Center(

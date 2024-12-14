@@ -1,5 +1,11 @@
 import 'dart:convert';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:final_menu/splash_screen/splash_screen.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +18,8 @@ import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:final_menu/request_from_driver_page.dart/request.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage1 extends StatefulWidget {
@@ -35,6 +43,15 @@ class _HomePage1State extends State<HomePage1> {
     }
   }
 
+  late LocationData
+      _currentLocation; // Location variable to hold user's current location
+  Location _location = Location();
+  late String _initialUrl;
+  double totalFare = 0.0;
+  double totalDistance = 0.0;
+  int totalDeliveryLocations = 0;
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -44,10 +61,91 @@ class _HomePage1State extends State<HomePage1> {
     } else {
       // Handle case where currentUser is null or userId initialization fails
     }
+    _initialUrl =
+        'https://www.openstreetmap.org/#map=13/51.5/-0.09'; // Default location (London) for initialization
+    _getLocation();
+    _calculateStatistics();
   }
+
+  final _advancedDrawerController = AdvancedDrawerController();
+
+  //start
+
+  Future<void> _calculateStatistics() async {
+    try {
+      final successfulTripsSnapshot = await FirebaseFirestore.instance
+          .collection('successfulTrips')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      List<String> tripIds = [];
+      for (var doc in successfulTripsSnapshot.docs) {
+        final data = doc.data();
+        final tripId = data['tripId'] as String?;
+        if (tripId != null && tripId.isNotEmpty) {
+          tripIds.add(tripId);
+        }
+      }
+
+      double fareSum = 0.0;
+      double distanceSum = 0.0;
+
+      if (tripIds.isNotEmpty) {
+        final tripsSnapshot = await FirebaseFirestore.instance
+            .collection('trips')
+            .where(FieldPath.documentId, whereIn: tripIds)
+            .get();
+
+        for (var doc in tripsSnapshot.docs) {
+          final data = doc.data();
+          final fare = data['fare'] as String?;
+          final distance = data['distance'] as String?;
+
+          if (fare != null && fare.isNotEmpty) {
+            fareSum += double.tryParse(fare) ?? 0.0;
+          }
+
+          if (distance != null && distance.isNotEmpty) {
+            distanceSum += double.tryParse(distance) ?? 0.0;
+          }
+        }
+      }
+
+      totalDeliveryLocations = successfulTripsSnapshot.docs.length;
+
+      setState(() {
+        totalFare = fareSum;
+        totalDistance = distanceSum;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error calculating statistics: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _getLocation() async {
+    try {
+      var locationData = await _location.getLocation();
+      setState(() {
+        _currentLocation = locationData;
+        _initialUrl =
+            'https://www.openstreetmap.org/#map=13/${_currentLocation.latitude}/${_currentLocation.longitude}';
+      });
+    } catch (e) {
+      print('Error getting location: $e');
+      // Handle location fetch error
+    }
+  }
+
+  //end
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final String? message =
         ModalRoute.of(context)?.settings.arguments as String?;
     final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -76,12 +174,6 @@ class _HomePage1State extends State<HomePage1> {
       future: users.doc(userId).get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            body: Center(child: SplashScreen()),
-          );
-        }
-
         if (snapshot.hasError) {
           return Scaffold(
             body: Center(
@@ -91,7 +183,7 @@ class _HomePage1State extends State<HomePage1> {
 
         if (!snapshot.hasData || !snapshot.data!.exists) {
           return Scaffold(
-            body: Center(child: Text('User data not found. User ID: $userId')),
+            body: null,
           );
         }
 
@@ -104,335 +196,429 @@ class _HomePage1State extends State<HomePage1> {
         String avatarLetter =
             username.isNotEmpty ? username[0].toUpperCase() : 'U';
 
-        return Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            actions: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.white,
-                    child: Text(
-                      avatarLetter,
-                      style: TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                ],
+        return AdvancedDrawer(
+          controller: _advancedDrawerController,
+          // backdropColor: Colors.grey[120],
+          // backdropColor: Color.fromRGBO(65, 95, 207, 1.0),
+          backdropColor: Colors.blueAccent,
+          drawer: buildDrawer(context, avatarLetter, username, phoneNumber,
+              email), // Define your drawer widget here
+          child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () {
+                  _advancedDrawerController.showDrawer();
+                },
               ),
-            ],
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              centerTitle: true,
+              // title: Text('Tuk Tuk Sawari',style: TextStyle(fontWeight: FontWeight.bold),),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            body: Stack(
               children: [
-                SizedBox(
-                  width: 10,
-                ),
-                Image(
-                    image: AssetImage(
-                      'assets/signin_signup_logo.png',
-                    ),
-                    height: 40,
-                    width: 40),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  'Tuk Tuk',
-                  style: GoogleFonts.comicNeue(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 0, right: 0),
+                        child: _buildUserDetailsCard(
+                          context: context,
+                          username: username,
+                          avatarLetter: username.isNotEmpty
+                              ? username[0].toUpperCase()
+                              : 'U',
+                        ),
+                      ),
+                      // Row(
+                      //   children: [
+                      //     _buildStatCard(
+                      //       title: 'भुक्तानी गरिएको कुल भाडा',
+                      //       value: 'NPR ${totalFare.toStringAsFixed(2)}',
+                      //       cardColor: Colors.lime,
+                      //       iconColor: Colors.red,
+                      //       iconData: Icons.money,
+                      //       screenWidth: screenWidth,
+                      //     ),
+                      //     Column(
+                      //       children: [
+                      //         _buildStatCard(
+                      //           title: 'अनुमानित यात्रा',
+                      //           value: '${totalDistance.toStringAsFixed(2)} km',
+                      //           cardColor: Colors.green,
+                      //           iconColor: Colors.blue,
+                      //           iconData: Icons.travel_explore,
+                      //           screenWidth: screenWidth,
+                      //         ),
+                      //         _buildStatCard(
+                      //           title: 'यात्रा संख्या',
+                      //           value: '$totalDeliveryLocations',
+                      //           cardColor: Colors.orange,
+                      //           iconColor: Colors.yellow,
+                      //           iconData: Icons.tire_repair_rounded,
+                      //           screenWidth: screenWidth,
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ],
+                      // ),
+
+                      Column(
+                        children: [
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                                child: Container(
+                                  height: 180,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  color: Color.fromRGBO(255, 188, 71, 1),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: -20,
+                                right: 50,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.grey[50],
+                                  radius: 30,
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Color.fromRGBO(255, 188, 71, 1),
+                                    child: Icon(
+                                      Icons.currency_rupee_outlined,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 18,
+                                child: Image(
+                                  image: AssetImage(
+                                    'assets/money.gif',
+                                  ),
+                                  height: 80,
+                                  width: 80,
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 30,
+                                child: Image(
+                                  image: AssetImage(
+                                    'assets/total fare container.png',
+                                  ),
+                                  height: 180,
+                                  width: MediaQuery.of(context).size.width,
+                                ),
+                              ),
+                              Positioned(
+                                top: 14,
+                                left: 28,
+                                child: Column(
+                                  children: [
+                                    // Text(
+                                    //   'Total Fare',
+                                    //   style: GoogleFonts.lato(
+                                    //     fontWeight: FontWeight.bold,
+                                    //     color: Colors.white,
+                                    //     fontSize: 30,
+                                    //   ),
+                                    // ),
+                                    // SizedBox(
+                                    //   height: 10,
+                                    // ),
+                                    // Text(
+                                      // 'NPR ${totalFare.toStringAsFixed(2)}',
+                                    //   style: TextStyle(
+                                    //     color: Colors.white,
+                                    //     fontSize: 20,
+                                    //   ),
+                                    // ),
+
+
+
+
+                                     RichText(
+                                      text: TextSpan(
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 30,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Total Fare Paid \n',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                'NPR ${totalFare.toStringAsFixed(2)}',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+
+
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                                child: Container(
+                                  height: 180,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  color: Color.fromRGBO(255, 154, 170, 1.0),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: -20,
+                                right: 50,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.grey[50],
+                                  radius: 30,
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Color.fromRGBO(255, 154, 170, 1.0),
+                                    child: Icon(
+                                      Icons.history,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10,
+                                left: 28,
+                                child: Image(
+                                  image: AssetImage(
+                                    'assets/kilometer.gif',
+                                  ),
+                                  height: 80,
+                                  width: 80,
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 30,
+                                child: Image(
+                                  image: AssetImage(
+                                    'assets/total distance container.png',
+                                  ),
+                                  height: 180,
+                                  width: MediaQuery.of(context).size.width,
+                                ),
+                              ),
+                              Positioned(
+                                top: 14,
+                                left: 28,
+                                child: Column(
+                                  children: [
+                                    // Text(
+                                    //   'Total Distance \n ${totalDistance.toStringAsFixed(2)} km',
+                                    //   style: GoogleFonts.lato(
+                                    //     fontWeight: FontWeight.bold,
+                                    //     color: Colors.white,
+                                    //     fontSize: 30,
+                                    //   ),
+                                    // ),
+
+                                    RichText(
+                                      text: TextSpan(
+                                        style: GoogleFonts.lato(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 30,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Total Distance \n',
+                                            style: TextStyle(
+                                              fontSize: 22,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                '${totalDistance.toStringAsFixed(2)} km',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    // Text(
+                                    //   '${totalDistance.toStringAsFixed(2)} km',
+                                    //   style: TextStyle(
+                                    //     color: Colors.white,
+                                    //     fontSize: 20,
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                                child: Container(
+                                  height: 180,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  color: Color.fromRGBO(113, 120, 211, 1.0),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: -20,
+                                right: 50,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.grey[50],
+                                  radius: 30,
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Color.fromRGBO(113, 120, 211, 1.0),
+                                    child: Icon(
+                                      Icons.drive_eta,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 28,
+                                child: Image(
+                                  image: AssetImage(
+                                    'assets/total_trips.gif',
+                                  ),
+                                  height: 100,
+                                  width: 100,
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 30,
+                                child: Image(
+                                  image: AssetImage(
+                                    'assets/total trips container.png',
+                                  ),
+                                  height: 180,
+                                  width: MediaQuery.of(context).size.width,
+                                ),
+                              ),
+                              Positioned(
+                                top: 14,
+                                left: 28,
+                                child: Column(
+                                  children: [
+                                    // Row(
+                                    //   children: [
+                                    //     Text(
+                                    //       'Total Trips : $totalDeliveryLocations',
+                                    //       style: GoogleFonts.lato(
+                                    //         fontWeight: FontWeight.bold,
+                                    //         color: Colors.white,
+                                    //         fontSize: 30,
+                                    //       ),
+                                    //     ),
+                                    //   ],
+                                    // ),
+
+
+
+
+
+                                    RichText(
+                                      text: TextSpan(
+                                        style: GoogleFonts.lato(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 30,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Total Trips\n',
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                '$totalDeliveryLocations',
+                                            style: TextStyle(
+                                              fontSize: 26,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+
+
+
+
+
+
+                                     
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          body: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 0, right: 0),
-                      child: _buildUserDetailsCard(
-                        context: context,
-                        username: username,
-                        avatarLetter: username.isNotEmpty
-                            ? username[0].toUpperCase()
-                            : 'U',
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.05),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildCard(
-                              context: context,
-                              title: 'सवारी बुक',
-                              subtitle: 'Get a ride quickly',
-                              icon: Icons.map_rounded,
-                              onTap: () {
-                                String url =
-                                    'https://www.openstreetmap.org/directions#map=8/28.401/84.430';
-
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomePage(
-                                      routeTo: '',
-                                      url: url,
-                                      userId: userId,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: _buildCard(
-                              context: context,
-                              title: 'जान राजी चालक',
-                              subtitle: 'Approve Drivers',
-                              icon: Icons.send,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => RequestPage(
-                                      userId: userId,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.05),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildCard(
-                              context: context,
-                              title: 'हजुरको विवरण',
-                              subtitle: 'Your Stats',
-                              icon: Icons.calculate,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StatisticsPage(
-                                      userId: userId,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: _buildCard(
-                              context: context,
-                              title: 'चालक संग वार्तालाप',
-                              subtitle: 'Communicate',
-                              icon: Icons.chat,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                      userId: userId,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.05),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildCard(
-                              context: context,
-                              title: 'पुर्व यत्रा',
-                              subtitle: 'Past ride',
-                              icon: Icons.history,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HistoryPage(
-                                      userId: userId,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: _buildCard(
-                              context: context,
-                              title: 'चालक मोड',
-                              subtitle: 'Start driving',
-                              icon: Icons.electric_rickshaw_outlined,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DriverRegistrationPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.05),
-                      child: _buildCard(
-                        context: context,
-                        title: 'बाहिर निस्किने ?',
-                        subtitle: 'Signout Safely',
-                        icon: Icons.logout,
-                        isFullWidth: true,
-                        onTap: () {
-                          // Show confirmation dialog
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Confirm Sign Out'),
-                                content:
-                                    Text('Are you sure you want to sign out?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                    },
-                                    child: Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // Sign out and navigate to the SignInPage
-                                      FirebaseAuth.instance.signOut();
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => SignInPage(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text('Sign Out'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              );
-            },
-          ),
         );
       },
-    );
-  }
-
-  Widget _buildCard({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required VoidCallback onTap,
-    bool isFullWidth = false,
-  }) {
-    // Determine the color of the icon based on the title
-    Color iconColor;
-
-    if (title == 'सवारी बुक') {
-      iconColor = const Color.fromARGB(255, 226, 93, 52).withOpacity(0.8);
-    } else if (title == 'जान राजी चालक') {
-      iconColor = const Color.fromARGB(255, 70, 153, 221);
-    } else if (title == 'हजुरको विवरण') {
-      iconColor = const Color.fromARGB(255, 181, 197, 37);
-    } else if (title == 'चालक संग वार्तालाप') {
-      iconColor = const Color.fromARGB(255, 75, 182, 130).withOpacity(0.9);
-    } else if (title == 'पुर्व यत्रा') {
-      iconColor = const Color.fromARGB(255, 226, 183, 54);
-    } else if (title == 'चालक मोड') {
-      iconColor = const Color.fromARGB(255, 127, 94, 185);
-    } else {
-      iconColor = Colors.red; // Default color if title doesn't match
-    }
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        // color: Colors.transparent,
-        elevation: 0.01,
-
-        margin: const EdgeInsets.only(bottom: 20),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Set the color of the icon dynamically
-                  Icon(icon, color: iconColor),
-
-                  const SizedBox(width: 10),
-                  Flexible(
-                    child: Text(
-                      title,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      // Remove the overflow property to allow the text to wrap
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                style: GoogleFonts.comicNeue(fontSize: 16),
-                overflow: TextOverflow.ellipsis, // Subtitle can still overflow
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -541,16 +727,15 @@ class _HomePage1State extends State<HomePage1> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => HomePage(
-                                
-                                  userId: userId,
-                                  url:
-                                      'https://www.openstreetmap.org/search?query=$mapsearchedplace'
-                                      ,routeTo: mapsearchedplace,
-                                      ),
+                                userId: userId,
+                                url:
+                                    'https://www.openstreetmap.org/search?query=$mapsearchedplace',
+                                routeTo: mapsearchedplace,
+                              ),
                             ),
-                            
                           );
-                          print('Searched Name with URL IS :                     \n \n \n \t                  https://www.openstreetmap.org/search?query=$mapsearchedplace');
+                          print(
+                              'Searched Name with URL IS :                     \n \n \n \t                  https://www.openstreetmap.org/search?query=$mapsearchedplace');
                         },
                       ),
                       Divider(),
@@ -559,111 +744,6 @@ class _HomePage1State extends State<HomePage1> {
                 },
               ),
             ),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             actions: [
               Container(
                 decoration: BoxDecoration(
@@ -699,12 +779,12 @@ class _HomePage1State extends State<HomePage1> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0),
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          color: Colors.transparent,
+          // color: Colors.,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -728,6 +808,46 @@ class _HomePage1State extends State<HomePage1> {
 
             SizedBox(height: 20),
             // Search field
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  child: Container(
+                    color: Colors.grey[20],
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child:
+                        Image(image: AssetImage('assets/homepage_tuktuk.png')),
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  child: Container(
+                    color: Colors.grey[20],
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: Image(
+                        image: AssetImage('assets/homepage_motorbike.png')),
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  child: Container(
+                    color: Colors.grey[20],
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: Image(image: AssetImage('assets/homepage_taxi.png')),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(
+              height: 20,
+            ),
+
             TextField(
               controller: searchController,
               decoration: InputDecoration(
@@ -745,8 +865,342 @@ class _HomePage1State extends State<HomePage1> {
                 showSearchResults(context, results);
               },
             ),
+            SizedBox(
+              height: 10,
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildDrawer(BuildContext context, String avatarLetterParameter,
+      String username, String phoneNumber, String email) {
+    return Drawer(
+      child: Container(
+        // color: Colors.grey[120],
+        // color: Color.fromRGBO(65, 95, 207, 1),
+        color: Colors.blueAccent,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                  // color: Colors.white10.withOpacity(0.1),
+                  ),
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white,
+                    child: Text(
+                      avatarLetterParameter,
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    username,
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    phoneNumber,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    email,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.send,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Requests',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                onTap: () {
+                  // Handle Requests tap
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              RequestPage(userId: userId)));
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.chat,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Chats',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                onTap: () {
+                  // Handle Chats tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                        userId: userId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.bar_chart,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Statistics',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => StatisticsPage(
+                        userId: userId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.directions_car,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Trips',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HistoryPage(
+                        userId: userId,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.person_4_sharp,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Driver Login',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DriverRegistrationPage(),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListTile(
+                leading: Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Logout',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                onTap: () {
+                  // Show confirmation dialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Confirm Sign Out'),
+                        content: Text('Are you sure you want to sign out?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Sign out and navigate to the SignInPage
+                              FirebaseAuth.instance.signOut();
+                              Navigator.of(context).pop(); // Close the dialog
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignInPage(),
+                                ),
+                              );
+                            },
+                            child: Text('Sign Out'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget _buildStatCard({
+  //   required String title,
+  //   required String value,
+  //   required Color color,
+  //   required double screenWidth,
+  // }) {
+  //   return Card(
+  //     elevation: 0.5,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(10),
+  //     ),
+  //     child: Padding(
+  //       padding: EdgeInsets.all(screenWidth * 0.04), // Make padding responsive
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: [
+  //           Expanded(
+  //             child: Text(
+  //               title,
+  //               style: TextStyle(
+  //                 fontSize: 18, // Responsive font size
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //           ),
+  //           Text(
+  //             value,
+  //             style: TextStyle(
+  //               fontSize: 18, // Responsive font size
+  //               fontWeight: FontWeight.bold,
+  //               color: color,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildStatCard({
+    required String title,
+    required String value,
+    required Color cardColor,
+    required IconData iconData,
+    required Color iconColor,
+    required double screenWidth,
+  }) {
+    return Card(
+      elevation: 0.5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      color: cardColor, // Custom card color
+      child: Padding(
+        padding: EdgeInsets.all(screenWidth * 0.04), // Make padding responsive
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              iconData,
+              size: screenWidth * 0.1, // Responsive icon size
+              color: iconColor,
+            ),
+            SizedBox(
+                height: screenWidth * 0.02), // Spacer between icon and text
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: screenWidth * 0.05, // Responsive font size
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: screenWidth * 0.05, // Responsive font size
+                fontWeight: FontWeight.bold,
+                color: Colors.white, // Text color below icon
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PieChartSectionData _buildPieChartSection({
+    required String title,
+    required double value,
+    required Color color,
+  }) {
+    return PieChartSectionData(
+      value: value,
+      color: color,
+      title: value.toStringAsFixed(2),
+      titleStyle: TextStyle(
+        fontSize: 0,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
       ),
     );
   }

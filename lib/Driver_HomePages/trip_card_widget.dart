@@ -399,26 +399,26 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   onPressed: widget.isButtonDisabled
                       ? null
                       : () async {
-                          showDialog(
-                            context: context,
-                            barrierDismissible:
-                                false, // Prevent user from dismissing the dialog
-                            builder: (BuildContext context) {
-                              return Dialog(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: const [
-                                      CircularProgressIndicator(), // Display a loading indicator
-                                      SizedBox(height: 10),
-                                      Text('Processing ...')
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
+                          // showDialog(
+                          //   context: context,
+                          //   barrierDismissible:
+                          //       false, // Prevent user from dismissing the dialog
+                          //   builder: (BuildContext context) {
+                          //     return Dialog(
+                          //       child: Padding(
+                          //         padding: const EdgeInsets.all(20.0),
+                          //         child: Column(
+                          //           mainAxisSize: MainAxisSize.min,
+                          //           children: const [
+                          //             // CircularProgressIndicator(), // Display a loading indicator
+                          //             // SizedBox(height: 10),
+                          //             // Text('Processing ...')
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     );
+                          //   },
+                          // );
 
 // Automatically close the dialog after 5 seconds
                           Future.delayed(const Duration(seconds: 5), () {

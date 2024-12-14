@@ -280,7 +280,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                         margin: const EdgeInsets.only(left: 10, right: 10),
                         child: FlipCard(
                           direction: FlipDirection.HORIZONTAL,
-                          back: Card(
+                          front: Card(
                             elevation: 2,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -342,64 +342,64 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                   //   ],
                                   // ),
 
-
-
-
-
-
-
-
-
                                   Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Expanded(
-      child: Text(
-        '${userDetails['username']}',
-        softWrap: true,
-        
-        style: TextStyle(
-          fontSize: 21,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-    SizedBox(width: 10), // Add spacing between texts
-    Expanded(
-      flex: 2, // Adjust flex value to control relative width of this column
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
-                softWrap: true,
-                style: TextStyle(
-                  color: const Color.fromARGB(155, 0, 0, 0),
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 6),
-          Text(
-            '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
-            softWrap: true,
-            style: TextStyle(
-              color: const Color.fromARGB(155, 0, 0, 0),
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    ),
-  ],
-),
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '${userDetails['username']}',
+                                          softWrap: true,
+                                          style: TextStyle(
+                                            fontSize: 21,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          width:
+                                              10), // Add spacing between texts
+                                      Expanded(
+                                        flex:
+                                            2, // Adjust flex value to control relative width of this column
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
+                                                  softWrap: true,
+                                                  style: TextStyle(
+                                                    color: const Color.fromARGB(
+                                                        155, 0, 0, 0),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 6),
+                                            Text(
+                                              '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
+                                              softWrap: true,
+                                              style: TextStyle(
+                                                color: const Color.fromARGB(
+                                                    155, 0, 0, 0),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
 
                                   // const SizedBox(height: 2),
                                   Text(
@@ -417,86 +417,8 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                     height: 1,
                                     color: Colors.grey[300],
                                   ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(height: 4),
-                                          Text(
-                                            DateFormat('yyyy-MM-dd HH:mm:ss')
-                                                .format(tripDetails['timestamp']
-                                                    .toDate()),
-                                            style: GoogleFonts.comicNeue(
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.w800),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        '... ${index + 1}',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          front: Card(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.location_on,
-                                          color: Colors
-                                              .green), // Icon for Pickup Location
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          '${tripDetails['pickupLocation']}',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.location_on,
-                                          color: Colors
-                                              .red), // Icon for Delivery Location
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          '${tripDetails['deliveryLocation']}',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey[300],
-                                  ),
-                                  const SizedBox(height: 12),
+                                  // const SizedBox(height: 12),
+
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -779,6 +701,88 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                             color: Colors.grey),
                                       ),
                                     ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          back: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on,
+                                          color: Colors
+                                              .green), // Icon for Pickup Location
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          '${tripDetails['pickupLocation']}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on,
+                                          color: Colors
+                                              .red), // Icon for Delivery Location
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          '${tripDetails['deliveryLocation']}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Divider(
+                                    height: 1,
+                                    color: Colors.grey[300],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 4),
+                                          Text(
+                                            DateFormat('yyyy-MM-dd HH:mm:ss')
+                                                .format(tripDetails['timestamp']
+                                                    .toDate()),
+                                            style: GoogleFonts.comicNeue(
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.w800),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        '... ${index + 1}',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
                                   ),
                                 ],
                               ),

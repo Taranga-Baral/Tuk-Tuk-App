@@ -212,7 +212,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _checkUser() async {
     // Display splash screen for 3 seconds
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 3));
 
     // Check if the tutorial has been completed
     SharedPreferences prefs = await SharedPreferences.getInstance();

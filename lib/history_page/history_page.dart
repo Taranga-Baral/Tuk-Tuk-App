@@ -51,6 +51,7 @@ class _HistoryPageState extends State<HistoryPage> {
           'no_of_person': tripDetails['no_of_person'] ?? 'N/A',
           'vehicle_mode': tripDetails['vehicle_mode'] ?? 'N/A',
           'driverName': vehicleData['name'] ?? 'Unknown Driver', // Driver name
+          'profilePictureUrl': vehicleData['profilePictureUrl'] ?? '', // Driver name
         };
       }));
 
@@ -66,11 +67,11 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,color: Colors.black,),
+          icon: Icon(Icons.arrow_back,color: Colors.white,),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: Colors.amber.shade300,
-        title: Text('Trip History',style: GoogleFonts.outfit(color: Colors.black),),
+        backgroundColor: Colors.blueAccent,
+        title: Text('Trip History',style: GoogleFonts.outfit(color: Colors.white),),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchTrips(),
@@ -136,6 +137,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                 child: Text('${trip['deliveryLocation']}')),
                           ],
                         ),
+
+                        
                         SizedBox(height: 5),
                         Row(
                           children: [
@@ -153,6 +156,18 @@ class _HistoryPageState extends State<HistoryPage> {
                     ),
                   ),
                 );
+
+                // return Container(
+                //   color: Colors.grey,
+                //   child: Column(
+                //     children: [
+                //       Container(
+                //         color: Colors.red,
+                //         child: ,
+                //       ),
+                //     ],
+                //   ),
+                // );
               },
             );
           }

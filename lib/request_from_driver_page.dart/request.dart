@@ -206,15 +206,20 @@ class _RequestPageState extends State<RequestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Colors.blueAccent,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        // backgroundColor: Color.fromRGBO(65, 95, 207, 1),
         backgroundColor: Colors.blueAccent,
         title: Text(
           'Requests',
-          style: GoogleFonts.outfit(color: Colors.black),
+          style: GoogleFonts.outfit(color: Colors.white),
         ),
         actions: [
           Row(
@@ -226,7 +231,8 @@ class _RequestPageState extends State<RequestPage> {
                 icon: Icon(Icons.refresh),
                 color: Colors.white,
               ),
-              PopupMenuButton<String>(iconColor: Colors.white,
+              PopupMenuButton<String>(
+                iconColor: Colors.white,
                 color: Color.fromRGBO(255, 255, 255, 1),
                 onSelected: (value) {
                   setState(() {
@@ -433,6 +439,19 @@ class _RequestPageState extends State<RequestPage> {
                                                   Spacer(),
                                                   Row(
                                                     children: [
+
+                                                      CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                radius: 20,
+                                                backgroundImage: AssetImage(
+                                                  driverData['vehicleType'] == 'Taxi'
+                                                      ? 'assets/homepage_taxi.png'
+                                                      : driverData['vehicleType'] == 'Tuk Tuk'
+                                                          ? 'assets/homepage_tuktuk.png'
+                                                          : 'assets/homepage_motorbike.png',
+                                                ),
+                                              ),
                                                       IconButton(
                                                         icon: Icon(Icons.phone,
                                                             color:
@@ -1127,11 +1146,25 @@ class _RequestPageState extends State<RequestPage> {
                                               ),
                                             ],
                                           ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.end,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              SizedBox(width: 20),
+                                              CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                radius: 20,
+                                                backgroundImage: AssetImage(
+                                                  vehicleType == 'Taxi'
+                                                      ? 'assets/homepage_taxi.png'
+                                                      : vehicleType == 'Tuk Tuk'
+                                                          ? 'assets/homepage_tuktuk.png'
+                                                          : 'assets/homepage_motorbike.png',
+                                                ),
+                                              ),
                                               GestureDetector(
                                                 child: Icon(Icons.phone,
                                                     color: Colors.green),
@@ -1158,7 +1191,6 @@ class _RequestPageState extends State<RequestPage> {
                                                   }
                                                 },
                                               ),
-                                              SizedBox(width: 20),
                                               ElevatedButton(
                                                 onPressed:
                                                     _buttonStates[tripId] ==
@@ -1206,7 +1238,7 @@ class _RequestPageState extends State<RequestPage> {
                                     ),
                                   ),
                                   front: Card(
-                                    elevation: 1,
+                                    elevation: 0.9,
                                     margin: EdgeInsets.all(10),
                                     child: SizedBox(
                                       child: Padding(
@@ -1216,8 +1248,8 @@ class _RequestPageState extends State<RequestPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             ListTile(
-                                              leading: CircleAvatar(
-                                                radius: 25,
+                                              trailing: CircleAvatar(
+                                                radius: 20,
                                                 backgroundImage: profilePicture !=
                                                         null
                                                     ? NetworkImage(
@@ -1227,7 +1259,7 @@ class _RequestPageState extends State<RequestPage> {
                                                         as ImageProvider,
                                               ),
                                               title: Text(
-                                                '$name - $numberPlate',
+                                                '$name - $vehicleType',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16),
@@ -1237,14 +1269,16 @@ class _RequestPageState extends State<RequestPage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'Vehicle Type: $vehicleType',
+                                                    '$numberPlate',
                                                     style:
                                                         TextStyle(fontSize: 14),
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                            Divider(),
+                                            Divider(
+                                              thickness: 0.1,
+                                            ),
                                             Row(
                                               children: [
                                                 Icon(
