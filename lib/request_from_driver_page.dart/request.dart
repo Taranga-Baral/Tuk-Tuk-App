@@ -49,7 +49,7 @@ class _RequestPageState extends State<RequestPage> {
           .collection('requestsofDrivers')
           .where('userId', isEqualTo: widget.userId)
           .orderBy('requestTimestamp', descending: true)
-          .limit(1000) // Limit the number of documents to load
+          .limit(50) // Limit the number of documents to load
           .get();
 
       print('Fetching arrived drivers...');
@@ -57,7 +57,7 @@ class _RequestPageState extends State<RequestPage> {
           .collection('arrivedDrivers')
           .where('userId', isEqualTo: widget.userId)
           .orderBy('timestamp', descending: true)
-          .limit(20)
+          .limit(50)
           .get();
 
       // Debugging: Print retrieved documents
@@ -1361,9 +1361,9 @@ class _RequestPageState extends State<RequestPage> {
             )
           : Center(
               child: Image(
-              image: AssetImage('assets/no_data_found.gif'),
-              height: MediaQuery.of(context).size.height * 0.5,
-              width: MediaQuery.of(context).size.width * 0.5,
+              image: AssetImage('assets/loading_screen.gif'),
+              height: MediaQuery.of(context).size.height * 0.2,
+              width: MediaQuery.of(context).size.width * 0.2,
             )),
     );
   }
