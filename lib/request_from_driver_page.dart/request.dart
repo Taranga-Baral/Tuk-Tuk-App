@@ -1071,6 +1071,8 @@ class _RequestPageState extends State<RequestPage> {
                                     vehicleData['profilePictureUrl'] ?? 'N/A';
                                 final vehicleType =
                                     vehicleData['vehicleType'] ?? 'N/A';
+                                    final vehicleMode =
+                                    tripData['vehicle_mode'] ?? 'N/A';
 
                                 final pickupLocation =
                                     tripData['pickupLocation'] ?? 'N/A';
@@ -1269,7 +1271,7 @@ class _RequestPageState extends State<RequestPage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    '$numberPlate',
+                                                    '$numberPlate - $vehicleMode V.',
                                                     style:
                                                         TextStyle(fontSize: 14),
                                                   ),

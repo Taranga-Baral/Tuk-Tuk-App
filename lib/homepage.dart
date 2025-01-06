@@ -441,7 +441,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     // Apply distance and the time-based multiplier to the fare calculation
-    fare = (double.parse(distance) * 10) * rate * timeMultiplier;
+    fare = (double.parse(distance) * 10) * rate * timeMultiplier * (isDaytime ? 1.03 : 0.98);
 
     // Print to check if it's daytime or nighttime and the calculated fare
     print("Booking time: ${isDaytime ? 'Daytime' : 'Nighttime'}");

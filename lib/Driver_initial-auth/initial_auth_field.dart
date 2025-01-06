@@ -1292,7 +1292,7 @@ These Terms and Conditions ("Terms") govern your use of the Tuk Tuk Sawari Mobil
 
 3.1 Passenger Side: The passenger side of the App is currently free to use for a limited time. Some features may become paid in the future, which will be communicated in advance.
 
-3.2 Driver Commission: Drivers agree to pay a commission of 6% per ride to Tuk Tuk Sawari for each Ride fare generated through the App.
+3.2 Driver Commission: Drivers agree to pay a commission of certain percentage (not more than 5%) in near future but until stated no any Commission Rates are aided per ride to Tuk Tuk Sawari for each Ride fare generated through the App.
 4. User Conduct
 
 4.1 Prohibited Conduct: Users agree not to engage in fraudulent, illegal, or other harmful activities while using the App. This includes but is not limited to harassment, misrepresentation, or misuse of the service. Company shall not take any Responsibility for any Misconduct Performed by Drivers.
