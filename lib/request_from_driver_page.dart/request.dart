@@ -1071,8 +1071,9 @@ class _RequestPageState extends State<RequestPage> {
                                     vehicleData['profilePictureUrl'] ?? 'N/A';
                                 final vehicleType =
                                     vehicleData['vehicleType'] ?? 'N/A';
-                                    final vehicleMode =
-                                    tripData['vehicle_mode'] ?? 'N/A';
+                                    final vehicleModeD =
+                                    vehicleData['vehicleMode'] ?? 'N/A';
+                                    final vehicleModeT = tripData['vehicle_mode'] ?? 'N/A';
 
                                 final pickupLocation =
                                     tripData['pickupLocation'] ?? 'N/A';
@@ -1082,13 +1083,16 @@ class _RequestPageState extends State<RequestPage> {
                                 final distance = tripData['distance'] ?? 'N/A';
 
                                 // Return your custom widget here
+
+
+
                                 return FlipCard(
                                   flipOnTouch: true,
                                   direction: FlipDirection.HORIZONTAL,
                                   back: Card(
                                     elevation: 1,
                                     margin: EdgeInsets.all(10),
-                                    child: Padding(
+                                    child: vehicleModeT == vehicleModeD ? Padding(
                                       padding: const EdgeInsets.all(15.0),
                                       child: Column(
                                         crossAxisAlignment:
@@ -1237,6 +1241,13 @@ class _RequestPageState extends State<RequestPage> {
                                           ),
                                         ],
                                       ),
+                                    ): Column(
+                                      children: [
+                                        SizedBox(height: 50,),
+                                        Center(child: Text('You Selected $vehicleModeT Vehicle but this is $vehicleModeD', textAlign: TextAlign.center,style: GoogleFonts.comicNeue(color: Colors.red, fontSize: 22, fontWeight: FontWeight.bold),),),
+                                        SizedBox(height: 50,),
+
+                                      ],
                                     ),
                                   ),
                                   front: Card(
@@ -1271,7 +1282,7 @@ class _RequestPageState extends State<RequestPage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    '$numberPlate - $vehicleMode V.',
+                                                    '$numberPlate - $vehicleModeD V.',
                                                     style:
                                                         TextStyle(fontSize: 14),
                                                   ),
@@ -1351,6 +1362,11 @@ class _RequestPageState extends State<RequestPage> {
                                     ),
                                   ),
                                 );
+
+
+
+
+                                
                               },
                             );
                           },

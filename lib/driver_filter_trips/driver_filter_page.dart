@@ -419,13 +419,16 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                     color: Colors.teal),
                               ),
                               SizedBox(height: 8),
+                              
+
+
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      '${trip['municipalityDropdown'] ?? 'No Record of Municipality'}',
+                                      '${trip['municipalityDropdown'] ?? 'No Record of Municipality'} - ${trip['vehicle_mode']}',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.black54),
                                     ),

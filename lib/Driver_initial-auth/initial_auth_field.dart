@@ -32,6 +32,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
   DateTime? _selectedDateOfBirth;
   final _picker = ImagePicker();
   String _selectedVehicleType = 'Tuk Tuk'; // Default value for dropdown
+  String _selectedVehicleMode = 'Petrol'; // Default value for dropdown
 
   final _numberPlateController = TextEditingController();
   final _brandController = TextEditingController();
@@ -245,6 +246,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
         // Update existing fields
         await vehicleDataRef.update({
           'vehicleType': _selectedVehicleType,
+          'vehicleMode': _selectedVehicleMode,
           'numberPlate': _numberPlateController.text,
           'brand': _brandController.text,
           'color': _colorController.text,
@@ -270,6 +272,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
         // Create new document
         await vehicleDataRef.set({
           'vehicleType': _selectedVehicleType,
+          'vehicleMode': _selectedVehicleMode,
           'numberPlate': _numberPlateController.text,
           'brand': _brandController.text,
           'color': _colorController.text,
@@ -547,6 +550,28 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                                   );
                                 }).toList(),
                               ),
+
+
+                              DropdownButton<String>(
+                                value: _selectedVehicleMode,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _selectedVehicleMode = newValue!;
+                                  });
+                                },
+                                items: <String>[
+                                  'Petrol',
+                                  'Electric',
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+
+
+
                               SizedBox(
                                 height: 5,
                               ),

@@ -20,6 +20,7 @@ class TripCardWidget extends StatefulWidget {
   final String driverId; // New parameter
 
   const TripCardWidget({
+    
     super.key,
     required this.tripData,
     required this.index,
