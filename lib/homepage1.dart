@@ -166,8 +166,10 @@ class _HomePage1State extends State<HomePage1> {
         if (updateSnapshot.exists) {
           bool isUpdateAvailable = updateSnapshot['is_update_available'];
           String version = updateSnapshot['version'];
+          String thisVersion =
+              '1.0.2'; //yo chai maile jailei rakhna parxa taki user ko device ko aaile ko version sanga compare garna milos so user lai update aako xa vanera notify garna sakiyos
 
-          if (isUpdateAvailable) {
+          if (isUpdateAvailable && thisVersion != version) {
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -187,7 +189,6 @@ class _HomePage1State extends State<HomePage1> {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Implement update logic here
                         Navigator.of(context).pop(); // Close the dialog
                       },
                       child: GestureDetector(
@@ -713,8 +714,8 @@ class _HomePage1State extends State<HomePage1> {
                         ),
                         child: Container(
                           color: Colors.blueAccent,
-                          height: 100,
-                          width: 90,
+                          height: 90,
+                          width: 80,
                           child: Center(
                             child: GestureDetector(
                               onTap: () {
