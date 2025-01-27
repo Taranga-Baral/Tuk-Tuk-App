@@ -180,7 +180,7 @@ class _HomePage1State extends State<HomePage1> {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
+                        Navigator.of(context).pop();
                       },
                       child: Text(
                         'Later',
@@ -189,11 +189,10 @@ class _HomePage1State extends State<HomePage1> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
+                        Navigator.of(context).pop();
                       },
                       child: GestureDetector(
                         onTap: () {
-                          // Start a periodic timer to call checkUpdateAvailability every 10 seconds
                           Timer.periodic(Duration(seconds: 1 * 24 * 60 * 60),
                               (timer) {
                             checkUpdateAvailability(context);
