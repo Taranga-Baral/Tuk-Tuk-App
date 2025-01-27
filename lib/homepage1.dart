@@ -293,15 +293,15 @@ class _HomePage1State extends State<HomePage1> {
           drawer: buildDrawer(context, avatarLetter, username, phoneNumber,
               email), // Define your drawer widget here
           child: Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(
-                'Tuk Tuk Sawari',
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            ),
+            // appBar: AppBar(
+            //   centerTitle: true,
+            //   title: Text(
+            //     'Tuk Tuk Sawari',
+            //     style: TextStyle(fontWeight: FontWeight.w500),
+            //   ),
+            //   backgroundColor: Colors.transparent,
+            //   elevation: 0,
+            // ),
             body: SafeArea(
               child: Stack(
                 clipBehavior: Clip.none,
@@ -704,15 +704,16 @@ class _HomePage1State extends State<HomePage1> {
                   //     )),
 
                   Positioned(
-                      top: -100,
+                      top: -30,
                       right: 0,
                       child: ClipRRect(
                         borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(30),
-                            topLeft: Radius.circular(30)),
+                          bottomLeft: Radius.circular(30),
+                          // topLeft: Radius.circular(30),
+                        ),
                         child: Container(
                           color: Colors.blueAccent,
-                          height: 130,
+                          height: 100,
                           width: 90,
                           child: Center(
                             child: GestureDetector(
