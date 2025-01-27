@@ -78,19 +78,32 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      _tutorialData[index]['subtitle']!,
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
+                    MediaQuery.of(context).size.height >= 600
+                        ? Text(
+                            _tutorialData[index]['subtitle']!,
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.center,
+                          )
+                        : SizedBox(),
                   ],
                 );
               },
             ),
             Positioned(
+              bottom: 0,
+              right: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(50)),
+                child: Container(
+                  color: Colors.blueAccent,
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  width: MediaQuery.of(context).size.width * 0.26,
+                ),
+              ),
+            ),
+            Positioned(
               top: MediaQuery.of(context).size.height * 0.02,
-              left: 20,
-              right: 20,
+              left: 10,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -151,7 +164,7 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                         borderRadius: BorderRadius.circular(40),
                         child: Container(
                           // color: Colors.deepPurpleAccent.shade200.withOpacity(0.8),
-                          color: Colors.blue.withOpacity(0.8),
+                          color: Colors.transparent,
                           height: 50,
                           width: 60,
                           child: Center(
@@ -180,38 +193,16 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                     //   child: Text('Next'),
                     // ),
 
-                    ElevatedButton(
-                      onPressed: () {
+                    GestureDetector(
+                      onTap: () {
                         _pageController.nextPage(
-                          duration: Duration(milliseconds: 300),
+                          duration: Duration(milliseconds: 500),
                           curve: Curves.easeInOut,
                         );
                       },
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all<Color>(
-                          // Colors.purple.shade300,
-                          Colors.blue.withOpacity(0.78),
-                        ),
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50.0),
-                          ),
-                        ),
-                        padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                          EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                        ),
-                      ),
-                      // child: Text(
-                      //   'Next',
-                      //   style: TextStyle(
-                      //     fontSize: 18,
-                      //     color: Colors.white,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
                       child: Icon(
                         Icons.arrow_right,
-                        size: 30,
+                        size: 50,
                         color: Colors.white,
                       ),
                     ),
