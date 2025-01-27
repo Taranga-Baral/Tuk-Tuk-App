@@ -133,7 +133,7 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _currentIndex == index
-                              ? Colors.blue
+                              ? Colors.blueAccent
                               : Colors.grey,
                         ),
                       ),
@@ -151,8 +151,8 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                         borderRadius: BorderRadius.circular(40),
                         child: Container(
                           // color: Colors.deepPurpleAccent.shade200.withOpacity(0.8),
-                          color: Colors.pinkAccent.withOpacity(0.8),
-                          height: 60,
+                          color: Colors.blue.withOpacity(0.8),
+                          height: 50,
                           width: 60,
                           child: Center(
                               child: Icon(
@@ -160,6 +160,13 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                             color: Colors.white,
                           )),
                         ),
+                        // child: SizedBox(
+                        //   height: 90,
+                        //   width: 80,
+                        //   child: Image(
+                        //       image:
+                        //           AssetImage('assets/onboarding last go.gif')),
+                        // ),
                       ),
                     )
                   else
@@ -183,16 +190,15 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all<Color>(
                           // Colors.purple.shade300,
-                          Colors.purpleAccent.withOpacity(0.61),
+                          Colors.blue.withOpacity(0.78),
                         ),
-                        shape:
-                            WidgetStateProperty.all<RoundedRectangleBorder>(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50.0),
                           ),
                         ),
                         padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                          EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                         ),
                       ),
                       // child: Text(
@@ -203,7 +209,11 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                       //     fontWeight: FontWeight.bold,
                       //   ),
                       // ),
-                      child: Icon(Icons.arrow_right,size: 30,color: Colors.white,),
+                      child: Icon(
+                        Icons.arrow_right,
+                        size: 30,
+                        color: Colors.white,
+                      ),
                     ),
                 ],
               ),
