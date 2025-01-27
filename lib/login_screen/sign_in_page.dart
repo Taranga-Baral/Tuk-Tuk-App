@@ -295,25 +295,25 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _checkIfLoggedIn() async {
-  User? user = _auth.currentUser;
+    User? user = _auth.currentUser;
 
-  // If the user is already logged in, navigate to the homepage and clear the navigation stack
-  if (user != null) {
-    Future.delayed(Duration.zero, () {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomePage1()),
-        (Route<dynamic> route) => false,  // This clears the entire navigation stack
-      );
-    });
+    // If the user is already logged in, navigate to the homepage and clear the navigation stack
+    if (user != null) {
+      Future.delayed(Duration.zero, () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomePage1()),
+          (Route<dynamic> route) =>
+              false, // This clears the entire navigation stack
+        );
+      });
+    }
   }
-}
-
 
   void _signIn() async {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
+        email: _controllerEmail.text.trim(),
+        password: _controllerPassword.text.trim(),
       );
 
       setState(() {
@@ -331,10 +331,9 @@ class _SignInPageState extends State<SignInPage> {
 
         Future.delayed(Duration(seconds: 1), () {
           Navigator.of(context).pushAndRemoveUntil(
-  MaterialPageRoute(builder: (context) => HomePage1()),
-  (Route<dynamic> route) => false,
-);
-
+            MaterialPageRoute(builder: (context) => HomePage1()),
+            (Route<dynamic> route) => false,
+          );
         });
       }
     } catch (e) {
@@ -370,14 +369,20 @@ class _SignInPageState extends State<SignInPage> {
           child: Container(
             height: screenHeight * 0.39,
             width: screenWidth,
-            
+
             // color: const Color.fromARGB(255, 200, 54, 244),
-            decoration: BoxDecoration(image: DecorationImage(image: AssetImage('assets/signin_container_image.png',),fit: BoxFit.cover,opacity: 1)),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(
+                      'assets/signin_container_image.png',
+                    ),
+                    fit: BoxFit.cover,
+                    opacity: 1)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: MediaQuery.of(context).size.height *0.05,
+                  radius: MediaQuery.of(context).size.height * 0.05,
                   backgroundImage: AssetImage('assets/signin_signup_logo.jpg'),
                 ),
                 const SizedBox(height: 12),
@@ -427,8 +432,7 @@ class _SignInPageState extends State<SignInPage> {
                     TextFormField(
                       controller: _controllerEmail,
                       decoration: const InputDecoration(
-                        prefixIconColor:
-                            Color.fromARGB(255, 187, 109, 201),
+                        prefixIconColor: Color.fromARGB(255, 187, 109, 201),
                         labelText: 'Enter your E-mail',
                         prefixIcon: Icon(Icons.email),
                         hintText: 'johndoe@gmail.com',
@@ -489,7 +493,8 @@ class _SignInPageState extends State<SignInPage> {
                       child: GestureDetector(
                         onTap: _signIn,
                         child: Container(
-                          height: screenHeight * 0.08,
+                          // height: screenHeight * 0.08,
+                          height: 55,
                           width: screenWidth,
                           color: _color,
                           child: const Center(
@@ -520,7 +525,7 @@ class _SignInPageState extends State<SignInPage> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border.all(
-                              color: const Color.fromARGB(255, 200, 54, 244),
+                              color: const Color.fromARGB(160, 200, 54, 244),
                               width: 2),
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
@@ -532,15 +537,15 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                           ],
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               'Driver Mode',
-                              style: GoogleFonts.amaticSc(
-                                fontSize: screenHeight * 0.04,
+                              style: TextStyle(
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 200, 54, 244),
+                                color: Color.fromARGB(190, 200, 54, 244),
                               ),
                             ),
                             // const SizedBox(height: 8),
