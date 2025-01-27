@@ -288,7 +288,8 @@ class _HomePage1State extends State<HomePage1> {
                                   radius: 30,
                                   child: CircleAvatar(
                                     radius: 20,
-                                    backgroundColor: Color.fromRGBO(255, 188, 71, 1),
+                                    backgroundColor:
+                                        Color.fromRGBO(255, 188, 71, 1),
                                     child: Icon(
                                       Icons.currency_rupee_outlined,
                                       size: 20,
@@ -336,17 +337,14 @@ class _HomePage1State extends State<HomePage1> {
                                     //   height: 10,
                                     // ),
                                     // Text(
-                                      // 'NPR ${totalFare.toStringAsFixed(2)}',
+                                    // 'NPR ${totalFare.toStringAsFixed(2)}',
                                     //   style: TextStyle(
                                     //     color: Colors.white,
                                     //     fontSize: 20,
                                     //   ),
                                     // ),
 
-
-
-
-                                     RichText(
+                                    RichText(
                                       text: TextSpan(
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
@@ -355,10 +353,10 @@ class _HomePage1State extends State<HomePage1> {
                                         ),
                                         children: [
                                           TextSpan(
-                                            text: 'Total Fare Paid \n',
+                                            text: 'कुल भुक्तानि गरिएको भाडा\n',
                                             style: TextStyle(
+                                              // overflow: TextOverflow.ellipsis,
                                               fontSize: 24,
-                                              
                                             ),
                                           ),
                                           TextSpan(
@@ -371,9 +369,6 @@ class _HomePage1State extends State<HomePage1> {
                                         ],
                                       ),
                                     ),
-
-
-
                                   ],
                                 ),
                               ),
@@ -403,7 +398,8 @@ class _HomePage1State extends State<HomePage1> {
                                   radius: 30,
                                   child: CircleAvatar(
                                     radius: 20,
-                                    backgroundColor: Color.fromRGBO(255, 154, 170, 1.0),
+                                    backgroundColor:
+                                        Color.fromRGBO(255, 154, 170, 1.0),
                                     child: Icon(
                                       Icons.history,
                                       size: 20,
@@ -457,14 +453,14 @@ class _HomePage1State extends State<HomePage1> {
                                         ),
                                         children: [
                                           TextSpan(
-                                            text: 'Total Distance \n',
+                                            text: 'जम्मा हिडिएको कि.मि \n',
                                             style: TextStyle(
                                               fontSize: 22,
                                             ),
                                           ),
                                           TextSpan(
                                             text:
-                                                '${totalDistance.toStringAsFixed(2)} km',
+                                                '${totalDistance.toStringAsFixed(2)} Kilometer',
                                             style: TextStyle(
                                               fontSize: 18,
                                             ),
@@ -512,7 +508,8 @@ class _HomePage1State extends State<HomePage1> {
                                   radius: 30,
                                   child: CircleAvatar(
                                     radius: 20,
-                                    backgroundColor: Color.fromRGBO(113, 120, 211, 1.0),
+                                    backgroundColor:
+                                        Color.fromRGBO(113, 120, 211, 1.0),
                                     child: Icon(
                                       Icons.drive_eta,
                                       size: 20,
@@ -561,10 +558,6 @@ class _HomePage1State extends State<HomePage1> {
                                     //   ],
                                     // ),
 
-
-
-
-
                                     RichText(
                                       text: TextSpan(
                                         style: GoogleFonts.lato(
@@ -574,15 +567,13 @@ class _HomePage1State extends State<HomePage1> {
                                         ),
                                         children: [
                                           TextSpan(
-                                            text: 'Total Trips\n',
+                                            text: 'कुल यात्रा गरिएको संख्या\n',
                                             style: TextStyle(
                                               fontSize: 24,
-                                              
                                             ),
                                           ),
                                           TextSpan(
-                                            text:
-                                                '$totalDeliveryLocations',
+                                            text: '$totalDeliveryLocations',
                                             style: TextStyle(
                                               fontSize: 26,
                                             ),
@@ -591,13 +582,6 @@ class _HomePage1State extends State<HomePage1> {
                                       ),
                                     ),
 
-
-
-
-
-
-
-                                     
                                     SizedBox(
                                       height: 10,
                                     ),
