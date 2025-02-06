@@ -410,7 +410,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                                       ),
                                       IconButton(
                                         onPressed: () {
-                                          _launchPhoneCall() async {
+                                          launchPhoneCall() async {
                                             final url =
                                                 'tel:${tripDetails?['phone']}';
                                             // ignore: deprecated_member_use
@@ -422,7 +422,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                                             }
                                           }
 
-                                          _launchPhoneCall();
+                                          launchPhoneCall();
                                         },
                                         icon: Icon(Icons.phone,
                                             color: Colors.green.shade400),

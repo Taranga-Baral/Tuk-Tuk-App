@@ -11,7 +11,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   final String routeTo;
@@ -228,7 +227,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-
   Future<String> _getDistanceFromAPI(String loc1, String loc2) async {
     print('Location 1 is : $loc1');
     print('Location 2 is : $loc2');
@@ -441,7 +439,10 @@ class _HomePageState extends State<HomePage> {
     }
 
     // Apply distance and the time-based multiplier to the fare calculation
-    fare = (double.parse(distance) * 10) * rate * timeMultiplier * (isDaytime ? 1.01 : 0.99);
+    fare = (double.parse(distance) * 10) *
+        rate *
+        timeMultiplier *
+        (isDaytime ? 1.01 : 0.99);
 
     // Print to check if it's daytime or nighttime and the calculated fare
     print("Booking time: ${isDaytime ? 'Daytime' : 'Nighttime'}");

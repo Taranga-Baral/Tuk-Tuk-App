@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
-import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +18,6 @@ class TripCardWidget extends StatefulWidget {
   final String driverId; // New parameter
 
   const TripCardWidget({
-    
     super.key,
     required this.tripData,
     required this.index,

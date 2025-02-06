@@ -47,7 +47,7 @@ class _HomePage1State extends State<HomePage1> {
 
   late LocationData
       _currentLocation; // Location variable to hold user's current location
-  Location _location = Location();
+  final Location _location = Location();
   late String _initialUrl;
   double totalFare = 0.0;
   double totalDistance = 0.0;

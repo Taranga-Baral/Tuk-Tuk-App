@@ -270,7 +270,6 @@ import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
