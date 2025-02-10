@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/splash_screen/splash_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/rendering.dart';
@@ -18,7 +19,6 @@ import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:final_menu/request_from_driver_page.dart/request.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -965,6 +965,10 @@ class _HomePage1State extends State<HomePage1> {
 
             TextField(
               controller: searchController,
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MapPage()));
+              },
               decoration: InputDecoration(
                 hintText: 'कहाँ जानू हुन्छ त ?',
                 filled: true,

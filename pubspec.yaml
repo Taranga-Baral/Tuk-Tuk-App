@@ -83,6 +83,7 @@ dependencies:
   animated_card: ^2.0.0
   latlong2: ^0.9.1
   location: ^7.0.0
+  galli_vector_package: ^0.0.5
 
 dev_dependencies:
   flutter_test:

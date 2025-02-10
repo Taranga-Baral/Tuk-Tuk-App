@@ -494,6 +494,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_cube:
+    dependency: transitive
+    description:
+      name: flutter_cube
+      sha256: "71cf679a251166eb97f86751c56582b09abdbf859485fbf60524948813914c3b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   flutter_image_compress:
     dependency: "direct main"
     description:
@@ -672,6 +680,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.8.0"
+  galli_vector_package:
+    dependency: "direct main"
+    description:
+      name: galli_vector_package
+      sha256: dac27bca86d55a91ca66ffcecd370824fcf9aaa850935322b69ef8cb71f21a37
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   geolocator:
     dependency: "direct main"
     description:
@@ -944,6 +960,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
+  maplibre_gl:
+    dependency: transitive
+    description:
+      name: maplibre_gl
+      sha256: ea2fa443e7d5dc18db7f37a0f6f5af40642888c56b81a14441aeddea077adaea
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.0"
+  maplibre_gl_platform_interface:
+    dependency: transitive
+    description:
+      name: maplibre_gl_platform_interface
+      sha256: "718c3503f36936fbf35c34d6ddf8bf770474c5ba1e6cb1d8caece44efae424af"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.0"
+  maplibre_gl_web:
+    dependency: transitive
+    description:
+      name: maplibre_gl_web
+      sha256: e7d71b08f24dca70e9c9cf841b096704a677e6239447d87220ec071355768149
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.0"
   matcher:
     dependency: transitive
     description:
