@@ -14,13 +14,12 @@ import firebase_core
 import firebase_storage
 import flutter_image_compress_macos
 import flutter_inappwebview_macos
-import flutter_local_notifications
 import geolocator_apple
 import location
 import path_provider_foundation
 import rive_common
 import shared_preferences_foundation
-import sqflite
+import sqflite_darwin
 import url_launcher_macos
 import video_player_avfoundation
 
@@ -34,7 +33,6 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   FLTFirebaseStoragePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseStoragePlugin"))
   FlutterImageCompressMacosPlugin.register(with: registry.registrar(forPlugin: "FlutterImageCompressMacosPlugin"))
   InAppWebViewFlutterPlugin.register(with: registry.registrar(forPlugin: "InAppWebViewFlutterPlugin"))
-  FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   GeolocatorPlugin.register(with: registry.registrar(forPlugin: "GeolocatorPlugin"))
   LocationPlugin.register(with: registry.registrar(forPlugin: "LocationPlugin"))
   PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
