@@ -443,7 +443,8 @@ class _HomePage1State extends State<HomePage1> {
                                             TextSpan(
                                               text:
                                                   'कुल भुक्तानि गरिएको भाडा\n',
-                                              style: TextStyle(
+                                              style: GoogleFonts
+                                                  .tiroDevanagariHindi(
                                                 // overflow: TextOverflow.ellipsis,
                                                 fontSize: 24,
                                               ),
@@ -543,7 +544,8 @@ class _HomePage1State extends State<HomePage1> {
                                           children: [
                                             TextSpan(
                                               text: 'जम्मा हिडिएको कि.मि \n',
-                                              style: TextStyle(
+                                              style: GoogleFonts
+                                                  .tiroDevanagariHindi(
                                                 fontSize: 22,
                                               ),
                                             ),
@@ -658,7 +660,8 @@ class _HomePage1State extends State<HomePage1> {
                                             TextSpan(
                                               text:
                                                   'कुल यात्रा गरिएको संख्या\n',
-                                              style: TextStyle(
+                                              style: GoogleFonts
+                                                  .tiroDevanagariHindi(
                                                 fontSize: 24,
                                               ),
                                             ),
@@ -915,8 +918,8 @@ class _HomePage1State extends State<HomePage1> {
             ),
             Text(
               'हजुर लाई स्वागत छ ,',
-              style: TextStyle(
-                fontSize: 18,
+              style: GoogleFonts.notoSans(
+                fontSize: 20,
                 color: Colors.black54,
               ),
             ),
@@ -963,26 +966,29 @@ class _HomePage1State extends State<HomePage1> {
               height: 20,
             ),
 
-            TextField(
-              controller: searchController,
+            GestureDetector(
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MapPage()));
               },
-              decoration: InputDecoration(
-                hintText: 'कहाँ जानू हुन्छ त ?',
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  enabled: false,
+                  hintText: 'कहाँ जानू हुन्छ त ?',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
+                // Inside _buildUserDetailsCard TextField onSubmitted callback
+                onSubmitted: (value) async {
+                  final results = await searchLocations(value);
+                  showSearchResults(context, results);
+                },
               ),
-              // Inside _buildUserDetailsCard TextField onSubmitted callback
-              onSubmitted: (value) async {
-                final results = await searchLocations(value);
-                showSearchResults(context, results);
-              },
             ),
             SizedBox(
               height: 10,
