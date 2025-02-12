@@ -1267,67 +1267,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Widget _buildVehicleTypeSelector(String distance, StateSetter setState) {
-  //   final List<String> vehicleTypes = ['Tuk Tuk', 'Motor Bike', 'Taxi'];
-  //   final List<String> vehicleImages = [
-  //     'assets/homepage_tuktuk.png',
-  //     'assets/homepage_motorbike.png',
-  //     'assets/homepage_taxi.png'
-  //   ];
-
-  //   return SizedBox(
-  //     height: 100,
-  //     child: ListView.builder(
-  //       scrollDirection: Axis.horizontal,
-  //       itemCount: vehicleTypes.length,
-  //       itemBuilder: (context, index) {
-  //         bool isSelected = selectedVehicleType == vehicleTypes[index];
-
-  //         return GestureDetector(
-  //           onTap: () {
-  //             setState(() {
-  //               selectedVehicleType = vehicleTypes[index];
-  //               print('Selected Vehicle Type: $selectedVehicleType');
-  //               _calculateFare(distance); // Recalculate fare after selection
-  //             });
-  //           },
-  //           child: Padding(
-  //             padding: const EdgeInsets.symmetric(horizontal: 10.0),
-  //             child: Column(
-  //               children: [
-  //                 Container(
-  //                   decoration: BoxDecoration(
-  //                     border: Border.all(
-  //                       color:
-  //                           isSelected ? Colors.deepOrange : Colors.transparent,
-  //                       width: 3,
-  //                     ),
-  //                     borderRadius: BorderRadius.circular(12),
-  //                   ),
-  //                   child: Image.asset(
-  //                     vehicleImages[index],
-  //                     height: 60,
-  //                     width: 60,
-  //                   ),
-  //                 ),
-  //                 SizedBox(height: 8),
-  //                 Text(
-  //                   vehicleTypes[index],
-  //                   style: GoogleFonts.comicNeue(
-  //                     fontSize: 4,
-  //                     color: isSelected ? Colors.teal : Colors.black,
-  //                     fontWeight: FontWeight.bold,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
   void _triggerPassengerSelection(int passengerCount, double distance) {
     setState(() {
       // Manually trigger the button's touch event for passenger selection

@@ -735,6 +735,10 @@ class _MapPageState extends State<MapPage> {
 
           print('Hi There Distance: $distance meters');
           print('Hi There Duration: $duration seconds');
+
+          //start
+
+          //end
         } else {
           print('Error: ${jsonResponse['message']}');
         }
@@ -760,7 +764,6 @@ class _MapPageState extends State<MapPage> {
         if (jsonResponse['success'] == true) {
           final String locationName = jsonResponse['data']['generalName'];
           print('Hi there Pickup locname is : $locationName');
-
           print(
               'Hi there Pickup Latitude is : ${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}, Pickup Longitude is : ${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}');
         } else {
