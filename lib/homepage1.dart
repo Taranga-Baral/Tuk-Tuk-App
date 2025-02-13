@@ -141,6 +141,94 @@ class _HomePage1State extends State<HomePage1> {
     }
   }
 
+  // Future<bool> checkUpdateAvailability(BuildContext context) async {
+  //   try {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  //     // Get the last execution time from SharedPreferences
+  //     int lastExecution = prefs.getInt('lastExecution') ?? 0;
+  //     int currentTime = DateTime.now().millisecondsSinceEpoch;
+  //     int oneDayInMillis = 1 * 24 * 60 * 60 * 1000; // 1 day in milliseconds
+
+  //     // Check if a day has passed since the last execution
+  //     if (currentTime - lastExecution >= oneDayInMillis) {
+  //       // Update the last execution time in SharedPreferences
+  //       await prefs.setInt('lastExecution', currentTime);
+
+  //       // Access Firestore collection and document
+  //       DocumentSnapshot updateSnapshot = await FirebaseFirestore.instance
+  //           .collection('update') // Replace with your collection name
+  //           .doc('rkgn9bRgnWLSdVSJxj1H') // Replace with your document ID
+  //           .get();
+
+  //       // Check if document exists and retrieve value of is_update_available
+  //       if (updateSnapshot.exists) {
+  //         bool isUpdateAvailable = updateSnapshot['is_update_available'];
+  //         String version = updateSnapshot['version'];
+  //         String thisVersion =
+  //             '1.0.2'; //yo chai maile jailei rakhna parxa taki user ko device ko aaile ko version sanga compare garna milos so user lai update aako xa vanera notify garna sakiyos
+
+  //         if (isUpdateAvailable && thisVersion != version) {
+  //           showDialog(
+  //             context: context,
+  //             builder: (BuildContext context) {
+  //               return AlertDialog(
+  //                 title: Text('New Update Available!'),
+  //                 content: Text(
+  //                     'A new update $version is available. We Highly Recommend you to Update Tuk Tuk Sawari from www.tuktuk.tarangabaral.com.np Website for Better Performance and Experience. \n \nDeveloper : Taranga Baral'),
+  //                 actions: [
+  //                   TextButton(
+  //                     onPressed: () {
+  //                       Navigator.of(context).pop();
+  //                     },
+  //                     child: Text(
+  //                       'Later',
+  //                       style: TextStyle(color: Colors.red, fontSize: 14),
+  //                     ),
+  //                   ),
+  //                   TextButton(
+  //                     onPressed: () {
+  //                       Navigator.of(context).pop();
+  //                     },
+  //                     child: GestureDetector(
+  //                       onTap: () {
+  //                         Timer.periodic(Duration(seconds: 1 * 24 * 60 * 60),
+  //                             (timer) {
+  //                           checkUpdateAvailability(context);
+  //                         });
+  //                         _launchURL('https://www.tuktuk.tarangabaral.com.np');
+  //                       },
+  //                       child: Text(
+  //                         'Update',
+  //                         style: TextStyle(
+  //                             color: Colors.green,
+  //                             fontSize: 16,
+  //                             fontWeight: FontWeight.w600),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               );
+  //             },
+  //           );
+  //         }
+
+  //         return isUpdateAvailable;
+  //       } else {
+  //         // Handle case where document does not exist
+  //         return false;
+  //       }
+  //     } else {
+  //       print('Daily check skipped: Not enough time has passed.');
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     // Handle error
+  //     print('Error checking update availability: $e');
+  //     return false;
+  //   }
+  // }
+
   Future<bool> checkUpdateAvailability(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -148,7 +236,8 @@ class _HomePage1State extends State<HomePage1> {
       // Get the last execution time from SharedPreferences
       int lastExecution = prefs.getInt('lastExecution') ?? 0;
       int currentTime = DateTime.now().millisecondsSinceEpoch;
-      int oneDayInMillis = 1 * 24 * 60 * 60 * 1000; // 1 day in milliseconds
+      // int oneDayInMillis = 1 * 24 * 60 * 60 * 1000; // 1 day in milliseconds
+      int oneDayInMillis = 600 * 1000;
 
       // Check if a day has passed since the last execution
       if (currentTime - lastExecution >= oneDayInMillis) {
@@ -165,8 +254,7 @@ class _HomePage1State extends State<HomePage1> {
         if (updateSnapshot.exists) {
           bool isUpdateAvailable = updateSnapshot['is_update_available'];
           String version = updateSnapshot['version'];
-          String thisVersion =
-              '1.0.2'; //yo chai maile jailei rakhna parxa taki user ko device ko aaile ko version sanga compare garna milos so user lai update aako xa vanera notify garna sakiyos
+          String thisVersion = '1.0.2'; // Replace with the current app version
 
           if (isUpdateAvailable && thisVersion != version) {
             showDialog(
@@ -175,7 +263,7 @@ class _HomePage1State extends State<HomePage1> {
                 return AlertDialog(
                   title: Text('New Update Available!'),
                   content: Text(
-                      'A new update $version is available. We Highly Recommend you to Update Tuk Tuk Sawari from www.tuktuk.tarangabaral.com.np Website for Better Performance and Experience. \n \nDeveloper : Taranga Baral'),
+                      'A new update $version is available. We highly recommend you to update Tuk Tuk Sawari from www.tuktuk.tarangabaral.com.np for better performance and experience. \n \nDeveloper: Taranga Baral'),
                   actions: [
                     TextButton(
                       onPressed: () {
@@ -189,22 +277,14 @@ class _HomePage1State extends State<HomePage1> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
+                        _launchURL('https://www.tuktuk.tarangabaral.com.np');
                       },
-                      child: GestureDetector(
-                        onTap: () {
-                          Timer.periodic(Duration(seconds: 1 * 24 * 60 * 60),
-                              (timer) {
-                            checkUpdateAvailability(context);
-                          });
-                          _launchURL('https://www.tuktuk.tarangabaral.com.np');
-                        },
-                        child: Text(
-                          'Update',
-                          style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600),
-                        ),
+                      child: Text(
+                        'Update',
+                        style: TextStyle(
+                            color: Colors.green,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -228,6 +308,7 @@ class _HomePage1State extends State<HomePage1> {
       return false;
     }
   }
+
   //end
 
   @override
