@@ -8,6 +8,7 @@ import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/request_from_driver_page.dart/request.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:galli_vector_package/galli_vector_package.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -426,57 +427,60 @@ class _MapPageState extends State<MapPage> {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(
-          top: 30,
+          top: 10,
           right: 12,
           left: 12,
-        ), // Reduced padding for a compact UI
+        ),
         child: Column(
           children: [
             //home buttons
             ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(8)),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Map Button (Green)
-                    GestureDetector(
-                      onTap: () {
-                        // mapHeightWhenMapButtonClicked();
-                        // setState(
-                        //   () {
-                        //     _heightOfMap = 0.4;
-                        //   },
-                        // );
-                        // setState(() {});
-                        setState(() {
-                          _distanceResetViewBookingOption = false;
-                        });
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width *
-                            0.25, // Smaller width
-                        height: 35, // Smaller height
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius:
-                              BorderRadius.circular(8), // Smaller border radius
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Map',
-                            style: TextStyle(
-                              color: Colors
-                                  .white, // White text for better contrast
-                              fontSize: 14, // Smaller font size
-                              fontWeight: FontWeight.w600, // Semi-bold
-                            ),
+                    if (_searchQuery.isNotEmpty &&
+                        _distance != '' &&
+                        _duration != '' &&
+                        _deliveryLocation != '')
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          color: const Color.fromARGB(235, 80, 91, 247),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Text(
+                                _searchQuery.length > 20
+                                    ? '${_searchQuery.substring(0, 20)}...'
+                                    : _searchQuery,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 16.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
 
+                    SizedBox(
+                      width: 10,
+                    ),
                     // Cancel Icon (Red)
                     GestureDetector(
                       onTap: () {
@@ -488,8 +492,8 @@ class _MapPageState extends State<MapPage> {
                       },
                       child: Icon(
                         Icons.cancel,
-                        color: Colors.red, // Red color for the cancel icon
-                        size: 30, // Slightly larger size for better visibility
+                        color: const Color.fromARGB(237, 244, 67, 54),
+                        size: 30,
                       ),
                     ),
                   ],
@@ -498,7 +502,7 @@ class _MapPageState extends State<MapPage> {
             ),
 
             SizedBox(
-              height: 10,
+              height: 5,
             ),
 
             // Pickup and Delivery Locations
@@ -942,563 +946,6 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  Widget _noBuildVehicleSelection(
-      String distance, String duration, StateSetter setState) {
-    final List<String> vehicleTypes = ['Tuk Tuk', 'Motor Bike', 'Taxi'];
-    final List<String> vehicleModes = ['Petrol', 'Electric'];
-    final List<String> vehicleImages = [
-      'assets/homepage_tuktuk.png',
-      'assets/homepage_motorbike.png',
-      'assets/homepage_taxi.png'
-    ];
-
-    final List<String> chitwanMunicipalities = [
-      'Bharatpur Metropolitan City',
-      'Kalika Municipality',
-      'Khairahani Municipality',
-      'Madi Municipality',
-      'Ratnanagar Municipality',
-      'Rapti Municipality',
-      'Ichchhakamana Rural Municipality',
-    ];
-
-    void mapHeightWhenFirstBooked() {
-      setState(
-        () {
-          _heightOfMap = 0;
-        },
-      );
-    }
-
-    void mapHeightWhenMapButtonClicked() {
-      setState(
-        () {
-          _heightOfMap = 0.4;
-        },
-      );
-    }
-
-    mapHeightWhenFirstBooked();
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 30,
-          right: 12,
-          left: 12,
-        ), // Reduced padding for a compact UI
-        child: Column(
-          children: [
-            //home buttons
-            ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Map Button (Green)
-                    GestureDetector(
-                      onTap: () {
-                        // mapHeightWhenMapButtonClicked();
-                        // setState(
-                        //   () {
-                        //     _heightOfMap = 0.4;
-                        //   },
-                        // );
-                        // setState(() {});
-                        setState(() {
-                          _distanceResetViewBookingOption = false;
-                        });
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width *
-                            0.25, // Smaller width
-                        height: 35, // Smaller height
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius:
-                              BorderRadius.circular(8), // Smaller border radius
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Map',
-                            style: TextStyle(
-                              color: Colors
-                                  .white, // White text for better contrast
-                              fontSize: 14, // Smaller font size
-                              fontWeight: FontWeight.w600, // Semi-bold
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Cancel Icon (Red)
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    MapPage(userId: widget.userId)));
-                      },
-                      child: Icon(
-                        Icons.cancel,
-                        color: Colors.red, // Red color for the cancel icon
-                        size: 30, // Slightly larger size for better visibility
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(
-              height: 10,
-            ),
-
-            // Pickup and Delivery Locations
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Text(
-                  //   'Locations (from, to)',
-                  //   style: TextStyle(
-                  //     fontSize: 16,
-                  //     fontWeight: FontWeight.bold,
-                  //     color: Colors.orange[800],
-                  //   ),
-                  // ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, color: Colors.green, size: 20),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _pickupLocation,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, color: Colors.red, size: 20),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _deliveryLocation,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Vehicle Type Selection
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Vehicle Type',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Container(
-                    height: 100, // Reduced height for a compact UI
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: vehicleTypes.length,
-                      itemBuilder: (context, index) {
-                        bool isSelected =
-                            selectedVehicleType == vehicleTypes[index];
-
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedVehicleType = vehicleTypes[index];
-                              selectedPassengers =
-                                  1; // Reset passengers when vehicle changes
-                              fare = FareCalculator.calculateFare(
-                                distance: distance,
-                                vehicleType: selectedVehicleType!,
-                                mode: selectedMode!,
-                                passengers: selectedPassengers,
-                              );
-                            });
-                          },
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.25, // Reduced width for a compact UI
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? Colors.blueAccent
-                                          : Colors.grey[300]!,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Image.asset(
-                                    vehicleImages[index],
-                                    height:
-                                        50, // Reduced height for a compact UI
-                                    width: 50, // Reduced width for a compact UI
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  vehicleTypes[index],
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: isSelected
-                                        ? Colors.blueAccent
-                                        : Colors.grey[700],
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Municipality Selection
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Municipality',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: chitwanMunicipalities.map((municipality) {
-                      bool isSelected = selectedMunicipality == municipality;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedMunicipality = municipality;
-                          });
-                        },
-                        child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.blueAccent
-                                : Colors.grey[200],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            municipality,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  isSelected ? Colors.white : Colors.grey[800],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(
-              height: 10,
-            ),
-
-            // Vehicle Mode Selection
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Vehicle Mode',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: vehicleModes.map((mode) {
-                      bool isSelected = selectedMode == mode;
-                      return Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedMode = mode;
-                              fare = FareCalculator.calculateFare(
-                                distance: distance,
-                                vehicleType: selectedVehicleType!,
-                                mode: selectedMode!,
-                                passengers: selectedPassengers,
-                              );
-                            });
-                          },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Colors.blueAccent
-                                  : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Text(
-                                mode,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.grey[800],
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-
-            // Number of Passengers Selection
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Number of Passengers',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(
-                        selectedVehicleType == 'Motor Bike' ? 1 : 5,
-                        (index) {
-                          int passengerCount = index + 1;
-                          bool isSelected =
-                              selectedPassengers == passengerCount;
-
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: ChoiceChip(
-                              label: Text(
-                                '$passengerCount',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.blue[800],
-                                ),
-                              ),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                setState(() {
-                                  selectedPassengers = passengerCount;
-                                  fare = FareCalculator.calculateFare(
-                                    distance: distance,
-                                    vehicleType: selectedVehicleType!,
-                                    mode: 'Petrol',
-                                    passengers: selectedPassengers,
-                                  );
-                                });
-                              },
-                              selectedColor: Colors.blueAccent,
-                              backgroundColor: Colors.grey[200],
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Total Fare, Distance, and Duration Display
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(26, 68, 137, 255),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Distance:',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                        Text(
-                          'N/A',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[800],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Duration:',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                        Text(
-                          'N/A Min, Driving',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[800],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Total Fare:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange,
-                          ),
-                        ),
-                        Text(
-                          'NPR ${fare.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(
-              height: 10,
-            ),
-            ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-                child: Container(
-                  width: double.infinity, // Full width
-                  height: 50, // Fixed height
-                  decoration: BoxDecoration(
-                    color: Colors.blueAccent, // Vibrant green color
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2), // Subtle shadow
-                        blurRadius: 6,
-                        offset: Offset(0, 3), // Shadow position
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Hail a Ride',
-                      style: TextStyle(
-                        color: Colors.white, // White text for contrast
-                        fontSize: 18, // Slightly larger font size
-                        fontWeight: FontWeight.bold, // Bold text
-                        letterSpacing:
-                            1.0, // Slightly spaced letters for a professional look
-                      ),
-                    ),
-                  ),
-                )),
-
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   final List<Map<String, dynamic>> municipalitySections = [
     {
       'title': 'Chitwan',
@@ -1573,6 +1020,7 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           SizedBox(
@@ -1584,184 +1032,269 @@ class _MapPageState extends State<MapPage> {
                 onPointerMove: (_) {},
                 child: Builder(
                   builder: (BuildContext context) {
-                    return SizedBox(
-                      height: _distance != ''
-                          ? MediaQuery.of(context).size.height * 0.4
-                          : MediaQuery.of(context).size.height * 1,
-                      child: GalliMap(
-                        scrollGestureEnabled: true,
-                        showThree60Widget: false,
-                        showSearchWidget: false,
-                        doubleClickZoomEnabled: true,
-                        dragEnabled: true,
-                        showCurrentLocation: true,
-                        showCurrentLocationButton: true,
-                        authToken: "1b040d87-2d67-47d5-aa97-f8b47d301fec",
-                        size: (
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                        ),
-                        compassPosition: (
-                          position: CompassViewPosition.topRight,
-                          offset: const Point(32, 82)
-                        ),
-                        showCompass: true,
-                        onMapCreated: (newC) {
-                          controller = newC;
-                          setState(() {});
-                        },
-                        onMapClick: (LatLng latLng) {},
-                        onMapLongPress: (LatLng latlng) {},
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 35,
-                                  left: 20,
-                                ),
-                                child: Icon(
-                                  Icons.arrow_back_ios_outlined,
-                                  color: Colors.blueAccent,
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, top: 35),
-                                child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.78,
-                                  child: Form(
-                                    key: _formKey,
-                                    child: TextFormField(
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return "Please enter Location";
-                                        }
-                                        return null; // Return null if validation passes
-                                      },
-                                      onFieldSubmitted: _handleSearch,
-
-                                      controller: _searchController,
-                                      decoration: InputDecoration(
-                                        // Add a hint text
-                                        hintText: 'Full Location',
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 16,
-                                          fontStyle: FontStyle.italic,
-                                        ),
-                                        // Add a prefix icon (e.g., a search icon)
-                                        prefixIcon: Icon(
-                                          Icons.search,
-                                          color: Colors.blue[700],
-                                          size: 24,
-                                        ),
-                                        // Add a border with rounded corners
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.blue[700]!,
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        // Customize the focused border
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.blue[700]!,
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        // Customize the enabled border
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.grey[400]!,
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        // Add a filled background color
-                                        filled: true,
-                                        fillColor: const Color.fromARGB(
-                                            200, 255, 255, 255),
-                                        // Add a suffix icon (e.g., a clear button)
-                                        suffixIcon: _searchController.text
-                                                .trim()
-                                                .isNotEmpty
-                                            ? IconButton(
-                                                icon: Icon(
-                                                  Icons.clear,
-                                                  color: Colors.grey[600],
-                                                  size: 20,
-                                                ),
-                                                onPressed: () {
-                                                  _searchController.clear();
-                                                  setState(() {});
-                                                },
-                                              )
-                                            : null,
-                                        // Add padding inside the TextField
-                                        contentPadding: EdgeInsets.symmetric(
-                                          vertical: 5.0,
-                                          horizontal: 20.0,
-                                        ),
-                                      ),
-                                      // Customize the text style
-                                      style: TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      // Add cursor customization
-                                      cursorColor: Colors.blue[700],
-                                      cursorWidth: 2.0,
-                                      cursorRadius: Radius.circular(2.0),
+                    return ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(20)),
+                      child: SizedBox(
+                        height: _distance != ''
+                            ? MediaQuery.of(context).size.height * 0.4
+                            : MediaQuery.of(context).size.height * 1,
+                        child: GalliMap(
+                          scrollGestureEnabled: true,
+                          showThree60Widget: false,
+                          showSearchWidget: false,
+                          doubleClickZoomEnabled: true,
+                          dragEnabled: true,
+                          showCurrentLocation: true,
+                          showCurrentLocationButton: true,
+                          authToken: "1b040d87-2d67-47d5-aa97-f8b47d301fec",
+                          size: (
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                          ),
+                          compassPosition: (
+                            position: CompassViewPosition.topRight,
+                            offset: const Point(32, 82)
+                          ),
+                          showCompass: true,
+                          onMapCreated: (newC) {
+                            controller = newC;
+                            setState(() {});
+                          },
+                          onMapClick: (LatLng latLng) {},
+                          onMapLongPress: (LatLng latlng) {},
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 25,
+                                    left: 20,
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  HomePage1()));
+                                    },
+                                    child: Icon(
+                                      Icons.arrow_back_ios_outlined,
+                                      color: Colors.black87,
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          if (_searchQuery.isNotEmpty &&
-                              _distance != '' &&
-                              _duration != '' &&
-                              _deliveryLocation != '')
-                            Positioned(
-                              bottom: 50.0,
-                              left: 16.0,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Container(
-                                  color: const Color.fromARGB(235, 80, 91, 247),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12.0, vertical: 8.0),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Colors.white,
-                                        size: 16,
+
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 10, top: 25),
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.78,
+                                    child: Form(
+                                      key: _formKey,
+                                      child: TextFormField(
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return "Please enter Location";
+                                          }
+                                          return null; // Return null if validation passes
+                                        },
+                                        onFieldSubmitted: _handleSearch,
+                                        controller: _searchController,
+                                        decoration: InputDecoration(
+                                          // Hint text with a subtle style
+                                          hintText: 'Enter Full Location',
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 16,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                          // Prefix icon (search icon)
+                                          prefixIcon: Icon(
+                                            Icons.search,
+                                            color: Colors.blue[700],
+                                            size: 24,
+                                          ),
+                                          // Border with rounded corners and shadow
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            borderSide: BorderSide(
+                                              color: Colors.blue[700]!,
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                          // Focused border with a glowing effect
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            borderSide: BorderSide(
+                                              color: Colors.blue[700]!,
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                          // Enabled border with a subtle color
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            borderSide: BorderSide(
+                                              color: Colors.grey[400]!,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          // Filled background with a slight transparency
+                                          filled: true,
+                                          fillColor:
+                                              Colors.white.withOpacity(0.9),
+                                          // Suffix icon (clear button)
+                                          suffixIcon: _searchController.text
+                                                  .trim()
+                                                  .isNotEmpty
+                                              ? IconButton(
+                                                  icon: Icon(
+                                                    Icons.clear,
+                                                    color: Colors.grey[600],
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () {
+                                                    _searchController.clear();
+                                                    setState(() {});
+                                                  },
+                                                )
+                                              : null,
+                                          // Padding inside the TextField
+                                          contentPadding: EdgeInsets.symmetric(
+                                            vertical: 15.0,
+                                            horizontal: 20.0,
+                                          ),
+                                          // Add a subtle shadow to the container
+                                          enabled: true,
+                                          isDense: true,
+                                          // Add a floating label behavior
+                                          floatingLabelBehavior:
+                                              FloatingLabelBehavior.auto,
+                                        ),
+                                        // Customize the text style
+                                        style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        // Cursor customization
+                                        cursorColor: Colors.blue[700],
+                                        cursorWidth: 2.0,
+                                        cursorRadius: Radius.circular(2.0),
                                       ),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      Text(
-                                        _searchQuery,
-                                        style: GoogleFonts.outfit(
-                                            fontSize: 16.0,
-                                            color: Colors.white),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
+                                // Padding(
+                                //   padding:
+                                //       const EdgeInsets.only(left: 10, top: 35),
+                                //   child: SizedBox(
+                                //     width: MediaQuery.of(context).size.width *
+                                //         0.78,
+                                //     child: Form(
+                                //       key: _formKey,
+                                //       child: TextFormField(
+                                //         validator: (value) {
+                                //           if (value!.isEmpty) {
+                                //             return "Please enter Location";
+                                //           }
+                                //           return null; // Return null if validation passes
+                                //         },
+                                //         onFieldSubmitted: _handleSearch,
+
+                                //         controller: _searchController,
+                                //         decoration: InputDecoration(
+                                //           // Add a hint text
+                                //           hintText: 'Full Location',
+                                //           hintStyle: TextStyle(
+                                //             color: Colors.grey[800],
+                                //             fontSize: 16,
+                                //             fontStyle: FontStyle.italic,
+                                //           ),
+                                //           // Add a prefix icon (e.g., a search icon)
+                                //           prefixIcon: Icon(
+                                //             Icons.search,
+                                //             color: Colors.blue[700],
+                                //             size: 24,
+                                //           ),
+                                //           // Add a border with rounded corners
+                                //           border: OutlineInputBorder(
+                                //             borderRadius:
+                                //                 BorderRadius.circular(12.0),
+                                //             borderSide: BorderSide(
+                                //               color: Colors.blue[700]!,
+                                //               width: 2.0,
+                                //             ),
+                                //           ),
+                                //           // Customize the focused border
+                                //           focusedBorder: OutlineInputBorder(
+                                //             borderRadius:
+                                //                 BorderRadius.circular(12.0),
+                                //             borderSide: BorderSide(
+                                //               color: Colors.blue[700]!,
+                                //               width: 2.0,
+                                //             ),
+                                //           ),
+                                //           // Customize the enabled border
+                                //           enabledBorder: OutlineInputBorder(
+                                //             borderRadius:
+                                //                 BorderRadius.circular(12.0),
+                                //             borderSide: BorderSide(
+                                //               color: Colors.grey[400]!,
+                                //               width: 1.5,
+                                //             ),
+                                //           ),
+                                //           // Add a filled background color
+                                //           filled: true,
+                                //           fillColor: const Color.fromARGB(
+                                //               200, 255, 255, 255),
+                                //           // Add a suffix icon (e.g., a clear button)
+                                //           suffixIcon: _searchController.text
+                                //                   .trim()
+                                //                   .isNotEmpty
+                                //               ? IconButton(
+                                //                   icon: Icon(
+                                //                     Icons.clear,
+                                //                     color: Colors.grey[600],
+                                //                     size: 20,
+                                //                   ),
+                                //                   onPressed: () {
+                                //                     _searchController.clear();
+                                //                     setState(() {});
+                                //                   },
+                                //                 )
+                                //               : null,
+                                //           // Add padding inside the TextField
+                                //           contentPadding: EdgeInsets.symmetric(
+                                //             vertical: 5.0,
+                                //             horizontal: 20.0,
+                                //           ),
+                                //         ),
+                                //         // Customize the text style
+                                //         style: TextStyle(
+                                //           color: Colors.black87,
+                                //           fontSize: 16,
+                                //           fontWeight: FontWeight.w500,
+                                //         ),
+                                //         // Add cursor customization
+                                //         cursorColor: Colors.blue[700],
+                                //         cursorWidth: 2.0,
+                                //         cursorRadius: Radius.circular(2.0),
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
                             ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },

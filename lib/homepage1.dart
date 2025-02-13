@@ -706,7 +706,7 @@ class _HomePage1State extends State<HomePage1> {
                   //     )),
 
                   Positioned(
-                      top: -30,
+                      top: 0,
                       right: 0,
                       child: ClipRRect(
                         borderRadius: BorderRadius.only(
@@ -715,8 +715,8 @@ class _HomePage1State extends State<HomePage1> {
                         ),
                         child: Container(
                           color: Colors.blueAccent,
-                          height: 90,
-                          width: 80,
+                          height: 70,
+                          width: 70,
                           child: Center(
                             child: GestureDetector(
                               onTap: () {

@@ -7,9 +7,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:final_menu/login_screen/sign_up_page.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.blueAccent, // Choose your preferred color
+    statusBarBrightness: Brightness.dark, // Change the text color of status bar
+  ));
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
