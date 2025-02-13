@@ -1125,7 +1125,7 @@ class _MapPageState extends State<MapPage> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 28,
+                                    top: 31,
                                     left: 20,
                                   ),
                                   child: GestureDetector(
@@ -1145,7 +1145,7 @@ class _MapPageState extends State<MapPage> {
 
                                 Padding(
                                   padding:
-                                      const EdgeInsets.only(left: 10, top: 28),
+                                      const EdgeInsets.only(left: 10, top: 31),
                                   child: SizedBox(
                                     width: MediaQuery.of(context).size.width *
                                         0.78,
@@ -1170,8 +1170,8 @@ class _MapPageState extends State<MapPage> {
                                           ),
                                           // Prefix icon (search icon)
                                           prefixIcon: Icon(
-                                            Icons.search,
-                                            color: Colors.blue[700],
+                                            Icons.location_on,
+                                            color: Colors.green,
                                             size: 24,
                                           ),
                                           // Border with rounded corners and shadow
