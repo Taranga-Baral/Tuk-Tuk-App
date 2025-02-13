@@ -1,6 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/galli_maps/booking_option_with_firebase.dart';
+import 'package:final_menu/homepage1.dart';
+import 'package:final_menu/request_from_driver_page.dart/request.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:galli_vector_package/galli_vector_package.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,8 +15,120 @@ import 'package:location/location.dart';
 import 'package:final_menu/models/api.dart';
 import 'package:http/http.dart' as http;
 
+// class FareCalculator {
+//   static double calculateFare({
+//     required String distance,
+//     required String vehicleType,
+//     required String mode,
+//     required int passengers,
+//   }) {
+//     double rate = 0;
+//     double distanceKm = double.parse(distance) / 1000;
+//     DateTime now = DateTime.now();
+//     int currentHour = now.hour;
+//     bool isDaytime = currentHour >= 6 && currentHour < 18;
+//     double timeMultiplier = isDaytime ? 1 : 1.1;
+
+//     // Define fare rates for each vehicle type and mode
+//     final Map<String, Map<String, List<double>>> fareRates = {
+//       'Tuk Tuk': {
+//         'Petrol': [2.4, 4.5, 7, 9, 11.5, 14],
+//         'Electric': [1, 1.6, 2.4, 3.4, 4.2, 5],
+//       },
+//       'Motor Bike': {
+//         'Petrol': [1.6, 1.2],
+//         'Electric': [1, 0.75],
+//       },
+//       'Taxi': {
+//         'Petrol': [10, 7.5],
+//         'Electric': [4, 3],
+//       },
+//     };
+
+//     // Get the rate based on vehicle type, mode, and passengers
+//     if (fareRates.containsKey(vehicleType) &&
+//         fareRates[vehicleType]!.containsKey(mode)) {
+//       List<double> rates = fareRates[vehicleType]![mode]!;
+//       rate = rates[passengers - 1]; // Adjust for 0-based index
+//     }
+
+//     // Apply distance and time-based multiplier
+//     return (distanceKm * 10) *
+//         rate *
+//         timeMultiplier *
+//         (isDaytime ? 1.01 : 0.99);
+//   }
+// }
+
+class FareCalculator {
+  static double calculateFare({
+    required String distance,
+    required String vehicleType,
+    required String mode,
+    required int passengers,
+  }) {
+    double rate = 0;
+    double distanceKm =
+        double.parse(distance) / 1000; // Convert meters to kilometers
+    DateTime now = DateTime.now();
+    int currentHour = now.hour;
+    bool isDaytime = currentHour >= 6 && currentHour < 18;
+    double timeMultiplier = isDaytime ? 1 : 1.1; // Nighttime surcharge
+
+    // Define fare rates for each vehicle type and mode
+    final Map<String, Map<String, List<double>>> fareRates = {
+      'Tuk Tuk': {
+        'Petrol': [2.4, 4.5, 7, 9, 11.5, 14], // Rates for 1 to 5 passengers
+        'Electric': [1, 1.6, 2.4, 3.4, 4.2, 5], // Rates for 1 to 5 passengers
+      },
+      'Motor Bike': {
+        'Petrol': [1.6], // Only 1 passenger allowed
+        'Electric': [1], // Only 1 passenger allowed
+      },
+      'Taxi': {
+        'Petrol': [10], // Fixed rate for up to 5 passengers
+        'Electric': [4], // Fixed rate for up to 5 passengers
+      },
+    };
+
+    // Validate passengers based on vehicle type
+    if (vehicleType == 'Motor Bike' && passengers > 1) {
+      throw Exception('Motor Bike can only carry 1 passenger.');
+    }
+    if (vehicleType == 'Tuk Tuk' && passengers > 5) {
+      throw Exception('Tuk Tuk can only carry up to 5 passengers.');
+    }
+    if (vehicleType == 'Taxi' && passengers > 5) {
+      throw Exception('Taxi can only carry up to 5 passengers.');
+    }
+
+    // Get the rate based on vehicle type, mode, and passengers
+    if (fareRates.containsKey(vehicleType) &&
+        fareRates[vehicleType]!.containsKey(mode)) {
+      List<double> rates = fareRates[vehicleType]![mode]!;
+
+      // For Taxi, use the fixed rate regardless of passengers
+      if (vehicleType == 'Taxi') {
+        rate = rates[0]; // Fixed rate for Taxi
+      }
+      // For Tuk Tuk, use the rate based on passengers
+      else if (vehicleType == 'Tuk Tuk') {
+        rate = rates[passengers - 1]; // Adjust for 0-based index
+      }
+      // For Motor Bike, use the fixed rate
+      else if (vehicleType == 'Motor Bike') {
+        rate = rates[0]; // Fixed rate for Motor Bike
+      }
+    }
+
+    // Apply distance and time-based multiplier
+    return (distanceKm * 10) * rate * timeMultiplier;
+  }
+}
+
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  final String userId;
+  const MapPage({super.key, required this.userId});
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -19,9 +137,16 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   MapLibreMapController? controller;
   Line? _selectedLine;
+  String _distance = '';
+  bool _distanceResetViewBookingOption = true;
+  String _duration = '';
+  String _deliveryLocation = '';
   Symbol? _selectedSymbol;
   Symbol? _selectedSymbol1;
   String _searchQuery = '';
+  String _pickupLocation = '';
+  double _heightOfMap = 1;
+
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -31,6 +156,1348 @@ class _MapPageState extends State<MapPage> {
   LocationData? _currentLocation;
   ApiModels apimodels = ApiModels();
   final List<Line> _routeLines = [];
+  List<String> searchResults = [];
+  List<String> searchResultsDelivery = [];
+  TextEditingController pickupTextController = TextEditingController();
+  TextEditingController deliveryTextController = TextEditingController();
+  bool _isLoading = true;
+  String? selectedMunicipality;
+  int? previousPassengers;
+  String? selectedMode = 'Petrol';
+  String? selectedVehicleType = 'Tuk Tuk';
+  int selectedPassengers = 1;
+  int previousPassengersForTukTuk =
+      1; // To store previous selection for Tuk Tuk
+  int previousPassengersForTaxi = 1; // To store previous selection for Taxi
+  double fare = 0.0;
+  bool isBookingInProgress = false; // Add this variable
+  bool isPickupTextFieldEnabled = true;
+  bool isDeliveryTextFieldEnabled = true;
+
+  Future<void> _storeDataInFirestore(Map<String, dynamic> data) async {
+    try {
+      await FirebaseFirestore.instance.collection('trips').doc().set(data);
+    } catch (e) {
+      print('Error storing data: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> _getUserDetails() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        return userDoc.data() ?? {};
+      } catch (e) {
+        print('Error fetching user details: $e');
+      }
+    }
+    return {};
+  }
+
+  // void _calculateFare(String distance) {
+  //   double rate = 0;
+  //   print(distance);
+  //   double distancedoublevar = double.parse(distance);
+  //   int distanceintvarwithoutroundoff = distancedoublevar.toInt();
+  //   int distanceintvar = distanceintvarwithoutroundoff.round();
+
+  //   DateTime now = DateTime.now();
+  //   int currentHour = now.hour;
+  //   //daytime is equal to 6 to 6
+  //   bool isDaytime = currentHour >= 6 && currentHour < 18;
+
+  //   // Default rate modifier for daytime is 1, and for nighttime it's 1.05
+  //   double timeMultiplier = isDaytime ? 1 : 1.1;
+
+  //   if (selectedVehicleType == 'Tuk Tuk') {
+  //     // Calculate base rate based on distance and mode
+  //     if (distanceintvar <= 7) {
+  //       if (selectedMode == 'Petrol') {
+  //         if (selectedPassengers == 1) {
+  //           rate = 2.4;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 4.5;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 7;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 9;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 11.5;
+  //         } else {
+  //           rate = 14;
+  //         }
+  //       } else {
+  //         // Non-petrol mode
+  //         if (selectedPassengers == 1) {
+  //           rate = 1;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 1.6;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 2.4;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 3.4;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 4.2;
+  //         } else {
+  //           rate = 5;
+  //         }
+  //       }
+  //     } else {
+  //       // Distance greater than 7 km
+  //       if (selectedMode == 'Petrol') {
+  //         if (selectedPassengers == 1) {
+  //           rate = 1.9;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 3.6;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 5.5;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 7.4;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 9.7;
+  //         } else {
+  //           rate = 12;
+  //         }
+  //       } else {
+  //         // Non-petrol mode
+  //         if (selectedPassengers == 1) {
+  //           rate = 0.75;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 1.4;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 4.3;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 5.7;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 7;
+  //         } else {
+  //           rate = 8.5;
+  //         }
+  //       }
+  //     }
+  //   } else if (selectedVehicleType == 'Motor Bike') {
+  //     // Calculate base rate based on distance and mode
+  //     if (distanceintvar <= 10) {
+  //       if (selectedMode == 'Petrol') {
+  //         if (selectedPassengers == 1) {
+  //           rate = 1.6;
+  //         }
+  //       } else {
+  //         // Non-petrol mode
+  //         if (selectedPassengers == 1) {
+  //           rate = 1;
+  //         }
+  //       }
+  //     } else {
+  //       // Distance greater than 7 km
+  //       if (selectedMode == 'Petrol') {
+  //         if (selectedPassengers == 1) {
+  //           rate = 1.2;
+  //         }
+  //       } else {
+  //         // Non-petrol mode
+  //         if (selectedPassengers == 1) {
+  //           rate = 0.75;
+  //         }
+  //       }
+  //     }
+  //   } else if (selectedVehicleType == 'Taxi') {
+  //     // Calculate base rate based on distance and mode
+  //     if (distanceintvar <= 7) {
+  //       if (selectedMode == 'Petrol') {
+  //         if (selectedPassengers == 1) {
+  //           rate = 10;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 10;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 10;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 10;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 10;
+  //         } else {
+  //           rate = 10;
+  //         }
+  //       } else {
+  //         // Non-petrol mode
+  //         if (selectedPassengers == 1) {
+  //           rate = 4;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 4;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 4;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 4;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 4;
+  //         } else {
+  //           rate = 4;
+  //         }
+  //       }
+  //     } else {
+  //       // Distance greater than 7 km
+  //       if (selectedMode == 'Petrol') {
+  //         if (selectedPassengers == 1) {
+  //           rate = 7.5;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 7.5;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 7.5;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 7.5;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 7.5;
+  //         } else {
+  //           rate = 7.5;
+  //         }
+  //       } else {
+  //         // Non-petrol mode
+  //         if (selectedPassengers == 1) {
+  //           rate = 3;
+  //         } else if (selectedPassengers == 2) {
+  //           rate = 3;
+  //         } else if (selectedPassengers == 3) {
+  //           rate = 3;
+  //         } else if (selectedPassengers == 4) {
+  //           rate = 3;
+  //         } else if (selectedPassengers == 5) {
+  //           rate = 3;
+  //         } else {
+  //           rate = 3;
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   // Apply distance and the time-based multiplier to the fare calculation
+  //   fare = (double.parse(distance) * 10) *
+  //       rate *
+  //       timeMultiplier *
+  //       (isDaytime ? 1.01 : 0.99);
+
+  //   // Print to check if it's daytime or nighttime and the calculated fare
+  //   print("Booking time: ${isDaytime ? 'Daytime' : 'Nighttime'}");
+  //   print('Calculated fare: $fare');
+  //   print('Selected Vehicle Type: $selectedVehicleType');
+  // }
+
+  Widget _buildVehicleTypeSelector(
+      String distance, String duration, StateSetter setState) {
+    final List<String> vehicleTypes = ['Tuk Tuk', 'Motor Bike', 'Taxi'];
+    final List<String> vehicleModes = ['Petrol', 'Electric'];
+    final List<String> vehicleImages = [
+      'assets/homepage_tuktuk.png',
+      'assets/homepage_motorbike.png',
+      'assets/homepage_taxi.png'
+    ];
+
+    final List<String> chitwanMunicipalities = [
+      'Bharatpur Metropolitan City',
+      'Kalika Municipality',
+      'Khairahani Municipality',
+      'Madi Municipality',
+      'Ratnanagar Municipality',
+      'Rapti Municipality',
+      'Ichchhakamana Rural Municipality',
+    ];
+
+    void mapHeightWhenFirstBooked() {
+      setState(
+        () {
+          _heightOfMap = 0;
+        },
+      );
+    }
+
+    void mapHeightWhenMapButtonClicked() {
+      setState(
+        () {
+          _heightOfMap = 0.4;
+        },
+      );
+    }
+
+    mapHeightWhenFirstBooked();
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 30,
+          right: 12,
+          left: 12,
+        ), // Reduced padding for a compact UI
+        child: Column(
+          children: [
+            //home buttons
+            ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Map Button (Green)
+                    GestureDetector(
+                      onTap: () {
+                        // mapHeightWhenMapButtonClicked();
+                        // setState(
+                        //   () {
+                        //     _heightOfMap = 0.4;
+                        //   },
+                        // );
+                        // setState(() {});
+                        setState(() {
+                          _distanceResetViewBookingOption = false;
+                        });
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width *
+                            0.25, // Smaller width
+                        height: 35, // Smaller height
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius:
+                              BorderRadius.circular(8), // Smaller border radius
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Map',
+                            style: TextStyle(
+                              color: Colors
+                                  .white, // White text for better contrast
+                              fontSize: 14, // Smaller font size
+                              fontWeight: FontWeight.w600, // Semi-bold
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Cancel Icon (Red)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MapPage(userId: widget.userId)));
+                      },
+                      child: Icon(
+                        Icons.cancel,
+                        color: Colors.red, // Red color for the cancel icon
+                        size: 30, // Slightly larger size for better visibility
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            // Pickup and Delivery Locations
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   'Locations (from, to)',
+                  //   style: TextStyle(
+                  //     fontSize: 16,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: Colors.orange[800],
+                  //   ),
+                  // ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.green, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _pickupLocation,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.red, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _deliveryLocation,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Vehicle Type Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Vehicle Type',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    height: 100, // Reduced height for a compact UI
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: vehicleTypes.length,
+                      itemBuilder: (context, index) {
+                        bool isSelected =
+                            selectedVehicleType == vehicleTypes[index];
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedVehicleType = vehicleTypes[index];
+                              selectedPassengers =
+                                  1; // Reset passengers when vehicle changes
+                              fare = FareCalculator.calculateFare(
+                                distance: distance,
+                                vehicleType: selectedVehicleType!,
+                                mode: selectedMode!,
+                                passengers: selectedPassengers,
+                              );
+                            });
+                          },
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.25, // Reduced width for a compact UI
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? Colors.blueAccent
+                                          : Colors.grey[300]!,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Image.asset(
+                                    vehicleImages[index],
+                                    height:
+                                        50, // Reduced height for a compact UI
+                                    width: 50, // Reduced width for a compact UI
+                                  ),
+                                ),
+                                SizedBox(height: 6),
+                                Text(
+                                  vehicleTypes[index],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: isSelected
+                                        ? Colors.blueAccent
+                                        : Colors.grey[700],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Municipality Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Municipality',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: chitwanMunicipalities.map((municipality) {
+                      bool isSelected = selectedMunicipality == municipality;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedMunicipality = municipality;
+                          });
+                        },
+                        child: Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.blueAccent
+                                : Colors.grey[200],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            municipality,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:
+                                  isSelected ? Colors.white : Colors.grey[800],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            // Vehicle Mode Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Vehicle Mode',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: vehicleModes.map((mode) {
+                      bool isSelected = selectedMode == mode;
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedMode = mode;
+                              fare = FareCalculator.calculateFare(
+                                distance: distance,
+                                vehicleType: selectedVehicleType!,
+                                mode: selectedMode!,
+                                passengers: selectedPassengers,
+                              );
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 4),
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.blueAccent
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                mode,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[800],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            // Number of Passengers Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Number of Passengers',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        selectedVehicleType == 'Motor Bike' ? 1 : 5,
+                        (index) {
+                          int passengerCount = index + 1;
+                          bool isSelected =
+                              selectedPassengers == passengerCount;
+
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: ChoiceChip(
+                              label: Text(
+                                '$passengerCount',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.blue[800],
+                                ),
+                              ),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                setState(() {
+                                  selectedPassengers = passengerCount;
+                                  fare = FareCalculator.calculateFare(
+                                    distance: distance,
+                                    vehicleType: selectedVehicleType!,
+                                    mode: 'Petrol',
+                                    passengers: selectedPassengers,
+                                  );
+                                });
+                              },
+                              selectedColor: Colors.blueAccent,
+                              backgroundColor: Colors.grey[200],
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Total Fare, Distance, and Duration Display
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(26, 68, 137, 255),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Distance:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        Text(
+                          '${(double.parse(_distance) / 1000).toStringAsFixed(1)} km',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[800],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Duration:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        Text(
+                          '~ ${(double.parse(_duration) / 60).toStringAsFixed(0)} Min, Driving',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[800],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total Fare:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        Text(
+                          'NPR ${fare.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+            ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                child: Container(
+                  width: double.infinity, // Full width
+                  height: 50, // Fixed height
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent, // Vibrant green color
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2), // Subtle shadow
+                        blurRadius: 6,
+                        offset: Offset(0, 3), // Shadow position
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Hail a Ride',
+                      style: TextStyle(
+                        color: Colors.white, // White text for contrast
+                        fontSize: 18, // Slightly larger font size
+                        fontWeight: FontWeight.bold, // Bold text
+                        letterSpacing:
+                            1.0, // Slightly spaced letters for a professional look
+                      ),
+                    ),
+                  ),
+                )),
+
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _noBuildVehicleSelection(
+      String distance, String duration, StateSetter setState) {
+    final List<String> vehicleTypes = ['Tuk Tuk', 'Motor Bike', 'Taxi'];
+    final List<String> vehicleModes = ['Petrol', 'Electric'];
+    final List<String> vehicleImages = [
+      'assets/homepage_tuktuk.png',
+      'assets/homepage_motorbike.png',
+      'assets/homepage_taxi.png'
+    ];
+
+    final List<String> chitwanMunicipalities = [
+      'Bharatpur Metropolitan City',
+      'Kalika Municipality',
+      'Khairahani Municipality',
+      'Madi Municipality',
+      'Ratnanagar Municipality',
+      'Rapti Municipality',
+      'Ichchhakamana Rural Municipality',
+    ];
+
+    void mapHeightWhenFirstBooked() {
+      setState(
+        () {
+          _heightOfMap = 0;
+        },
+      );
+    }
+
+    void mapHeightWhenMapButtonClicked() {
+      setState(
+        () {
+          _heightOfMap = 0.4;
+        },
+      );
+    }
+
+    mapHeightWhenFirstBooked();
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 30,
+          right: 12,
+          left: 12,
+        ), // Reduced padding for a compact UI
+        child: Column(
+          children: [
+            //home buttons
+            ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Map Button (Green)
+                    GestureDetector(
+                      onTap: () {
+                        // mapHeightWhenMapButtonClicked();
+                        // setState(
+                        //   () {
+                        //     _heightOfMap = 0.4;
+                        //   },
+                        // );
+                        // setState(() {});
+                        setState(() {
+                          _distanceResetViewBookingOption = false;
+                        });
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width *
+                            0.25, // Smaller width
+                        height: 35, // Smaller height
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius:
+                              BorderRadius.circular(8), // Smaller border radius
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Map',
+                            style: TextStyle(
+                              color: Colors
+                                  .white, // White text for better contrast
+                              fontSize: 14, // Smaller font size
+                              fontWeight: FontWeight.w600, // Semi-bold
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Cancel Icon (Red)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MapPage(userId: widget.userId)));
+                      },
+                      child: Icon(
+                        Icons.cancel,
+                        color: Colors.red, // Red color for the cancel icon
+                        size: 30, // Slightly larger size for better visibility
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            // Pickup and Delivery Locations
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   'Locations (from, to)',
+                  //   style: TextStyle(
+                  //     fontSize: 16,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: Colors.orange[800],
+                  //   ),
+                  // ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.green, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _pickupLocation,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.red, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _deliveryLocation,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Vehicle Type Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Vehicle Type',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    height: 100, // Reduced height for a compact UI
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: vehicleTypes.length,
+                      itemBuilder: (context, index) {
+                        bool isSelected =
+                            selectedVehicleType == vehicleTypes[index];
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedVehicleType = vehicleTypes[index];
+                              selectedPassengers =
+                                  1; // Reset passengers when vehicle changes
+                              fare = FareCalculator.calculateFare(
+                                distance: distance,
+                                vehicleType: selectedVehicleType!,
+                                mode: selectedMode!,
+                                passengers: selectedPassengers,
+                              );
+                            });
+                          },
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.25, // Reduced width for a compact UI
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? Colors.blueAccent
+                                          : Colors.grey[300]!,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Image.asset(
+                                    vehicleImages[index],
+                                    height:
+                                        50, // Reduced height for a compact UI
+                                    width: 50, // Reduced width for a compact UI
+                                  ),
+                                ),
+                                SizedBox(height: 6),
+                                Text(
+                                  vehicleTypes[index],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: isSelected
+                                        ? Colors.blueAccent
+                                        : Colors.grey[700],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Municipality Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Municipality',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: chitwanMunicipalities.map((municipality) {
+                      bool isSelected = selectedMunicipality == municipality;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedMunicipality = municipality;
+                          });
+                        },
+                        child: Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.blueAccent
+                                : Colors.grey[200],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            municipality,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:
+                                  isSelected ? Colors.white : Colors.grey[800],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+
+            // Vehicle Mode Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Vehicle Mode',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: vehicleModes.map((mode) {
+                      bool isSelected = selectedMode == mode;
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedMode = mode;
+                              fare = FareCalculator.calculateFare(
+                                distance: distance,
+                                vehicleType: selectedVehicleType!,
+                                mode: selectedMode!,
+                                passengers: selectedPassengers,
+                              );
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 4),
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.blueAccent
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                mode,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[800],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            // Number of Passengers Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Select Number of Passengers',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        selectedVehicleType == 'Motor Bike' ? 1 : 5,
+                        (index) {
+                          int passengerCount = index + 1;
+                          bool isSelected =
+                              selectedPassengers == passengerCount;
+
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: ChoiceChip(
+                              label: Text(
+                                '$passengerCount',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.blue[800],
+                                ),
+                              ),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                setState(() {
+                                  selectedPassengers = passengerCount;
+                                  fare = FareCalculator.calculateFare(
+                                    distance: distance,
+                                    vehicleType: selectedVehicleType!,
+                                    mode: 'Petrol',
+                                    passengers: selectedPassengers,
+                                  );
+                                });
+                              },
+                              selectedColor: Colors.blueAccent,
+                              backgroundColor: Colors.grey[200],
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Total Fare, Distance, and Duration Display
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(26, 68, 137, 255),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Distance:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        Text(
+                          'N/A',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[800],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Duration:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        Text(
+                          'N/A Min, Driving',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[800],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total Fare:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        Text(
+                          'NPR ${fare.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(
+              height: 10,
+            ),
+            ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                child: Container(
+                  width: double.infinity, // Full width
+                  height: 50, // Fixed height
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent, // Vibrant green color
+                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2), // Subtle shadow
+                        blurRadius: 6,
+                        offset: Offset(0, 3), // Shadow position
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Hail a Ride',
+                      style: TextStyle(
+                        color: Colors.white, // White text for contrast
+                        fontSize: 18, // Slightly larger font size
+                        fontWeight: FontWeight.bold, // Bold text
+                        letterSpacing:
+                            1.0, // Slightly spaced letters for a professional look
+                      ),
+                    ),
+                  ),
+                )),
+
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   final List<Map<String, dynamic>> municipalitySections = [
     {
@@ -106,113 +1573,126 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  color: Colors.transparent,
-                  height: MediaQuery.of(context).size.height,
-                  width: double.infinity,
-                  child: GalliMap(
-                    showThree60Widget: false,
-                    showSearchWidget: false,
-                    doubleClickZoomEnabled: true,
-                    dragEnabled: true,
-                    showCurrentLocation: true,
-                    showCurrentLocationButton: true,
-                    authToken: "1b040d87-2d67-47d5-aa97-f8b47d301fec",
-                    size: (
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                    ),
-                    compassPosition: (
-                      position: CompassViewPosition.topRight,
-                      offset: const Point(32, 82)
-                    ),
-                    showCompass: true,
-                    onMapCreated: (newC) {
-                      controller = newC;
-                      setState(() {});
-                    },
-                    onMapClick: (LatLng latLng) {},
-                    onMapLongPress: (LatLng latlng) {},
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: Column(
+        children: [
+          SizedBox(
+              height: _distance != ''
+                  ? MediaQuery.of(context).size.height * 0.4
+                  : MediaQuery.of(context).size.height * 1,
+              width: double.infinity,
+              child: Listener(
+                onPointerMove: (_) {},
+                child: Builder(
+                  builder: (BuildContext context) {
+                    return SizedBox(
+                      height: _distance != ''
+                          ? MediaQuery.of(context).size.height * 0.4
+                          : MediaQuery.of(context).size.height * 1,
+                      child: GalliMap(
+                        scrollGestureEnabled: true,
+                        showThree60Widget: false,
+                        showSearchWidget: false,
+                        doubleClickZoomEnabled: true,
+                        dragEnabled: true,
+                        showCurrentLocation: true,
+                        showCurrentLocationButton: true,
+                        authToken: "1b040d87-2d67-47d5-aa97-f8b47d301fec",
+                        size: (
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                        ),
+                        compassPosition: (
+                          position: CompassViewPosition.topRight,
+                          offset: const Point(32, 82)
+                        ),
+                        showCompass: true,
+                        onMapCreated: (newC) {
+                          controller = newC;
+                          setState(() {});
+                        },
+                        onMapClick: (LatLng latLng) {},
+                        onMapLongPress: (LatLng latlng) {},
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: 35,
-                              left: 20,
-                            ),
-                            child: Icon(
-                              Icons.arrow_back_ios_outlined,
-                              color: Colors.blueAccent,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10, top: 35),
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.78,
-                              child: Form(
-                                key: _formKey,
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Please enter Location";
-                                    }
-                                    return null; // Return null if validation passes
-                                  },
-                                  onFieldSubmitted: _handleSearch,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 35,
+                                  left: 20,
+                                ),
+                                child: Icon(
+                                  Icons.arrow_back_ios_outlined,
+                                  color: Colors.blueAccent,
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, top: 35),
+                                child: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.78,
+                                  child: Form(
+                                    key: _formKey,
+                                    child: TextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Please enter Location";
+                                        }
+                                        return null; // Return null if validation passes
+                                      },
+                                      onFieldSubmitted: _handleSearch,
 
-                                  controller: _searchController,
-                                  decoration: InputDecoration(
-                                    // Add a hint text
-                                    hintText: 'Full Location',
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    // Add a prefix icon (e.g., a search icon)
-                                    prefixIcon: Icon(
-                                      Icons.search,
-                                      color: Colors.blue[700],
-                                      size: 24,
-                                    ),
-                                    // Add a border with rounded corners
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[700]!,
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                    // Customize the focused border
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      borderSide: BorderSide(
-                                        color: Colors.blue[700]!,
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                    // Customize the enabled border
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      borderSide: BorderSide(
-                                        color: Colors.grey[400]!,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    // Add a filled background color
-                                    filled: true,
-                                    fillColor: const Color.fromARGB(
-                                        200, 255, 255, 255),
-                                    // Add a suffix icon (e.g., a clear button)
-                                    suffixIcon:
-                                        _searchController.text.trim().isNotEmpty
+                                      controller: _searchController,
+                                      decoration: InputDecoration(
+                                        // Add a hint text
+                                        hintText: 'Full Location',
+                                        hintStyle: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 16,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                        // Add a prefix icon (e.g., a search icon)
+                                        prefixIcon: Icon(
+                                          Icons.search,
+                                          color: Colors.blue[700],
+                                          size: 24,
+                                        ),
+                                        // Add a border with rounded corners
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          borderSide: BorderSide(
+                                            color: Colors.blue[700]!,
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        // Customize the focused border
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          borderSide: BorderSide(
+                                            color: Colors.blue[700]!,
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        // Customize the enabled border
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          borderSide: BorderSide(
+                                            color: Colors.grey[400]!,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        // Add a filled background color
+                                        filled: true,
+                                        fillColor: const Color.fromARGB(
+                                            200, 255, 255, 255),
+                                        // Add a suffix icon (e.g., a clear button)
+                                        suffixIcon: _searchController.text
+                                                .trim()
+                                                .isNotEmpty
                                             ? IconButton(
                                                 icon: Icon(
                                                   Icons.clear,
@@ -225,65 +1705,79 @@ class _MapPageState extends State<MapPage> {
                                                 },
                                               )
                                             : null,
-                                    // Add padding inside the TextField
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 5.0,
-                                      horizontal: 20.0,
+                                        // Add padding inside the TextField
+                                        contentPadding: EdgeInsets.symmetric(
+                                          vertical: 5.0,
+                                          horizontal: 20.0,
+                                        ),
+                                      ),
+                                      // Customize the text style
+                                      style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      // Add cursor customization
+                                      cursorColor: Colors.blue[700],
+                                      cursorWidth: 2.0,
+                                      cursorRadius: Radius.circular(2.0),
                                     ),
                                   ),
-                                  // Customize the text style
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (_searchQuery.isNotEmpty &&
+                              _distance != '' &&
+                              _duration != '' &&
+                              _deliveryLocation != '')
+                            Positioned(
+                              bottom: 50.0,
+                              left: 16.0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  color: const Color.fromARGB(235, 80, 91, 247),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12.0, vertical: 8.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        color: Colors.white,
+                                        size: 16,
+                                      ),
+                                      SizedBox(
+                                        width: 3,
+                                      ),
+                                      Text(
+                                        _searchQuery,
+                                        style: GoogleFonts.outfit(
+                                            fontSize: 16.0,
+                                            color: Colors.white),
+                                      ),
+                                    ],
                                   ),
-                                  // Add cursor customization
-                                  cursorColor: Colors.blue[700],
-                                  cursorWidth: 2.0,
-                                  cursorRadius: Radius.circular(2.0),
                                 ),
                               ),
                             ),
-                          ),
                         ],
                       ),
-                      if (_searchQuery.isNotEmpty)
-                        Positioned(
-                          bottom: 50.0,
-                          left: 16.0,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              color: const Color.fromARGB(235, 80, 91, 247),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 8.0),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Text(
-                                    _searchQuery,
-                                    style: GoogleFonts.outfit(
-                                        fontSize: 16.0, color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              ],
+              )),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: _distance != ''
+                      ? _buildVehicleTypeSelector(
+                          _distance, _duration, setState)
+                      : null),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -390,6 +1884,20 @@ class _MapPageState extends State<MapPage> {
                                   await fetchPickupLocationName();
                                   await fetchLocationName(coordinates);
                                   await fetchDistanceDuration(coordinates);
+
+//start
+                                  if (_searchQuery.isNotEmpty &&
+                                      _distance != '' &&
+                                      _duration != '') {
+                                    fare = FareCalculator.calculateFare(
+                                      distance: _distance,
+                                      vehicleType: selectedVehicleType!,
+                                      mode: 'Petrol',
+                                      passengers: selectedPassengers,
+                                    );
+                                    print('Printed Fare : $fare');
+                                  }
+//end
                                 }
                               },
                               child: Card(
@@ -661,7 +2169,7 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  Future<void> fetchLocationName(LatLng destination) async {
+  Future<bool> fetchLocationName(LatLng destination) async {
     final String destinationnameURL =
         "https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${destination.latitude}&lng=${destination.longitude}";
 
@@ -676,14 +2184,21 @@ class _MapPageState extends State<MapPage> {
           print('Hi there Delivery locname is : $locationName');
           print(
               'Hi there Destination Latitude is : ${destination.latitude}, Destination Longitude is : ${destination.longitude}');
+          setState(() {
+            _deliveryLocation = locationName;
+          });
+          return true;
         } else {
           print('Error: ${jsonResponse['message']}');
+          return false;
         }
       } else {
         print('Failed to load data: ${response.statusCode}');
+        return false;
       }
     } catch (e) {
       print('Exception caught: $e');
+      return false;
     }
   }
 
@@ -710,7 +2225,7 @@ class _MapPageState extends State<MapPage> {
   //   }
   // }
 
-  Future<void> fetchDistanceDuration(LatLng destination) async {
+  Future<bool> fetchDistanceDuration(LatLng destination) async {
     try {
       const String accessToken = '1b040d87-2d67-47d5-aa97-f8b47d301fec';
       const String baseUrl =
@@ -735,19 +2250,25 @@ class _MapPageState extends State<MapPage> {
 
           print('Hi There Distance: $distance meters');
           print('Hi There Duration: $duration seconds');
-
+          setState(() {
+            _distance = distance.toString();
+            _duration = duration.toString();
+          });
           //start
-
+          return true;
           //end
         } else {
           print('Error: ${jsonResponse['message']}');
+          return false;
         }
       } else {
         print('Failed to load data: ${response.statusCode}');
+        return false;
       }
     } catch (e) {
       print('Exception caught: $e');
       // Handle exceptions here, such as network errors or JSON decoding errors
+      return false;
     }
   }
 
@@ -766,6 +2287,9 @@ class _MapPageState extends State<MapPage> {
           print('Hi there Pickup locname is : $locationName');
           print(
               'Hi there Pickup Latitude is : ${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}, Pickup Longitude is : ${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}');
+          setState(() {
+            _pickupLocation = locationName;
+          });
         } else {
           print('Error: ${jsonResponse['message']}');
         }
@@ -813,6 +2337,265 @@ class _MapPageState extends State<MapPage> {
 
       removeGalliMarker();
       removeGalliMarker1();
+    }
+  }
+
+  void _triggerPassengerSelection(int passengerCount, double distance) {
+    setState(() {
+      // Manually trigger the button's touch event for passenger selection
+      selectedPassengers = passengerCount;
+
+      // Call the fare calculation logic
+      fare = FareCalculator.calculateFare(
+        distance: _distance,
+        vehicleType: selectedVehicleType!,
+        mode: selectedMode!,
+        passengers: selectedPassengers,
+      );
+
+      print('Calced Fare: $fare');
+    });
+  }
+
+  void _showSnackbar(String message, BuildContext context) {
+    if (message == 'Enter Proper Address') {
+      // Display alert with error sign
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.topSlide,
+        body: Center(
+          child: Column(
+            children: [
+              Text(
+                'Error',
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 22,
+                    color: Colors.red),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Enter Proper Pickup & Delivery Address',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
+                child: Image(
+                  image: AssetImage('assets/homepage_address_alert.gif'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        descTextStyle: TextStyle(color: Colors.red),
+        alignment: Alignment.center,
+        btnOkOnPress: () {},
+      ).show();
+    } else if (message == 'Select all of the Valid Option') {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.topSlide,
+        body: Center(
+          child: Column(
+            children: [
+              Text(
+                'Error',
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 22,
+                    color: Colors.red),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Select all of the Booking options',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
+                child: Image(
+                  image: AssetImage('assets/homepage_booking_confirmed.gif'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        descTextStyle: TextStyle(color: Colors.red),
+        alignment: Alignment.center,
+        btnOkOnPress: () {},
+      ).show();
+    } else if (message == 'Booking confirmed!') {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.topSlide,
+        dismissOnTouchOutside: false,
+        dismissOnBackKeyPress: false,
+        body: Center(
+          child: Column(
+            children: const [
+              Text(
+                'Success',
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 22,
+                    color: Colors.green),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Booking Confirmed',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        alignment: Alignment.center,
+        btnOkOnPress: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RequestPage(userId: widget.userId)));
+        },
+      ).show();
+
+      // Show full-screen animated flowers overlay
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Prevent dismissing by tapping outside
+        builder: (BuildContext context) {
+          return Stack(
+            children: [
+              // Background with transparency
+              Container(
+                color: Colors.black.withOpacity(0.2),
+              ),
+              // Centered animated image
+              Center(
+                child: Image.asset(
+                  'assets/bloom_booking.png',
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+          );
+        },
+      );
+
+      // Close the overlay after 5 seconds (adjust as needed)
+      Future.delayed(Duration(seconds: 3), () {
+        Navigator.of(context).pop(); // Close the overlay
+      });
+    } else if (message == 'Location permission granted') {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.topSlide,
+        body: Center(
+          child: Column(
+            children: const [
+              Text(
+                'Location Permission Granted',
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 22,
+                    color: Colors.green),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Note: To View your Current Location you need to enable GPS from Notification if it is not Turned on',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        alignment: Alignment.center,
+        btnOkOnPress: () {},
+      ).show();
+    } else {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.topSlide,
+        body: Center(
+          child: Column(
+            children: const [
+              Text(
+                'Location permission Denied',
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 22,
+                    color: Colors.red),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Go to Settings and Enable Location Permission.',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+        ),
+        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+        alignment: Alignment.center,
+        btnOkOnPress: () {},
+      ).show();
     }
   }
 }

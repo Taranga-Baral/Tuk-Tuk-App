@@ -968,8 +968,12 @@ class _HomePage1State extends State<HomePage1> {
 
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MapPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MapPage(
+                              userId: userId,
+                            )));
               },
               child: TextField(
                 controller: searchController,
