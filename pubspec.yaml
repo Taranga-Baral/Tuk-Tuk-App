@@ -85,6 +85,7 @@ dependencies:
   location: ^7.0.0
   galli_vector_package: ^0.0.5
   lottie: ^3.3.1
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:

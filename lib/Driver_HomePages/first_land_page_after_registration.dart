@@ -603,6 +603,8 @@ import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
 import 'package:final_menu/driver_filter_trips/driver_filter_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
+import 'package:final_menu/homepage.dart';
+import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -611,6 +613,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'trip_model.dart';
 import 'trip_card_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DriverHomePage extends StatefulWidget {
   final String driverEmail;
@@ -1146,7 +1149,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => SignInPage(), // Replace with your SignInPage
+            builder: (context) => HomePage1(), // Replace with your SignInPage
           ),
         );
         break;
@@ -1212,7 +1215,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
         ],
       ),
       body: _isLoading && _tripDataList.isEmpty
-          ? Center(child: Image(image: AssetImage('assets/loading_screen.gif'),height: MediaQuery.of(context).size.height *0.3,width: MediaQuery.of(context).size.width *0.3,))
+          ? Center(
+              child: Image(
+                image: AssetImage('assets/no_data_found.gif'),
+                height: MediaQuery.of(context).size.height * 0.3,
+                width: MediaQuery.of(context).size.width * 0.3,
+              ),
+            )
           : ListView.builder(
               controller: _scrollController,
               itemCount: _tripDataList.length +
@@ -1222,8 +1231,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
               itemBuilder: (context, index) {
                 if (index == _tripDataList.length) {
                   return Center(
-                      child:
-                          SizedBox()); // Loading indicator at the end
+                      child: SizedBox()); // Loading indicator at the end
                 }
                 final tripData = _tripDataList[index];
                 // Check the index against the length of _isButtonDisabledList
@@ -1302,45 +1310,42 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
         // Step 2: Darken the button and show a SnackBar
         _setButtonState(index); // Call to disable the button after confirmation
-        
 
         // Show a SnackBar with tripId, userId, and driverId
         AwesomeDialog(
-        context: context,
-        dialogType: DialogType.success,
-        animType: AnimType.topSlide,
-        body: Center(
-          child: Column(
-            children: const [
-              Text(
-                'Done',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 22,
-                    color: Colors.green),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'Request Sent Successfully',
-                style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 14,
-                    color: Colors.grey),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-            ],
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.topSlide,
+          body: Center(
+            child: Column(
+              children: const [
+                Text(
+                  'Done',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 22,
+                      color: Colors.green),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Request Sent Successfully',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 14,
+                      color: Colors.grey),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
           ),
-        ),
-        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
-        alignment: Alignment.center,
-        btnOkOnPress: () {},
-      ).show();
-
-      
+          btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+          alignment: Alignment.center,
+          btnOkOnPress: () {},
+        ).show();
       }
     } catch (e) {
       // Handle error (e.g., if something goes wrong during the Firebase write)

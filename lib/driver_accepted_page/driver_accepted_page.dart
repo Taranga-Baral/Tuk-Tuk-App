@@ -6,6 +6,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -180,11 +181,78 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
     });
   }
 
+  Widget _buildShimmerLoading() {
+    return ListView.builder(
+      itemCount: 5, // Number of shimmer placeholders
+      itemBuilder: (context, index) {
+        return Card(
+          margin: const EdgeInsets.all(8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 150,
+                    height: 20,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 20,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          height: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 20,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          height: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _loadMoreData() async {
     if (!isLoadingMore && hasMoreData) {
       setState(() {
         isLoadingMore = true;
       });
+
+      _buildShimmerLoading();
 
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('confirmedDrivers')
@@ -230,6 +298,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                         scrollInfo.metrics.maxScrollExtent &&
                     scrollInfo is ScrollEndNotification) {
                   if (hasMoreData) {
+                    _buildShimmerLoading();
                     _loadMoreData();
                   }
                 }

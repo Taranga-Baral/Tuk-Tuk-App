@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RequestPage extends StatefulWidget {
@@ -203,414 +204,495 @@ class _RequestPageState extends State<RequestPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: Colors.blueAccent,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
+  Widget _buildShimmerLoading() {
+    return ListView.builder(
+      itemCount: 5, // Number of shimmer placeholders
+      itemBuilder: (context, index) {
+        return Card(
+          margin: const EdgeInsets.all(8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        // backgroundColor: Color.fromRGBO(65, 95, 207, 1),
-        backgroundColor: Colors.blueAccent,
-        title: Text(
-          'Requests',
-          style: GoogleFonts.outfit(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {
-                  setState(() {});
-                },
-                icon: Icon(Icons.refresh),
-                color: Colors.white,
-              ),
-              PopupMenuButton<String>(
-                iconColor: Colors.white,
-                color: Color.fromRGBO(255, 255, 255, 1),
-                onSelected: (value) {
-                  setState(() {
-                    if (value == 'requests') {
-                      showArrivedDrivers = false;
-                    } else if (value == 'arrivedDrivers') {
-                      showArrivedDrivers = true;
-                    }
-                  });
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'requests',
-                    child: Text('Requests'),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 150,
+                    height: 40,
+                    color: Colors.white,
                   ),
-                  PopupMenuItem(
-                    value: 'arrivedDrivers',
-                    child: Text('Arrived Drivers'),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 40,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          height: 40,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 40,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          height: 40,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ],
-      ),
-      body: isDataLoaded
-          ? LayoutBuilder(
-              // Use LayoutBuilder to manage screen size
-              builder: (context, constraints) {
-                return Column(
-                  children: [
-                    if (showArrivedDrivers) ...[
-                      Flexible(
-                        child: ListView.builder(
-                          physics: _buildCustomScrollPhysics(),
-                          itemCount: arrivedDrivers.length,
-                          itemBuilder: (context, index) {
-                            final driver = arrivedDrivers[index];
-                            final driverId = driver['driverId'];
-                            final tripId = driver['tripId'];
+        );
+      },
+    );
+  }
 
-                            return FutureBuilder<Map<String, dynamic>>(
-                              future:
-                                  _getDriverAndTripDetails(driverId, tripId),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return Center(
-                                      child: Center(
-                                    child: Image(
-                                        image: AssetImage(
-                                            'assets/no_data_found.gif')),
-                                  ));
-                                }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        // backgroundColor: Colors.blueAccent,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          // backgroundColor: Color.fromRGBO(65, 95, 207, 1),
+          backgroundColor: Colors.blueAccent,
+          title: Text(
+            'Requests',
+            style: GoogleFonts.outfit(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {});
+                  },
+                  icon: Icon(Icons.refresh),
+                  color: Colors.white,
+                ),
+                PopupMenuButton<String>(
+                  iconColor: Colors.white,
+                  color: Color.fromRGBO(255, 255, 255, 1),
+                  onSelected: (value) {
+                    setState(() {
+                      if (value == 'requests') {
+                        showArrivedDrivers = false;
+                      } else if (value == 'arrivedDrivers') {
+                        showArrivedDrivers = true;
+                      }
+                    });
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'requests',
+                      child: Text('Requests'),
+                    ),
+                    PopupMenuItem(
+                      value: 'arrivedDrivers',
+                      child: Text('Arrived Drivers'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: isDataLoaded
+            ? LayoutBuilder(
+                // Use LayoutBuilder to manage screen size
+                builder: (context, constraints) {
+                  return Column(
+                    children: [
+                      if (showArrivedDrivers) ...[
+                        Flexible(
+                          child: ListView.builder(
+                            physics: _buildCustomScrollPhysics(),
+                            itemCount: arrivedDrivers.length,
+                            itemBuilder: (context, index) {
+                              final driver = arrivedDrivers[index];
+                              final driverId = driver['driverId'];
+                              final tripId = driver['tripId'];
 
-                                final driverData =
-                                    snapshot.data!['driver'] ?? {};
-                                final tripData = snapshot.data!['trip'] ?? {};
+                              return FutureBuilder<Map<String, dynamic>>(
+                                future:
+                                    _getDriverAndTripDetails(driverId, tripId),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                        child: Center(
+                                      child: Image(
+                                          image: AssetImage(
+                                              'assets/no_data_found.gif')),
+                                    ));
+                                    // return _buildShimmerLoading();
+                                  }
 
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 15),
-                                  child: AnimatedContainer(
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                    child: FlipCard(
-                                      direction: FlipDirection.HORIZONTAL,
-                                      front: Card(
-                                        elevation: 1,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                        shadowColor:
-                                            Colors.grey.withOpacity(0.5),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(15.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  CircleAvatar(
-                                                    radius: 25,
-                                                    backgroundImage: driverData[
-                                                                'profilePictureUrl'] !=
-                                                            null
-                                                        ? NetworkImage(driverData[
-                                                            'profilePictureUrl'])
-                                                        : AssetImage(
-                                                                'assets/tuktuk.jpg')
-                                                            as ImageProvider,
-                                                  ),
-                                                  SizedBox(width: 15),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          '${driverData['name'] ?? 'Unknown'}',
-                                                          style: GoogleFonts
-                                                              .outfit(
+                                  final driverData =
+                                      snapshot.data!['driver'] ?? {};
+                                  final tripData = snapshot.data!['trip'] ?? {};
+
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 15),
+                                    child: AnimatedContainer(
+                                      duration: Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut,
+                                      child: FlipCard(
+                                        direction: FlipDirection.HORIZONTAL,
+                                        front: Card(
+                                          elevation: 1,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          shadowColor:
+                                              Colors.grey.withOpacity(0.5),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 25,
+                                                      backgroundImage: driverData[
+                                                                  'profilePictureUrl'] !=
+                                                              null
+                                                          ? NetworkImage(driverData[
+                                                              'profilePictureUrl'])
+                                                          : AssetImage(
+                                                                  'assets/tuktuk.jpg')
+                                                              as ImageProvider,
+                                                    ),
+                                                    SizedBox(width: 15),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            '${driverData['name'] ?? 'Unknown'}',
+                                                            style: GoogleFonts
+                                                                .outfit(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 18,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
+                                                            maxLines: 2,
+                                                            softWrap: true,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                          Text(
+                                                            'Plate: ${driverData['numberPlate'] ?? 'N/A'}',
+                                                            style: GoogleFonts
+                                                                .comicNeue(
+                                                              fontSize: 14,
+                                                              color: Colors
+                                                                  .grey[700],
+                                                            ),
+                                                            maxLines: 2,
+                                                            softWrap: true,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Divider(
+                                                    height: 20,
+                                                    color: Colors.grey[300]),
+                                                SizedBox(height: 10),
+                                                _buildInfoRow(
+                                                    'Passenger:',
+                                                    tripData['no_of_person']
+                                                            .toString() ??
+                                                        'N/A'),
+                                                _buildInfoRow(
+                                                    'Pickup  :',
+                                                    tripData[
+                                                            'pickupLocation'] ??
+                                                        'N/A'),
+                                                _buildInfoRow(
+                                                    'Delivery:',
+                                                    tripData[
+                                                            'deliveryLocation'] ??
+                                                        'N/A'),
+                                                _buildInfoRow(
+                                                    'Vehicle :',
+                                                    tripData['vehicle_mode'] ??
+                                                        'N/A'),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Text('... ${index + 1}',
+                                                        style: TextStyle(
                                                             fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 18,
+                                                                FontWeight.w500,
+                                                            fontSize: 20,
                                                             color:
-                                                                Colors.black87,
+                                                                Colors.black54))
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        back: Card(
+                                          elevation: 1,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          shadowColor:
+                                              Colors.grey.withOpacity(0.5),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Driver Contact:',
+                                                  style: GoogleFonts.comicNeue(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 2),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '${driverData['phone'] ?? 'N/A'}',
+                                                      style:
+                                                          GoogleFonts.comicNeue(
+                                                              fontSize: 16),
+                                                    ),
+                                                    Spacer(),
+                                                    Row(
+                                                      children: [
+                                                        CircleAvatar(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .transparent,
+                                                          radius: 20,
+                                                          backgroundImage:
+                                                              AssetImage(
+                                                            driverData['vehicleType'] ==
+                                                                    'Taxi'
+                                                                ? 'assets/homepage_taxi.png'
+                                                                : driverData[
+                                                                            'vehicleType'] ==
+                                                                        'Tuk Tuk'
+                                                                    ? 'assets/homepage_tuktuk.png'
+                                                                    : 'assets/homepage_motorbike.png',
                                                           ),
-                                                          maxLines: 2,
-                                                          softWrap: true,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
                                                         ),
-                                                        Text(
-                                                          'Plate: ${driverData['numberPlate'] ?? 'N/A'}',
-                                                          style: GoogleFonts
-                                                              .comicNeue(
-                                                            fontSize: 14,
-                                                            color: Colors
-                                                                .grey[700],
-                                                          ),
-                                                          maxLines: 2,
-                                                          softWrap: true,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
+                                                        IconButton(
+                                                          icon: Icon(
+                                                              Icons.phone,
+                                                              color:
+                                                                  Colors.green),
+                                                          onPressed: () {
+                                                            final phoneNumber =
+                                                                driverData[
+                                                                    'phone'];
+                                                            if (phoneNumber !=
+                                                                    null &&
+                                                                phoneNumber
+                                                                    .isNotEmpty) {
+                                                              _launchPhoneNumber(
+                                                                  phoneNumber);
+                                                            } else {
+                                                              // ScaffoldMessenger
+                                                              //         .of(context)
+                                                              //     .showSnackBar(
+                                                              //   SnackBar(
+                                                              //       content: Text(
+                                                              //           'Phone number is unavailable')),
+                                                              // );
+                                                              AwesomeDialog(
+                                                                context:
+                                                                    context,
+                                                                dialogType:
+                                                                    DialogType
+                                                                        .error,
+                                                                animType: AnimType
+                                                                    .topSlide,
+                                                                title:
+                                                                    'Phone Number Unavailable',
+                                                                desc:
+                                                                    'The phone number is currently unavailable.',
+                                                                btnOkOnPress:
+                                                                    () {},
+                                                              ).show();
+                                                            }
+                                                          },
+                                                        ),
+                                                        IconButton(
+                                                          icon: Icon(Icons.chat,
+                                                              color:
+                                                                  Colors.blue),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .push(
+                                                              PageRouteBuilder(
+                                                                pageBuilder: (context,
+                                                                    animation,
+                                                                    secondaryAnimation) {
+                                                                  return FadeScaleTransition(
+                                                                    animation:
+                                                                        animation,
+                                                                    child:
+                                                                        ChatDetailPage(
+                                                                      userId: widget
+                                                                          .userId,
+                                                                      driverId:
+                                                                          driverId,
+                                                                      tripId:
+                                                                          tripId,
+                                                                      driverName:
+                                                                          driverData[
+                                                                              'name'],
+                                                                      pickupLocation:
+                                                                          tripData[
+                                                                              'pickupLocation'],
+                                                                      deliveryLocation:
+                                                                          tripData[
+                                                                              'deliveryLocation'],
+                                                                      distance:
+                                                                          tripData[
+                                                                              'distance'],
+                                                                      no_of_person:
+                                                                          tripData[
+                                                                              'no_of_person'],
+                                                                      vehicle_mode:
+                                                                          tripData[
+                                                                              'vehicle_mode'],
+                                                                      fare: tripData[
+                                                                          'fare'],
+                                                                    ),
+                                                                  );
+                                                                },
+                                                                transitionsBuilder:
+                                                                    (context,
+                                                                        animation,
+                                                                        secondaryAnimation,
+                                                                        child) {
+                                                                  const begin =
+                                                                      Offset(
+                                                                          1.0,
+                                                                          0.0);
+                                                                  const end =
+                                                                      Offset
+                                                                          .zero;
+                                                                  const curve =
+                                                                      Curves
+                                                                          .easeInOut;
+
+                                                                  var tween = Tween(
+                                                                      begin:
+                                                                          begin,
+                                                                      end: end);
+                                                                  var offsetAnimation =
+                                                                      animation.drive(tween.chain(CurveTween(
+                                                                          curve:
+                                                                              curve)));
+
+                                                                  return SlideTransition(
+                                                                      position:
+                                                                          offsetAnimation,
+                                                                      child:
+                                                                          child);
+                                                                },
+                                                              ),
+                                                            );
+                                                          },
                                                         ),
                                                       ],
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Divider(
-                                                  height: 20,
-                                                  color: Colors.grey[300]),
-                                              SizedBox(height: 10),
-                                              _buildInfoRow(
-                                                  'Passenger:',
-                                                  tripData['no_of_person']
-                                                          .toString() ??
-                                                      'N/A'),
-                                              _buildInfoRow(
-                                                  'Pickup  :',
-                                                  tripData['pickupLocation'] ??
-                                                      'N/A'),
-                                              _buildInfoRow(
-                                                  'Delivery:',
-                                                  tripData[
-                                                          'deliveryLocation'] ??
-                                                      'N/A'),
-                                              _buildInfoRow(
-                                                  'Vehicle :',
-                                                  tripData['vehicle_mode'] ??
-                                                      'N/A'),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  Text('... ${index + 1}',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontSize: 20,
-                                                          color:
-                                                              Colors.black54))
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      back: Card(
-                                        elevation: 1,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                        shadowColor:
-                                            Colors.grey.withOpacity(0.5),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(15.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Driver Contact:',
-                                                style: GoogleFonts.comicNeue(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                  color: Colors.black87,
+                                                  ],
                                                 ),
-                                              ),
-                                              SizedBox(height: 2),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    '${driverData['phone'] ?? 'N/A'}',
-                                                    style:
-                                                        GoogleFonts.comicNeue(
-                                                            fontSize: 16),
-                                                  ),
-                                                  Spacer(),
-                                                  Row(
-                                                    children: [
-                                                      CircleAvatar(
-                                                        backgroundColor:
-                                                            Colors.transparent,
-                                                        radius: 20,
-                                                        backgroundImage:
-                                                            AssetImage(
-                                                          driverData['vehicleType'] ==
-                                                                  'Taxi'
-                                                              ? 'assets/homepage_taxi.png'
-                                                              : driverData[
-                                                                          'vehicleType'] ==
-                                                                      'Tuk Tuk'
-                                                                  ? 'assets/homepage_tuktuk.png'
-                                                                  : 'assets/homepage_motorbike.png',
-                                                        ),
-                                                      ),
-                                                      IconButton(
-                                                        icon: Icon(Icons.phone,
-                                                            color:
-                                                                Colors.green),
-                                                        onPressed: () {
-                                                          final phoneNumber =
-                                                              driverData[
-                                                                  'phone'];
-                                                          if (phoneNumber !=
-                                                                  null &&
-                                                              phoneNumber
-                                                                  .isNotEmpty) {
-                                                            _launchPhoneNumber(
-                                                                phoneNumber);
-                                                          } else {
-                                                            // ScaffoldMessenger
-                                                            //         .of(context)
-                                                            //     .showSnackBar(
-                                                            //   SnackBar(
-                                                            //       content: Text(
-                                                            //           'Phone number is unavailable')),
-                                                            // );
-                                                            AwesomeDialog(
-                                                              context: context,
-                                                              dialogType:
-                                                                  DialogType
-                                                                      .error,
-                                                              animType: AnimType
-                                                                  .topSlide,
-                                                              title:
-                                                                  'Phone Number Unavailable',
-                                                              desc:
-                                                                  'The phone number is currently unavailable.',
-                                                              btnOkOnPress:
-                                                                  () {},
-                                                            ).show();
-                                                          }
-                                                        },
-                                                      ),
-                                                      IconButton(
-                                                        icon: Icon(Icons.chat,
-                                                            color: Colors.blue),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .push(
-                                                            PageRouteBuilder(
-                                                              pageBuilder: (context,
-                                                                  animation,
-                                                                  secondaryAnimation) {
-                                                                return FadeScaleTransition(
-                                                                  animation:
-                                                                      animation,
-                                                                  child:
-                                                                      ChatDetailPage(
-                                                                    userId: widget
-                                                                        .userId,
-                                                                    driverId:
-                                                                        driverId,
-                                                                    tripId:
-                                                                        tripId,
-                                                                    driverName:
-                                                                        driverData[
-                                                                            'name'],
-                                                                    pickupLocation:
-                                                                        tripData[
-                                                                            'pickupLocation'],
-                                                                    deliveryLocation:
-                                                                        tripData[
-                                                                            'deliveryLocation'],
-                                                                    distance:
-                                                                        tripData[
-                                                                            'distance'],
-                                                                    no_of_person:
-                                                                        tripData[
-                                                                            'no_of_person'],
-                                                                    vehicle_mode:
-                                                                        tripData[
-                                                                            'vehicle_mode'],
-                                                                    fare: tripData[
-                                                                        'fare'],
-                                                                  ),
-                                                                );
-                                                              },
-                                                              transitionsBuilder:
-                                                                  (context,
-                                                                      animation,
-                                                                      secondaryAnimation,
-                                                                      child) {
-                                                                const begin =
-                                                                    Offset(1.0,
-                                                                        0.0);
-                                                                const end =
-                                                                    Offset.zero;
-                                                                const curve =
-                                                                    Curves
-                                                                        .easeInOut;
-
-                                                                var tween = Tween(
-                                                                    begin:
-                                                                        begin,
-                                                                    end: end);
-                                                                var offsetAnimation =
-                                                                    animation.drive(tween.chain(
-                                                                        CurveTween(
-                                                                            curve:
-                                                                                curve)));
-
-                                                                return SlideTransition(
-                                                                    position:
-                                                                        offsetAnimation,
-                                                                    child:
-                                                                        child);
-                                                              },
-                                                            ),
-                                                          );
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              _buildInfoRow('Brand:',
-                                                  driverData['brand'] ?? 'N/A'),
-                                              _buildInfoRow('Color:',
-                                                  driverData['color'] ?? 'N/A'),
-                                              Divider(),
-                                              _buildInfoRow('Distance:',
-                                                  '${tripData['distance'] ?? 'N/A'} km'),
-                                              _buildInfoRow('Fare:',
-                                                  '${tripData['fare'] ?? 'N/A'}'),
-                                              _buildInfoRow(
-                                                'Timestamp:',
-                                                tripData['timestamp'] != null &&
-                                                        tripData['timestamp']
-                                                            is Timestamp
-                                                    ? _formatTimestamp(
-                                                        tripData['timestamp'])
-                                                    : 'N/A',
-                                              ),
-                                            ],
+                                                _buildInfoRow(
+                                                    'Brand:',
+                                                    driverData['brand'] ??
+                                                        'N/A'),
+                                                _buildInfoRow(
+                                                    'Color:',
+                                                    driverData['color'] ??
+                                                        'N/A'),
+                                                Divider(),
+                                                _buildInfoRow('Distance:',
+                                                    '${tripData['distance'] ?? 'N/A'} km'),
+                                                _buildInfoRow('Fare:',
+                                                    '${tripData['fare'] ?? 'N/A'}'),
+                                                _buildInfoRow(
+                                                  'Timestamp:',
+                                                  tripData['timestamp'] !=
+                                                              null &&
+                                                          tripData['timestamp']
+                                                              is Timestamp
+                                                      ? _formatTimestamp(
+                                                          tripData['timestamp'])
+                                                      : 'N/A',
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ] else ...[
-                      Flexible(
+                      ] else ...[
+                        Flexible(
 //                         child: ListView.builder(
 //                           itemCount: requests.length,
 //                           physics: _buildCustomScrollPhysics(),
@@ -778,94 +860,94 @@ class _RequestPageState extends State<RequestPage> {
 //                                               ),
 //                                             ],
 //                                           ),
-                        // Row(
-                        //   mainAxisAlignment:
-                        //       MainAxisAlignment.end,
-                        //   children: [
-                        //     SizedBox(width: 20),
-                        //     GestureDetector(
-                        //       child: Icon(Icons.phone,
-                        //           color: Colors.green),
-                        //       onTap: () {
-                        //         final phoneNumber =
-                        //             vehicleData['phone'];
-                        //         if (phoneNumber != null &&
-                        //             phoneNumber.isNotEmpty) {
-                        //           _launchPhoneNumber(
-                        //               phoneNumber);
-                        //         } else {
-                        //           AwesomeDialog(
-                        //             context: context,
-                        //             dialogType:
-                        //                 DialogType.error,
-                        //             animType:
-                        //                 AnimType.topSlide,
-                        //             title:
-                        //                 'Phone Number Unavailable',
-                        //             desc:
-                        //                 'The phone number is currently unavailable.',
-                        //             btnOkOnPress: () {},
-                        //           ).show();
-                        //         }
-                        //       },
-                        //     ),
-                        //     SizedBox(width: 20),
-                        //     ElevatedButton(
-                        //       onPressed:
-                        //           _buttonStates[tripId] ==
-                        //                   true
-                        //               ? null
-                        //               : () {
-                        //                   confirmRequest(
-                        //                       userId,
-                        //                       driverId,
-                        //                       tripId);
-                        //                 },
-                        //       style: ElevatedButton.styleFrom(
-                        //         foregroundColor: Colors.white,
-                        //         backgroundColor:
-                        //             _buttonStates[tripId] ==
-                        //                     true
-                        //                 ? Colors.grey
-                        //                 : Colors.blue,
-                        //         padding: EdgeInsets.symmetric(
-                        //             horizontal: 24,
-                        //             vertical:
-                        //                 12), // Padding for button
-                        //         shape: RoundedRectangleBorder(
-                        //           borderRadius:
-                        //               BorderRadius.circular(
-                        //                   8), // Rounded corners
-                        //         ),
-                        //       ),
-                        //       child: Text(
-                        //         'Confirm',
-                        //       style: TextStyle(
-                        //         fontSize:
-                        //             16, // Font size for the text
-                        //         fontWeight: FontWeight
-                        //             .bold, // Bold text
-                        //       ),
-                        //       ),
+                          // Row(
+                          //   mainAxisAlignment:
+                          //       MainAxisAlignment.end,
+                          //   children: [
+                          //     SizedBox(width: 20),
+                          //     GestureDetector(
+                          //       child: Icon(Icons.phone,
+                          //           color: Colors.green),
+                          //       onTap: () {
+                          //         final phoneNumber =
+                          //             vehicleData['phone'];
+                          //         if (phoneNumber != null &&
+                          //             phoneNumber.isNotEmpty) {
+                          //           _launchPhoneNumber(
+                          //               phoneNumber);
+                          //         } else {
+                          //           AwesomeDialog(
+                          //             context: context,
+                          //             dialogType:
+                          //                 DialogType.error,
+                          //             animType:
+                          //                 AnimType.topSlide,
+                          //             title:
+                          //                 'Phone Number Unavailable',
+                          //             desc:
+                          //                 'The phone number is currently unavailable.',
+                          //             btnOkOnPress: () {},
+                          //           ).show();
+                          //         }
+                          //       },
+                          //     ),
+                          //     SizedBox(width: 20),
+                          //     ElevatedButton(
+                          //       onPressed:
+                          //           _buttonStates[tripId] ==
+                          //                   true
+                          //               ? null
+                          //               : () {
+                          //                   confirmRequest(
+                          //                       userId,
+                          //                       driverId,
+                          //                       tripId);
+                          //                 },
+                          //       style: ElevatedButton.styleFrom(
+                          //         foregroundColor: Colors.white,
+                          //         backgroundColor:
+                          //             _buttonStates[tripId] ==
+                          //                     true
+                          //                 ? Colors.grey
+                          //                 : Colors.blue,
+                          //         padding: EdgeInsets.symmetric(
+                          //             horizontal: 24,
+                          //             vertical:
+                          //                 12), // Padding for button
+                          //         shape: RoundedRectangleBorder(
+                          //           borderRadius:
+                          //               BorderRadius.circular(
+                          //                   8), // Rounded corners
+                          //         ),
+                          //       ),
+                          //       child: Text(
+                          //         'Confirm',
+                          //       style: TextStyle(
+                          //         fontSize:
+                          //             16, // Font size for the text
+                          //         fontWeight: FontWeight
+                          //             .bold, // Bold text
+                          //       ),
+                          //       ),
 
-                        //       child: Text(
-                        //         _buttonStates[tripId] == true
-                        //             ? 'Confirmed'
-                        //             : 'Confirm',
-                        //         style: TextStyle(
-                        //           fontSize:
-                        //               16, // Font size for the text
-                        //           fontWeight: FontWeight
-                        //               .bold, // Bold text
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
+                          //       child: Text(
+                          //         _buttonStates[tripId] == true
+                          //             ? 'Confirmed'
+                          //             : 'Confirm',
+                          //         style: TextStyle(
+                          //           fontSize:
+                          //               16, // Font size for the text
+                          //           fontWeight: FontWeight
+                          //               .bold, // Bold text
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
 //                                   front: Card(
 //                                     elevation: 1,
 //                                     margin: EdgeInsets.all(10),
@@ -1000,421 +1082,428 @@ class _RequestPageState extends State<RequestPage> {
 //                             );
 //                           },
 //                         ),
-                        child: ListView.builder(
-                          itemCount: requests.length,
-                          itemBuilder: (context, index) {
-                            final request = requests[index];
-                            final tripId = request['tripId'];
-                            final driverId = request['driverId'];
-                            final userId = request['userId'];
+                          child: ListView.builder(
+                            itemCount: requests.length,
+                            itemBuilder: (context, index) {
+                              final request = requests[index];
+                              final tripId = request['tripId'];
+                              final driverId = request['driverId'];
+                              final userId = request['userId'];
 
-                            return FutureBuilder(
-                              future: Future.wait([
-                                FirebaseFirestore.instance
-                                    .collection('vehicleData')
-                                    .doc(driverId)
-                                    .get(),
-                                FirebaseFirestore.instance
-                                    .collection('trips')
-                                    .doc(tripId)
-                                    .get(),
-                                FirebaseFirestore.instance
-                                    .collection(
-                                        'distance_between_driver_and_passenger')
-                                    .where('tripId', isEqualTo: tripId)
-                                    .where('driverId', isEqualTo: driverId)
-                                    .where('userId', isEqualTo: userId)
-                                    .get(),
-                              ]),
-                              builder: (context,
-                                  AsyncSnapshot<List<dynamic>> snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Center(
-                                    child: Image(
-                                      image: AssetImage(
-                                          'assets/loading_screen.gif'),
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.3,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.3,
-                                    ),
-                                  );
-                                }
+                              return FutureBuilder(
+                                future: Future.wait([
+                                  FirebaseFirestore.instance
+                                      .collection('vehicleData')
+                                      .doc(driverId)
+                                      .get(),
+                                  FirebaseFirestore.instance
+                                      .collection('trips')
+                                      .doc(tripId)
+                                      .get(),
+                                  FirebaseFirestore.instance
+                                      .collection(
+                                          'distance_between_driver_and_passenger')
+                                      .where('tripId', isEqualTo: tripId)
+                                      .where('driverId', isEqualTo: driverId)
+                                      .where('userId', isEqualTo: userId)
+                                      .get(),
+                                ]),
+                                builder: (context,
+                                    AsyncSnapshot<List<dynamic>> snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                      child: Image(
+                                        image: AssetImage(
+                                            'assets/loading_screen.gif'),
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.3,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.3,
+                                      ),
+                                    );
+                                  }
 
-                                if (snapshot.hasError ||
-                                    !snapshot.hasData ||
-                                    snapshot.data == null) {
-                                  return Text('Error loading data');
-                                }
+                                  if (snapshot.hasError ||
+                                      !snapshot.hasData ||
+                                      snapshot.data == null) {
+                                    return Text('Error loading data');
+                                  }
 
-                                final vehicleData = snapshot.data![0].data()
-                                    as Map<String, dynamic>;
-                                final tripData = snapshot.data![1].data()
-                                    as Map<String, dynamic>;
-
-                                // Check for distance data from distance_between_driver_and_passenger collection
-                                String distanceBetweenDriverAndPassenger =
-                                    'N/A';
-                                if (snapshot.data![2].docs.isNotEmpty) {
-                                  final distanceDoc =
-                                      snapshot.data![2].docs.first;
-                                  final distanceData = distanceDoc.data()
+                                  final vehicleData = snapshot.data![0].data()
                                       as Map<String, dynamic>;
-                                  distanceBetweenDriverAndPassenger = distanceData[
-                                              'distance_between_driver_and_passenger']
-                                          .toString() ??
+                                  final tripData = snapshot.data![1].data()
+                                      as Map<String, dynamic>;
+
+                                  // Check for distance data from distance_between_driver_and_passenger collection
+                                  String distanceBetweenDriverAndPassenger =
                                       'N/A';
-                                }
+                                  if (snapshot.data![2].docs.isNotEmpty) {
+                                    final distanceDoc =
+                                        snapshot.data![2].docs.first;
+                                    final distanceData = distanceDoc.data()
+                                        as Map<String, dynamic>;
+                                    distanceBetweenDriverAndPassenger =
+                                        distanceData[
+                                                    'distance_between_driver_and_passenger']
+                                                .toString() ??
+                                            'N/A';
+                                  }
 
-                                // Extracting necessary data from vehicleData and tripData
-                                final phone = vehicleData['phone'] ?? 'N/A';
-                                final name = vehicleData['name'] ?? 'N/A';
-                                final numberPlate =
-                                    vehicleData['numberPlate'] ?? 'N/A';
-                                final profilePicture =
-                                    vehicleData['profilePictureUrl'] ?? 'N/A';
-                                final vehicleType =
-                                    vehicleData['vehicleType'] ?? 'N/A';
-                                final vehicleModeD =
-                                    vehicleData['vehicleMode'] ?? 'N/A';
-                                final vehicleModeT =
-                                    tripData['vehicle_mode'] ?? 'N/A';
+                                  // Extracting necessary data from vehicleData and tripData
+                                  final phone = vehicleData['phone'] ?? 'N/A';
+                                  final name = vehicleData['name'] ?? 'N/A';
+                                  final numberPlate =
+                                      vehicleData['numberPlate'] ?? 'N/A';
+                                  final profilePicture =
+                                      vehicleData['profilePictureUrl'] ?? 'N/A';
+                                  final vehicleType =
+                                      vehicleData['vehicleType'] ?? 'N/A';
+                                  final vehicleModeD =
+                                      vehicleData['vehicleMode'] ?? 'N/A';
+                                  final vehicleModeT =
+                                      tripData['vehicle_mode'] ?? 'N/A';
 
-                                final pickupLocation =
-                                    tripData['pickupLocation'] ?? 'N/A';
-                                final deliveryLocation =
-                                    tripData['deliveryLocation'] ?? 'N/A';
-                                final fare = tripData['fare'] ?? 'N/A';
-                                final distance = tripData['distance'] ?? 'N/A';
+                                  final pickupLocation =
+                                      tripData['pickupLocation'] ?? 'N/A';
+                                  final deliveryLocation =
+                                      tripData['deliveryLocation'] ?? 'N/A';
+                                  final fare = tripData['fare'] ?? 'N/A';
+                                  final distance =
+                                      tripData['distance'] ?? 'N/A';
 
-                                // Return your custom widget here
+                                  // Return your custom widget here
 
-                                return FlipCard(
-                                  flipOnTouch: true,
-                                  direction: FlipDirection.HORIZONTAL,
-                                  back: Card(
-                                    elevation: 1,
-                                    margin: EdgeInsets.all(10),
-                                    child: vehicleModeT == vehicleModeD
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(15.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_on,
-                                                      color: Colors.green,
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Expanded(
-                                                      child: Text(
-                                                        '$pickupLocation',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_on,
-                                                      color: Colors.red,
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Expanded(
-                                                      child: Text(
-                                                        '$deliveryLocation',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Divider(),
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.money,
-                                                      color: Colors
-                                                          .blueAccent.shade200,
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Expanded(
-                                                      child: Text(
-                                                        'NPR $fare',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    CircleAvatar(
-                                                      backgroundColor:
-                                                          Colors.transparent,
-                                                      radius: 20,
-                                                      backgroundImage:
-                                                          AssetImage(
-                                                        vehicleType == 'Taxi'
-                                                            ? 'assets/homepage_taxi.png'
-                                                            : vehicleType ==
-                                                                    'Tuk Tuk'
-                                                                ? 'assets/homepage_tuktuk.png'
-                                                                : 'assets/homepage_motorbike.png',
-                                                      ),
-                                                    ),
-                                                    GestureDetector(
-                                                      child: Icon(Icons.phone,
-                                                          color: Colors.green),
-                                                      onTap: () {
-                                                        final phoneNumber =
-                                                            vehicleData[
-                                                                'phone'];
-                                                        if (phoneNumber !=
-                                                                null &&
-                                                            phoneNumber
-                                                                .isNotEmpty) {
-                                                          _launchPhoneNumber(
-                                                              phoneNumber);
-                                                        } else {
-                                                          AwesomeDialog(
-                                                            context: context,
-                                                            dialogType:
-                                                                DialogType
-                                                                    .error,
-                                                            animType: AnimType
-                                                                .topSlide,
-                                                            title:
-                                                                'Phone Number Unavailable',
-                                                            desc:
-                                                                'The phone number is currently unavailable.',
-                                                            btnOkOnPress: () {},
-                                                          ).show();
-                                                        }
-                                                      },
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: _buttonStates[
-                                                                  tripId] ==
-                                                              true
-                                                          ? null
-                                                          : () {
-                                                              confirmRequest(
-                                                                  userId,
-                                                                  driverId,
-                                                                  tripId);
-                                                            },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        foregroundColor:
-                                                            Colors.white,
-                                                        backgroundColor:
-                                                            _buttonStates[
-                                                                        tripId] ==
-                                                                    true
-                                                                ? Colors.grey
-                                                                : Colors.blue,
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 24,
-                                                                vertical:
-                                                                    12), // Padding for button
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                  8), // Rounded corners
-                                                        ),
-                                                      ),
-                                                      child: Text(
-                                                        _buttonStates[tripId] ==
-                                                                true
-                                                            ? 'Trip Booked'
-                                                            : 'Confirm',
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              16, // Font size for the text
-                                                          fontWeight: FontWeight
-                                                              .bold, // Bold text
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : Column(
-                                            children: [
-                                              SizedBox(
-                                                height: 50,
-                                              ),
-                                              Center(
-                                                child: Text(
-                                                  'You Selected $vehicleModeT Vehicle but this is $vehicleModeD',
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.comicNeue(
-                                                      color: Colors.red,
-                                                      fontSize: 22,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 50,
-                                              ),
-                                            ],
-                                          ),
-                                  ),
-                                  front: Card(
-                                    elevation: 0.9,
-                                    margin: EdgeInsets.all(10),
-                                    child: SizedBox(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(15.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            ListTile(
-                                              trailing: CircleAvatar(
-                                                radius: 20,
-                                                backgroundImage: profilePicture !=
-                                                        null
-                                                    ? NetworkImage(
-                                                        profilePicture)
-                                                    : AssetImage(
-                                                            'assets/tuktuk.jpg')
-                                                        as ImageProvider,
-                                              ),
-                                              title: Text(
-                                                '$name - $vehicleType',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16),
-                                              ),
-                                              subtitle: Column(
+                                  return FlipCard(
+                                    flipOnTouch: true,
+                                    direction: FlipDirection.HORIZONTAL,
+                                    back: Card(
+                                      elevation: 1,
+                                      margin: EdgeInsets.all(10),
+                                      child: vehicleModeT == vehicleModeD
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.all(15.0),
+                                              child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.location_on,
+                                                        color: Colors.green,
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Expanded(
+                                                        child: Text(
+                                                          '$pickupLocation',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Divider(),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.location_on,
+                                                        color: Colors.red,
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Expanded(
+                                                        child: Text(
+                                                          '$deliveryLocation',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Divider(),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.money,
+                                                        color: Colors.blueAccent
+                                                            .shade200,
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Expanded(
+                                                        child: Text(
+                                                          'NPR $fare',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      CircleAvatar(
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        radius: 20,
+                                                        backgroundImage:
+                                                            AssetImage(
+                                                          vehicleType == 'Taxi'
+                                                              ? 'assets/homepage_taxi.png'
+                                                              : vehicleType ==
+                                                                      'Tuk Tuk'
+                                                                  ? 'assets/homepage_tuktuk.png'
+                                                                  : 'assets/homepage_motorbike.png',
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        child: Icon(Icons.phone,
+                                                            color:
+                                                                Colors.green),
+                                                        onTap: () {
+                                                          final phoneNumber =
+                                                              vehicleData[
+                                                                  'phone'];
+                                                          if (phoneNumber !=
+                                                                  null &&
+                                                              phoneNumber
+                                                                  .isNotEmpty) {
+                                                            _launchPhoneNumber(
+                                                                phoneNumber);
+                                                          } else {
+                                                            AwesomeDialog(
+                                                              context: context,
+                                                              dialogType:
+                                                                  DialogType
+                                                                      .error,
+                                                              animType: AnimType
+                                                                  .topSlide,
+                                                              title:
+                                                                  'Phone Number Unavailable',
+                                                              desc:
+                                                                  'The phone number is currently unavailable.',
+                                                              btnOkOnPress:
+                                                                  () {},
+                                                            ).show();
+                                                          }
+                                                        },
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: _buttonStates[
+                                                                    tripId] ==
+                                                                true
+                                                            ? null
+                                                            : () {
+                                                                confirmRequest(
+                                                                    userId,
+                                                                    driverId,
+                                                                    tripId);
+                                                              },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          foregroundColor:
+                                                              Colors.white,
+                                                          backgroundColor:
+                                                              _buttonStates[
+                                                                          tripId] ==
+                                                                      true
+                                                                  ? Colors.grey
+                                                                  : Colors.blue,
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  horizontal:
+                                                                      24,
+                                                                  vertical:
+                                                                      12), // Padding for button
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8), // Rounded corners
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          _buttonStates[
+                                                                      tripId] ==
+                                                                  true
+                                                              ? 'Trip Booked'
+                                                              : 'Confirm',
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                16, // Font size for the text
+                                                            fontWeight: FontWeight
+                                                                .bold, // Bold text
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          : Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: 50,
+                                                ),
+                                                Center(
+                                                  child: Text(
+                                                    'You Selected $vehicleModeT Vehicle but this is $vehicleModeD',
+                                                    textAlign: TextAlign.center,
+                                                    style:
+                                                        GoogleFonts.comicNeue(
+                                                            color: Colors.red,
+                                                            fontSize: 22,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 50,
+                                                ),
+                                              ],
+                                            ),
+                                    ),
+                                    front: Card(
+                                      elevation: 0.9,
+                                      margin: EdgeInsets.all(10),
+                                      child: SizedBox(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              ListTile(
+                                                trailing: CircleAvatar(
+                                                  radius: 20,
+                                                  backgroundImage:
+                                                      profilePicture != null
+                                                          ? NetworkImage(
+                                                              profilePicture)
+                                                          : AssetImage(
+                                                                  'assets/tuktuk.jpg')
+                                                              as ImageProvider,
+                                                ),
+                                                title: Text(
+                                                  '$name - $vehicleType',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16),
+                                                ),
+                                                subtitle: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '$numberPlate - $vehicleModeD V.',
+                                                      style: TextStyle(
+                                                          fontSize: 14),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Divider(
+                                                thickness: 0.1,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.call_end_sharp,
+                                                    color: Colors.green,
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Text(
+                                                      '$phone',
+                                                      style: TextStyle(
+                                                          fontSize: 14),
+                                                      softWrap: true,
+                                                      overflow:
+                                                          TextOverflow.visible,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 5),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.linear_scale_rounded,
+                                                    color: Colors.orange,
+                                                  ),
+                                                  SizedBox(width: 10),
                                                   Text(
-                                                    '$numberPlate - $vehicleModeD V.',
+                                                    '${double.tryParse(distance)?.toStringAsFixed(1)} km',
                                                     style:
                                                         TextStyle(fontSize: 14),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                            Divider(
-                                              thickness: 0.1,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.call_end_sharp,
-                                                  color: Colors.green,
-                                                ),
-                                                SizedBox(width: 10),
-                                                Expanded(
-                                                  child: Text(
-                                                    '$phone',
-                                                    style:
-                                                        TextStyle(fontSize: 14),
-                                                    softWrap: true,
-                                                    overflow:
-                                                        TextOverflow.visible,
+                                              SizedBox(height: 5),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.people_sharp,
+                                                    color: Colors
+                                                        .pinkAccent.shade200,
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 5),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.linear_scale_rounded,
-                                                  color: Colors.orange,
-                                                ),
-                                                SizedBox(width: 10),
-                                                Text(
-                                                  '${double.tryParse(distance)?.toStringAsFixed(1)} km',
-                                                  style:
-                                                      TextStyle(fontSize: 14),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 5),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.people_sharp,
-                                                  color: Colors
-                                                      .pinkAccent.shade200,
-                                                ),
-                                                SizedBox(width: 10),
-                                                Expanded(
-                                                  child: Text(
-                                                    'Driver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
-                                                    style:
-                                                        TextStyle(fontSize: 14),
+                                                  SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Driver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
+                                                      style: TextStyle(
+                                                          fontSize: 14),
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  '... ${index + 1}',
-                                                  style: GoogleFonts.comicNeue(
-                                                      fontSize: 20,
-                                                      color: Colors.grey),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    '... ${index + 1}',
+                                                    style:
+                                                        GoogleFonts.comicNeue(
+                                                            fontSize: 20,
+                                                            color: Colors.grey),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
-                );
-              },
-            )
-          : Center(
-              child: Image(
-              image: AssetImage('assets/loading_screen.gif'),
-              height: MediaQuery.of(context).size.height * 0.2,
-              width: MediaQuery.of(context).size.width * 0.2,
-            )),
-    );
+                  );
+                },
+              )
+            : _buildShimmerLoading());
   }
 
   Future<Map<String, dynamic>> _getDriverAndTripDetails(
