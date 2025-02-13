@@ -77,7 +77,10 @@ class _HistoryPageState extends State<HistoryPage> {
         backgroundColor: Colors.blueAccent,
         title: Text(
           'Trip History',
-          style: GoogleFonts.outfit(color: Colors.white),
+          style: GoogleFonts.outfit(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(

@@ -347,174 +347,139 @@ class _ChatPageState extends State<ChatPage> {
   //   }
   // }
 
+  Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+    // Calculate time 1 hour ago
+    DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 1));
 
+    Query query = firestore
+        .collection('confirmedDrivers')
+        .where('userId', isEqualTo: widget.userId)
+        .orderBy('confirmedAt', descending: true)
+        .limit(isLoadMore ? 10 : 10); // Load 10 cards at a time
 
+    if (isLoadMore && lastDocument != null) {
+      query = query.startAfterDocument(lastDocument!);
+    }
 
+    QuerySnapshot confirmedDriversSnapshot = await query.get();
 
+    if (confirmedDriversSnapshot.docs.isNotEmpty) {
+      List<Map<String, dynamic>> fetchedData = [];
 
+      for (var doc in confirmedDriversSnapshot.docs) {
+        var confirmedDriverData = doc.data() as Map<String, dynamic>;
 
+        // Check if this trip is in successfulTrips collection
+        bool isTripSuccessful = await _checkIfTripIsSuccessful(
+          confirmedDriverData['tripId'],
+          confirmedDriverData['userId'],
+        );
 
+        if (!isTripSuccessful) {
+          // Fetch details from trips using tripId
+          DocumentSnapshot tripSnapshot = await firestore
+              .collection('trips')
+              .doc(confirmedDriverData['tripId'])
+              .get();
 
+          // Check if the trip exists and is within the last hour
+          if (tripSnapshot.exists) {
+            var tripData = tripSnapshot.data() as Map<String, dynamic>;
+            var tripTimestamp = (tripData['timestamp'] as Timestamp).toDate();
 
+            // Compare tripTimestamp with oneHourAgo
+            if (tripTimestamp.isAfter(oneHourAgo)) {
+              // Trip is within the last hour, include it in fetchedData
+              // Fetch details from vehicleData using driverId
+              DocumentSnapshot driverSnapshot = await firestore
+                  .collection('vehicleData')
+                  .doc(confirmedDriverData['driverId'])
+                  .get();
+              var driverData = driverSnapshot.data() as Map<String, dynamic>;
 
-
-
-
-
-Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  // Calculate time 1 hour ago
-  DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 1));
-
-  Query query = firestore
-      .collection('confirmedDrivers')
-      .where('userId', isEqualTo: widget.userId)
-      .orderBy('confirmedAt', descending: true)
-      .limit(isLoadMore ? 10 : 10); // Load 10 cards at a time
-
-  if (isLoadMore && lastDocument != null) {
-    query = query.startAfterDocument(lastDocument!);
-  }
-
-  QuerySnapshot confirmedDriversSnapshot = await query.get();
-
-  if (confirmedDriversSnapshot.docs.isNotEmpty) {
-    List<Map<String, dynamic>> fetchedData = [];
-
-    for (var doc in confirmedDriversSnapshot.docs) {
-      var confirmedDriverData = doc.data() as Map<String, dynamic>;
-
-      // Check if this trip is in successfulTrips collection
-      bool isTripSuccessful = await _checkIfTripIsSuccessful(
-        confirmedDriverData['tripId'],
-        confirmedDriverData['userId'],
-      );
-
-      if (!isTripSuccessful) {
-        // Fetch details from trips using tripId
-        DocumentSnapshot tripSnapshot = await firestore
-            .collection('trips')
-            .doc(confirmedDriverData['tripId'])
-            .get();
-
-        // Check if the trip exists and is within the last hour
-        if (tripSnapshot.exists) {
-          var tripData = tripSnapshot.data() as Map<String, dynamic>;
-          var tripTimestamp = (tripData['timestamp'] as Timestamp).toDate();
-
-          // Compare tripTimestamp with oneHourAgo
-          if (tripTimestamp.isAfter(oneHourAgo)) {
-            // Trip is within the last hour, include it in fetchedData
-            // Fetch details from vehicleData using driverId
-            DocumentSnapshot driverSnapshot = await firestore
-                .collection('vehicleData')
-                .doc(confirmedDriverData['driverId'])
-                .get();
-            var driverData = driverSnapshot.data() as Map<String, dynamic>;
-
-            // Combine the data from both collections and include profile picture
-            fetchedData.add({
-              'id': doc.id,
-              'pickupLocation': tripData['pickupLocation'],
-              'deliveryLocation': tripData['deliveryLocation'],
-              'distance': tripData['distance'],
-              'fare': tripData['fare'],
-              'driverName': driverData['name'],
-              'driverPhone': driverData['phone'],
-              'profilePictureUrl': driverData['profilePictureUrl'] ?? '',
-              'driverId': confirmedDriverData['driverId'],
-              'tripId': confirmedDriverData['tripId'],
-              'no_of_person': tripData['no_of_person'],
-              'vehicle_mode': tripData['vehicle_mode'],
-              'timestamp': confirmedDriverData['timestamp'], // Ensure this field exists
-            });
+              // Combine the data from both collections and include profile picture
+              fetchedData.add({
+                'id': doc.id,
+                'pickupLocation': tripData['pickupLocation'],
+                'deliveryLocation': tripData['deliveryLocation'],
+                'distance': tripData['distance'],
+                'fare': tripData['fare'],
+                'driverName': driverData['name'],
+                'driverPhone': driverData['phone'],
+                'profilePictureUrl': driverData['profilePictureUrl'] ?? '',
+                'driverId': confirmedDriverData['driverId'],
+                'tripId': confirmedDriverData['tripId'],
+                'no_of_person': tripData['no_of_person'],
+                'vehicle_mode': tripData['vehicle_mode'],
+                'timestamp': confirmedDriverData[
+                    'timestamp'], // Ensure this field exists
+              });
+            } else {
+              // Trip is older than 1 hour, skip processing
+              print(
+                  'Skipping trip ${confirmedDriverData['tripId']} as it is older than 1 hour.');
+            }
           } else {
-            // Trip is older than 1 hour, skip processing
             print(
-                'Skipping trip ${confirmedDriverData['tripId']} as it is older than 1 hour.');
+                'Trip ${confirmedDriverData['tripId']} does not exist or has no data.');
           }
         } else {
           print(
-              'Trip ${confirmedDriverData['tripId']} does not exist or has no data.');
+              'Trip ${confirmedDriverData['tripId']} is marked as successful in the database. Skipping.');
         }
-      } else {
-        print(
-            'Trip ${confirmedDriverData['tripId']} is marked as successful in the database. Skipping.');
       }
-    }
 
-    setState(() {
-      if (isLoadMore) {
-        confirmedDriversData.addAll(fetchedData);
-      } else {
-        confirmedDriversData = fetchedData;
-      }
-      lastDocument =
-          confirmedDriversSnapshot.docs.last; // Update the last document
-    });
+      setState(() {
+        if (isLoadMore) {
+          confirmedDriversData.addAll(fetchedData);
+        } else {
+          confirmedDriversData = fetchedData;
+        }
+        lastDocument =
+            confirmedDriversSnapshot.docs.last; // Update the last document
+      });
+    }
   }
-}
 
 // Function to check if a trip is marked as successful in successfulTrips collection
-Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  try {
-    QuerySnapshot querySnapshot = await firestore
-        .collection('successfulTrips')
-        .where('tripId', isEqualTo: tripId)
-        .where('userId', isEqualTo: userId)
-        .limit(1)
-        .get();
+    try {
+      QuerySnapshot querySnapshot = await firestore
+          .collection('successfulTrips')
+          .where('tripId', isEqualTo: tripId)
+          .where('userId', isEqualTo: userId)
+          .limit(1)
+          .get();
 
-    return querySnapshot.docs.isNotEmpty; // Return true if trip is marked as successful
-  } catch (e) {
-    print('Error checking successful trip: $e');
-    return false; // Assume trip is not marked as successful on error
+      return querySnapshot
+          .docs.isNotEmpty; // Return true if trip is marked as successful
+    } catch (e) {
+      print('Error checking successful trip: $e');
+      return false; // Assume trip is not marked as successful on error
+    }
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,color: Colors.white,),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Chat with Drivers',
-          style: GoogleFonts.outfit(color: Colors.white),
+          style: GoogleFonts.outfit(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         // backgroundColor: Colors.greenAccent.shade200.withOpacity(0.9),
         backgroundColor: Colors.blueAccent,

@@ -241,7 +241,20 @@ class _HomePage1State extends State<HomePage1> {
     if (currentUser == null) {
       return Scaffold(
         body: Center(
-          child: Text('No user is logged in'),
+          child: Column(
+            children: [
+              Text('No user is logged in, Login Again'),
+              GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => SignInPage()));
+                  },
+                  child: Icon(
+                    Icons.home,
+                    color: Colors.green,
+                  ))
+            ],
+          ),
         ),
       );
     }

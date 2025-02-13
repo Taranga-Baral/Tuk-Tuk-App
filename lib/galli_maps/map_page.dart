@@ -74,7 +74,7 @@ class FareCalculator {
     DateTime now = DateTime.now();
     int currentHour = now.hour;
     bool isDaytime = currentHour >= 6 && currentHour < 18;
-    double timeMultiplier = isDaytime ? 1 : 1.1; // Nighttime surcharge
+    double timeMultiplier = isDaytime ? 1 : 1.05; // Nighttime surcharge
 
     // Define fare rates for each vehicle type and mode
     final Map<String, Map<String, List<double>>> fareRates = {
@@ -907,35 +907,90 @@ class _MapPageState extends State<MapPage> {
             SizedBox(
               height: 10,
             ),
-            ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-                child: Container(
-                  width: double.infinity, // Full width
-                  height: 50, // Fixed height
-                  decoration: BoxDecoration(
-                    color: Colors.blueAccent, // Vibrant green color
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2), // Subtle shadow
-                        blurRadius: 6,
-                        offset: Offset(0, 3), // Shadow position
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Hail a Ride',
-                      style: TextStyle(
-                        color: Colors.white, // White text for contrast
-                        fontSize: 18, // Slightly larger font size
-                        fontWeight: FontWeight.bold, // Bold text
-                        letterSpacing:
-                            1.0, // Slightly spaced letters for a professional look
+            InkWell(
+              onTap: isBookingInProgress
+                  ? null
+                  : () async {
+                      if (selectedMunicipality != null &&
+                          selectedVehicleType != null &&
+                          selectedMode != null &&
+                          ((selectedVehicleType == 'Motor Bike' &&
+                                  selectedPassengers == 1) ||
+                              (selectedVehicleType == 'Tuk Tuk' &&
+                                  (selectedPassengers >= 1 &&
+                                      selectedPassengers <= 5)) ||
+                              (selectedVehicleType == 'Taxi' &&
+                                  (selectedPassengers >= 1 &&
+                                      selectedPassengers <= 5)))) {
+                        setState(() {
+                          isBookingInProgress = true; // Disable the button
+                        });
+                        final userDetails = await _getUserDetails();
+                        final user = FirebaseAuth.instance.currentUser;
+                        final bookingData = {
+                          'vehicle_mode': selectedMode,
+                          'vehicleType': selectedVehicleType,
+                          'no_of_person': selectedPassengers,
+                          'userId': user?.uid ?? 'N/A',
+                          'municipalityDropdown': selectedMunicipality,
+                          'timestamp': FieldValue.serverTimestamp(),
+                          'fare': fare.toStringAsFixed(2),
+                          'distance':
+                              (double.parse(distance) / 1000).toString(),
+                          'username': userDetails['username'] ?? 'N/A',
+                          'email': userDetails['email'] ?? 'N/A',
+                          'phone': userDetails['phone_number'] ?? 'N/A',
+                          'pickupLocation': _pickupLocation,
+                          'deliveryLocation': _deliveryLocation,
+                        };
+
+                        await _storeDataInFirestore(bookingData);
+                        // Navigator.of(context).pop(true);
+                        setState(() {
+                          isBookingInProgress =
+                              false; // Enable the button after completion
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      RequestPage(userId: widget.userId)));
+                        });
+                      } else {
+                        _showSnackbar(
+                            'Select all of the Valid Option', context);
+                      }
+                    },
+              child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  child: Container(
+                    width: double.infinity, // Full width
+                    height: 50, // Fixed height
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent, // Vibrant green color
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2), // Subtle shadow
+                          blurRadius: 6,
+                          offset: Offset(0, 3), // Shadow position
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Hail a Ride',
+                        style: TextStyle(
+                          color: Colors.white, // White text for contrast
+                          fontSize: 18, // Slightly larger font size
+                          fontWeight: FontWeight.bold, // Bold text
+                          letterSpacing:
+                              1.0, // Slightly spaced letters for a professional look
+                        ),
                       ),
                     ),
-                  ),
-                )),
+                  )),
+            ),
 
             SizedBox(
               height: 10,
@@ -1070,7 +1125,7 @@ class _MapPageState extends State<MapPage> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 25,
+                                    top: 28,
                                     left: 20,
                                   ),
                                   child: GestureDetector(
@@ -1090,7 +1145,7 @@ class _MapPageState extends State<MapPage> {
 
                                 Padding(
                                   padding:
-                                      const EdgeInsets.only(left: 10, top: 25),
+                                      const EdgeInsets.only(left: 10, top: 28),
                                   child: SizedBox(
                                     width: MediaQuery.of(context).size.width *
                                         0.78,
@@ -1625,7 +1680,7 @@ class _MapPageState extends State<MapPage> {
               geometry: geometry,
               lineColor: "#5a7dff",
               lineWidth: 4.0,
-              lineOpacity: 0.5,
+              lineOpacity: 0.9,
               draggable: false,
               lineJoin: 'round',
               lineGapWidth: 2,
@@ -1680,7 +1735,7 @@ class _MapPageState extends State<MapPage> {
                 iconSize: 0.2,
                 iconHaloBlur: 10,
                 iconHaloWidth: 2,
-                iconOpacity: 0.85,
+                iconOpacity: 0.96,
                 iconOffset: Offset(0, 0.8),
                 iconColor: '#0077FF',
                 iconHaloColor: '#FFFFFF',
