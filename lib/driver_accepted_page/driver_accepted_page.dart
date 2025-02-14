@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:final_menu/driver_chat_page/chat_detail_page.dart';
+import 'package:final_menu/galli_maps/driver_view_passenger_location/driver_view_passenger_location.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -578,18 +579,24 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                           color: Colors.indigo,
                                         ),
                                         onPressed: () {
-                                          final pickupLocation =
-                                              tripDetails['pickupLocation'] ??
-                                                  '';
-                                          final deliveryLocation =
-                                              tripDetails['deliveryLocation'] ??
-                                                  '';
-                                          if (pickupLocation.isNotEmpty &&
-                                              deliveryLocation.isNotEmpty) {
-                                            _launchOpenStreetMapWithDirections(
-                                                pickupLocation,
-                                                deliveryLocation);
-                                          }
+                                          // final pickupLocation =
+                                          //     tripDetails['pickupLocation'] ??
+                                          //         '';
+                                          // final deliveryLocation =
+                                          //     tripDetails['deliveryLocation'] ??
+                                          //         '';
+                                          // if (pickupLocation.isNotEmpty &&
+                                          //     deliveryLocation.isNotEmpty) {
+                                          //   _launchOpenStreetMapWithDirections(
+                                          //       pickupLocation,
+                                          //       deliveryLocation);
+                                          // }
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DriverViewPassengerLocation(
+                                                          tripId: tripId)));
                                         },
                                       ),
                                       IconButton(

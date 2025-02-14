@@ -147,6 +147,8 @@ class _MapPageState extends State<MapPage> {
   String _searchQuery = '';
   String _pickupLocation = '';
   double _heightOfMap = 1;
+  String _destinationLatitude = '';
+  String _destinationLongitude = '';
 
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -942,6 +944,10 @@ class _MapPageState extends State<MapPage> {
                           'phone': userDetails['phone_number'] ?? 'N/A',
                           'pickupLocation': _pickupLocation,
                           'deliveryLocation': _deliveryLocation,
+                          'pickupLatitude': _currentLocation!.latitude,
+                          'pickupLongitude': _currentLocation!.longitude,
+                          'deliveryLatitude': _destinationLatitude,
+                          'deliveryLongitude': _destinationLongitude,
                         };
 
                         await _storeDataInFirestore(bookingData);
@@ -1466,12 +1472,19 @@ class _MapPageState extends State<MapPage> {
                                   await clearRoutes(); // Clear existing routes
                                   await drawRoute(
                                       coordinates); // Draw new route
-                                  Navigator.of(context).pop(); // Close dialog
 
                                   // Fetch and print pickup and delivery location names
                                   await fetchPickupLocationName();
                                   await fetchLocationName(coordinates);
                                   await fetchDistanceDuration(coordinates);
+                                  setState(() {
+                                    _destinationLatitude =
+                                        coordinates.latitude.toString();
+                                    _destinationLongitude =
+                                        coordinates.longitude.toString();
+                                  });
+
+                                  Navigator.of(context).pop(); // Close dialog
 
 //start
                                   if (_searchQuery.isNotEmpty &&
@@ -1678,9 +1691,9 @@ class _MapPageState extends State<MapPage> {
 
             lineOptionsList.add(LineOptions(
               geometry: geometry,
-              lineColor: "#5a7dff",
+              lineColor: "#0000FF",
               lineWidth: 4.0,
-              lineOpacity: 0.9,
+              lineOpacity: 0.98,
               draggable: false,
               lineJoin: 'round',
               lineGapWidth: 2,

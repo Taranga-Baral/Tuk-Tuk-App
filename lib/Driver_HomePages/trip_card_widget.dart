@@ -59,25 +59,25 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   }
 
   // Function to convert place name to lat-long using OSM Nominatim API
-  Future<Map<String, double>> _convertPlaceNameToLatLong(
-      String placeName) async {
-    final String url =
-        'https://nominatim.openstreetmap.org/search?q=$placeName&format=json&limit=1';
-    final response = await http.get(Uri.parse(url));
+  // Future<Map<String, double>> _convertPlaceNameToLatLong(
+  //     String placeName) async {
+  //   final String url =
+  //       'https://nominatim.openstreetmap.org/search?q=$placeName&format=json&limit=1';
+  //   final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
-      if (data.isNotEmpty) {
-        final latitude = double.parse(data[0]['lat']);
-        final longitude = double.parse(data[0]['lon']);
-        return {'latitude': latitude, 'longitude': longitude};
-      } else {
-        throw Exception('Place not found');
-      }
-    } else {
-      throw Exception('Failed to fetch location data');
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     final List data = json.decode(response.body);
+  //     if (data.isNotEmpty) {
+  //       final latitude = double.parse(data[0]['lat']);
+  //       final longitude = double.parse(data[0]['lon']);
+  //       return {'latitude': latitude, 'longitude': longitude};
+  //     } else {
+  //       throw Exception('Place not found');
+  //     }
+  //   } else {
+  //     throw Exception('Failed to fetch location data');
+  //   }
+  // }
 
 // Function to check if a document exists in the requestsofDrivers collection
   Future<bool> checkRequestExists(
@@ -470,19 +470,10 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                             double pickupLatitude;
                             double pickupLongitude;
 
-                            // 3. Check if pickupLocation is a GeoPoint (lat, long) or a place name
-                            if (pickupLocation is GeoPoint) {
-                              // If it's a GeoPoint, extract lat and long
-                              pickupLatitude = pickupLocation.latitude;
-                              pickupLongitude = pickupLocation.longitude;
-                            } else {
-                              // If it's a place name, convert to lat-long using Nominatim
-                              Map<String, double> latLong =
-                                  await _convertPlaceNameToLatLong(
-                                      pickupLocation);
-                              pickupLatitude = latLong['latitude']!;
-                              pickupLongitude = latLong['longitude']!;
-                            }
+                            // 3. Check if pickupLocation is a GeoPoint (lat, long) or a place name (aaile directly available in fb db)
+
+                            pickupLatitude = tripData['pickupLatitude'];
+                            pickupLongitude = tripData['pickupLongitude'];
 
                             widget.onRequestTap();
 

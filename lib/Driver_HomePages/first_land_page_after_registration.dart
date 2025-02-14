@@ -603,6 +603,7 @@ import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
 import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
 import 'package:final_menu/driver_filter_trips/driver_filter_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
+import 'package:final_menu/galli_maps/driver_view_passenger_location/driver_view_passenger_location.dart';
 import 'package:final_menu/homepage.dart';
 import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
@@ -658,67 +659,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
     }
     throw Exception('Failed to geocode address');
-  }
-
-  Future<void> _launchOpenStreetMapWithDirections(String tripId) async {
-    try {
-      DocumentSnapshot tripSnapshot = await FirebaseFirestore.instance
-          .collection('trips')
-          .doc(tripId)
-          .get();
-
-      if (tripSnapshot.exists) {
-        final data = tripSnapshot.data() as Map<String, dynamic>;
-        final pickupLocation = data['pickupLocation'] as String;
-        final deliveryLocation = data['deliveryLocation'] as String;
-
-        // Try to parse as coordinates
-        final pickupCoords = _parseCoordinates(pickupLocation);
-        final deliveryCoords = _parseCoordinates(deliveryLocation);
-
-        double pickupLatitude;
-        double pickupLongitude;
-        double deliveryLatitude;
-        double deliveryLongitude;
-
-        if (pickupCoords != null) {
-          pickupLatitude = pickupCoords['latitude']!;
-          pickupLongitude = pickupCoords['longitude']!;
-        } else {
-          final pickupData = await _geocodeAddress(pickupLocation);
-          pickupLatitude = pickupData['latitude']!;
-          pickupLongitude = pickupData['longitude']!;
-        }
-
-        if (deliveryCoords != null) {
-          deliveryLatitude = deliveryCoords['latitude']!;
-          deliveryLongitude = deliveryCoords['longitude']!;
-        } else {
-          final deliveryData = await _geocodeAddress(deliveryLocation);
-          deliveryLatitude = deliveryData['latitude']!;
-          deliveryLongitude = deliveryData['longitude']!;
-        }
-
-        final String openStreetMapUrl =
-            'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=$pickupLatitude%2C$pickupLongitude%3B$deliveryLatitude%2C$deliveryLongitude';
-
-        final Uri launchUri = Uri.parse(openStreetMapUrl);
-
-        if (await canLaunchUrl(launchUri)) {
-          await launchUrl(launchUri);
-        } else {
-          print('Could not launch $launchUri');
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Trip details not found')),
-          );
-        }
-      }
-    } catch (e) {
-      print('Error fetching trip details: $e');
-    }
   }
 
   Future<bool> _checkRequestExists(
@@ -1255,7 +1195,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     }
                   },
                   onMapTap: () =>
-                      _launchOpenStreetMapWithDirections(tripData.tripId!),
+                      // _launchOpenStreetMapWithDirections(tripData.tripId!),
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DriverViewPassengerLocation(
+                                    tripId: tripData.tripId!,
+                                  ))),
                   onRequestTap: () {
                     _setButtonState(index); // Call to disable the button
                     showTripAndUserIdInSnackBar(
