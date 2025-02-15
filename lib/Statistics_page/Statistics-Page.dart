@@ -253,6 +253,10 @@ class _StatisticsPageState extends State<StatisticsPage>
     _calculateStatistics();
   }
 
+  Future<void> _refreshData() async {
+    setState(() {});
+  }
+
   Future<void> _calculateStatistics() async {
     try {
       final successfulTripsSnapshot = await FirebaseFirestore.instance

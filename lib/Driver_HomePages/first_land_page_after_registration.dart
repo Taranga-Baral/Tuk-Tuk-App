@@ -645,6 +645,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
+  Future<void> _refreshData() async {
+    setState(() {});
+  }
+
   Future<Map<String, double>> _geocodeAddress(String address) async {
     final response = await http.get(Uri.parse(
         'https://nominatim.openstreetmap.org/search?format=json&q=${Uri.encodeComponent(address)}'));
@@ -1155,63 +1159,70 @@ class _DriverHomePageState extends State<DriverHomePage> {
         ],
       ),
       body: _isLoading && _tripDataList.isEmpty
-          ? Center(
-              child: Image(
-                image: AssetImage('assets/no_data_found.gif'),
-                height: MediaQuery.of(context).size.height * 0.3,
-                width: MediaQuery.of(context).size.width * 0.3,
+          ? RefreshIndicator(
+              onRefresh: _refreshData,
+              child: Center(
+                child: Image(
+                  image: AssetImage('assets/no_data_found.gif'),
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  width: MediaQuery.of(context).size.width * 0.3,
+                ),
               ),
             )
-          : ListView.builder(
-              controller: _scrollController,
-              itemCount: _tripDataList.length +
-                  (_hasMore
-                      ? 1
-                      : 0), // Loading indicator if more trips are available
-              itemBuilder: (context, index) {
-                if (index == _tripDataList.length) {
-                  return Center(
-                      child: SizedBox()); // Loading indicator at the end
-                }
-                final tripData = _tripDataList[index];
-                // Check the index against the length of _isButtonDisabledList
-                final isButtonDisabled = index < _isButtonDisabledList.length
-                    ? _isButtonDisabledList[index]
-                    : false; // Default to false if index is out of bounds
+          : RefreshIndicator(
+              onRefresh: _refreshData,
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: _tripDataList.length +
+                    (_hasMore
+                        ? 1
+                        : 0), // Loading indicator if more trips are available
+                itemBuilder: (context, index) {
+                  if (index == _tripDataList.length) {
+                    return Center(
+                        child: SizedBox()); // Loading indicator at the end
+                  }
+                  final tripData = _tripDataList[index];
+                  // Check the index against the length of _isButtonDisabledList
+                  final isButtonDisabled = index < _isButtonDisabledList.length
+                      ? _isButtonDisabledList[index]
+                      : false; // Default to false if index is out of bounds
 
-                return TripCardWidget(
-                  driverId: widget.driverEmail,
-                  userId: tripData.userId.toString(),
-                  tripId: tripData.tripId.toString(),
-                  tripData: _tripDataList[index],
-                  onPhoneTap: () {
-                    if (tripData.phoneNumber != null &&
-                        tripData.phoneNumber!.isNotEmpty) {
-                      _launchPhoneNumber(tripData.phoneNumber!);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Phone number not available')),
-                      );
-                    }
-                  },
-                  onMapTap: () =>
-                      // _launchOpenStreetMapWithDirections(tripData.tripId!),
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DriverViewPassengerLocation(
-                                    tripId: tripData.tripId!,
-                                  ))),
-                  onRequestTap: () {
-                    _setButtonState(index); // Call to disable the button
-                    showTripAndUserIdInSnackBar(
-                        _tripDataList[index], context, index);
-                  },
-                  index: index,
-                  isButtonDisabled:
-                      isButtonDisabled, // Use the checked value here
-                );
-              },
+                  return TripCardWidget(
+                    driverId: widget.driverEmail,
+                    userId: tripData.userId.toString(),
+                    tripId: tripData.tripId.toString(),
+                    tripData: _tripDataList[index],
+                    onPhoneTap: () {
+                      if (tripData.phoneNumber != null &&
+                          tripData.phoneNumber!.isNotEmpty) {
+                        _launchPhoneNumber(tripData.phoneNumber!);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Phone number not available')),
+                        );
+                      }
+                    },
+                    onMapTap: () =>
+                        // _launchOpenStreetMapWithDirections(tripData.tripId!),
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    DriverViewPassengerLocation(
+                                      tripId: tripData.tripId!,
+                                    ))),
+                    onRequestTap: () {
+                      _setButtonState(index); // Call to disable the button
+                      showTripAndUserIdInSnackBar(
+                          _tripDataList[index], context, index);
+                    },
+                    index: index,
+                    isButtonDisabled:
+                        isButtonDisabled, // Use the checked value here
+                  );
+                },
+              ),
             ),
     );
   }

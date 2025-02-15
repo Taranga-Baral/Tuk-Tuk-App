@@ -944,6 +944,10 @@ class _ChatPageState extends State<ChatPage> {
     fetchConfirmedDriversData();
   }
 
+  Future<void> _refreshData() async {
+    setState(() {});
+  }
+
   Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 1));
@@ -1062,83 +1066,86 @@ class _ChatPageState extends State<ChatPage> {
                 width: MediaQuery.of(context).size.width * 0.5,
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: confirmedDriversData.length,
-                      itemBuilder: (context, index) {
-                        var data = confirmedDriversData[index];
-                        return DriverCard(
-                          data: data,
-                          index: index,
-                          onChatPressed: () {
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation, secondaryAnimation) {
-                                  return FadeScaleTransition(
-                                    animation: animation,
-                                    child: ChatDetailPage(
-                                      userId: widget.userId,
-                                      driverId: data['driverId'],
-                                      tripId: data['tripId'],
-                                      driverName: data['driverName'],
-                                      pickupLocation: data['pickupLocation'],
-                                      deliveryLocation:
-                                          data['deliveryLocation'],
-                                      distance: data['distance'],
-                                      no_of_person: data['no_of_person'],
-                                      vehicle_mode: data['vehicle_mode'],
-                                      fare: data['fare'],
-                                    ),
-                                  );
-                                },
-                                transitionsBuilder: (context, animation,
-                                    secondaryAnimation, child) {
-                                  const begin = Offset(1.0, 0.0);
-                                  const end = Offset.zero;
-                                  const curve = Curves.easeInOut;
+          : RefreshIndicator(
+              onRefresh: _refreshData,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: confirmedDriversData.length,
+                        itemBuilder: (context, index) {
+                          var data = confirmedDriversData[index];
+                          return DriverCard(
+                            data: data,
+                            index: index,
+                            onChatPressed: () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation, secondaryAnimation) {
+                                    return FadeScaleTransition(
+                                      animation: animation,
+                                      child: ChatDetailPage(
+                                        userId: widget.userId,
+                                        driverId: data['driverId'],
+                                        tripId: data['tripId'],
+                                        driverName: data['driverName'],
+                                        pickupLocation: data['pickupLocation'],
+                                        deliveryLocation:
+                                            data['deliveryLocation'],
+                                        distance: data['distance'],
+                                        no_of_person: data['no_of_person'],
+                                        vehicle_mode: data['vehicle_mode'],
+                                        fare: data['fare'],
+                                      ),
+                                    );
+                                  },
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeInOut;
 
-                                  var tween = Tween(begin: begin, end: end);
-                                  var offsetAnimation = animation.drive(
-                                      tween.chain(CurveTween(curve: curve)));
+                                    var tween = Tween(begin: begin, end: end);
+                                    var offsetAnimation = animation.drive(
+                                        tween.chain(CurveTween(curve: curve)));
 
-                                  return SlideTransition(
-                                    position: offsetAnimation,
-                                    child: child,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        );
-                      },
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  if (isLoadingMore)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (!isLoadingMore) {
-                        setState(() {
-                          isLoadingMore = true;
-                        });
-                        fetchConfirmedDriversData(isLoadMore: true).then((_) {
+                    if (isLoadingMore)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (!isLoadingMore) {
                           setState(() {
-                            isLoadingMore = false;
+                            isLoadingMore = true;
                           });
-                        });
-                      }
-                    },
-                    child: Text('Load More'),
-                  ),
-                ],
+                          fetchConfirmedDriversData(isLoadMore: true).then((_) {
+                            setState(() {
+                              isLoadingMore = false;
+                            });
+                          });
+                        }
+                      },
+                      child: Text('Load More'),
+                    ),
+                  ],
+                ),
               ),
             ),
     );
@@ -1158,128 +1165,318 @@ class DriverCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return Stack(
+    //   clipBehavior: Clip.none,
+    //   children: [
+    //     Card(
+    //       elevation: 4,
+    //       margin: EdgeInsets.symmetric(vertical: 6),
+    //       shape: RoundedRectangleBorder(
+    //         borderRadius: BorderRadius.circular(12),
+    //       ),
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(12.0),
+    //         child: Row(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             SizedBox(width: 1),
+    //             // Profile Picture
+    //             CircleAvatar(
+    //               radius: 20,
+    //               backgroundImage: data['profilePictureUrl'].isNotEmpty
+    //                   ? NetworkImage(data['profilePictureUrl'])
+    //                   : AssetImage('assets/logo.png') as ImageProvider,
+    //             ),
+    //             SizedBox(width: 12),
+    //             // Driver Details
+    //             Expanded(
+    //               child: Column(
+    //                 crossAxisAlignment: CrossAxisAlignment.start,
+    //                 children: [
+    //                   // Driver Name
+    //                   Text(
+    //                     data['driverName'],
+    //                     style: TextStyle(
+    //                       fontWeight: FontWeight.bold,
+    //                       fontSize: 16,
+    //                     ),
+    //                   ),
+    //                   SizedBox(height: 8),
+    //                   // Pickup Location
+    //                   Row(
+    //                     children: [
+    //                       Icon(
+    //                         Icons.location_on,
+    //                         color: Colors.red,
+    //                         size: 16,
+    //                       ),
+    //                       SizedBox(width: 4),
+    //                       Expanded(
+    //                         child: Text(
+    //                           'Pickup: ${data['pickupLocation']}',
+    //                           style: TextStyle(fontSize: 14),
+    //                         ),
+    //                       ),
+    //                     ],
+    //                   ),
+    //                   SizedBox(height: 4),
+    //                   // Delivery Location
+    //                   Row(
+    //                     children: [
+    //                       Icon(
+    //                         Icons.location_on,
+    //                         color: Colors.green,
+    //                         size: 16,
+    //                       ),
+    //                       SizedBox(width: 4),
+    //                       Expanded(
+    //                         child: Text(
+    //                           'Delivery: ${data['deliveryLocation']}',
+    //                           style: TextStyle(fontSize: 14),
+    //                         ),
+    //                       ),
+    //                     ],
+    //                   ),
+    //                   SizedBox(height: 4),
+    //                   // Contact Number
+    //                   Row(
+    //                     children: [
+    //                       Icon(
+    //                         Icons.phone,
+    //                         color: Colors.blue,
+    //                         size: 16,
+    //                       ),
+    //                       SizedBox(width: 4),
+    //                       Text(
+    //                         'Contact: ${data['driverPhone']}',
+    //                         style: TextStyle(fontSize: 14),
+    //                       ),
+    //                     ],
+    //                   ),
+    //                 ],
+    //               ),
+    //             ),
+    //             // Chat Icon
+    //             IconButton(
+    //               icon: Icon(Icons.chat, color: Colors.green),
+    //               onPressed: onChatPressed,
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //     Positioned(
+    //       top: -1,
+    //       right: -1,
+    //       child: // Serial Number
+    //           ClipRRect(
+    //         borderRadius: BorderRadius.circular(20),
+    //         child: Container(
+    //           color: Colors.blueAccent,
+    //           width: 20,
+    //           height: 20,
+    //           alignment: Alignment.center,
+    //           child: Text(
+    //             '${index + 1}',
+    //             style: TextStyle(
+    //               fontSize: 16,
+    //               fontWeight: FontWeight.bold,
+    //               color: Colors.white,
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     )
+    //   ],
+    // );
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Card(
-          elevation: 4,
-          margin: EdgeInsets.symmetric(vertical: 6),
+          elevation: 6,
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: 1),
-                // Profile Picture
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: data['profilePictureUrl'].isNotEmpty
-                      ? NetworkImage(data['profilePictureUrl'])
-                      : AssetImage('assets/logo.png') as ImageProvider,
-                ),
-                SizedBox(width: 12),
-                // Driver Details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: [Colors.blue.shade50, Colors.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Profile Picture with Custom Border
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Driver Name
-                      Text(
-                        data['driverName'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.blueAccent,
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: Image.network(
+                            data['profilePictureUrl'].isNotEmpty
+                                ? data['profilePictureUrl']
+                                : 'assets/logo.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Icon(
+                              Icons.person,
+                              size: 40,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(height: 8),
-                      // Pickup Location
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Colors.red,
-                            size: 16,
-                          ),
-                          SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              'Pickup: ${data['pickupLocation']}',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                        ],
+                      SizedBox(
+                        height: 10,
                       ),
-                      SizedBox(height: 4),
-                      // Delivery Location
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Colors.green,
-                            size: 16,
-                          ),
-                          SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              'Delivery: ${data['deliveryLocation']}',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4),
-                      // Contact Number
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.phone,
-                            color: Colors.blue,
-                            size: 16,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Contact: ${data['driverPhone']}',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ],
+                      IconButton(
+                        icon: Icon(Icons.chat,
+                            color: Colors.green.shade600, size: 24),
+                        onPressed: onChatPressed,
                       ),
                     ],
                   ),
-                ),
-                // Chat Icon
-                IconButton(
-                  icon: Icon(Icons.chat, color: Colors.green),
-                  onPressed: onChatPressed,
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  // Driver Details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Driver Name
+                        Text(
+                          data['driverName'],
+                          style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.blue.shade900,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Pickup Location
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              color: Colors.red.shade400,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Pickup: ${data['pickupLocation']}',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade800,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        // Delivery Location
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              color: Colors.green.shade400,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Delivery: ${data['deliveryLocation']}',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade800,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        // Contact Number
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.phone,
+                              color: Colors.blue.shade400,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Contact: ${data['driverPhone']}',
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                color: Colors.grey.shade800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Chat Icon
+                ],
+              ),
             ),
           ),
         ),
+        // Serial Number Badge
         Positioned(
-          top: -1,
-          right: -1,
-          child: // Serial Number
-              ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+          top: 8,
+          right: 8,
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(12), topRight: Radius.circular(12)),
             child: Container(
-              color: Colors.blueAccent,
-              width: 20,
-              height: 20,
-              alignment: Alignment.center,
-              child: Text(
-                '${index + 1}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              width: 50,
+              height: 30,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  '${index + 1}',
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
