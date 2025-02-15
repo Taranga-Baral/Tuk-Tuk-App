@@ -450,7 +450,7 @@ class _MapPageState extends State<MapPage> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Container(
-                          color: const Color.fromARGB(235, 80, 91, 247),
+                          color: const Color.fromARGB(255, 80, 91, 247),
                           padding: EdgeInsets.symmetric(
                               horizontal: 12.0, vertical: 8.0),
                           child: Row(
@@ -609,7 +609,8 @@ class _MapPageState extends State<MapPage> {
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                       color: isSelected
-                                          ? Colors.blueAccent
+                                          ? const Color.fromARGB(
+                                              235, 80, 91, 247)
                                           : Colors.grey[300]!,
                                       width: 2,
                                     ),
@@ -628,7 +629,7 @@ class _MapPageState extends State<MapPage> {
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: isSelected
-                                        ? Colors.blueAccent
+                                        ? const Color.fromARGB(235, 80, 91, 247)
                                         : Colors.grey[700],
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -651,7 +652,7 @@ class _MapPageState extends State<MapPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Select Municipality',
+                    'Select Your Municipality',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -675,7 +676,7 @@ class _MapPageState extends State<MapPage> {
                               EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? Colors.blueAccent
+                                ? const Color.fromARGB(235, 80, 91, 247)
                                 : Colors.grey[200],
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -736,7 +737,7 @@ class _MapPageState extends State<MapPage> {
                             padding: EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? Colors.blueAccent
+                                  ? const Color.fromARGB(235, 80, 91, 247)
                                   : Colors.grey[200],
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -796,7 +797,7 @@ class _MapPageState extends State<MapPage> {
                                   fontSize: 14,
                                   color: isSelected
                                       ? Colors.white
-                                      : Colors.blue[800],
+                                      : const Color.fromARGB(235, 80, 91, 247),
                                 ),
                               ),
                               selected: isSelected,
@@ -811,7 +812,8 @@ class _MapPageState extends State<MapPage> {
                                   );
                                 });
                               },
-                              selectedColor: Colors.blueAccent,
+                              selectedColor:
+                                  const Color.fromARGB(235, 80, 91, 247),
                               backgroundColor: Colors.grey[200],
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 6),
@@ -972,7 +974,7 @@ class _MapPageState extends State<MapPage> {
                     width: double.infinity, // Full width
                     height: 50, // Fixed height
                     decoration: BoxDecoration(
-                      color: Colors.blueAccent, // Vibrant green color
+                      color: const Color.fromARGB(255, 73, 85, 252),
                       borderRadius:
                           BorderRadius.circular(10), // Rounded corners
                       boxShadow: [
@@ -1131,7 +1133,7 @@ class _MapPageState extends State<MapPage> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 31,
+                                    top: 35,
                                     left: 20,
                                   ),
                                   child: GestureDetector(
@@ -1151,7 +1153,7 @@ class _MapPageState extends State<MapPage> {
 
                                 Padding(
                                   padding:
-                                      const EdgeInsets.only(left: 10, top: 31),
+                                      const EdgeInsets.only(left: 10, top: 35),
                                   child: SizedBox(
                                     width: MediaQuery.of(context).size.width *
                                         0.78,

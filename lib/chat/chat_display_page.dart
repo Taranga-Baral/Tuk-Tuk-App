@@ -1,219 +1,6 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:flutter/material.dart';
-
-// class ChatDetailPage extends StatelessWidget {
-//   final String userId;
-//   final String driverId;
-//   final String tripId;
-//   final String driverName;
-//   final String pickupLocation;
-//   final String deliveryLocation;
-//   final String distance;
-//   final String fare;
-
-//   ChatDetailPage({
-//     required this.userId,
-//     required this.driverId,
-//     required this.tripId,
-//     required this.driverName,
-//     required this.pickupLocation,
-//     required this.deliveryLocation,
-//     required this.distance,
-//     required this.fare,
-//   });
-
-//   Future<String?> fetchDriverProfilePicture() async {
-//     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-//     final driverSnapshot = await firestore.collection('vehicleData').doc(driverId).get();
-//     return driverSnapshot.data()?['profilePictureUrl']; // Fetch the profile picture URL
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     TextEditingController messageController = TextEditingController();
-
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Chat with $driverName'),
-//       ),
-//       body: Column(
-//         children: [
-//           // Center Avatar and Information Icon
-//           Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 20.0),
-//             child: Column(
-//               children: [
-//                 FutureBuilder<String?>(
-//                   future: fetchDriverProfilePicture(),
-//                   builder: (context, snapshot) {
-//                     if (snapshot.connectionState == ConnectionState.waiting) {
-//                       return CircleAvatar(
-//                         radius: 60,
-//                         child: CircularProgressIndicator(),
-//                       );
-//                     }
-//                     if (snapshot.hasError || !snapshot.hasData) {
-//                       return CircleAvatar(
-//                         radius: 60,
-//                         child: Icon(Icons.error),
-//                       );
-//                     }
-//                     String? profilePictureUrl = snapshot.data;
-//                     return CircleAvatar(
-//                       radius: 60,
-//                       backgroundImage: profilePictureUrl != null
-//                           ? NetworkImage(profilePictureUrl)
-//                           : AssetImage('assets/tuktuk1.png') as ImageProvider, // Fallback image if no URL
-//                     );
-//                   },
-//                 ),
-//                 SizedBox(height: 10),
-//                 IconButton(
-//                   icon: Icon(Icons.info_outline, size: 30),
-//                   onPressed: () {
-//                     showDialog(
-//                       context: context,
-//                       builder: (context) => AlertDialog(
-//                         title: Text('Trip Details'),
-//                         content: Column(
-//                           mainAxisSize: MainAxisSize.min,
-//                           children: [
-//                             Text('Driver Name: $driverName'),
-//                             Text('Pickup Location: $pickupLocation'),
-//                             Text('Delivery Location: $deliveryLocation'),
-//                             Text('Distance: ${distance} km'),
-//                             Text('Fare: NPR ${fare}'),
-//                           ],
-//                         ),
-//                         actions: [
-//                           TextButton(
-//                             onPressed: () => Navigator.of(context).pop(),
-//                             child: Text('Close'),
-//                           ),
-//                         ],
-//                       ),
-//                     );
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-
-//           // Chat messages
-//           Expanded(
-//             child: StreamBuilder<QuerySnapshot>(
-//               stream: FirebaseFirestore.instance
-//                   .collection('userChats')
-//                   .where('tripId', isEqualTo: tripId)
-//                   .orderBy('timestamp', descending: false)
-//                   .snapshots(),
-//               builder: (context, snapshot) {
-//                 if (snapshot.connectionState == ConnectionState.waiting) {
-//                   return Center(child: CircularProgressIndicator());
-//                 }
-
-//                 if (snapshot.hasError) {
-//                   return Center(child: Text('Error: ${snapshot.error}'));
-//                 }
-
-//                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-//                   return Center(child: Text('No messages.'));
-//                 }
-
-//                 return ListView.builder(
-//                   itemCount: snapshot.data!.docs.length,
-//                   itemBuilder: (context, index) {
-//                     final chatData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-//                     final isUserMessage = chatData['userId'] == userId;
-
-//                     return Align(
-//                       alignment: isUserMessage ? Alignment.centerRight : Alignment.centerLeft,
-//                       child: Padding(
-//                         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
-//                         child: Card(
-//                           color: isUserMessage ? Colors.blue[100] : Colors.green[100],
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(12),
-//                           ),
-//                           child: Container(
-//                             padding: EdgeInsets.all(12.0),
-//                             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Text(
-//                                   chatData['message'],
-//                                   style: TextStyle(
-//                                     color: isUserMessage ? Colors.black : Colors.black87,
-//                                     fontSize: 16.0,
-//                                   ),
-//                                 ),
-//                                 SizedBox(height: 5.0),
-//                                 Text(
-//                                   chatData['timestamp'] != null
-//                                       ? chatData['timestamp'].toDate().toString()
-//                                       : 'Sending...',
-//                                   style: TextStyle(
-//                                     color: Colors.grey[600],
-//                                     fontSize: 12.0,
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     );
-//                   },
-//                 );
-//               },
-//             ),
-//           ),
-
-//           // Message input
-//           Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Row(
-//               children: [
-//                 Expanded(
-//                   child: TextField(
-//                     controller: messageController,
-//                     minLines: 1,
-//                     maxLines: null, // Allow text to wrap into multiple lines
-//                     decoration: InputDecoration(
-//                       hintText: 'Type your message...',
-//                       border: OutlineInputBorder(
-//                         borderRadius: BorderRadius.circular(20),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 IconButton(
-//                   icon: Icon(Icons.send),
-//                   onPressed: () async {
-//                     if (messageController.text.isNotEmpty) {
-//                       await FirebaseFirestore.instance.collection('userChats').add({
-//                         'userId': userId,
-//                         'driverId': driverId,
-//                         'tripId': tripId,
-//                         'message': messageController.text,
-//                         'timestamp': FieldValue.serverTimestamp(),
-//                       });
-//                       messageController.clear();
-//                     }
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:flutter/material.dart';
+// import 'package:avatar_glow/avatar_glow.dart';
 // import 'package:rxdart/rxdart.dart';
 
 // class ChatDetailPage extends StatelessWidget {
@@ -225,8 +12,11 @@
 //   final String deliveryLocation;
 //   final String distance;
 //   final String fare;
+//   final int no_of_person;
+//   final String vehicle_mode;
 
-//   ChatDetailPage({
+//   const ChatDetailPage({
+//     super.key,
 //     required this.userId,
 //     required this.driverId,
 //     required this.tripId,
@@ -235,12 +25,15 @@
 //     required this.deliveryLocation,
 //     required this.distance,
 //     required this.fare,
+//     required this.no_of_person,
+//     required this.vehicle_mode,
 //   });
 
 //   Future<String?> fetchDriverProfilePicture() async {
 //     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-//     final driverSnapshot = await firestore.collection('vehicleData').doc(driverId).get();
-//     return driverSnapshot.data()?['profilePictureUrl']; // Fetch the profile picture URL
+//     final driverSnapshot =
+//         await firestore.collection('vehicleData').doc(driverId).get();
+//     return driverSnapshot.data()?['profilePictureUrl'];
 //   }
 
 //   Stream<List<Map<String, dynamic>>> _getMessages() {
@@ -250,12 +43,12 @@
 //         .orderBy('timestamp', descending: false)
 //         .snapshots()
 //         .map((snapshot) {
-//           return snapshot.docs.map((doc) {
-//             final data = doc.data() as Map<String, dynamic>;
-//             data['collection'] = 'userChats';
-//             return data;
-//           }).toList();
-//         });
+//       return snapshot.docs.map((doc) {
+//         final data = doc.data();
+//         data['collection'] = 'userChats';
+//         return data;
+//       }).toList();
+//     });
 
 //     final driverChatsStream = FirebaseFirestore.instance
 //         .collection('driverChats')
@@ -263,14 +56,15 @@
 //         .orderBy('timestamp', descending: false)
 //         .snapshots()
 //         .map((snapshot) {
-//           return snapshot.docs.map((doc) {
-//             final data = doc.data() as Map<String, dynamic>;
-//             data['collection'] = 'driverChats';
-//             return data;
-//           }).toList();
-//         });
+//       return snapshot.docs.map((doc) {
+//         final data = doc.data();
+//         data['collection'] = 'driverChats';
+//         return data;
+//       }).toList();
+//     });
 
-//     return Rx.combineLatest2(userChatsStream, driverChatsStream, (userChats, driverChats) {
+//     return Rx.combineLatest2(userChatsStream, driverChatsStream,
+//         (userChats, driverChats) {
 //       List<Map<String, dynamic>> allChats = [];
 //       allChats.addAll(userChats);
 //       allChats.addAll(driverChats);
@@ -278,7 +72,7 @@
 //         final timestampA = a['timestamp'] as Timestamp?;
 //         final timestampB = b['timestamp'] as Timestamp?;
 //         if (timestampA == null || timestampB == null) {
-//           return 0; // Handle cases where timestamp might be null
+//           return 0;
 //         }
 //         return timestampA.compareTo(timestampB);
 //       });
@@ -286,181 +80,297 @@
 //     });
 //   }
 
+//   void _showTripDetails(BuildContext context) {
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('Trip Details'),
+//         content: SingleChildScrollView(
+//           child: Column(mainAxisSize: MainAxisSize.min, children: [
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   'चालकको नाम : $driverName',
+//                   textAlign: TextAlign.left,
+//                 ),
+//                 Divider(),
+//                 Text(
+//                   'उठाउने स्थान : $pickupLocation',
+//                   textAlign: TextAlign.left,
+//                 ),
+//                 Divider(),
+//                 Text(
+//                   'डेलिभरी स्थान : $deliveryLocation',
+//                   textAlign: TextAlign.left,
+//                 ),
+//                 Divider(),
+//                 Text(
+//                   'दूरी : $distance km',
+//                   textAlign: TextAlign.left,
+//                 ),
+//                 Divider(),
+//                 Text(
+//                   'भाडा : NPR $fare',
+//                   textAlign: TextAlign.left,
+//                 ),
+//                 Divider(),
+//                 Text(
+//                   'यात्री (हरू) : $no_of_person',
+//                   textAlign: TextAlign.left,
+//                 ),
+//                 Divider(),
+//                 Text(
+//                   'सवारी साधनको प्रकार : $vehicle_mode',
+//                   textAlign: TextAlign.left,
+//                 ),
+//               ],
+//             ),
+//           ]),
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.of(context).pop(),
+//             style: TextButton.styleFrom(
+//               foregroundColor: Colors.white,
+//               backgroundColor: Colors.blueAccent,
+//             ),
+//             child: Text('Close'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
 //   @override
 //   Widget build(BuildContext context) {
 //     TextEditingController messageController = TextEditingController();
 
 //     return Scaffold(
-//       appBar: AppBar(
-//         actions: [
-//           IconButton(onPressed: (){showDialog(
-//                       context: context,
-//                       builder: (context) => AlertDialog(
-//                         title: Text('Trip Details'),
-//                         content: Column(
-//                           mainAxisSize: MainAxisSize.min,
-//                           children: [
-//                             Text('Driver Name: $driverName'),
-//                             Text('Pickup Location: $pickupLocation'),
-//                             Text('Delivery Location: $deliveryLocation'),
-//                             Text('Distance: ${distance} km'),
-//                             Text('Fare: NPR ${fare}'),
-//                           ],
-//                         ),
-//                         actions: [
-//                           TextButton(
-//                             onPressed: () => Navigator.of(context).pop(),
-//                             child: Text('Close'),
-//                           ),
-//                         ],
-//                       ),
-//                     );}, icon: Icon(Icons.info_outline))
-//         ],
-//         title: Text('Chat with $driverName'),
-//       ),
-//       body: Column(
-//         children: [
-//           // Center Avatar and Information Icon
-//           Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 20.0),
-//             child: Column(
-//               children: [
-//                 FutureBuilder<String?>(
-//                   future: fetchDriverProfilePicture(),
-//                   builder: (context, snapshot) {
-//                     if (snapshot.connectionState == ConnectionState.waiting) {
-//                       return CircleAvatar(
-//                         radius: 60,
-//                         child: CircularProgressIndicator(),
-//                       );
-//                     }
-//                     if (snapshot.hasError || !snapshot.hasData) {
-//                       return CircleAvatar(
-//                         radius: 60,
-//                         child: Icon(Icons.error),
-//                       );
-//                     }
-//                     String? profilePictureUrl = snapshot.data;
-//                     return CircleAvatar(
-//                       radius: 50,
-//                       backgroundImage: profilePictureUrl != null
-//                           ? NetworkImage(profilePictureUrl)
-//                           : AssetImage('assets/tuktuk1.png') as ImageProvider, // Fallback image if no URL
-//                     );
-//                   },
-//                 ),
-
-//               ],
-//             ),
-//           ),
-
-//           // Chat messages
-//           Expanded(
-//             child: StreamBuilder<List<Map<String, dynamic>>>(
-//               stream: _getMessages(),
-//               builder: (context, snapshot) {
-//                 if (snapshot.connectionState == ConnectionState.waiting) {
-//                   return Center(child: CircularProgressIndicator());
-//                 }
-
-//                 if (snapshot.hasError) {
-//                   return Center(child: Text('Error: ${snapshot.error}'));
-//                 }
-
-//                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//                   return Center(child: Text('No messages.'));
-//                 }
-
-//                 final messages = snapshot.data!;
-
-//                 return ListView.builder(
-//                   itemCount: messages.length,
-//                   itemBuilder: (context, index) {
-//                     final chatData = messages[index];
-//                     final isDriverMessage = chatData['collection'] == 'driverChats';
-
-//                     return Align(
-//                       alignment: isDriverMessage ? Alignment.centerLeft : Alignment.centerRight,
-//                       child: Padding(
-//                         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
-//                         child: Card(
-//                           color: isDriverMessage ? Colors.green[100] : Colors.blue[100],
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(12),
-//                           ),
-//                           child: Container(
-//                             padding: EdgeInsets.all(12.0),
-//                             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Text(
-//                                   chatData['message'],
-//                                   style: TextStyle(
-//                                     color: isDriverMessage ? Colors.black87 : Colors.black,
-//                                     fontSize: 16.0,
-//                                   ),
-//                                 ),
-//                                 SizedBox(height: 5.0),
-//                                 Text(
-//                                   chatData['timestamp'] != null
-//                                       ? chatData['timestamp'].toDate().toString()
-//                                       : 'Sending...',
-//                                   style: TextStyle(
-//                                     color: Colors.grey[600],
-//                                     fontSize: 12.0,
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
+//       resizeToAvoidBottomInset: true,
+//       body: CustomScrollView(
+//         slivers: [
+//           SliverAppBar(
+//             expandedHeight: 200.0,
+//             floating: false,
+//             pinned: true,
+//             flexibleSpace: FlexibleSpaceBar(
+//               centerTitle: true,
+//               title: FutureBuilder<String?>(
+//                 future: fetchDriverProfilePicture(),
+//                 builder: (context, snapshot) {
+//                   if (snapshot.connectionState == ConnectionState.waiting) {
+//                     return Text('Loading...');
+//                   }
+//                   if (snapshot.hasError || !snapshot.hasData) {
+//                     return Text('Driver: $driverName');
+//                   }
+//                   String? profilePictureUrl = snapshot.data;
+//                   return GestureDetector(
+//                     onTap: () => _showTripDetails(context),
+//                     child: Row(
+//                       mainAxisSize: MainAxisSize.min,
+//                       children: [
+//                         AvatarGlow(
+//                           glowColor: Colors.blueAccent,
+//                           duration: Duration(milliseconds: 2000),
+//                           repeat: true,
+//                           child: CircleAvatar(
+//                             radius: 20,
+//                             backgroundImage: profilePictureUrl != null
+//                                 ? NetworkImage(profilePictureUrl)
+//                                 : AssetImage('assets/tuktuk1.png')
+//                                     as ImageProvider,
 //                           ),
 //                         ),
-//                       ),
-//                     );
-//                   },
-//                 );
-//               },
-//             ),
-//           ),
-
-//           // Message input
-//           Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Row(
-//               children: [
-//                 Expanded(
-//                   child: TextField(
-//                     controller: messageController,
-//                     minLines: 1,
-//                     maxLines: null, // Allow text to wrap into multiple lines
-//                     decoration: InputDecoration(
-//                       hintText: 'Type your message...',
-//                       border: OutlineInputBorder(
-//                         borderRadius: BorderRadius.circular(20),
-//                       ),
+//                         SizedBox(width: 12),
+//                         Text(
+//                           driverName,
+//                           style: TextStyle(
+//                             fontSize: 16,
+//                             fontWeight: FontWeight.bold,
+//                             color: Colors.white,
+//                           ),
+//                         ),
+//                       ],
 //                     ),
+//                   );
+//                 },
+//               ),
+//               background: FutureBuilder<String?>(
+//                 future: fetchDriverProfilePicture(),
+//                 builder: (context, snapshot) {
+//                   if (snapshot.connectionState == ConnectionState.waiting) {
+//                     return Center(child: CircularProgressIndicator());
+//                   }
+//                   if (snapshot.hasError || !snapshot.hasData) {
+//                     return Center(child: Icon(Icons.error));
+//                   }
+//                   String? profilePictureUrl = snapshot.data;
+//                   return Image.network(
+//                     profilePictureUrl!,
+//                     fit: BoxFit.cover,
+//                   );
+//                 },
+//               ),
+//             ),
+//           ),
+//           SliverList(
+//             delegate: SliverChildListDelegate([
+//               // Chat messages
+//               StreamBuilder<List<Map<String, dynamic>>>(
+//                 stream: _getMessages(),
+//                 builder: (context, snapshot) {
+//                   if (snapshot.connectionState == ConnectionState.waiting) {
+//                     return Center(child: CircularProgressIndicator());
+//                   }
+
+//                   if (snapshot.hasError) {
+//                     return Center(child: Text('Error: ${snapshot.error}'));
+//                   }
+
+//                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//                     return Center(child: Text('No messages.'));
+//                   }
+
+//                   final messages = snapshot.data!;
+
+//                   return ListView.builder(
+//                     padding: EdgeInsets.all(10.0),
+//                     shrinkWrap: true,
+//                     physics: NeverScrollableScrollPhysics(),
+//                     itemCount: messages.length,
+//                     itemBuilder: (context, index) {
+//                       final chatData = messages[index];
+//                       final isDriverMessage =
+//                           chatData['collection'] == 'driverChats';
+
+//                       return Align(
+//                         alignment: isDriverMessage
+//                             ? Alignment.centerLeft
+//                             : Alignment.centerRight,
+//                         child: Container(
+//                           margin: EdgeInsets.symmetric(
+//                               vertical: 6.0, horizontal: 10.0),
+//                           padding: EdgeInsets.all(12.0),
+//                           decoration: BoxDecoration(
+//                             color: isDriverMessage
+//                                 ? Colors.green.withOpacity(0.3)
+//                                 : Colors.blueAccent.withOpacity(0.8),
+//                             borderRadius: BorderRadius.only(
+//                               topLeft: Radius.circular(20),
+//                               topRight: Radius.circular(20),
+//                               bottomLeft: isDriverMessage
+//                                   ? Radius.circular(20)
+//                                   : Radius.circular(0),
+//                               bottomRight: isDriverMessage
+//                                   ? Radius.circular(0)
+//                                   : Radius.circular(20),
+//                             ),
+//                             boxShadow: [
+//                               BoxShadow(
+//                                 color: Colors.black.withOpacity(0.1),
+//                                 blurRadius: 5,
+//                                 offset: Offset(0, 3),
+//                               )
+//                             ],
+//                           ),
+//                           constraints: BoxConstraints(
+//                               maxWidth:
+//                                   MediaQuery.of(context).size.width * 0.7),
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               Text(
+//                                 chatData['message'],
+//                                 style: TextStyle(
+//                                   color: isDriverMessage
+//                                       ? Colors.black87
+//                                       : Colors.white,
+//                                   fontSize: 16.0,
+//                                 ),
+//                               ),
+//                               SizedBox(height: 5.0),
+//                               Text(
+//                                 chatData['timestamp'] != null
+//                                     ? chatData['timestamp'].toDate().toString()
+//                                     : 'Sending...',
+//                                 style: TextStyle(
+//                                   color: isDriverMessage
+//                                       ? Colors.grey[700]
+//                                       : Colors.white70,
+//                                   fontSize: 12.0,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ]),
+//           ),
+//         ],
+//       ),
+//       bottomNavigationBar: Padding(
+//         padding: const EdgeInsets.all(8.0),
+//         child: Row(
+//           children: [
+//             Expanded(
+//               child: Container(
+//                 padding: EdgeInsets.symmetric(horizontal: 10.0),
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   borderRadius: BorderRadius.circular(25.0),
+//                   boxShadow: [
+//                     BoxShadow(
+//                       color: Colors.grey.withOpacity(0.2),
+//                       spreadRadius: 1,
+//                       blurRadius: 5,
+//                       offset: Offset(0, 3),
+//                     )
+//                   ],
+//                 ),
+//                 child: TextField(
+//                   controller: messageController,
+//                   minLines: 1,
+//                   maxLines: null,
+//                   decoration: InputDecoration(
+//                     hintText: 'Type your message...',
+//                     border: InputBorder.none,
 //                   ),
 //                 ),
-//                 IconButton(
-//                   icon: Icon(Icons.send),
-//                   onPressed: () async {
-//                     if (messageController.text.isNotEmpty) {
-//                       await FirebaseFirestore.instance.collection('userChats').add({
-//                         'userId': userId,
-//                         'driverId': driverId,
-//                         'tripId': tripId,
-//                         'message': messageController.text,
-//                         'timestamp': FieldValue.serverTimestamp(),
-//                       });
-
-//                       messageController.clear();
-//                     }
-//                   },
-//                 ),
-//               ],
+//               ),
 //             ),
-//           ),
-//         ],
+//             SizedBox(width: 8.0),
+//             Container(
+//               decoration: BoxDecoration(
+//                 color: Colors.blueAccent,
+//                 shape: BoxShape.circle,
+//               ),
+//               child: IconButton(
+//                 icon: Icon(Icons.send, color: Colors.white),
+//                 onPressed: () async {
+//                   if (messageController.text.isNotEmpty) {
+//                     await FirebaseFirestore.instance
+//                         .collection('userChats')
+//                         .add({
+//                       'userId': userId,
+//                       'driverId': driverId,
+//                       'tripId': tripId,
+//                       'message': messageController.text,
+//                       'timestamp': FieldValue.serverTimestamp(),
+//                     });
+
+//                     messageController.clear();
+//                   }
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
 //       ),
 //     );
 //   }
@@ -500,8 +410,7 @@ class ChatDetailPage extends StatelessWidget {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final driverSnapshot =
         await firestore.collection('vehicleData').doc(driverId).get();
-    return driverSnapshot
-        .data()?['profilePictureUrl']; // Fetch the profile picture URL
+    return driverSnapshot.data()?['profilePictureUrl'];
   }
 
   Stream<List<Map<String, dynamic>>> _getMessages() {
@@ -540,7 +449,7 @@ class ChatDetailPage extends StatelessWidget {
         final timestampA = a['timestamp'] as Timestamp?;
         final timestampB = b['timestamp'] as Timestamp?;
         if (timestampA == null || timestampB == null) {
-          return 0; // Handle cases where timestamp might be null
+          return 0;
         }
         return timestampA.compareTo(timestampB);
       });
@@ -548,257 +457,312 @@ class ChatDetailPage extends StatelessWidget {
     });
   }
 
+  void _showTripDetails(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Trip Details'),
+        content: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'चालकको नाम : $driverName',
+                  textAlign: TextAlign.left,
+                ),
+                Divider(),
+                Text(
+                  'उठाउने स्थान : $pickupLocation',
+                  textAlign: TextAlign.left,
+                ),
+                Divider(),
+                Text(
+                  'डेलिभरी स्थान : $deliveryLocation',
+                  textAlign: TextAlign.left,
+                ),
+                Divider(),
+                Text(
+                  'दूरी : $distance km',
+                  textAlign: TextAlign.left,
+                ),
+                Divider(),
+                Text(
+                  'भाडा : NPR $fare',
+                  textAlign: TextAlign.left,
+                ),
+                Divider(),
+                Text(
+                  'यात्री (हरू) : $no_of_person',
+                  textAlign: TextAlign.left,
+                ),
+                Divider(),
+                Text(
+                  'सवारी साधनको प्रकार : $vehicle_mode',
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ),
+          ]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.blueAccent,
+            ),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController messageController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Trip Details'),
-                  content: SingleChildScrollView(
-                    child: Column(
+      resizeToAvoidBottomInset: true,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 200.0,
+            floating: false,
+            stretch: true,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: FutureBuilder<String?>(
+                future: fetchDriverProfilePicture(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('Loading...');
+                  }
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return Text('Driver: $driverName');
+                  }
+                  String? profilePictureUrl = snapshot.data;
+                  return GestureDetector(
+                    onTap: () => _showTripDetails(context),
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment
-                              .start, // Aligns children to the right
-                          children: [
-                            Text(
-                              'चालकको नाम : $driverName',
-                              textAlign: TextAlign.left,
-                            ),
-                            Divider(),
-                            Text(
-                              'उठाउने स्थान : $pickupLocation',
-                              textAlign: TextAlign.left,
-                            ),
-                            Divider(),
-                            Text(
-                              'डेलिभरी स्थान : $deliveryLocation',
-                              textAlign: TextAlign.left,
-                            ),
-                            Divider(),
-                            Text(
-                              'दूरी : $distance km',
-                              textAlign: TextAlign.left,
-                            ),
-                            Divider(),
-                            Text(
-                              'भाडा : NPR $fare',
-                              textAlign: TextAlign.left,
-                            ),
-                            Divider(),
-                            Text(
-                              'यात्री (हरू) : $no_of_person',
-                              textAlign: TextAlign.left,
-                            ),
-                            Divider(),
-                            Text(
-                              'सवारी साधनको प्रकार : $vehicle_mode',
-                              textAlign: TextAlign.left,
-                            ),
-                          ],
+                        AvatarGlow(
+                          glowColor: Colors.blueAccent,
+                          duration: Duration(milliseconds: 2000),
+                          repeat: true,
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundImage: profilePictureUrl != null
+                                ? NetworkImage(profilePictureUrl)
+                                : AssetImage('assets/tuktuk1.png')
+                                    as ImageProvider,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          driverName,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor:
-                            Colors.green, // Button background color
-                      ),
-                      child: Text('Close'),
-                    ),
+                  );
+                },
+              ),
+              background: LayoutBuilder(
+                builder: (context, constraints) {
+                  final double maxHeight = constraints.maxHeight;
+                  final double minHeight = kToolbarHeight;
+                  final double currentHeight = constraints.biggest.height;
+                  final double opacity =
+                      (currentHeight - minHeight) / (maxHeight - minHeight);
+
+                  return FutureBuilder<String?>(
+                    future: fetchDriverProfilePicture(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return Center(child: Icon(Icons.error));
+                      }
+                      String? profilePictureUrl = snapshot.data;
+                      return Opacity(
+                        opacity: opacity.clamp(
+                            1, 1.0), // 60% transparency at minimum height
+                        child: Image.network(
+                          profilePictureUrl!,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              // Chat messages
+              StreamBuilder<List<Map<String, dynamic>>>(
+                stream: _getMessages(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No messages.'));
+                  }
+
+                  final messages = snapshot.data!;
+
+                  return ListView.builder(
+                    padding: EdgeInsets.all(10.0),
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final chatData = messages[index];
+                      final isDriverMessage =
+                          chatData['collection'] == 'driverChats';
+
+                      return Align(
+                        alignment: isDriverMessage
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              vertical: 6.0, horizontal: 10.0),
+                          padding: EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: isDriverMessage
+                                ? Colors.green.withOpacity(0.3)
+                                : Colors.blueAccent.withOpacity(0.8),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                              bottomLeft: isDriverMessage
+                                  ? Radius.circular(20)
+                                  : Radius.circular(0),
+                              bottomRight: isDriverMessage
+                                  ? Radius.circular(0)
+                                  : Radius.circular(20),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 5,
+                                offset: Offset(0, 3),
+                              )
+                            ],
+                          ),
+                          constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.7),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                chatData['message'],
+                                style: TextStyle(
+                                  color: isDriverMessage
+                                      ? Colors.black87
+                                      : Colors.white,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                              SizedBox(height: 5.0),
+                              Text(
+                                chatData['timestamp'] != null
+                                    ? chatData['timestamp'].toDate().toString()
+                                    : 'Sending...',
+                                style: TextStyle(
+                                  color: isDriverMessage
+                                      ? Colors.grey[700]
+                                      : Colors.white70,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ]),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    )
                   ],
                 ),
-              );
-            },
-            icon: Icon(Icons.info_outline),
-          ),
-        ],
-        backgroundColor: Colors.transparent,
-        title: Text('Chat with $driverName'),
-      ),
-      body: Column(
-        children: [
-          // Center Avatar and Information Icon
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30.0),
-            child: Column(
-              children: [
-                FutureBuilder<String?>(
-                  future: fetchDriverProfilePicture(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircleAvatar(
-                        radius: 60,
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (snapshot.hasError || !snapshot.hasData) {
-                      return CircleAvatar(
-                        radius: 60,
-                        child: Icon(Icons.error),
-                      );
-                    }
-                    String? profilePictureUrl = snapshot.data;
-                    return AvatarGlow(
-                      glowRadiusFactor: 0.4,
-                      startDelay: Duration(milliseconds: 500),
-                      glowColor:
-                          Colors.greenAccent, // Adjust the glow color as needed
-                      glowShape: BoxShape.circle,
-                      animate: true,
-
-                      child: Material(
-                        elevation: 8.0,
-                        shape: CircleBorder(),
-                        color: Colors.transparent,
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: profilePictureUrl != null
-                              ? NetworkImage(profilePictureUrl)
-                              : AssetImage('assets/tuktuk1.png')
-                                  as ImageProvider, // Fallback image if no URL
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // Chat messages
-          Expanded(
-            child: StreamBuilder<List<Map<String, dynamic>>>(
-              stream: _getMessages(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No messages.'));
-                }
-
-                final messages = snapshot.data!;
-
-                return ListView.builder(
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final chatData = messages[index];
-                    final isDriverMessage =
-                        chatData['collection'] == 'driverChats';
-
-                    return Align(
-                      alignment: isDriverMessage
-                          ? Alignment.centerLeft
-                          : Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 6.0, horizontal: 10.0),
-                        child: Card(
-                          color: isDriverMessage
-                              ? Colors.green[100]
-                              : Colors.blue[100],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Container(
-                            padding: EdgeInsets.all(12.0),
-                            constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.7),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  chatData['message'],
-                                  style: TextStyle(
-                                    color: isDriverMessage
-                                        ? Colors.black87
-                                        : Colors.black,
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                                SizedBox(height: 5.0),
-                                Text(
-                                  chatData['timestamp'] != null
-                                      ? chatData['timestamp']
-                                          .toDate()
-                                          .toString()
-                                      : 'Sending...',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 12.0,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-
-          // Message input
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    minLines: 1,
-                    maxLines: null, // Allow text to wrap into multiple lines
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
+                child: TextField(
+                  controller: messageController,
+                  minLines: 1,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: 'Type your message...',
+                    border: InputBorder.none,
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () async {
-                    if (messageController.text.isNotEmpty) {
-                      await FirebaseFirestore.instance
-                          .collection('userChats')
-                          .add({
-                        'userId': userId,
-                        'driverId': driverId,
-                        'tripId': tripId,
-                        'message': messageController.text,
-                        'timestamp': FieldValue.serverTimestamp(),
-                      });
-
-                      messageController.clear();
-                    }
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            SizedBox(width: 8.0),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.blueAccent,
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: Icon(Icons.send, color: Colors.white),
+                onPressed: () async {
+                  if (messageController.text.isNotEmpty) {
+                    await FirebaseFirestore.instance
+                        .collection('userChats')
+                        .add({
+                      'userId': userId,
+                      'driverId': driverId,
+                      'tripId': tripId,
+                      'message': messageController.text,
+                      'timestamp': FieldValue.serverTimestamp(),
+                    });
+
+                    messageController.clear();
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

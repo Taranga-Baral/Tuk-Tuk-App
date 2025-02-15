@@ -116,14 +116,19 @@ class _DriverViewPassengerLocationState
       _pickupLocation!.longitude,
     );
 
-    if (distance < 100) {
-      // 100 meters threshold
-      _removeRedRoute();
-      _drawBlueRoute();
-      _addMarkersWhenDriverCameInPassengerPickup();
-    }
+    // if (distance < 100) {
+    //   setState(() {});
+    //   // 100 meters threshold
+    //   _removeRedRoute();
+    //   _drawBlueRoute();
+    //   _addMarkers();
+    //   setState(() {});
+    // }
+    setState(() {});
     _drawRedRoute();
+    _drawBlueRoute();
     _addMarkers();
+    setState(() {});
   }
 
   Future<void> _drawRedRoute() async {
@@ -285,64 +290,11 @@ class _DriverViewPassengerLocationState
     );
   }
 
-  Future<void> _addMarkersWhenDriverCameInPassengerPickup() async {
-    if (controller == null ||
-        _currentLocation == null ||
-        _pickupLocation == null ||
-        _deliveryLocation == null) return;
-
-    setState(() {});
-
-    _driverMarker = await controller!.addSymbol(SymbolOptions(
-      geometry:
-          LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-      iconAnchor: 'center',
-      iconSize: 0.5,
-      iconHaloBlur: 10,
-      iconHaloWidth: 2,
-      iconOpacity: 1,
-      iconOffset: Offset(0, 0.8),
-      iconColor: '#0077FF',
-      iconHaloColor: '#FFFFFF',
-      iconImage: 'images/driverCurrentLocation.png',
-      draggable: false,
-    ));
-
-    _deliveryMarker = await controller!.addSymbol(SymbolOptions(
-      geometry: _deliveryLocation!,
-      iconAnchor: 'center',
-      iconSize: 0.3,
-      iconHaloBlur: 10,
-      iconHaloWidth: 2,
-      iconOpacity: 1,
-      iconOffset: Offset(0, 0.8),
-      iconColor: '#0077FF',
-      iconHaloColor: '#FFFFFF',
-      iconImage: 'images/destination.png',
-      draggable: false,
-    ));
-  }
-
   Future<void> _addMarkers() async {
     if (controller == null ||
         _currentLocation == null ||
         _pickupLocation == null ||
         _deliveryLocation == null) return;
-
-    _driverMarker = await controller!.addSymbol(SymbolOptions(
-      geometry:
-          LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-      iconAnchor: 'center',
-      iconSize: 0.3,
-      iconHaloBlur: 10,
-      iconHaloWidth: 2,
-      iconOpacity: 1,
-      iconOffset: Offset(0, 0.8),
-      iconColor: '#0077FF',
-      iconHaloColor: '#FFFFFF',
-      iconImage: 'images/driverCurrentLocation.png',
-      draggable: false,
-    ));
 
     _pickupMarker = await controller!.addSymbol(SymbolOptions(
       geometry: _pickupLocation!,
