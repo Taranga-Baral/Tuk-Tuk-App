@@ -277,8 +277,8 @@ class _RequestPageState extends State<RequestPage> {
                         children: [
                           Container(
                             height: 20,
+                            color: Colors.grey,
                             width: 120,
-                            color: Colors.red,
                           ),
                           SizedBox(
                             height: 5,
@@ -286,15 +286,15 @@ class _RequestPageState extends State<RequestPage> {
                           Container(
                             height: 10,
                             width: 80,
-                            color: Colors.red,
+                            color: Colors.grey,
                           ),
                           SizedBox(
                             height: 6,
                           ),
                           Container(
                             height: 10,
+                            color: Colors.grey,
                             width: 50,
-                            color: Colors.red,
                           ),
 
                           //start
@@ -303,8 +303,8 @@ class _RequestPageState extends State<RequestPage> {
                           ),
                           Container(
                             height: 10,
+                            color: Colors.grey,
                             width: 50,
-                            color: Colors.red,
                           ),
 
                           SizedBox(
@@ -312,8 +312,8 @@ class _RequestPageState extends State<RequestPage> {
                           ),
                           Container(
                             height: 10,
+                            color: Colors.grey,
                             width: 50,
-                            color: Colors.red,
                           ),
 
                           SizedBox(
@@ -321,8 +321,8 @@ class _RequestPageState extends State<RequestPage> {
                           ),
                           Container(
                             height: 10,
+                            color: Colors.grey,
                             width: 50,
-                            color: Colors.red,
                           ),
 
                           //end
@@ -330,7 +330,6 @@ class _RequestPageState extends State<RequestPage> {
                       ),
                       CircleAvatar(
                         radius: 30,
-                        backgroundColor: Colors.red,
                       ),
                     ],
                   ),
@@ -1269,12 +1268,14 @@ class _RequestPageState extends State<RequestPage> {
                                               0.3,
                                         ),
                                       );
+                                      // return _buildShimmerLoading();
                                     }
 
                                     if (snapshot.hasError ||
                                         !snapshot.hasData ||
                                         snapshot.data == null) {
                                       return Text('Error loading data');
+                                      // return _buildShimmerLoading();
                                     }
 
                                     final vehicleData = snapshot.data![0].data()
