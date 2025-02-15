@@ -950,7 +950,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 1));
+    DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 5));
 
     Query query = firestore
         .collection('confirmedDrivers')

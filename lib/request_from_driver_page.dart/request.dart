@@ -214,7 +214,7 @@ class _RequestPageState extends State<RequestPage> {
 
   Widget _buildShimmerLoading() {
     return ListView.builder(
-      itemCount: 5, // Number of shimmer placeholders
+      itemCount: 8, // Number of shimmer placeholders
       itemBuilder: (context, index) {
         return Card(
           margin: const EdgeInsets.all(8),
@@ -229,42 +229,108 @@ class _RequestPageState extends State<RequestPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 150,
-                    height: 40,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 8),
+                  // Container(
+                  //   width: 150,
+                  //   height: 40,
+                  //   color: Colors.white,
+                  // ),
+                  // const SizedBox(height: 8),
+                  // Row(
+                  //   children: [
+                  //     Container(
+                  //       width: 24,
+                  //       height: 40,
+                  //       color: Colors.white,
+                  //     ),
+                  //     const SizedBox(width: 10),
+                  //     Expanded(
+                  //       child: Container(
+                  //         height: 40,
+                  //         color: Colors.white,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 5),
+                  // Row(
+                  //   children: [
+                  //     Container(
+                  //       width: 24,
+                  //       height: 40,
+                  //       color: Colors.white,
+                  //     ),
+                  //     const SizedBox(width: 10),
+                  //     Expanded(
+                  //       child: Container(
+                  //         height: 40,
+                  //         color: Colors.white,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Container(
-                        width: 24,
-                        height: 40,
-                        color: Colors.white,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 20,
+                            width: 120,
+                            color: Colors.red,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            height: 10,
+                            width: 80,
+                            color: Colors.red,
+                          ),
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Container(
+                            height: 10,
+                            width: 50,
+                            color: Colors.red,
+                          ),
+
+                          //start
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Container(
+                            height: 10,
+                            width: 50,
+                            color: Colors.red,
+                          ),
+
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            height: 10,
+                            width: 50,
+                            color: Colors.red,
+                          ),
+
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            height: 10,
+                            width: 50,
+                            color: Colors.red,
+                          ),
+
+                          //end
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  Row(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 40,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Container(
-                          height: 40,
-                          color: Colors.white,
-                        ),
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.red,
                       ),
                     ],
                   ),
@@ -411,18 +477,65 @@ class _RequestPageState extends State<RequestPage> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      CircleAvatar(
-                                                        radius: 25,
-                                                        backgroundImage: driverData[
-                                                                    'profilePictureUrl'] !=
-                                                                null
-                                                            ? NetworkImage(
-                                                                driverData[
-                                                                    'profilePictureUrl'])
-                                                            : AssetImage(
-                                                                    'assets/tuktuk.jpg')
-                                                                as ImageProvider,
+                                                      // CircleAvatar(
+                                                      //   radius: 25,
+                                                      //   backgroundImage: driverData[
+                                                      //               'profilePictureUrl'] !=
+                                                      //           null
+                                                      //       ? NetworkImage(
+                                                      //           driverData[
+                                                      //               'profilePictureUrl'])
+                                                      //       : AssetImage(
+                                                      //               'assets/tuktuk.jpg')
+                                                      //           as ImageProvider,
+                                                      // ),
+
+                                                      Container(
+                                                        width: 60,
+                                                        height: 60,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          border: Border.all(
+                                                            color: Colors
+                                                                .lightGreen,
+                                                            width: 3,
+                                                          ),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                              blurRadius: 6,
+                                                              offset:
+                                                                  const Offset(
+                                                                      0, 3),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: ClipOval(
+                                                          child: Image.network(
+                                                            driverData['profilePictureUrl']
+                                                                    .isNotEmpty
+                                                                ? driverData[
+                                                                    'profilePictureUrl']
+                                                                : 'assets/logo.png',
+                                                            fit: BoxFit.cover,
+                                                            errorBuilder: (context,
+                                                                    error,
+                                                                    stackTrace) =>
+                                                                Icon(
+                                                              Icons.person,
+                                                              size: 40,
+                                                              color:
+                                                                  Colors.green,
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
+
                                                       SizedBox(width: 15),
                                                       Expanded(
                                                         child: Column(
@@ -1438,16 +1551,62 @@ class _RequestPageState extends State<RequestPage> {
                                                             .start,
                                                     children: [
                                                       ListTile(
-                                                        trailing: CircleAvatar(
-                                                          radius: 20,
-                                                          backgroundImage: profilePicture !=
-                                                                  null
-                                                              ? NetworkImage(
-                                                                  profilePicture)
-                                                              : AssetImage(
-                                                                      'assets/tuktuk.jpg')
-                                                                  as ImageProvider,
+                                                        trailing: Container(
+                                                          width: 55,
+                                                          height: 60,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            border: Border.all(
+                                                              color: Colors
+                                                                  .redAccent,
+                                                              width: 2,
+                                                            ),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Colors
+                                                                    .black
+                                                                    .withOpacity(
+                                                                        0.1),
+                                                                blurRadius: 6,
+                                                                offset:
+                                                                    const Offset(
+                                                                        0, 3),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          child: ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                              profilePicture
+                                                                      .isNotEmpty
+                                                                  ? profilePicture
+                                                                  : 'assets/logo.png',
+                                                              fit: BoxFit.cover,
+                                                              errorBuilder:
+                                                                  (context,
+                                                                          error,
+                                                                          stackTrace) =>
+                                                                      Icon(
+                                                                Icons.person,
+                                                                size: 40,
+                                                                color: Colors
+                                                                    .green,
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ),
+                                                        // trailing: CircleAvatar(
+                                                        //   radius: 20,
+                                                        //   backgroundImage: profilePicture !=
+                                                        //           null
+                                                        //       ? NetworkImage(
+                                                        //           profilePicture)
+                                                        //       : AssetImage(
+                                                        //               'assets/tuktuk.jpg')
+                                                        //           as ImageProvider,
+                                                        // ),
                                                         title: Text(
                                                           '$name - $vehicleType',
                                                           style: TextStyle(

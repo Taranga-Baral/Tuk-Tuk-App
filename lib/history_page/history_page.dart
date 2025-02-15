@@ -739,22 +739,76 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage: trip['profilePictureUrl'] != null &&
-                                  trip['profilePictureUrl'].isNotEmpty
-                              ? NetworkImage(trip['profilePictureUrl'])
-                              : null,
-                          child: trip['profilePictureUrl'] == null ||
-                                  trip['profilePictureUrl'].isEmpty
-                              ? const Icon(Icons.person)
-                              : null,
+                        // CircleAvatar(
+                        //   backgroundImage: trip['profilePictureUrl'] != null &&
+                        //           trip['profilePictureUrl'].isNotEmpty
+                        //       ? NetworkImage(trip['profilePictureUrl'])
+                        //       : null,
+                        //   child: trip['profilePictureUrl'] == null ||
+                        //           trip['profilePictureUrl'].isEmpty
+                        //       ? const Icon(Icons.person)
+                        //       : null,
+                        // ),
+
+                        // ClipOval(
+                        //   child: Image.network(
+                        //     trip['profilePictureUrl'].isNotEmpty
+                        //         ? trip['profilePictureUrl']
+                        //         : 'assets/logo.png',
+                        //     fit: BoxFit.cover,
+                        //     errorBuilder: (context, error, stackTrace) => Icon(
+                        //       Icons.person,
+                        //       size: 40,
+                        //       color: Colors.blueAccent,
+                        //     ),
+                        //   ),
+                        // ),
+
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.blueAccent,
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: Image.network(
+                              trip['profilePictureUrl'].isNotEmpty
+                                  ? trip['profilePictureUrl']
+                                  : 'assets/logo.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(
+                                Icons.person,
+                                size: 40,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                          ),
                         ),
+
                         const SizedBox(width: 10),
-                        Text(
-                          '${trip['driverName']}',
-                          style: GoogleFonts.outfit(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        Flexible(
+                          child: Text(
+                            '${trip['driverName']}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            style: GoogleFonts.outfit(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.blue.shade900,
+                            ),
                           ),
                         ),
                       ],
