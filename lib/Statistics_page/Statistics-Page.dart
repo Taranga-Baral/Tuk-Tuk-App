@@ -337,80 +337,86 @@ class _StatisticsPageState extends State<StatisticsPage>
       ),
       body: isLoading
           ? Center()
-          : FadeTransition(
-              opacity: _fadeAnimation,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Stat Cards with Nepali Text
-                    _buildStatCard(
-                      title: 'कुल किराया', // Total Fare in Nepali
-                      value:
-                          'रु ${totalFare.toStringAsFixed(2)}', // NPR symbol replaced with रु
-                      icon: Icons.money,
-                      color: Colors.lime[600]!,
-                    ),
-                    SizedBox(height: 16),
-                    _buildStatCard(
-                      title: 'कुल दूरी', // Total Distance in Nepali
-                      value:
-                          '${totalDistance.toStringAsFixed(2)} किमी', // km replaced with किमी
-                      icon: Icons.directions_car,
-                      color: Colors.green[700]!,
-                    ),
-                    SizedBox(height: 16),
-                    _buildStatCard(
-                      title:
-                          'कुल यात्राहरू', // Total Trips in Nepali (plural form)
-                      value: '$totalDeliveryLocations',
-                      icon: Icons.location_on,
-                      color: Colors.orange[700]!,
-                    ),
-                    SizedBox(height: 32),
-
-                    // Pie Chart with Nepali Text
-                    Text(
-                      'यात्रा विवरण', // Trip Breakdown in Nepali
-                      style: GoogleFonts.outfit(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87, // Added for better contrast
+          : SingleChildScrollView(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      _buildStatCard(
+                        title: 'कुल खर्चिएको रकम',
+                        value: 'रु ${totalFare.toStringAsFixed(2)}',
+                        icon: Icons.money,
+                        color: Colors.blueAccent,
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
+                      SizedBox(height: 16),
+                      _buildStatCard(
+                        title: 'कुल दूरी',
+                        value: '${totalDistance.toStringAsFixed(2)} किमी',
+                        icon: Icons.directions_car,
+                        color: Colors.deepOrange[700]!,
                       ),
-                      child: SizedBox(
-                        height: screenHeight * 0.3,
-                        child: PieChart(
-                          PieChartData(
-                            sections: [
-                              _buildPieChartSection(
-                                value: totalFare,
-                                color: Colors.lime[400]!,
+                      SizedBox(height: 16),
+                      _buildStatCard(
+                        title: 'कुल यात्रा (हरु)',
+                        value: '$totalDeliveryLocations',
+                        icon: Icons.location_on,
+                        color: Colors.green,
+                      ),
+                      SizedBox(height: 32),
+                      Text(
+                        'यात्रा विवरण',
+                        style: GoogleFonts.outfit(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: SizedBox(
+                          height: screenHeight * 0.3,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              PieChart(
+                                PieChartData(
+                                  sections: [
+                                    _buildPieChartSection(
+                                      value: totalFare,
+                                      color: Colors.blueAccent,
+                                    ),
+                                    _buildPieChartSection(
+                                      value: totalDistance,
+                                      color: Colors.deepOrange[700]!,
+                                    ),
+                                    _buildPieChartSection(
+                                      value: totalDeliveryLocations.toDouble(),
+                                      color: Colors.green,
+                                    ),
+                                  ],
+                                  borderData: FlBorderData(show: false),
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: screenWidth * 0.2,
+                                  startDegreeOffset:
+                                      -90, // Rotate chart for better visual appeal
+                                ),
                               ),
-                              _buildPieChartSection(
-                                value: totalDistance,
-                                color: Colors.green[700]!,
-                              ),
-                              _buildPieChartSection(
-                                value: totalDeliveryLocations.toDouble(),
-                                color: Colors.orange[700]!,
+                              Image.asset(
+                                'assets/logo.png',
+                                width: 120,
+                                height: 120,
                               ),
                             ],
-                            borderData: FlBorderData(show: false),
-                            sectionsSpace: 0,
-                            centerSpaceRadius: screenWidth * 0.2,
-                            startDegreeOffset:
-                                -90, // Rotate chart for better visual appeal
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
