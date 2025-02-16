@@ -263,6 +263,7 @@
 // }
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -368,28 +369,39 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.redAccent,
-        title: Text(
-          'Successful Trips',
-          style: GoogleFonts.outfit(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.history, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.info_outline, color: Colors.white),
-            onPressed: () {
-              // Add info action
-            },
-          ),
+      appBar: CustomAppBar(
+        appBarColor: Colors.redAccent,
+        appBarIcons: const [
+          Icons.chat,
+          Icons.info_outline,
         ],
+        title: 'My Successful Trips',
+        driverId: widget.driverId,
       ),
+
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   backgroundColor: Colors.redAccent,
+      //   title: Text(
+      //     'Successful Trips',
+      //     style: GoogleFonts.outfit(
+      //       color: Colors.white,
+      //       fontWeight: FontWeight.bold,
+      //     ),
+      //   ),
+      //   leading: IconButton(
+      //     icon: Icon(Icons.history, color: Colors.white),
+      //     onPressed: () => Navigator.of(context).pop(),
+      //   ),
+      //   actions: [
+      //     IconButton(
+      //       icon: Icon(Icons.info_outline, color: Colors.white),
+      //       onPressed: () {
+      //         // Add info action
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
           if (!isLoadingMore &&

@@ -414,10 +414,10 @@ class _DriverChatPageState extends State<DriverChatPage> {
       appBar: CustomAppBar(
         appBarColor: Colors.teal,
         appBarIcons: const [
-          Icons.arrow_back,
+          Icons.chat,
           Icons.info_outline,
         ],
-        title: 'View Messages',
+        title: 'Chat with Passengers',
         driverId: widget.driverId,
       ),
       body: allDocuments.isEmpty
