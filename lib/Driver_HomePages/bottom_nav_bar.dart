@@ -59,7 +59,7 @@
 //   }
 
 //     void _refreshCurrentPage() {
-  
+
 //   }
 
 //   @override
@@ -107,7 +107,6 @@
 //     ],
 //   );
 // }
-
 
 //   Widget _buildNavBarItem(IconData icon, String label, int index, double iconSize, double labelSize) {
 //     bool isSelected = _selectedIndex == index;
@@ -158,7 +157,8 @@ class BottomNavBarPage extends StatefulWidget {
   _BottomNavBarPageState createState() => _BottomNavBarPageState();
 }
 
-class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerProviderStateMixin {
+class _BottomNavBarPageState extends State<BottomNavBarPage>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   late final List<Widget> _pages;
   late AnimationController _controller;
@@ -199,12 +199,14 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerPr
     setState(() {
       _selectedIndex = index;
     });
-    _controller.forward(from: 0); // Restart the animation when a new item is tapped
+    _controller.forward(
+        from: 0); // Restart the animation when a new item is tapped
   }
 
   void _refreshCurrentPage() {
     if (_pages[_selectedIndex] is RefreshablePage) {
-      final RefreshablePage currentPage = _pages[_selectedIndex] as RefreshablePage;
+      final RefreshablePage currentPage =
+          _pages[_selectedIndex] as RefreshablePage;
       currentPage.refresh(); // Call refresh method of the current page
     }
   }
@@ -217,7 +219,10 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerPr
       floatingActionButton: FloatingActionButton(
         onPressed: _refreshCurrentPage,
         backgroundColor: Colors.redAccent.shade200,
-        child: Icon(Icons.refresh, color: Colors.white,),
+        child: Icon(
+          Icons.refresh,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -239,11 +244,25 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerPr
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavBarItem(Icons.home, 'Home', 0, iconSize, labelSize),
-              _buildNavBarItem(Icons.check_circle, 'Accepted', 1, iconSize, labelSize),
-              _buildNavBarItem(Icons.filter_alt, 'Filter', 2, iconSize, labelSize),
-              _buildNavBarItem(Icons.history, 'Trips', 3, iconSize, labelSize),
-              _buildNavBarItem(Icons.chat, 'Chat', 4, iconSize, labelSize),
+              // _buildNavBarItem(Icons.home, 'Home', 0, iconSize, labelSize),
+              // _buildNavBarItem(
+              //     Icons.check_circle, 'Accepted', 1, iconSize, labelSize),
+              // _buildNavBarItem(
+              //     Icons.filter_alt, 'Filter', 2, iconSize, labelSize),
+              // _buildNavBarItem(
+              //     Icons.history, 'Success', 3, iconSize, labelSize),
+              // _buildNavBarItem(Icons.chat, 'Chat', 4, iconSize, labelSize),
+
+              _buildNavBarItem(
+                  Icons.home, 'यात्री खोज', 0, iconSize, labelSize),
+              _buildNavBarItem(Icons.check_circle, 'कुरिरहेका यात्री', 1,
+                  iconSize, labelSize),
+              _buildNavBarItem(
+                  Icons.filter_alt, 'चाहिएको यात्री', 2, iconSize, labelSize),
+              _buildNavBarItem(
+                  Icons.history, 'मेरो यात्रा', 3, iconSize, labelSize),
+              _buildNavBarItem(
+                  Icons.chat, 'यात्री वार्तालाप', 4, iconSize, labelSize),
             ],
           ),
         ),
@@ -251,7 +270,8 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerPr
     );
   }
 
-  Widget _buildNavBarItem(IconData icon, String label, int index, double iconSize, double labelSize) {
+  Widget _buildNavBarItem(IconData icon, String label, int index,
+      double iconSize, double labelSize) {
     bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () => _onItemTapped(index),
@@ -275,7 +295,13 @@ class _BottomNavBarPageState extends State<BottomNavBarPage> with SingleTickerPr
             //   fontSize: labelSize,
             //   color: isSelected ? Colors.redAccent : Colors.grey,
             // ),
-            style: isSelected ? GoogleFonts.ubuntu(fontSize: labelSize + 1, color: isSelected? Colors.redAccent : Colors.grey) : GoogleFonts.ubuntu(fontSize: labelSize, color: isSelected? Colors.redAccent : Colors.grey),
+            style: isSelected
+                ? GoogleFonts.ubuntu(
+                    fontSize: labelSize + 1,
+                    color: isSelected ? Colors.redAccent : Colors.grey)
+                : GoogleFonts.ubuntu(
+                    fontSize: labelSize,
+                    color: isSelected ? Colors.redAccent : Colors.grey),
           ),
         ],
       ),

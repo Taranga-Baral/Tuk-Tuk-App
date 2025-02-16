@@ -405,7 +405,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                                   ],
                                   borderData: FlBorderData(show: false),
                                   sectionsSpace: 0,
-                                  centerSpaceRadius: screenWidth * 0.2,
+                                  centerSpaceRadius: 50,
                                   startDegreeOffset:
                                       -90, // Rotate chart for better visual appeal
                                 ),

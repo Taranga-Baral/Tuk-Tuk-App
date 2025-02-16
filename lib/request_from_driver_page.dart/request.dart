@@ -490,16 +490,15 @@ class _RequestPageState extends State<RequestPage> {
                                                       // ),
 
                                                       Container(
-                                                        width: 60,
+                                                        width: 55,
                                                         height: 60,
                                                         decoration:
                                                             BoxDecoration(
                                                           shape:
                                                               BoxShape.circle,
                                                           border: Border.all(
-                                                            color: Colors
-                                                                .lightGreen,
-                                                            width: 3,
+                                                            color: Colors.green,
+                                                            width: 2,
                                                           ),
                                                           boxShadow: [
                                                             BoxShadow(
@@ -522,6 +521,31 @@ class _RequestPageState extends State<RequestPage> {
                                                                     'profilePictureUrl']
                                                                 : 'assets/logo.png',
                                                             fit: BoxFit.cover,
+                                                            loadingBuilder:
+                                                                (BuildContext
+                                                                        context,
+                                                                    Widget
+                                                                        child,
+                                                                    ImageChunkEvent?
+                                                                        loadingProgress) {
+                                                              if (loadingProgress ==
+                                                                  null) {
+                                                                // Image is fully loaded, return the image
+                                                                return child;
+                                                              } else {
+                                                                // Image is still loading, return a CircularProgressIndicator
+                                                                return Center(
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    value: loadingProgress.expectedTotalBytes !=
+                                                                            null
+                                                                        ? loadingProgress.cumulativeBytesLoaded /
+                                                                            loadingProgress.expectedTotalBytes!
+                                                                        : null,
+                                                                  ),
+                                                                );
+                                                              }
+                                                            },
                                                             errorBuilder: (context,
                                                                     error,
                                                                     stackTrace) =>
@@ -1585,6 +1609,31 @@ class _RequestPageState extends State<RequestPage> {
                                                                   ? profilePicture
                                                                   : 'assets/logo.png',
                                                               fit: BoxFit.cover,
+                                                              loadingBuilder:
+                                                                  (BuildContext
+                                                                          context,
+                                                                      Widget
+                                                                          child,
+                                                                      ImageChunkEvent?
+                                                                          loadingProgress) {
+                                                                if (loadingProgress ==
+                                                                    null) {
+                                                                  // Image is fully loaded, return the image
+                                                                  return child;
+                                                                } else {
+                                                                  // Image is still loading, return a CircularProgressIndicator
+                                                                  return Center(
+                                                                    child:
+                                                                        CircularProgressIndicator(
+                                                                      value: loadingProgress.expectedTotalBytes !=
+                                                                              null
+                                                                          ? loadingProgress.cumulativeBytesLoaded /
+                                                                              loadingProgress.expectedTotalBytes!
+                                                                          : null,
+                                                                    ),
+                                                                  );
+                                                                }
+                                                              },
                                                               errorBuilder:
                                                                   (context,
                                                                           error,

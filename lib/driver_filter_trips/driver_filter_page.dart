@@ -217,43 +217,39 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
         // Step 2: Show a SnackBar with tripId, userId, and driverId
 
         AwesomeDialog(
-        context: context,
-        dialogType: DialogType.success,
-        animType: AnimType.topSlide,
-        body: Center(
-          child: Column(
-            children: const [
-              Text(
-                'Done',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 22,
-                    color: Colors.green),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'Request Sent Successfully. Wait for their Response.',
-                style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 14,
-                    color: Colors.grey),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-            ],
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.topSlide,
+          body: Center(
+            child: Column(
+              children: const [
+                Text(
+                  'Done',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 22,
+                      color: Colors.green),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Request Sent Successfully. Wait for their Response.',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 14,
+                      color: Colors.grey),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
           ),
-        ),
-        btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
-        alignment: Alignment.center,
-        btnOkOnPress: () {},
-      ).show();
-
-
-
-
+          btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
+          alignment: Alignment.center,
+          btnOkOnPress: () {},
+        ).show();
       }
 
       // Step 1: Add the userId, driverId, and tripId to the "requestsofDrivers" collection
@@ -419,9 +415,6 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                     color: Colors.teal),
                               ),
                               SizedBox(height: 8),
-                              
-
-
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -539,6 +532,12 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                             await _getCurrentLocation();
 
                                         // Fetch pickup location from Firestore
+                                        // Map<String, dynamic> tripData =
+                                        //     await _getPickupLocation(
+                                        //         trip['tripId']);
+                                        // var pickupLocation =
+                                        //     tripData['pickupLocation'];
+
                                         Map<String, dynamic> tripData =
                                             await _getPickupLocation(
                                                 trip['tripId']);
@@ -554,21 +553,11 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                         double pickupLongitude;
 
                                         // Check if pickupLocation is a GeoPoint (lat, long) or a place name
-                                        if (pickupLocation is GeoPoint) {
-                                          // If it's a GeoPoint, extract lat and long
-                                          pickupLatitude =
-                                              pickupLocation.latitude;
-                                          pickupLongitude =
-                                              pickupLocation.longitude;
-                                        } else {
-                                          // If it's a place name, convert to lat-long using Nominatim
-                                          Map<String, double> latLong =
-                                              await _convertPlaceNameToLatLong(
-                                                  pickupLocation);
-                                          pickupLatitude = latLong['latitude']!;
-                                          pickupLongitude =
-                                              latLong['longitude']!;
-                                        }
+
+                                        pickupLatitude =
+                                            tripData['pickupLatitude'];
+                                        pickupLongitude =
+                                            tripData['pickupLongitude'];
 
                                         // Calculate the distance between user's location and pickup location
                                         double distance = _calculateDistance(
@@ -966,27 +955,6 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance.collection('trips').doc(tripId).get();
     return snapshot.data()!;
-  }
-
-  // Function to convert place name to lat-long using OSM Nominatim API
-  Future<Map<String, double>> _convertPlaceNameToLatLong(
-      String placeName) async {
-    final String url =
-        'https://nominatim.openstreetmap.org/search?q=$placeName&format=json&limit=1';
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
-      if (data.isNotEmpty) {
-        final latitude = double.parse(data[0]['lat']);
-        final longitude = double.parse(data[0]['lon']);
-        return {'latitude': latitude, 'longitude': longitude};
-      } else {
-        throw Exception('Place not found');
-      }
-    } else {
-      throw Exception('Failed to fetch location data');
-    }
   }
 
   // Function to calculate the distance between two points

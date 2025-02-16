@@ -344,528 +344,564 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                       final isDoneButtonPressed =
                           buttonStates['isDoneButtonPressed'] ?? false;
 
-                      return Card(
-                        color: Colors.transparent,
-                        elevation: 0,
-                        margin: const EdgeInsets.only(left: 10, right: 10),
-                        child: FlipCard(
-                          direction: FlipDirection.HORIZONTAL,
-                          front: Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Row(
-                                  //   mainAxisAlignment:
-                                  //       MainAxisAlignment.spaceBetween,
-                                  //   children: [
-                                  //     Text(
-                                  //       softWrap: true,
-                                  //       maxLines: null,
-                                  //       '${userDetails['username']}',
-                                  //       style: GoogleFonts.outfit(
-                                  //           fontSize: 21,
-                                  //           fontWeight: FontWeight.w600),
-                                  //     ),
-                                  //     Column(
-                                  //       children: [
-                                  //         Row(
-                                  //           children: [
-                                  //             // Icon(FontAwesomeIcons.rupeeSign),
-
-                                  //             Text(
-                                  //               softWrap: true,
-                                  //               maxLines: null,
-                                  //               'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
-                                  //               style: GoogleFonts.fugazOne(
-                                  //                   color: const Color.fromARGB(
-                                  //                       155, 0, 0, 0),
-                                  //                   fontSize: 14,
-                                  //                   fontWeight:
-                                  //                       FontWeight.w100),
-                                  //             ),
-                                  //           ],
-                                  //         ),
-                                  //         const SizedBox(
-                                  //           height: 6,
-                                  //         ),
-                                  //         Text(
-                                  //           softWrap: true,
-                                  //           maxLines: null,
-                                  //           '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
-                                  //           // style: const TextStyle(
-                                  //           //     fontWeight: FontWeight.w600,
-                                  //           //     fontSize: 14),
-                                  //           style: GoogleFonts.fugazOne(
-                                  //               color: const Color.fromARGB(
-                                  //                   155, 0, 0, 0),
-                                  //               fontSize: 14,
-                                  //               fontWeight: FontWeight.w500),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   ],
-                                  // ),
-
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          '${userDetails['username']}',
-                                          softWrap: true,
-                                          style: TextStyle(
-                                            fontSize: 21,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                          width:
-                                              10), // Add spacing between texts
-                                      Expanded(
-                                        flex:
-                                            2, // Adjust flex value to control relative width of this column
-                                        child: Column(
+                      return isDoneButtonPressed
+                          ? Container()
+                          : Card(
+                              color: Colors.transparent,
+                              elevation: 0,
+                              margin:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              child: FlipCard(
+                                direction: FlipDirection.HORIZONTAL,
+                                front: Card(
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
-                                                  softWrap: true,
-                                                  style: TextStyle(
-                                                    color: const Color.fromARGB(
-                                                        155, 0, 0, 0),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                            Expanded(
+                                              child: Text(
+                                                '${userDetails['username']}',
+                                                softWrap: true,
+                                                style: TextStyle(
+                                                  fontSize: 21,
+                                                  fontWeight: FontWeight.w600,
                                                 ),
-                                              ],
+                                              ),
                                             ),
-                                            SizedBox(height: 6),
-                                            Text(
-                                              '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
-                                              softWrap: true,
-                                              style: TextStyle(
-                                                color: const Color.fromARGB(
-                                                    155, 0, 0, 0),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
+                                            SizedBox(
+                                                width:
+                                                    10), // Add spacing between texts
+                                            Expanded(
+                                              flex:
+                                                  2, // Adjust flex value to control relative width of this column
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      Text(
+                                                        'NPR ${double.parse(tripDetails['fare']).toStringAsFixed(1)}',
+                                                        softWrap: true,
+                                                        style: TextStyle(
+                                                          color: const Color
+                                                              .fromARGB(
+                                                              155, 0, 0, 0),
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 6),
+                                                  Text(
+                                                    '${double.parse(tripDetails['distance']).toStringAsFixed(1)} Km',
+                                                    softWrap: true,
+                                                    style: TextStyle(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              155, 0, 0, 0),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
 
-                                  // const SizedBox(height: 2),
-                                  Text(
-                                    '${tripDetails['municipalityDropdown']}',
-                                    style: GoogleFonts.comicNeue(),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    "${userDetails['phone_number']}",
-                                    style: GoogleFonts.comicNeue(),
-                                  ),
+                                        // const SizedBox(height: 2),
+                                        Text(
+                                          '${tripDetails['municipalityDropdown']}',
+                                          style: GoogleFonts.comicNeue(),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          "${userDetails['phone_number']}",
+                                          style: GoogleFonts.comicNeue(),
+                                        ),
 
-                                  const SizedBox(height: 12),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey[300],
-                                  ),
-                                  // const SizedBox(height: 12),
+                                        const SizedBox(height: 12),
+                                        Divider(
+                                          height: 1,
+                                          color: Colors.grey[300],
+                                        ),
+                                        // const SizedBox(height: 12),
 
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      IconButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
                                                         DriverChatDisplayPage(
-                                                  driverId: widget.driverId,
-                                                  tripId: tripId,
-                                                  userId: userId,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          icon: Icon(
-                                            Icons.chat_sharp,
-                                            color: Colors.teal,
-                                          )),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.phone,
-                                          color: Colors.orange,
-                                        ),
-                                        onPressed: () {
-                                          final phoneNumber =
-                                              userDetails['phone_number'];
-                                          if (phoneNumber != null &&
-                                              phoneNumber.isNotEmpty) {
-                                            _launchPhoneNumber(phoneNumber);
-                                          } else {
-                                            // ScaffoldMessenger.of(context)
-                                            //     .showSnackBar(
-                                            //   const SnackBar(
-                                            //     content: Text(
-                                            //         'Phone number unavailable'),
-                                            //   ),
-                                            // );
-
-                                            AwesomeDialog(
-                                              context: context,
-                                              dialogType: DialogType.error,
-                                              animType: AnimType.topSlide,
-                                              body: Center(
-                                                child: Column(
-                                                  children: const [
-                                                    Text(
-                                                      'Phone Number Invalid',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontSize: 22,
-                                                          color: Colors.red),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Text(
-                                                      'Looks like Phone Number is not Provided by the User',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w300,
-                                                          fontSize: 14,
-                                                          color: Colors.grey),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              btnOkColor: Colors
-                                                  .deepOrange.shade500
-                                                  .withOpacity(0.8),
-                                              alignment: Alignment.center,
-                                              btnOkOnPress: () {},
-                                            ).show();
-                                          }
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.location_on_outlined,
-                                          color: Colors.indigo,
-                                        ),
-                                        onPressed: () {
-                                          // final pickupLocation =
-                                          //     tripDetails['pickupLocation'] ??
-                                          //         '';
-                                          // final deliveryLocation =
-                                          //     tripDetails['deliveryLocation'] ??
-                                          //         '';
-                                          // if (pickupLocation.isNotEmpty &&
-                                          //     deliveryLocation.isNotEmpty) {
-                                          //   _launchOpenStreetMapWithDirections(
-                                          //       pickupLocation,
-                                          //       deliveryLocation);
-                                          // }
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DriverViewPassengerLocation(
-                                                          tripId: tripId)));
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.send),
-                                        color: isSendButtonPressed
-                                            ? Colors.grey
-                                            : Colors.blue,
-                                        onPressed: isSendButtonPressed
-                                            ? null
-                                            : () async {
-                                                final isNetworkAvailable =
-                                                    await _checkNetworkStatus();
-                                                if (isNetworkAvailable) {
-                                                  try {
-                                                    await FirebaseFirestore
-                                                        .instance
-                                                        .collection(
-                                                            'arrivedDrivers')
-                                                        .add({
-                                                      'tripId': tripId,
-                                                      'driverId':
-                                                          widget.driverId,
-                                                      'userId': userId,
-                                                      'timestamp': FieldValue
-                                                          .serverTimestamp(),
-                                                    });
-
-                                                    await _updateButtonStates(
-                                                        tripId, true, false);
-
-                                                    AwesomeDialog(
-                                                      context: context,
-                                                      dialogType:
-                                                          DialogType.success,
-                                                      animType:
-                                                          AnimType.topSlide,
-                                                      body: Center(
-                                                        child: Column(
-                                                          children: const [
-                                                            Text(
-                                                              'Arrived',
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  fontSize: 22,
-                                                                  color: Colors
-                                                                      .green),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                            Text(
-                                                              'Driver Arrival Recorded. Pickup your Passenger. ',
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300,
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .grey),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      btnOkColor: Colors
-                                                          .deepOrange.shade500
-                                                          .withOpacity(0.8),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      btnOkOnPress: () {},
-                                                    ).show();
-
-                                                    setState(() {});
-                                                  } catch (e) {
-                                                    ScaffoldMessenger.of(
-                                                        // ignore: use_build_context_synchronously
-                                                        context).showSnackBar(
-                                                      const SnackBar(
-                                                          content: Text(
-                                                              'Failed to send driver. Try again.')),
-                                                    );
-                                                  }
-                                                } else {
-                                                  // ignore: use_build_context_synchronously
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            'No network connection available')),
-                                                  );
-                                                }
-                                              },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.done_all),
-                                        color: isSendButtonPressed &&
-                                                !isDoneButtonPressed
-                                            ? Colors.blue
-                                            : Colors.grey,
-                                        onPressed: isSendButtonPressed &&
-                                                !isDoneButtonPressed
-                                            ? () async {
-                                                await _updateButtonStates(
-                                                    tripId, true, true);
-
-                                                await FirebaseFirestore.instance
-                                                    .collection(
-                                                        'successfulTrips')
-                                                    .add({
-                                                  'tripId': tripId,
-                                                  'driverId': widget.driverId,
-                                                  'userId': userId,
-                                                  'timestamp': FieldValue
-                                                      .serverTimestamp(),
-                                                });
-
-                                                AwesomeDialog(
-                                                  context: context,
-                                                  dialogType:
-                                                      DialogType.success,
-                                                  animType: AnimType.topSlide,
-                                                  body: Center(
-                                                    child: Column(
-                                                      children: const [
-                                                        Text(
-                                                          'Ride Master',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontSize: 22,
-                                                              color:
-                                                                  Colors.green),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        Text(
-                                                          'Trips Added to your Collection.',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w300,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  Colors.grey),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                      ],
+                                                      driverId: widget.driverId,
+                                                      tripId: tripId,
+                                                      userId: userId,
                                                     ),
                                                   ),
-                                                  btnOkColor: Colors
-                                                      .deepOrange.shade500
+                                                );
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.teal.withOpacity(
+                                                      0.2), // Subtle background color
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.chat,
+                                                  size: 20,
+                                                  color: Colors.teal,
+                                                ),
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                final phoneNumber =
+                                                    userDetails['phone_number'];
+                                                if (phoneNumber != null &&
+                                                    phoneNumber.isNotEmpty) {
+                                                  _launchPhoneNumber(
+                                                      phoneNumber);
+                                                } else {
+                                                  // ScaffoldMessenger.of(context)
+                                                  //     .showSnackBar(
+                                                  //   const SnackBar(
+                                                  //     content: Text(
+                                                  //         'Phone number unavailable'),
+                                                  //   ),
+                                                  // );
+
+                                                  AwesomeDialog(
+                                                    context: context,
+                                                    dialogType:
+                                                        DialogType.error,
+                                                    animType: AnimType.topSlide,
+                                                    body: Center(
+                                                      child: Column(
+                                                        children: const [
+                                                          Text(
+                                                            'Phone Number Invalid',
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 22,
+                                                                color:
+                                                                    Colors.red),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Text(
+                                                            'Looks like Phone Number is not Provided by the User',
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w300,
+                                                                fontSize: 14,
+                                                                color: Colors
+                                                                    .grey),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    btnOkColor: Colors
+                                                        .deepOrange.shade500
+                                                        .withOpacity(0.8),
+                                                    alignment: Alignment.center,
+                                                    btnOkOnPress: () {},
+                                                  ).show();
+                                                }
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.orange.withOpacity(
+                                                      0.2), // Subtle background color
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.phone,
+                                                  size: 20,
+                                                  color: Colors.orange,
+                                                ),
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                // final pickupLocation =
+                                                //     tripDetails['pickupLocation'] ??
+                                                //         '';
+                                                // final deliveryLocation =
+                                                //     tripDetails['deliveryLocation'] ??
+                                                //         '';
+                                                // if (pickupLocation.isNotEmpty &&
+                                                //     deliveryLocation.isNotEmpty) {
+                                                //   _launchOpenStreetMapWithDirections(
+                                                //       pickupLocation,
+                                                //       deliveryLocation);
+                                                // }
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DriverViewPassengerLocation(
+                                                                tripId:
+                                                                    tripId)));
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.indigo.withOpacity(
+                                                      0.2), // Subtle background color
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.location_on_rounded,
+                                                  size: 20,
+                                                  color: Colors.indigo
                                                       .withOpacity(0.8),
-                                                  alignment: Alignment.center,
-                                                  btnOkOnPress: () {},
-                                                ).show();
-                                                setState(() {});
-                                              }
-                                            : null,
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        '... ${index + 1}',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                            color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          back: Card(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.location_on,
-                                          color: Colors
-                                              .green), // Icon for Pickup Location
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          '${tripDetails['pickupLocation']}',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                                ),
+                                              ),
+                                            ),
+                                            isSendButtonPressed
+                                                ? Container()
+                                                : InkWell(
+                                                    onTap: isSendButtonPressed
+                                                        ? null
+                                                        : () async {
+                                                            final isNetworkAvailable =
+                                                                await _checkNetworkStatus();
+                                                            if (isNetworkAvailable) {
+                                                              try {
+                                                                await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'arrivedDrivers')
+                                                                    .add({
+                                                                  'tripId':
+                                                                      tripId,
+                                                                  'driverId': widget
+                                                                      .driverId,
+                                                                  'userId':
+                                                                      userId,
+                                                                  'timestamp':
+                                                                      FieldValue
+                                                                          .serverTimestamp(),
+                                                                });
+
+                                                                await _updateButtonStates(
+                                                                    tripId,
+                                                                    true,
+                                                                    false);
+
+                                                                AwesomeDialog(
+                                                                  context:
+                                                                      context,
+                                                                  dialogType:
+                                                                      DialogType
+                                                                          .success,
+                                                                  animType: AnimType
+                                                                      .topSlide,
+                                                                  body: Center(
+                                                                    child:
+                                                                        Column(
+                                                                      children: const [
+                                                                        Text(
+                                                                          'Arrived',
+                                                                          style: TextStyle(
+                                                                              fontWeight: FontWeight.w500,
+                                                                              fontSize: 22,
+                                                                              color: Colors.green),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              10,
+                                                                        ),
+                                                                        Text(
+                                                                          'Driver Arrival Recorded. Pickup your Passenger. ',
+                                                                          style: TextStyle(
+                                                                              fontWeight: FontWeight.w300,
+                                                                              fontSize: 14,
+                                                                              color: Colors.grey),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              10,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  btnOkColor: Colors
+                                                                      .deepOrange
+                                                                      .shade500
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  btnOkOnPress:
+                                                                      () {},
+                                                                ).show();
+
+                                                                setState(() {});
+                                                              } catch (e) {
+                                                                ScaffoldMessenger.of(
+                                                                        // ignore: use_build_context_synchronously
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                  const SnackBar(
+                                                                      content: Text(
+                                                                          'Failed to send driver. Try again.')),
+                                                                );
+                                                              }
+                                                            } else {
+                                                              // ignore: use_build_context_synchronously
+                                                              ScaffoldMessenger
+                                                                      .of(context)
+                                                                  .showSnackBar(
+                                                                const SnackBar(
+                                                                    content: Text(
+                                                                        'No network connection available')),
+                                                              );
+                                                            }
+                                                          },
+                                                    child: Icon(
+                                                      Icons.send,
+                                                      color: isSendButtonPressed
+                                                          ? Colors.grey
+                                                          : Colors.blue,
+                                                    ),
+                                                  ),
+                                            IconButton(
+                                              icon: const Icon(Icons.done_all),
+                                              color: isSendButtonPressed &&
+                                                      !isDoneButtonPressed
+                                                  ? Colors.blue
+                                                  : Colors.grey,
+                                              onPressed: isSendButtonPressed &&
+                                                      !isDoneButtonPressed
+                                                  ? () async {
+                                                      await _updateButtonStates(
+                                                          tripId, true, true);
+
+                                                      await FirebaseFirestore
+                                                          .instance
+                                                          .collection(
+                                                              'successfulTrips')
+                                                          .add({
+                                                        'tripId': tripId,
+                                                        'driverId':
+                                                            widget.driverId,
+                                                        'userId': userId,
+                                                        'timestamp': FieldValue
+                                                            .serverTimestamp(),
+                                                      });
+
+                                                      AwesomeDialog(
+                                                        context: context,
+                                                        dialogType:
+                                                            DialogType.success,
+                                                        animType:
+                                                            AnimType.topSlide,
+                                                        body: Center(
+                                                          child: Column(
+                                                            children: const [
+                                                              Text(
+                                                                'Ride Master',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        22,
+                                                                    color: Colors
+                                                                        .green),
+                                                              ),
+                                                              SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              Text(
+                                                                'Trips Added to your Collection.',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                    fontSize:
+                                                                        14,
+                                                                    color: Colors
+                                                                        .grey),
+                                                              ),
+                                                              SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        btnOkColor: Colors
+                                                            .deepOrange.shade500
+                                                            .withOpacity(0.8),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        btnOkOnPress: () {},
+                                                      ).show();
+                                                      setState(() {});
+                                                    }
+                                                  : null,
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                        // Row(
+                                        //   mainAxisAlignment:
+                                        //       MainAxisAlignment.end,
+                                        //   children: [
+                                        //     Text(
+                                        //       '... ${index + 1}',
+                                        //       style: TextStyle(
+                                        //           fontWeight: FontWeight.bold,
+                                        //           fontSize: 17,
+                                        //           color: Colors.grey),
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(height: 15),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.location_on,
-                                          color: Colors
-                                              .red), // Icon for Delivery Location
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          '${tripDetails['deliveryLocation']}',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                ),
+                                back: Card(
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              decoration: BoxDecoration(
+                                                color: Colors.green.withOpacity(
+                                                    0.2), // Subtle background color
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                  Icons.location_on,
+                                                  color: Colors.green),
+                                            ), // Icon for Pickup Location
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                '${tripDetails['pickupLocation']}',
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 15),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              decoration: BoxDecoration(
+                                                color: Colors.red.withOpacity(
+                                                    0.2), // Subtle background color
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                  Icons.location_on,
+                                                  color: Colors.red),
+                                            ), // Icon for Delivery Location
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                '${tripDetails['deliveryLocation']}',
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 15),
+                                        Divider(
+                                          height: 1,
+                                          color: Colors.grey[300],
+                                        ),
+                                        const SizedBox(height: 15),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  DateFormat(
+                                                          'yyyy-MM-dd HH:mm:ss')
+                                                      .format(tripDetails[
+                                                              'timestamp']
+                                                          .toDate()),
+                                                  style: GoogleFonts.comicNeue(
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.w800),
+                                                ),
+                                              ],
+                                            ),
+                                            // Text(
+                                            //   '... ${index + 1}',
+                                            //   style: TextStyle(
+                                            //       fontSize: 16,
+                                            //       color: Colors.black54,
+                                            //       fontWeight: FontWeight.w600),
+                                            // ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(height: 15),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey[300],
-                                  ),
-                                  const SizedBox(height: 15),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(height: 4),
-                                          Text(
-                                            DateFormat('yyyy-MM-dd HH:mm:ss')
-                                                .format(tripDetails['timestamp']
-                                                    .toDate()),
-                                            style: GoogleFonts.comicNeue(
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.w800),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        '... ${index + 1}',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
-                      );
+                            );
                     },
                   );
                 },
