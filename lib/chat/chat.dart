@@ -923,6 +923,7 @@ import 'package:final_menu/chat/chat_display_page.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatPage extends StatefulWidget {
   final String userId;
@@ -950,13 +951,13 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 5));
+    DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 10));
 
     Query query = firestore
         .collection('confirmedDrivers')
         .where('userId', isEqualTo: widget.userId)
         .orderBy('confirmedAt', descending: true)
-        .limit(isLoadMore ? 10 : 10);
+        .limit(isLoadMore ? 3 : 8);
 
     if (isLoadMore && lastDocument != null) {
       query = query.startAfterDocument(lastDocument!);
@@ -1057,15 +1058,32 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
         backgroundColor: Colors.blueAccent,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: GestureDetector(
+                onTap: () {
+                  if (!isLoadingMore) {
+                    setState(() {
+                      isLoadingMore = true;
+                    });
+                    fetchConfirmedDriversData(isLoadMore: true).then((_) {
+                      setState(() {
+                        isLoadingMore = false;
+                      });
+                    });
+                  }
+                },
+                child: Icon(
+                  Icons.refresh_rounded,
+                  color: Colors.white,
+                  size: 26,
+                )),
+          )
+        ],
       ),
       body: confirmedDriversData.isEmpty
-          ? Center(
-              child: Image(
-                image: AssetImage('assets/no_data_found.gif'),
-                height: MediaQuery.of(context).size.height * 0.5,
-                width: MediaQuery.of(context).size.width * 0.5,
-              ),
-            )
+          ? _buildShimmerLoading()
           : RefreshIndicator(
               onRefresh: _refreshData,
               child: Padding(
@@ -1077,9 +1095,11 @@ class _ChatPageState extends State<ChatPage> {
                         itemCount: confirmedDriversData.length,
                         itemBuilder: (context, index) {
                           var data = confirmedDriversData[index];
+
                           return DriverCard(
                             data: data,
                             index: index,
+                            totalItems: confirmedDriversData.length,
                             onChatPressed: () {
                               Navigator.of(context).push(
                                 PageRouteBuilder(
@@ -1124,26 +1144,17 @@ class _ChatPageState extends State<ChatPage> {
                         },
                       ),
                     ),
-                    if (isLoadingMore)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(),
-                      ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (!isLoadingMore) {
-                          setState(() {
-                            isLoadingMore = true;
-                          });
-                          fetchConfirmedDriversData(isLoadMore: true).then((_) {
-                            setState(() {
-                              isLoadingMore = false;
-                            });
-                          });
-                        }
-                      },
-                      child: Text('Load More'),
-                    ),
+                    // if (isLoadingMore)
+                    //   Padding(
+                    //     padding: const EdgeInsets.all(8.0),
+                    //     child: Image(
+                    //       image: AssetImage(
+                    //         'assets/logo.png',
+                    //       ),
+                    //       height: MediaQuery.of(context).size.height * 0.6,
+                    //       width: MediaQuery.of(context).size.width * 0.9,
+                    //     ),
+                    //   ),
                   ],
                 ),
               ),
@@ -1152,17 +1163,24 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-class DriverCard extends StatelessWidget {
+class DriverCard extends StatefulWidget {
   final Map<String, dynamic> data;
   final int index;
+  final int totalItems;
   final VoidCallback onChatPressed;
 
   const DriverCard({
     required this.data,
     required this.index,
+    required this.totalItems,
     required this.onChatPressed,
   });
 
+  @override
+  State<DriverCard> createState() => _DriverCardState();
+}
+
+class _DriverCardState extends State<DriverCard> {
   @override
   Widget build(BuildContext context) {
     // return Stack(
@@ -1294,7 +1312,7 @@ class DriverCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Card(
-          elevation: 6,
+          elevation: 1,
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -1302,11 +1320,11 @@ class DriverCard extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                colors: [Colors.blue.shade50, Colors.white],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              // gradient: LinearGradient(
+              //   colors: [Colors.blue.shade50, Colors.white],
+              //   begin: Alignment.topLeft,
+              //   end: Alignment.bottomRight,
+              // ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -1337,10 +1355,29 @@ class DriverCard extends StatelessWidget {
                         ),
                         child: ClipOval(
                           child: Image.network(
-                            data['profilePictureUrl'].isNotEmpty
-                                ? data['profilePictureUrl']
+                            widget.data['profilePictureUrl'].isNotEmpty
+                                ? widget.data['profilePictureUrl']
                                 : 'assets/logo.png',
                             fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                // Image is fully loaded, return the image
+                                return child;
+                              } else {
+                                // Image is still loading, return a CircularProgressIndicator
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              }
+                            },
                             errorBuilder: (context, error, stackTrace) => Icon(
                               Icons.person,
                               size: 40,
@@ -1355,7 +1392,7 @@ class DriverCard extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.chat,
                             color: Colors.green.shade600, size: 24),
-                        onPressed: onChatPressed,
+                        onPressed: widget.onChatPressed,
                       ),
                     ],
                   ),
@@ -1367,7 +1404,7 @@ class DriverCard extends StatelessWidget {
                       children: [
                         // Driver Name
                         Text(
-                          data['driverName'],
+                          widget.data['driverName'],
                           style: GoogleFonts.outfit(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -1386,7 +1423,7 @@ class DriverCard extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Pickup: ${data['pickupLocation']}',
+                                'Pickup: ${widget.data['pickupLocation']}',
                                 style: GoogleFonts.outfit(
                                   fontSize: 14,
                                   color: Colors.grey.shade800,
@@ -1407,7 +1444,7 @@ class DriverCard extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Delivery: ${data['deliveryLocation']}',
+                                'Delivery: ${widget.data['deliveryLocation']}',
                                 style: GoogleFonts.outfit(
                                   fontSize: 14,
                                   color: Colors.grey.shade800,
@@ -1427,7 +1464,7 @@ class DriverCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Contact: ${data['driverPhone']}',
+                              'Contact: ${widget.data['driverPhone']}',
                               style: GoogleFonts.outfit(
                                 fontSize: 14,
                                 color: Colors.grey.shade800,
@@ -1466,7 +1503,7 @@ class DriverCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  '${index + 1}',
+                  '${widget.totalItems - widget.index}',
                   style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -1480,4 +1517,99 @@ class DriverCard extends StatelessWidget {
       ],
     );
   }
+}
+
+Widget _buildShimmerLoading() {
+  return ListView.builder(
+    itemCount: 8, // Number of shimmer placeholders
+    itemBuilder: (context, index) {
+      return Card(
+        margin: const EdgeInsets.all(8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Row: Image, Title, Circled Symbol
+                Row(
+                  children: [
+                    // Image in top left
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 30),
+                    // Title in top middle
+                    Expanded(
+                      child: Container(
+                        height: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Circled symbol in top right
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Bottom Row: Chat Icon Badge and Three Texts
+                Row(
+                  children: [
+                    // Chat icon with badge in bottom left
+                    Icon(
+                      Icons.chat,
+                      size: 30,
+                    ),
+                    const SizedBox(width: 10),
+                    // Three texts in 3 rows
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: 12,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            width: double.infinity,
+                            height: 12,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            width: double.infinity,
+                            height: 12,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

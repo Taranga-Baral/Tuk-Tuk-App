@@ -702,155 +702,125 @@ class _RequestPageState extends State<RequestPage> {
                                                           SizedBox(
                                                             width: 8,
                                                           ),
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(6.0),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Colors
-                                                                  .green
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              shape: BoxShape
-                                                                  .circle,
-                                                            ),
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                final phoneNumber =
-                                                                    driverData[
-                                                                        'phone'];
-                                                                if (phoneNumber !=
-                                                                        null &&
-                                                                    phoneNumber
-                                                                        .isNotEmpty) {
-                                                                  _launchPhoneNumber(
-                                                                      phoneNumber);
-                                                                } else {
-                                                                  // ScaffoldMessenger
-                                                                  //         .of(context)
-                                                                  //     .showSnackBar(
-                                                                  //   SnackBar(
-                                                                  //       content: Text(
-                                                                  //           'Phone number is unavailable')),
-                                                                  // );
-                                                                  AwesomeDialog(
-                                                                    context:
-                                                                        context,
-                                                                    dialogType:
-                                                                        DialogType
-                                                                            .error,
-                                                                    animType:
-                                                                        AnimType
-                                                                            .topSlide,
-                                                                    title:
-                                                                        'Phone Number Unavailable',
-                                                                    desc:
-                                                                        'The phone number is currently unavailable.',
-                                                                    btnOkOnPress:
-                                                                        () {},
-                                                                  ).show();
-                                                                }
-                                                              },
-                                                              child: Icon(
-                                                                  Icons.phone,
-                                                                  color: Colors
-                                                                      .green),
-                                                            ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              final phoneNumber =
+                                                                  driverData[
+                                                                      'phone'];
+                                                              if (phoneNumber !=
+                                                                      null &&
+                                                                  phoneNumber
+                                                                      .isNotEmpty) {
+                                                                _launchPhoneNumber(
+                                                                    phoneNumber);
+                                                              } else {
+                                                                // ScaffoldMessenger
+                                                                //         .of(context)
+                                                                //     .showSnackBar(
+                                                                //   SnackBar(
+                                                                //       content: Text(
+                                                                //           'Phone number is unavailable')),
+                                                                // );
+                                                                AwesomeDialog(
+                                                                  context:
+                                                                      context,
+                                                                  dialogType:
+                                                                      DialogType
+                                                                          .error,
+                                                                  animType: AnimType
+                                                                      .topSlide,
+                                                                  title:
+                                                                      'Phone Number Unavailable',
+                                                                  desc:
+                                                                      'The phone number is currently unavailable.',
+                                                                  btnOkOnPress:
+                                                                      () {},
+                                                                ).show();
+                                                              }
+                                                            },
+                                                            child: Icon(
+                                                                Icons.phone,
+                                                                color: Colors
+                                                                    .green),
                                                           ),
                                                           SizedBox(
                                                             width: 8,
                                                           ),
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(6.0),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Colors.blue
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              shape: BoxShape
-                                                                  .circle,
-                                                            ),
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .push(
-                                                                  PageRouteBuilder(
-                                                                    pageBuilder:
-                                                                        (context,
-                                                                            animation,
-                                                                            secondaryAnimation) {
-                                                                      return FadeScaleTransition(
-                                                                        animation:
-                                                                            animation,
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                                PageRouteBuilder(
+                                                                  pageBuilder: (context,
+                                                                      animation,
+                                                                      secondaryAnimation) {
+                                                                    return FadeScaleTransition(
+                                                                      animation:
+                                                                          animation,
+                                                                      child:
+                                                                          ChatDetailPage(
+                                                                        userId:
+                                                                            widget.userId,
+                                                                        driverId:
+                                                                            driverId,
+                                                                        tripId:
+                                                                            tripId,
+                                                                        driverName:
+                                                                            driverData['name'],
+                                                                        pickupLocation:
+                                                                            tripData['pickupLocation'],
+                                                                        deliveryLocation:
+                                                                            tripData['deliveryLocation'],
+                                                                        distance:
+                                                                            tripData['distance'],
+                                                                        no_of_person:
+                                                                            tripData['no_of_person'],
+                                                                        vehicle_mode:
+                                                                            tripData['vehicle_mode'],
+                                                                        fare: tripData[
+                                                                            'fare'],
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                  transitionsBuilder: (context,
+                                                                      animation,
+                                                                      secondaryAnimation,
+                                                                      child) {
+                                                                    const begin =
+                                                                        Offset(
+                                                                            1.0,
+                                                                            0.0);
+                                                                    const end =
+                                                                        Offset
+                                                                            .zero;
+                                                                    const curve =
+                                                                        Curves
+                                                                            .easeInOut;
+
+                                                                    var tween = Tween(
+                                                                        begin:
+                                                                            begin,
+                                                                        end:
+                                                                            end);
+                                                                    var offsetAnimation =
+                                                                        animation.drive(tween.chain(CurveTween(
+                                                                            curve:
+                                                                                curve)));
+
+                                                                    return SlideTransition(
+                                                                        position:
+                                                                            offsetAnimation,
                                                                         child:
-                                                                            ChatDetailPage(
-                                                                          userId:
-                                                                              widget.userId,
-                                                                          driverId:
-                                                                              driverId,
-                                                                          tripId:
-                                                                              tripId,
-                                                                          driverName:
-                                                                              driverData['name'],
-                                                                          pickupLocation:
-                                                                              tripData['pickupLocation'],
-                                                                          deliveryLocation:
-                                                                              tripData['deliveryLocation'],
-                                                                          distance:
-                                                                              tripData['distance'],
-                                                                          no_of_person:
-                                                                              tripData['no_of_person'],
-                                                                          vehicle_mode:
-                                                                              tripData['vehicle_mode'],
-                                                                          fare:
-                                                                              tripData['fare'],
-                                                                        ),
-                                                                      );
-                                                                    },
-                                                                    transitionsBuilder: (context,
-                                                                        animation,
-                                                                        secondaryAnimation,
-                                                                        child) {
-                                                                      const begin =
-                                                                          Offset(
-                                                                              1.0,
-                                                                              0.0);
-                                                                      const end =
-                                                                          Offset
-                                                                              .zero;
-                                                                      const curve =
-                                                                          Curves
-                                                                              .easeInOut;
-
-                                                                      var tween = Tween(
-                                                                          begin:
-                                                                              begin,
-                                                                          end:
-                                                                              end);
-                                                                      var offsetAnimation =
-                                                                          animation
-                                                                              .drive(tween.chain(CurveTween(curve: curve)));
-
-                                                                      return SlideTransition(
-                                                                          position:
-                                                                              offsetAnimation,
-                                                                          child:
-                                                                              child);
-                                                                    },
-                                                                  ),
-                                                                );
-                                                              },
-                                                              child: Icon(
-                                                                  Icons.chat,
-                                                                  color: Colors
-                                                                      .blue),
-                                                            ),
+                                                                            child);
+                                                                  },
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Icon(
+                                                                Icons.chat,
+                                                                color: Colors
+                                                                    .blue),
                                                           ),
                                                         ],
                                                       ),
@@ -1488,25 +1458,11 @@ class _RequestPageState extends State<RequestPage> {
                                                                     ),
                                                                   ),
                                                                   GestureDetector(
-                                                                    child:
-                                                                        Container(
-                                                                      padding: const EdgeInsets
-                                                                          .all(
-                                                                          6.0),
-                                                                      decoration:
-                                                                          BoxDecoration(
+                                                                    child: Icon(
+                                                                        Icons
+                                                                            .phone,
                                                                         color: Colors
-                                                                            .green
-                                                                            .withOpacity(0.2),
-                                                                        shape: BoxShape
-                                                                            .circle,
-                                                                      ),
-                                                                      child: Icon(
-                                                                          Icons
-                                                                              .phone,
-                                                                          color:
-                                                                              Colors.green),
-                                                                    ),
+                                                                            .green),
                                                                     onTap: () {
                                                                       final phoneNumber =
                                                                           vehicleData[
@@ -1733,25 +1689,10 @@ class _RequestPageState extends State<RequestPage> {
                                                       ),
                                                       Row(
                                                         children: [
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(6.0),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Colors
-                                                                  .green
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              shape: BoxShape
-                                                                  .circle,
-                                                            ),
-                                                            child: Icon(
-                                                              Icons
-                                                                  .call_end_sharp,
-                                                              color:
-                                                                  Colors.green,
-                                                            ),
+                                                          Icon(
+                                                            Icons
+                                                                .call_end_sharp,
+                                                            color: Colors.green,
                                                           ),
                                                           SizedBox(width: 10),
                                                           Expanded(
@@ -1770,31 +1711,16 @@ class _RequestPageState extends State<RequestPage> {
                                                       SizedBox(height: 5),
                                                       Row(
                                                         children: [
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(6.0),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Colors
-                                                                  .pinkAccent
-                                                                  .shade200
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              shape: BoxShape
-                                                                  .circle,
-                                                            ),
-                                                            child: Icon(
-                                                              Icons
-                                                                  .linear_scale_rounded,
-                                                              color: Colors
-                                                                  .pinkAccent
-                                                                  .shade200,
-                                                            ),
+                                                          Icon(
+                                                            Icons
+                                                                .linear_scale_rounded,
+                                                            color: Colors
+                                                                .pinkAccent
+                                                                .shade200,
                                                           ),
                                                           SizedBox(width: 10),
                                                           Text(
-                                                            '${double.tryParse(distance)?.toStringAsFixed(1)} km, Driver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
+                                                            'Total: ${double.tryParse(distance)?.toStringAsFixed(1)} km,\nDriver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
                                                             style: TextStyle(
                                                                 fontSize: 14),
                                                           ),

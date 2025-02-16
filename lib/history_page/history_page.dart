@@ -849,7 +849,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   width: 50,
                   child: Center(
                     child: Text(
-                      '${index + 1}',
+                      '${trips.length - index}',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,

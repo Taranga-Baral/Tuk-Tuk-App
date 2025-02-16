@@ -1404,11 +1404,6 @@ class _HomePage1State extends State<HomePage1> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                // Inside _buildUserDetailsCard TextField onSubmitted callback
-                onSubmitted: (value) async {
-                  final results = await searchLocations(value);
-                  showSearchResults(context, results);
-                },
               ),
             ),
             SizedBox(
