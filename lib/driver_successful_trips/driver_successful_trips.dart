@@ -266,6 +266,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DriverSuccessfulTrips extends StatefulWidget {
   final String driverId;
@@ -287,6 +288,12 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
   void initState() {
     super.initState();
     _loadSuccessfulTrips(); // Load the initial data
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _loadSuccessfulTrips();
+    });
   }
 
   Future<void> _loadSuccessfulTrips() async {
@@ -362,7 +369,7 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.redAccent,
         title: Text(
           'Successful Trips',
           style: GoogleFonts.outfit(
@@ -371,7 +378,7 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.history, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -387,107 +394,115 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
         onNotification: (ScrollNotification scrollInfo) {
           if (!isLoadingMore &&
               scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            _buildShimmerLoading();
             _loadSuccessfulTrips(); // Load more data when scrolled to the bottom
           }
           return false; // Return false to allow other scroll notifications to occur
         },
         child: isDataLoaded
-            ? AnimationLimiter(
-                child: ListView.builder(
-                  itemCount: successfulTripsData.length,
-                  itemBuilder: (context, index) {
-                    final data = successfulTripsData[index];
-                    final tripData = data['successfulTrip'];
-                    final userData = data['user'];
-                    final tripDetails = data['trip'];
+            ? RefreshIndicator(
+                onRefresh: _refresh,
+                child: AnimationLimiter(
+                  child: ListView.builder(
+                    itemCount: successfulTripsData.length,
+                    itemBuilder: (context, index) {
+                      final data = successfulTripsData[index];
+                      final tripData = data['successfulTrip'];
+                      final userData = data['user'];
+                      final tripDetails = data['trip'];
 
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 500),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: Card(
-                            margin: EdgeInsets.all(10),
-                            elevation: 1,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        '${userData['username'] ?? 'Unknown'}',
-                                        style: GoogleFonts.outfit(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.teal[800],
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 500),
+                        child: SlideAnimation(
+                          verticalOffset: 50.0,
+                          child: FadeInAnimation(
+                            child: Card(
+                              margin: EdgeInsets.all(10),
+                              elevation: 1,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            '${userData['username'] ?? 'Unknown'}',
+                                            style: GoogleFonts.outfit(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blueAccent
+                                                  .withOpacity(0.8),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        'Trip #${index + 1}',
-                                        style: GoogleFonts.outfit(
-                                          fontSize: 16,
-                                          color: Colors.grey[700],
-                                          fontWeight: FontWeight.w500,
+                                        Text(
+                                          'Trip #${successfulTripsData.length - index}',
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 16,
+                                            color: Colors.grey[700],
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 12),
-                                  _buildDetailRow(
-                                    icon: Icons.location_on,
-                                    iconColor: Colors.green,
-                                    text:
-                                        'Pickup: ${tripDetails['pickupLocation'] ?? 'Unknown'}',
-                                  ),
-                                  _buildDetailRow(
-                                    icon: Icons.location_on,
-                                    iconColor: Colors.red,
-                                    text:
-                                        'Delivery: ${tripDetails['deliveryLocation'] ?? 'Unknown'}',
-                                  ),
-                                  _buildDetailRow(
-                                    icon: Icons.linear_scale_rounded,
-                                    iconColor: Colors.teal,
-                                    text:
-                                        'Distance: ${double.tryParse(tripDetails['distance'] ?? '0')?.toStringAsFixed(2)} km',
-                                  ),
-                                  _buildDetailRow(
-                                    icon: Icons.money,
-                                    iconColor: Colors.blueAccent,
-                                    text:
-                                        'Fare: NPR ${tripDetails['fare'] ?? '0'}',
-                                  ),
-                                  // _buildDetailRow(
-                                  //   icon: Icons.call_end,
-                                  //   iconColor: Colors.amber,
-                                  //   text:
-                                  //       'Contact: ${userData['phone_number'] ?? 'Unknown'}',
-                                  // ),
-                                ],
+                                      ],
+                                    ),
+                                    SizedBox(height: 12),
+                                    _buildDetailRow(
+                                      icon: Icons.location_on,
+                                      iconColor: Colors.green,
+                                      text:
+                                          'Pickup: ${tripDetails['pickupLocation'] ?? 'Unknown'}',
+                                    ),
+                                    _buildDetailRow(
+                                      icon: Icons.location_on,
+                                      iconColor: Colors.red,
+                                      text:
+                                          'Delivery: ${tripDetails['deliveryLocation'] ?? 'Unknown'}',
+                                    ),
+                                    _buildDetailRow(
+                                      icon: Icons.linear_scale_rounded,
+                                      iconColor: Colors.teal,
+                                      text:
+                                          'Distance: ${double.tryParse(tripDetails['distance'] ?? '0')?.toStringAsFixed(2)} km',
+                                    ),
+                                    _buildDetailRow(
+                                      icon: Icons.money,
+                                      iconColor: Colors.blueAccent,
+                                      text:
+                                          'Fare: NPR ${tripDetails['fare'] ?? '0'}',
+                                    ),
+                                    // _buildDetailRow(
+                                    //   icon: Icons.call_end,
+                                    //   iconColor: Colors.amber,
+                                    //   text:
+                                    //       'Contact: ${userData['phone_number'] ?? 'Unknown'}',
+                                    // ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               )
-            : Center(
-                child: Image.asset(
-                  'assets/no_data_found.gif',
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  width: MediaQuery.of(context).size.width * 0.5,
-                ),
-              ),
+            : _buildShimmerLoading(),
+        // : Center(
+        //     child: Image.asset(
+        //       'assets/no_data_found.gif',
+        //       height: MediaQuery.of(context).size.height * 0.5,
+        //       width: MediaQuery.of(context).size.width * 0.5,
+        //     ),
+        //   ),
       ),
     );
   }
@@ -528,4 +543,83 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
       ),
     );
   }
+}
+
+Widget _buildShimmerLoading() {
+  return ListView.builder(
+    itemCount: 8, // Number of shimmer placeholders
+    itemBuilder: (context, index) {
+      return Card(
+        margin: const EdgeInsets.all(8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Row: Title in the middle and Card in the top right
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Title in the top middle
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 30),
+                    // Card in the top right
+                    Container(
+                      width: 30,
+                      height: 25,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                // Four descriptions below the title
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      width: double.infinity,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      width: double.infinity,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      width: double.infinity,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }
