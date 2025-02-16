@@ -787,6 +787,28 @@ class _HistoryPageState extends State<HistoryPage> {
                                   ? trip['profilePictureUrl']
                                   : 'assets/logo.png',
                               fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  // Image is fully loaded, return the image
+                                  return child;
+                                } else {
+                                  // Image is still loading, return a CircularProgressIndicator
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  );
+                                }
+                              },
                               errorBuilder: (context, error, stackTrace) =>
                                   Icon(
                                 Icons.person,

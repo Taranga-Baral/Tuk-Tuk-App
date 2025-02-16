@@ -778,6 +778,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            backgroundColor: Colors.blueAccent,
             expandedHeight: 200.0,
             floating: false,
             stretch: true,
@@ -859,6 +860,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     },
                   );
                 },
+              ),
+            ),
+            leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
               ),
             ),
           ),

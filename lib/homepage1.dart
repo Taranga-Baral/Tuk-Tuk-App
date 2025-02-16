@@ -412,9 +412,12 @@ class _HomePage1State extends State<HomePage1> {
                             color: Colors.white,
                             fontWeight: FontWeight.bold),
                       ),
-                      background: Image.asset(
-                        'images/homepage_card_bg.png',
-                        fit: BoxFit.cover,
+                      background: Opacity(
+                        opacity: 0.9,
+                        child: Image.asset(
+                          'images/homepage_card_bg.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
@@ -1602,35 +1605,119 @@ class _HomePage1State extends State<HomePage1> {
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
-                  // Show confirmation dialog
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Confirm Sign Out'),
-                        content: Text('Are you sure you want to sign out?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
-                            child: Text('Cancel'),
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(20.0), // Rounded corners
+                        ),
+                        elevation: 10, // Shadow
+                        backgroundColor: Colors.white,
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // Sign out and navigate to the SignInPage
-                              FirebaseAuth.instance.signOut();
-                              Navigator.of(context).pop(); // Close the dialog
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SignInPage(),
+                          child: Column(
+                            mainAxisSize:
+                                MainAxisSize.min, // Fit content height
+                            children: [
+                              // Icon at the top
+                              Icon(
+                                Icons.exit_to_app,
+                                size: 50,
+                                color: Colors.redAccent,
+                              ),
+                              const SizedBox(height: 16),
+                              // Title
+                              Text(
+                                'Confirm Sign Out',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
                                 ),
-                              );
-                            },
-                            child: Text('Sign Out'),
+                              ),
+                              const SizedBox(height: 10),
+                              // Subtitle
+                              Text(
+                                'Are you sure you want to sign out?',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[700],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 20),
+                              // Buttons Row
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  // Cancel Button
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 10,
+                                      ),
+                                      backgroundColor: Colors.grey[200],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  // Sign Out Button
+                                  TextButton(
+                                    onPressed: () {
+                                      // Sign out and navigate to the SignInPage
+                                      FirebaseAuth.instance.signOut();
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SignInPage(),
+                                        ),
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 10,
+                                      ),
+                                      backgroundColor: Colors.redAccent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Sign Out',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       );
                     },
                   );
