@@ -572,53 +572,176 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title:  Text('Account Found',style: GoogleFonts.outfit(fontWeight: FontWeight.w400),),
-          content: Text(
-              'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?',style: GoogleFonts.comicNeue(),),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                // Clear the saved email to log in with a different account
-                _clearSavedEmail();
-                Navigator.pop(context);
-              },
-              child: const Text('Logout',style: TextStyle(color: Colors.red),),
-            ),
-            TextButton(
-              onPressed: () {
-                // Log in with the saved account
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        BottomNavBarPage(driverEmail: savedEmail),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0); // Slide in from the right
-                      const end = Offset.zero;
-                      const curve = Curves.decelerate;
-
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-                      var offsetAnimation = animation.drive(tween);
-
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      );
-                    },
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0), // Rounded corners
+          ),
+          elevation: 10, // Shadow
+          backgroundColor: Colors.white,
+          child: Container(
+            padding: const EdgeInsets.all(25),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Fit content height
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Text(
+                  'Account Found',
+                  style: GoogleFonts.outfit(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
                   ),
-                  (route) =>
-                      false, // This ensures all previous routes are removed
-                );
-              },
-              child: const Text('Log In',style: TextStyle(color: Colors.green),),
+                ),
+                const SizedBox(height: 15),
+                // Content
+                Text(
+                  'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?',
+                  style: GoogleFonts.comicNeue(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 25),
+                // Buttons Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // Logout Button
+                    TextButton(
+                      onPressed: () {
+                        // Clear the saved email to log in with a different account
+                        _clearSavedEmail();
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        backgroundColor: Colors.red[50], // Light red background
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Logout',
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Log In Button
+                    TextButton(
+                      onPressed: () {
+                        // Log in with the saved account
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    BottomNavBarPage(driverEmail: savedEmail),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin =
+                                  Offset(1.0, 0.0); // Slide in from the right
+                              const end = Offset.zero;
+                              const curve = Curves.decelerate;
+
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                          (route) => false, // Remove all previous routes
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        backgroundColor:
+                            Colors.green[50], // Light green background
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Log In',
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title:  Text('Account Found',style: GoogleFonts.outfit(fontWeight: FontWeight.w400),),
+    //       content: Text(
+    //           'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?',style: GoogleFonts.comicNeue(),),
+    //       actions: <Widget>[
+    //         TextButton(
+    //           onPressed: () {
+    //             // Clear the saved email to log in with a different account
+    //             _clearSavedEmail();
+    //             Navigator.pop(context);
+    //           },
+    //           child: const Text('Logout',style: TextStyle(color: Colors.red),),
+    //         ),
+    //         TextButton(
+    //           onPressed: () {
+    //             // Log in with the saved account
+    //             Navigator.pushAndRemoveUntil(
+    //               context,
+    //               PageRouteBuilder(
+    //                 pageBuilder: (context, animation, secondaryAnimation) =>
+    //                     BottomNavBarPage(driverEmail: savedEmail),
+    //                 transitionsBuilder:
+    //                     (context, animation, secondaryAnimation, child) {
+    //                   const begin = Offset(1.0, 0.0); // Slide in from the right
+    //                   const end = Offset.zero;
+    //                   const curve = Curves.decelerate;
+
+    //                   var tween = Tween(begin: begin, end: end)
+    //                       .chain(CurveTween(curve: curve));
+    //                   var offsetAnimation = animation.drive(tween);
+
+    //                   return SlideTransition(
+    //                     position: offsetAnimation,
+    //                     child: child,
+    //                   );
+    //                 },
+    //               ),
+    //               (route) =>
+    //                   false, // This ensures all previous routes are removed
+    //             );
+    //           },
+    //           child: const Text('Log In',style: TextStyle(color: Colors.green),),
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
   }
 
   Future<void> _clearSavedEmail() async {
@@ -713,33 +836,30 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
   // }
 
   void _showErrorMessage(String message) {
-  String dialogTitle = 'Error';
-  String dialogMessage = message;
+    String dialogTitle = 'Error';
+    String dialogMessage = message;
 
-  if (message == 'Please enter both email and Password.') {
-    dialogTitle = 'Error';
-  } else if (message == 'No matching driver found. Please check your email and Password.') {
-    dialogTitle = 'Driver Not Found';
-  } else if (message == 'No matching driver found. Please check your email.') {
-    dialogTitle = 'Driver Not Found';
-  } else {
-    dialogTitle = 'Error Validating Driver';
+    if (message == 'Please enter both email and Password.') {
+      dialogTitle = 'Error';
+    } else if (message ==
+        'No matching driver found. Please check your email and Password.') {
+      dialogTitle = 'Driver Not Found';
+    } else if (message ==
+        'No matching driver found. Please check your email.') {
+      dialogTitle = 'Driver Not Found';
+    } else {
+      dialogTitle = 'Error Validating Driver';
+    }
+
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.topSlide,
+      title: dialogTitle,
+      desc: '\t $dialogMessage \t',
+      btnOkOnPress: () {},
+    ).show();
   }
-
-  AwesomeDialog(
-    context: context,
-    dialogType: DialogType.error,
-    animType: AnimType.topSlide,
-    title: dialogTitle,
-    desc: '\t $dialogMessage \t',
-    btnOkOnPress: () {},
-  ).show();
-}
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
