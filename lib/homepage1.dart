@@ -379,457 +379,780 @@ class _HomePage1State extends State<HomePage1> {
             username.isNotEmpty ? username[0].toUpperCase() : 'U';
 
         return AdvancedDrawer(
-          controller: _advancedDrawerController,
-          // backdropColor: Colors.grey[120],
-          // backdropColor: Color.fromRGBO(65, 95, 207, 1.0),
-          backdropColor: Colors.blueAccent,
-          drawer: buildDrawer(context, avatarLetter, username, phoneNumber,
-              email), // Define your drawer widget here
-          child: Scaffold(
-            // appBar: AppBar(
-            //   centerTitle: true,
-            //   title: Text(
-            //     'Tuk Tuk Sawari',
-            //     style: TextStyle(fontWeight: FontWeight.w500),
-            //   ),
-            //   backgroundColor: Colors.transparent,
-            //   elevation: 0,
-            // ),
-            body: SafeArea(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 0, right: 0),
-                          child: _buildUserDetailsCard(
-                            context: context,
-                            username: username,
-                            avatarLetter: username.isNotEmpty
-                                ? username[0].toUpperCase()
-                                : 'U',
-                          ),
-                        ),
-
-                        // Row(
-                        //   children: [
-                        //     _buildStatCard(
-                        //       title: 'भुक्तानी गरिएको कुल भाडा',
-                        //       value: 'NPR ${totalFare.toStringAsFixed(2)}',
-                        //       cardColor: Colors.lime,
-                        //       iconColor: Colors.red,
-                        //       iconData: Icons.money,
-                        //       screenWidth: screenWidth,
-                        //     ),
-                        //     Column(
-                        //       children: [
-                        //         _buildStatCard(
-                        //           title: 'अनुमानित यात्रा',
-                        //           value: '${totalDistance.toStringAsFixed(2)} km',
-                        //           cardColor: Colors.green,
-                        //           iconColor: Colors.blue,
-                        //           iconData: Icons.travel_explore,
-                        //           screenWidth: screenWidth,
-                        //         ),
-                        //         _buildStatCard(
-                        //           title: 'यात्रा संख्या',
-                        //           value: '$totalDeliveryLocations',
-                        //           cardColor: Colors.orange,
-                        //           iconColor: Colors.yellow,
-                        //           iconData: Icons.tire_repair_rounded,
-                        //           screenWidth: screenWidth,
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
-
-                        Column(
-                          children: [
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
-                                  child: Container(
-                                    height: 180,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.9,
-                                    color: Color.fromRGBO(255, 188, 71, 1),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: -20,
-                                  right: 50,
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.grey[50],
-                                    radius: 30,
-                                    child: CircleAvatar(
-                                      radius: 20,
-                                      backgroundColor:
-                                          Color.fromRGBO(255, 188, 71, 1),
-                                      child: Icon(
-                                        Icons.currency_rupee_outlined,
-                                        size: 20,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 18,
-                                  child: Image(
-                                    image: AssetImage(
-                                      'assets/money.gif',
-                                    ),
-                                    height: 80,
-                                    width: 80,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 30,
-                                  child: Image(
-                                    image: AssetImage(
-                                      'assets/total fare container.png',
-                                    ),
-                                    height: 180,
-                                    width: MediaQuery.of(context).size.width,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 14,
-                                  left: 28,
-                                  child: Column(
-                                    children: [
-                                      // Text(
-                                      //   'Total Fare',
-                                      //   style: GoogleFonts.lato(
-                                      //     fontWeight: FontWeight.bold,
-                                      //     color: Colors.white,
-                                      //     fontSize: 30,
-                                      //   ),
-                                      // ),
-                                      // SizedBox(
-                                      //   height: 10,
-                                      // ),
-                                      // Text(
-                                      // 'NPR ${totalFare.toStringAsFixed(2)}',
-                                      //   style: TextStyle(
-                                      //     color: Colors.white,
-                                      //     fontSize: 20,
-                                      //   ),
-                                      // ),
-
-                                      RichText(
-                                        text: TextSpan(
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 30,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text:
-                                                  'कुल भुक्तानि गरिएको भाडा\n',
-                                              style: GoogleFonts
-                                                  .tiroDevanagariHindi(
-                                                // overflow: TextOverflow.ellipsis,
-                                                fontSize: 24,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text:
-                                                  'NPR ${totalFare.toStringAsFixed(2)}',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
-                                  child: Container(
-                                    height: 180,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.9,
-                                    color: Color.fromRGBO(255, 154, 170, 1.0),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: -20,
-                                  right: 50,
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.grey[50],
-                                    radius: 30,
-                                    child: CircleAvatar(
-                                      radius: 20,
-                                      backgroundColor:
-                                          Color.fromRGBO(255, 154, 170, 1.0),
-                                      child: Icon(
-                                        Icons.history,
-                                        size: 20,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  left: 28,
-                                  child: Image(
-                                    image: AssetImage(
-                                      'assets/kilometer.gif',
-                                    ),
-                                    height: 80,
-                                    width: 80,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 30,
-                                  child: Image(
-                                    image: AssetImage(
-                                      'assets/total distance container.png',
-                                    ),
-                                    height: 180,
-                                    width: MediaQuery.of(context).size.width,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 14,
-                                  left: 28,
-                                  child: Column(
-                                    children: [
-                                      // Text(
-                                      //   'Total Distance \n ${totalDistance.toStringAsFixed(2)} km',
-                                      //   style: GoogleFonts.lato(
-                                      //     fontWeight: FontWeight.bold,
-                                      //     color: Colors.white,
-                                      //     fontSize: 30,
-                                      //   ),
-                                      // ),
-
-                                      RichText(
-                                        text: TextSpan(
-                                          style: GoogleFonts.lato(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 30,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text: 'जम्मा हिडिएको कि.मि \n',
-                                              style: GoogleFonts
-                                                  .tiroDevanagariHindi(
-                                                fontSize: 22,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text:
-                                                  '${totalDistance.toStringAsFixed(2)} Kilometer',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      // Text(
-                                      //   '${totalDistance.toStringAsFixed(2)} km',
-                                      //   style: TextStyle(
-                                      //     color: Colors.white,
-                                      //     fontSize: 20,
-                                      //   ),
-                                      // ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
-                                  child: Container(
-                                    height: 180,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.9,
-                                    color: Color.fromRGBO(113, 120, 211, 1.0),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: -20,
-                                  right: 50,
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.grey[50],
-                                    radius: 30,
-                                    child: CircleAvatar(
-                                      radius: 20,
-                                      backgroundColor:
-                                          Color.fromRGBO(113, 120, 211, 1.0),
-                                      child: Icon(
-                                        Icons.drive_eta,
-                                        size: 20,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 28,
-                                  child: Image(
-                                    image: AssetImage(
-                                      'assets/total_trips.gif',
-                                    ),
-                                    height: 100,
-                                    width: 100,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 30,
-                                  child: Image(
-                                    image: AssetImage(
-                                      'assets/total trips container.png',
-                                    ),
-                                    height: 180,
-                                    width: MediaQuery.of(context).size.width,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 14,
-                                  left: 28,
-                                  child: Column(
-                                    children: [
-                                      // Row(
-                                      //   children: [
-                                      //     Text(
-                                      //       'Total Trips : $totalDeliveryLocations',
-                                      //       style: GoogleFonts.lato(
-                                      //         fontWeight: FontWeight.bold,
-                                      //         color: Colors.white,
-                                      //         fontSize: 30,
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
-
-                                      RichText(
-                                        text: TextSpan(
-                                          style: GoogleFonts.lato(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            fontSize: 30,
-                                          ),
-                                          children: [
-                                            TextSpan(
-                                              text:
-                                                  'कुल यात्रा गरिएको संख्या\n',
-                                              style: GoogleFonts
-                                                  .tiroDevanagariHindi(
-                                                fontSize: 24,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: '$totalDeliveryLocations',
-                                              style: TextStyle(
-                                                fontSize: 26,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                      ],
+            controller: _advancedDrawerController,
+            // backdropColor: Colors.grey[120],
+            // backdropColor: Color.fromRGBO(65, 95, 207, 1.0),
+            backdropColor: Colors.blueAccent,
+            drawer: buildDrawer(context, avatarLetter, username, phoneNumber,
+                email), // Define your drawer widget here
+            child: Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    leading: InkWell(
+                      onTap: () {
+                        _advancedDrawerController.showDrawer();
+                      },
+                      child: Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                      ),
+                    ),
+                    foregroundColor: Colors.red,
+                    expandedHeight: 150.0, // Height when fully expanded
+                    floating: false,
+                    pinned: true,
+                    centerTitle: false, elevation: 2,
+                    snap: false, backgroundColor: Colors.blueAccent,
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Text(
+                        'Tuk Tuk',
+                        style: GoogleFonts.outfit(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      background: Image.asset(
+                        'images/homepage_card_bg.png',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-
-                  // Positioned(
-                  //     top: -90,
-                  //     right: 0,
-                  //     child: ClipRRect(
-                  //       borderRadius:
-                  //           BorderRadius.only(bottomLeft: Radius.circular(50)),
-                  //       child: Container(
-                  //         color: Colors.blueAccent,
-                  //         height: 100,
-                  //         width: 80,
-                  //       ),
-                  //     )),
-
-                  Positioned(
-                      top: 0,
-                      right: 0,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          // topLeft: Radius.circular(30),
-                        ),
-                        child: Container(
-                          color: Colors.blueAccent,
-                          height: 70,
-                          width: 70,
-                          child: Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                _advancedDrawerController.showDrawer();
-                              },
-                              child: Icon(
-                                Icons.menu,
-                                color: Colors.white,
-                                size: 26,
-                              ),
+                  SliverToBoxAdapter(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 0, right: 0),
+                            child: _buildUserDetailsCard(
+                              context: context,
+                              username: username,
+                              avatarLetter: username.isNotEmpty
+                                  ? username[0].toUpperCase()
+                                  : 'U',
                             ),
                           ),
-                        ),
-                      )),
+                          Column(
+                            children: [
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30)),
+                                    child: Container(
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.9,
+                                      color: Color.fromRGBO(255, 188, 71, 1),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: -20,
+                                    right: 50,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.grey[50],
+                                      radius: 30,
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor:
+                                            Color.fromRGBO(255, 188, 71, 1),
+                                        child: Icon(
+                                          Icons.currency_rupee_outlined,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 18,
+                                    child: Image(
+                                      image: AssetImage(
+                                        'assets/money.gif',
+                                      ),
+                                      height: 80,
+                                      width: 80,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 30,
+                                    child: Image(
+                                      image: AssetImage(
+                                        'assets/total fare container.png',
+                                      ),
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 14,
+                                    left: 28,
+                                    child: Column(
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: 30,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'कुल भुक्तानि गरिएको भाडा\n',
+                                                style: GoogleFonts
+                                                    .tiroDevanagariHindi(
+                                                  fontSize: 24,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    'NPR ${totalFare.toStringAsFixed(2)}',
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30)),
+                                    child: Container(
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.9,
+                                      color: Color.fromRGBO(255, 154, 170, 1.0),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: -20,
+                                    right: 50,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.grey[50],
+                                      radius: 30,
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor:
+                                            Color.fromRGBO(255, 154, 170, 1.0),
+                                        child: Icon(
+                                          Icons.history,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 10,
+                                    left: 28,
+                                    child: Image(
+                                      image: AssetImage(
+                                        'assets/kilometer.gif',
+                                      ),
+                                      height: 80,
+                                      width: 80,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 30,
+                                    child: Image(
+                                      image: AssetImage(
+                                        'assets/total distance container.png',
+                                      ),
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 14,
+                                    left: 28,
+                                    child: Column(
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            style: GoogleFonts.lato(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: 30,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: 'जम्मा हिडिएको कि.मि \n',
+                                                style: GoogleFonts
+                                                    .tiroDevanagariHindi(
+                                                  fontSize: 22,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '${totalDistance.toStringAsFixed(2)} Kilometer',
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30)),
+                                    child: Container(
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.9,
+                                      color: Color.fromRGBO(113, 120, 211, 1.0),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: -20,
+                                    right: 50,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.grey[50],
+                                      radius: 30,
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor:
+                                            Color.fromRGBO(113, 120, 211, 1.0),
+                                        child: Icon(
+                                          Icons.drive_eta,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 28,
+                                    child: Image(
+                                      image: AssetImage(
+                                        'assets/total_trips.gif',
+                                      ),
+                                      height: 100,
+                                      width: 100,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 30,
+                                    child: Image(
+                                      image: AssetImage(
+                                        'assets/total trips container.png',
+                                      ),
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 14,
+                                    left: 28,
+                                    child: Column(
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            style: GoogleFonts.lato(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              fontSize: 30,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'कुल यात्रा गरिएको संख्या\n',
+                                                style: GoogleFonts
+                                                    .tiroDevanagariHindi(
+                                                  fontSize: 24,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '$totalDeliveryLocations',
+                                                style: TextStyle(
+                                                  fontSize: 26,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ),
-        );
+
+              //   body: SafeArea(
+              //     child: Stack(
+              //       clipBehavior: Clip.none,
+              //       children: [
+              //         SingleChildScrollView(
+              //           child: Column(
+              //             crossAxisAlignment: CrossAxisAlignment.center,
+              //             children: [
+              //               Padding(
+              //                 padding: EdgeInsets.only(left: 0, right: 0),
+              //                 child: _buildUserDetailsCard(
+              //                   context: context,
+              //                   username: username,
+              //                   avatarLetter: username.isNotEmpty
+              //                       ? username[0].toUpperCase()
+              //                       : 'U',
+              //                 ),
+              //               ),
+
+              //               // Row(
+              //               //   children: [
+              //               //     _buildStatCard(
+              //               //       title: 'भुक्तानी गरिएको कुल भाडा',
+              //               //       value: 'NPR ${totalFare.toStringAsFixed(2)}',
+              //               //       cardColor: Colors.lime,
+              //               //       iconColor: Colors.red,
+              //               //       iconData: Icons.money,
+              //               //       screenWidth: screenWidth,
+              //               //     ),
+              //               //     Column(
+              //               //       children: [
+              //               //         _buildStatCard(
+              //               //           title: 'अनुमानित यात्रा',
+              //               //           value: '${totalDistance.toStringAsFixed(2)} km',
+              //               //           cardColor: Colors.green,
+              //               //           iconColor: Colors.blue,
+              //               //           iconData: Icons.travel_explore,
+              //               //           screenWidth: screenWidth,
+              //               //         ),
+              //               //         _buildStatCard(
+              //               //           title: 'यात्रा संख्या',
+              //               //           value: '$totalDeliveryLocations',
+              //               //           cardColor: Colors.orange,
+              //               //           iconColor: Colors.yellow,
+              //               //           iconData: Icons.tire_repair_rounded,
+              //               //           screenWidth: screenWidth,
+              //               //         ),
+              //               //       ],
+              //               //     ),
+              //               //   ],
+              //               // ),
+
+              //               Column(
+              //                 children: [
+              //                   Stack(
+              //                     clipBehavior: Clip.none,
+              //                     children: [
+              //                       ClipRRect(
+              //                         borderRadius:
+              //                             BorderRadius.all(Radius.circular(30)),
+              //                         child: Container(
+              //                           height: 180,
+              //                           width:
+              //                               MediaQuery.of(context).size.width * 0.9,
+              //                           color: Color.fromRGBO(255, 188, 71, 1),
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: -20,
+              //                         right: 50,
+              //                         child: CircleAvatar(
+              //                           backgroundColor: Colors.grey[50],
+              //                           radius: 30,
+              //                           child: CircleAvatar(
+              //                             radius: 20,
+              //                             backgroundColor:
+              //                                 Color.fromRGBO(255, 188, 71, 1),
+              //                             child: Icon(
+              //                               Icons.currency_rupee_outlined,
+              //                               size: 20,
+              //                               color: Colors.white,
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: 0,
+              //                         left: 18,
+              //                         child: Image(
+              //                           image: AssetImage(
+              //                             'assets/money.gif',
+              //                           ),
+              //                           height: 80,
+              //                           width: 80,
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: 0,
+              //                         left: 30,
+              //                         child: Image(
+              //                           image: AssetImage(
+              //                             'assets/total fare container.png',
+              //                           ),
+              //                           height: 180,
+              //                           width: MediaQuery.of(context).size.width,
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         top: 14,
+              //                         left: 28,
+              //                         child: Column(
+              //                           children: [
+              //                             // Text(
+              //                             //   'Total Fare',
+              //                             //   style: GoogleFonts.lato(
+              //                             //     fontWeight: FontWeight.bold,
+              //                             //     color: Colors.white,
+              //                             //     fontSize: 30,
+              //                             //   ),
+              //                             // ),
+              //                             // SizedBox(
+              //                             //   height: 10,
+              //                             // ),
+              //                             // Text(
+              //                             // 'NPR ${totalFare.toStringAsFixed(2)}',
+              //                             //   style: TextStyle(
+              //                             //     color: Colors.white,
+              //                             //     fontSize: 20,
+              //                             //   ),
+              //                             // ),
+
+              //                             RichText(
+              //                               text: TextSpan(
+              //                                 style: TextStyle(
+              //                                   fontWeight: FontWeight.bold,
+              //                                   color: Colors.white,
+              //                                   fontSize: 30,
+              //                                 ),
+              //                                 children: [
+              //                                   TextSpan(
+              //                                     text:
+              //                                         'कुल भुक्तानि गरिएको भाडा\n',
+              //                                     style: GoogleFonts
+              //                                         .tiroDevanagariHindi(
+              //                                       // overflow: TextOverflow.ellipsis,
+              //                                       fontSize: 24,
+              //                                     ),
+              //                                   ),
+              //                                   TextSpan(
+              //                                     text:
+              //                                         'NPR ${totalFare.toStringAsFixed(2)}',
+              //                                     style: TextStyle(
+              //                                       fontSize: 18,
+              //                                     ),
+              //                                   ),
+              //                                 ],
+              //                               ),
+              //                             ),
+              //                           ],
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   ),
+              //                   SizedBox(
+              //                     height: 20,
+              //                   ),
+              //                   Stack(
+              //                     clipBehavior: Clip.none,
+              //                     children: [
+              //                       ClipRRect(
+              //                         borderRadius:
+              //                             BorderRadius.all(Radius.circular(30)),
+              //                         child: Container(
+              //                           height: 180,
+              //                           width:
+              //                               MediaQuery.of(context).size.width * 0.9,
+              //                           color: Color.fromRGBO(255, 154, 170, 1.0),
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: -20,
+              //                         right: 50,
+              //                         child: CircleAvatar(
+              //                           backgroundColor: Colors.grey[50],
+              //                           radius: 30,
+              //                           child: CircleAvatar(
+              //                             radius: 20,
+              //                             backgroundColor:
+              //                                 Color.fromRGBO(255, 154, 170, 1.0),
+              //                             child: Icon(
+              //                               Icons.history,
+              //                               size: 20,
+              //                               color: Colors.white,
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: 10,
+              //                         left: 28,
+              //                         child: Image(
+              //                           image: AssetImage(
+              //                             'assets/kilometer.gif',
+              //                           ),
+              //                           height: 80,
+              //                           width: 80,
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: 0,
+              //                         left: 30,
+              //                         child: Image(
+              //                           image: AssetImage(
+              //                             'assets/total distance container.png',
+              //                           ),
+              //                           height: 180,
+              //                           width: MediaQuery.of(context).size.width,
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         top: 14,
+              //                         left: 28,
+              //                         child: Column(
+              //                           children: [
+              //                             // Text(
+              //                             //   'Total Distance \n ${totalDistance.toStringAsFixed(2)} km',
+              //                             //   style: GoogleFonts.lato(
+              //                             //     fontWeight: FontWeight.bold,
+              //                             //     color: Colors.white,
+              //                             //     fontSize: 30,
+              //                             //   ),
+              //                             // ),
+
+              //                             RichText(
+              //                               text: TextSpan(
+              //                                 style: GoogleFonts.lato(
+              //                                   fontWeight: FontWeight.bold,
+              //                                   color: Colors.white,
+              //                                   fontSize: 30,
+              //                                 ),
+              //                                 children: [
+              //                                   TextSpan(
+              //                                     text: 'जम्मा हिडिएको कि.मि \n',
+              //                                     style: GoogleFonts
+              //                                         .tiroDevanagariHindi(
+              //                                       fontSize: 22,
+              //                                     ),
+              //                                   ),
+              //                                   TextSpan(
+              //                                     text:
+              //                                         '${totalDistance.toStringAsFixed(2)} Kilometer',
+              //                                     style: TextStyle(
+              //                                       fontSize: 18,
+              //                                     ),
+              //                                   ),
+              //                                 ],
+              //                               ),
+              //                             ),
+
+              //                             SizedBox(
+              //                               height: 10,
+              //                             ),
+              //                             // Text(
+              //                             //   '${totalDistance.toStringAsFixed(2)} km',
+              //                             //   style: TextStyle(
+              //                             //     color: Colors.white,
+              //                             //     fontSize: 20,
+              //                             //   ),
+              //                             // ),
+              //                           ],
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   ),
+              //                   SizedBox(
+              //                     height: 20,
+              //                   ),
+              //                   Stack(
+              //                     clipBehavior: Clip.none,
+              //                     children: [
+              //                       ClipRRect(
+              //                         borderRadius:
+              //                             BorderRadius.all(Radius.circular(30)),
+              //                         child: Container(
+              //                           height: 180,
+              //                           width:
+              //                               MediaQuery.of(context).size.width * 0.9,
+              //                           color: Color.fromRGBO(113, 120, 211, 1.0),
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: -20,
+              //                         right: 50,
+              //                         child: CircleAvatar(
+              //                           backgroundColor: Colors.grey[50],
+              //                           radius: 30,
+              //                           child: CircleAvatar(
+              //                             radius: 20,
+              //                             backgroundColor:
+              //                                 Color.fromRGBO(113, 120, 211, 1.0),
+              //                             child: Icon(
+              //                               Icons.drive_eta,
+              //                               size: 20,
+              //                               color: Colors.white,
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: 0,
+              //                         left: 28,
+              //                         child: Image(
+              //                           image: AssetImage(
+              //                             'assets/total_trips.gif',
+              //                           ),
+              //                           height: 100,
+              //                           width: 100,
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         bottom: 0,
+              //                         left: 30,
+              //                         child: Image(
+              //                           image: AssetImage(
+              //                             'assets/total trips container.png',
+              //                           ),
+              //                           height: 180,
+              //                           width: MediaQuery.of(context).size.width,
+              //                         ),
+              //                       ),
+              //                       Positioned(
+              //                         top: 14,
+              //                         left: 28,
+              //                         child: Column(
+              //                           children: [
+              //                             // Row(
+              //                             //   children: [
+              //                             //     Text(
+              //                             //       'Total Trips : $totalDeliveryLocations',
+              //                             //       style: GoogleFonts.lato(
+              //                             //         fontWeight: FontWeight.bold,
+              //                             //         color: Colors.white,
+              //                             //         fontSize: 30,
+              //                             //       ),
+              //                             //     ),
+              //                             //   ],
+              //                             // ),
+
+              //                             RichText(
+              //                               text: TextSpan(
+              //                                 style: GoogleFonts.lato(
+              //                                   fontWeight: FontWeight.bold,
+              //                                   color: Colors.white,
+              //                                   fontSize: 30,
+              //                                 ),
+              //                                 children: [
+              //                                   TextSpan(
+              //                                     text:
+              //                                         'कुल यात्रा गरिएको संख्या\n',
+              //                                     style: GoogleFonts
+              //                                         .tiroDevanagariHindi(
+              //                                       fontSize: 24,
+              //                                     ),
+              //                                   ),
+              //                                   TextSpan(
+              //                                     text: '$totalDeliveryLocations',
+              //                                     style: TextStyle(
+              //                                       fontSize: 26,
+              //                                     ),
+              //                                   ),
+              //                                 ],
+              //                               ),
+              //                             ),
+
+              //                             SizedBox(
+              //                               height: 10,
+              //                             ),
+              //                           ],
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   ),
+              //                   SizedBox(
+              //                     height: 20,
+              //                   ),
+              //                 ],
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+
+              //         // Positioned(
+              //         //     top: -90,
+              //         //     right: 0,
+              //         //     child: ClipRRect(
+              //         //       borderRadius:
+              //         //           BorderRadius.only(bottomLeft: Radius.circular(50)),
+              //         //       child: Container(
+              //         //         color: Colors.blueAccent,
+              //         //         height: 100,
+              //         //         width: 80,
+              //         //       ),
+              //         //     )),
+
+              //         Positioned(
+              //             top: 0,
+              //             right: 0,
+              //             child: ClipRRect(
+              //               borderRadius: BorderRadius.only(
+              //                 bottomLeft: Radius.circular(30),
+              //                 // topLeft: Radius.circular(30),
+              //               ),
+              //               child: Container(
+              //                 color: Colors.blueAccent,
+              //                 height: 70,
+              //                 width: 70,
+              //                 child: Center(
+              //                   child: GestureDetector(
+              //                     onTap: () {
+              //                       _advancedDrawerController.showDrawer();
+              //                     },
+              //                     child: Icon(
+              //                       Icons.menu,
+              //                       color: Colors.white,
+              //                       size: 26,
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ),
+              //             )),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+            ));
       },
     );
   }
