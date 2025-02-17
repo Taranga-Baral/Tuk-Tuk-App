@@ -127,7 +127,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red.shade100.withOpacity(0.36),
+      backgroundColor: Colors.red.shade100.withOpacity(0.16),
       appBar: CustomAppBar(
         appBarColor: Colors.teal,
         appBarIcons: const [
@@ -260,7 +260,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
 
                           if (detailsSnapshot.hasError) {
                             return Card(
-                              elevation: 5,
+                              elevation: 1,
                               margin: EdgeInsets.symmetric(
                                   vertical: 8, horizontal: 16),
                               child: Padding(
@@ -710,7 +710,8 @@ class _ChatCardState extends State<ChatCard> {
             transform: Matrix4.translationValues(_dragOffset, 0, 0),
             child: Card(
               elevation: 0,
-              margin: EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+              color: Colors.transparent,
+              margin: EdgeInsets.symmetric(vertical: 6, horizontal: 7),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -746,7 +747,7 @@ class _ChatCardState extends State<ChatCard> {
                                 widget.username,
                                 style: GoogleFonts.outfit(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: Colors.redAccent.withOpacity(0.93),
                                   fontSize: 16,
                                 ),
                               ),
@@ -800,7 +801,7 @@ class _ChatCardState extends State<ChatCard> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.info,
-                            color: Colors.redAccent,
+                            color: Colors.blueGrey,
                             size: 24), // Smaller icon size
                         onPressed: () {
                           showDialog(
@@ -889,7 +890,7 @@ class _ChatCardState extends State<ChatCard> {
                         },
                         icon: Icon(
                           Icons.chat,
-                          color: Colors.blueAccent,
+                          color: Colors.blueGrey,
                           size: 24, // Smaller icon size
                         ),
                       ),
@@ -910,8 +911,7 @@ class _ChatCardState extends State<ChatCard> {
                         },
                         icon: Icon(
                           Icons.phone, // Corrected icon
-                          color: Colors
-                              .green, // Changed color for better distinction
+                          color: Colors.blueGrey,
                           size: 24, // Smaller icon size
                         ),
                       ),

@@ -680,6 +680,41 @@ class _DriverHomePageState extends State<DriverHomePage> {
         .docs.isNotEmpty; // Return true if any matching document is found
   }
 
+  Future<String?> PassengerSelectedVehicleMode(
+      String tripId, String userId, String driverId) async {
+    try {
+      // Query the "trips" collection for the document with matching tripId
+      final snapshot = await FirebaseFirestore.instance
+          .collection('trips')
+          .doc(tripId)
+          .get();
+
+      // Check if the document exists
+      if (snapshot.exists) {
+        // Access the document data
+        final tripData = snapshot.data();
+
+        // Check if userId matches to ensure correct document
+        if (tripData?['userId'] == userId) {
+          // Return the 'vehicle_mode' field from the document
+          return tripData?['vehicle_mode'] as String?;
+        } else {
+          // Handle case where userId does not match (optional)
+          print('User ID does not match the expected user for this trip.');
+          return null;
+        }
+      } else {
+        // Handle case where no document exists for the given tripId
+        print('No trip document found with tripId: $tripId');
+        return null;
+      }
+    } catch (e) {
+      // Handle any errors (e.g., Firestore query failure)
+      print('Error fetching vehicle mode: $e');
+      return null;
+    }
+  }
+
   Map<String, double>? _parseCoordinates(String location) {
     final parts = location.split(',');
     if (parts.length == 2) {
@@ -1158,6 +1193,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
           ),
         ],
       ),
+
       body: _isLoading && _tripDataList.isEmpty
           ? RefreshIndicator(
               onRefresh: _refreshData,
@@ -1173,57 +1209,295 @@ class _DriverHomePageState extends State<DriverHomePage> {
               onRefresh: _refreshData,
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: _tripDataList.length +
-                    (_hasMore
-                        ? 1
-                        : 0), // Loading indicator if more trips are available
+                itemCount: _tripDataList.length + (_hasMore ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == _tripDataList.length) {
-                    return Center(
-                        child: SizedBox()); // Loading indicator at the end
+                    return Card(
+                      margin: const EdgeInsets.all(8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Container(
+                                    height: 10,
+                                    width: 60,
+                                    color: Colors.grey,
+                                  ),
+                                  Container(
+                                    height: 10,
+                                    width: 40,
+                                    color: Colors.grey,
+                                  ),
+                                  Container(
+                                    height: 10,
+                                    width: 60,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                              Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: const [
+                                  Icon(Icons.electric_rickshaw),
+                                  Icon(Icons.numbers),
+                                  Icon(Icons.drive_eta_rounded),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  height: 30,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  height: 30,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.75,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  height: 30,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: const [
+                                  Icon(Icons.send),
+                                  Icon(Icons.phone),
+                                  Icon(Icons.location_on),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
                   }
+
                   final tripData = _tripDataList[index];
-                  // Check the index against the length of _isButtonDisabledList
                   final isButtonDisabled = index < _isButtonDisabledList.length
                       ? _isButtonDisabledList[index]
-                      : false; // Default to false if index is out of bounds
+                      : false;
 
-                  return TripCardWidget(
-                    driverId: widget.driverEmail,
-                    userId: tripData.userId.toString(),
-                    tripId: tripData.tripId.toString(),
-                    tripData: _tripDataList[index],
-                    onPhoneTap: () {
-                      if (tripData.phoneNumber != null &&
-                          tripData.phoneNumber!.isNotEmpty) {
-                        _launchPhoneNumber(tripData.phoneNumber!);
+                  // Use FutureBuilder to fetch passengerVehicleMode asynchronously
+                  return FutureBuilder<String?>(
+                    future: PassengerSelectedVehicleMode(
+                      tripData.tripId.toString(), // Pass tripId
+                      tripData.userId.toString(), // Pass userId
+                      widget.driverEmail, // Pass driverId
+                    ),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // Show a loading indicator while waiting for the result
+                        return Center(
+                          child: SizedBox(), //CircularProgressIndicator
+                        );
+                      } else if (snapshot.hasError) {
+                        // Handle errors
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else if (!snapshot.hasData || snapshot.data == null) {
+                        // Handle case where no data is returned
+                        return SizedBox
+                            .shrink(); // Hide the card if no vehicle mode is found
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Phone number not available')),
+                        // Fetch the vehicle mode for the driver (since _vehicleModeMap is not available)
+                        String? passengerVehicleMode = snapshot.data;
+
+                        // Here you would ideally fetch vehicleMode directly from Firestore
+                        // For illustration, let's assume vehicleMode fetching similar to passengerVehicleMode
+                        Future<String?> fetchVehicleMode() async {
+                          final vehicleDataSnapshot = await FirebaseFirestore
+                              .instance
+                              .collection('vehicleData')
+                              .doc(widget.driverEmail)
+                              .get();
+                          print("$vehicleDataSnapshot.data()?['vehicleMode']");
+                          return vehicleDataSnapshot.data()?['vehicleMode']
+                              as String?;
+                        }
+
+                        // Use FutureBuilder to fetch vehicleMode asynchronously
+                        return FutureBuilder<String?>(
+                          future: fetchVehicleMode(),
+                          builder: (context, vehicleModeSnapshot) {
+                            if (vehicleModeSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              // Show a loading indicator while waiting for the result
+                              return Center(
+                                child: SizedBox(), //circularProgress Indicator
+                              );
+                            } else if (vehicleModeSnapshot.hasError) {
+                              // Handle errors
+                              return Center(
+                                child:
+                                    Text('Error: ${vehicleModeSnapshot.error}'),
+                              );
+                            } else if (!vehicleModeSnapshot.hasData ||
+                                vehicleModeSnapshot.data == null) {
+                              // Handle case where no vehicle mode data is returned
+                              return SizedBox
+                                  .shrink(); // Hide the card if no vehicle mode is found
+                            } else {
+                              String? vehicleMode = vehicleModeSnapshot.data;
+
+                              // Display the card only if the vehicle modes match
+                              if (passengerVehicleMode == vehicleMode) {
+                                return TripCardWidget(
+                                  driverId: widget.driverEmail, // Pass driverId
+                                  userId:
+                                      tripData.userId.toString(), // Pass userId
+                                  tripId:
+                                      tripData.tripId.toString(), // Pass tripId
+                                  tripData: tripData,
+                                  onPhoneTap: () {
+                                    if (tripData.phoneNumber != null &&
+                                        tripData.phoneNumber!.isNotEmpty) {
+                                      _launchPhoneNumber(tripData.phoneNumber!);
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Phone number not available')),
+                                      );
+                                    }
+                                  },
+                                  onMapTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DriverViewPassengerLocation(
+                                        tripId: tripData.tripId!, // Pass tripId
+                                      ),
+                                    ),
+                                  ),
+                                  onRequestTap: () {
+                                    _setButtonState(
+                                        index); // Call to disable the button
+                                    showTripAndUserIdInSnackBar(
+                                        tripData, context, index);
+                                  },
+                                  index: index,
+                                  isButtonDisabled: isButtonDisabled,
+                                );
+                              } else {
+                                // Return an empty container if the vehicle modes don't match
+                                return SizedBox.shrink();
+                              }
+                            }
+                          },
                         );
                       }
                     },
-                    onMapTap: () =>
-                        // _launchOpenStreetMapWithDirections(tripData.tripId!),
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    DriverViewPassengerLocation(
-                                      tripId: tripData.tripId!,
-                                    ))),
-                    onRequestTap: () {
-                      _setButtonState(index); // Call to disable the button
-                      showTripAndUserIdInSnackBar(
-                          _tripDataList[index], context, index);
-                    },
-                    index: index,
-                    isButtonDisabled:
-                        isButtonDisabled, // Use the checked value here
                   );
                 },
               ),
             ),
+      // body: _isLoading && _tripDataList.isEmpty
+      //     ? RefreshIndicator(
+      //         onRefresh: _refreshData,
+      //         child: Center(
+      //           child: Image(
+      //             image: AssetImage('assets/no_data_found.gif'),
+      //             height: MediaQuery.of(context).size.height * 0.3,
+      //             width: MediaQuery.of(context).size.width * 0.3,
+      //           ),
+      //         ),
+      //       )
+      //     : RefreshIndicator(
+      //         onRefresh: _refreshData,
+      //         child: ListView.builder(
+      //           controller: _scrollController,
+      //           itemCount: _tripDataList.length +
+      //               (_hasMore
+      //                   ? 1
+      //                   : 0), // Loading indicator if more trips are available
+      //           itemBuilder: (context, index) {
+      //             if (index == _tripDataList.length) {
+      //               return Center(
+      //                   child: SizedBox()); // Loading indicator at the end
+      //             }
+      //             final tripData = _tripDataList[index];
+      //             // Check the index against the length of _isButtonDisabledList
+      //             final isButtonDisabled = index < _isButtonDisabledList.length
+      //                 ? _isButtonDisabledList[index]
+      //                 : false; // Default to false if index is out of bounds
+
+      //             return TripCardWidget(
+      //               driverId: widget.driverEmail,
+      //               userId: tripData.userId.toString(),
+      //               tripId: tripData.tripId.toString(),
+      //               tripData: _tripDataList[index],
+      //               onPhoneTap: () {
+      //                 if (tripData.phoneNumber != null &&
+      //                     tripData.phoneNumber!.isNotEmpty) {
+      //                   _launchPhoneNumber(tripData.phoneNumber!);
+      //                 } else {
+      //                   ScaffoldMessenger.of(context).showSnackBar(
+      //                     SnackBar(content: Text('Phone number not available')),
+      //                   );
+      //                 }
+      //               },
+      //               onMapTap: () =>
+      //                   // _launchOpenStreetMapWithDirections(tripData.tripId!),
+      //                   Navigator.push(
+      //                       context,
+      //                       MaterialPageRoute(
+      //                           builder: (context) =>
+      //                               DriverViewPassengerLocation(
+      //                                 tripId: tripData.tripId!,
+      //                               ))),
+      //               onRequestTap: () {
+      //                 _setButtonState(index); // Call to disable the button
+      //                 showTripAndUserIdInSnackBar(
+      //                     _tripDataList[index], context, index);
+      //               },
+      //               index: index,
+      //               isButtonDisabled:
+      //                   isButtonDisabled, // Use the checked value here
+      //             );
+      //           },
+      //         ),
+      //       ),
     );
   }
 
