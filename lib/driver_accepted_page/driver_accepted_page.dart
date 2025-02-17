@@ -464,19 +464,10 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                   ),
                                                 );
                                               },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.teal.withOpacity(
-                                                      0.2), // Subtle background color
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(
-                                                  Icons.chat,
-                                                  size: 20,
-                                                  color: Colors.teal,
-                                                ),
+                                              child: Icon(
+                                                Icons.chat,
+                                                size: 20,
+                                                color: Colors.blueGrey,
                                               ),
                                             ),
                                             InkWell(
@@ -541,19 +532,10 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                   ).show();
                                                 }
                                               },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.orange.withOpacity(
-                                                      0.2), // Subtle background color
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(
-                                                  Icons.phone,
-                                                  size: 20,
-                                                  color: Colors.orange,
-                                                ),
+                                              child: Icon(
+                                                Icons.phone,
+                                                size: 20,
+                                                color: Colors.blueGrey,
                                               ),
                                             ),
                                             InkWell(
@@ -578,20 +560,11 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                                 tripId:
                                                                     tripId)));
                                               },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.indigo.withOpacity(
-                                                      0.2), // Subtle background color
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(
-                                                  Icons.location_on_rounded,
-                                                  size: 20,
-                                                  color: Colors.indigo
-                                                      .withOpacity(0.8),
-                                                ),
+                                              child: Icon(
+                                                Icons.location_on_rounded,
+                                                size: 20,
+                                                color: Colors.blueGrey
+                                                    .withOpacity(0.8),
                                               ),
                                             ),
                                             isSendButtonPressed
