@@ -372,7 +372,7 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
       appBar: CustomAppBar(
         appBarColor: Colors.redAccent,
         appBarIcons: const [
-          Icons.chat,
+          Icons.history,
           Icons.info_outline,
         ],
         title: 'My Successful Trips',

@@ -5,8 +5,10 @@ import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/splash_screen/splash_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -1472,6 +1474,28 @@ class _HomePage1State extends State<HomePage1> {
                       fontSize: 12,
                     ),
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      // Copy the full userId to the clipboard
+                      Clipboard.setData(ClipboardData(text: userId));
+                      // Show a toast message to indicate the text has been copied
+                      Fluttertoast.showToast(
+                        msg: userId,
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: Colors.blue,
+                        textColor: Colors.white,
+                      );
+                    },
+                    child: Text(
+                      'User ID: ${userId.substring(0, 18)}...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -1724,6 +1748,28 @@ class _HomePage1State extends State<HomePage1> {
                 },
               ),
             ),
+            // Padding(
+            //   padding: const EdgeInsets.all(10.0),
+            //   child: ListTile(
+            //     leading: Icon(
+            //       Icons.person_4_sharp,
+            //       color: Colors.white,
+            //     ),
+            //     title: Text(
+            //       'UID: $userId',
+            //       style: TextStyle(
+            //           color: Colors.white, fontWeight: FontWeight.w500),
+            //     ),
+            //     onTap: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => DriverRegistrationPage(),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),
