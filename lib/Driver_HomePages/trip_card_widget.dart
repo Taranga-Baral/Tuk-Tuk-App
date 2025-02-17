@@ -513,11 +513,17 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   color: widget.isButtonDisabled ? Colors.grey : Colors.blue,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.phone),
+                  icon: const Icon(
+                    Icons.phone,
+                    color: Colors.blueGrey,
+                  ),
                   onPressed: widget.onPhoneTap,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.location_on),
+                  icon: const Icon(
+                    Icons.location_on,
+                    color: Colors.blueGrey,
+                  ),
                   onPressed: widget.onMapTap,
                 ),
               ],
@@ -529,11 +535,6 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   '${widget.tripData.timestamp}',
                   style:
                       GoogleFonts.comicNeue(fontSize: 12, color: Colors.grey),
-                ),
-                Text(
-                  '... ${widget.index + 1}',
-                  style:
-                      GoogleFonts.outfit(fontSize: 20, color: Colors.black54),
                 ),
               ],
             ),

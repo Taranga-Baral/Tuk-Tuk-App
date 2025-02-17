@@ -1300,7 +1300,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                     MainAxisAlignment.spaceAround,
                                 children: const [
                                   Icon(Icons.send),
-                                  Icon(Icons.phone),
+                                  Icon(
+                                    Icons.phone,
+                                  ),
                                   Icon(Icons.location_on),
                                 ],
                               ),
