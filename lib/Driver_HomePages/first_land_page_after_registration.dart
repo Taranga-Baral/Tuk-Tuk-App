@@ -1140,6 +1140,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.red.shade100.withOpacity(0.18),
       appBar: AppBar(
         centerTitle: true,
         title: Center(

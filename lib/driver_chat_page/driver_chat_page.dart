@@ -279,7 +279,7 @@ class _DriverChatPageState extends State<DriverChatPage> {
                             userId: userId,
                             tripId: tripId,
                             driverId: widget.driverId,
-                            message: chatData['message'],
+                            message: 'Passenger : ${chatData['message']}',
                             username: userDetails!['username'],
                             timestamp:
                                 chatData['timestamp'].toDate().toString(),
@@ -665,6 +665,19 @@ class ChatCard extends StatefulWidget {
 class _ChatCardState extends State<ChatCard> {
   double _dragOffset = 0.0;
   bool _showPopup = false;
+  bool _isExpanded = false; // Track if the card is expanded
+
+  void _onTap() {
+    setState(() {
+      if (_dragOffset == -160) {
+        // If the card is already swiped, reset it
+        _dragOffset = 0.0;
+        _showPopup = false;
+      } else {
+        _isExpanded = !_isExpanded; // Toggle expansion state
+      }
+    });
+  }
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     setState(() {
@@ -700,6 +713,15 @@ class _ChatCardState extends State<ChatCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DriverChatDisplayPage(
+                    driverId: widget.driverId,
+                    tripId: widget.tripId,
+                    userId: widget.userId)));
+      },
       onHorizontalDragUpdate: _onHorizontalDragUpdate,
       onHorizontalDragEnd: _onHorizontalDragEnd,
       child: Stack(
@@ -708,76 +730,82 @@ class _ChatCardState extends State<ChatCard> {
           AnimatedContainer(
             duration: Duration(milliseconds: 200),
             transform: Matrix4.translationValues(_dragOffset, 0, 0),
-            child: Card(
-              elevation: 0,
-              color: Colors.transparent,
-              margin: EdgeInsets.symmetric(vertical: 6, horizontal: 7),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    // Avatar with first letter
-                    CircleAvatar(
-                      backgroundColor: Colors.blue.shade200,
-                      radius: 24,
-                      child: Text(
-                        widget.username.isNotEmpty
-                            ? widget.username[0].toUpperCase()
-                            : '?', // Fallback for empty username
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+            child: Column(
+              children: [
+                Card(
+                  elevation: 0,
+                  color: Colors.transparent,
+                  margin: EdgeInsets.symmetric(vertical: 6, horizontal: 7),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        // Avatar with first letter
+                        CircleAvatar(
+                          backgroundColor: Colors.blue.shade300,
+                          radius: 24,
+                          child: Text(
+                            widget.username.isNotEmpty
+                                ? widget.username[0].toUpperCase()
+                                : '?', // Fallback for empty username
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    // Message and timestamp
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        SizedBox(width: 16),
+                        // Message and timestamp
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                widget.username,
-                                style: GoogleFonts.outfit(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.redAccent.withOpacity(0.93),
-                                  fontSize: 16,
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    widget.username,
+                                    style: GoogleFonts.outfit(
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.blueGrey,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    widget.timestamp,
+                                    style: GoogleFonts.comicNeue(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
                               ),
+                              SizedBox(height: 4),
                               Text(
-                                widget.timestamp,
+                                widget.message,
                                 style: GoogleFonts.comicNeue(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Colors.grey.shade700,
                                 ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            widget.message,
-                            style: GoogleFonts.comicNeue(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: Colors.grey.shade700,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                Divider(),
+              ],
             ),
           ),
 
@@ -813,7 +841,7 @@ class _ChatCardState extends State<ChatCard> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
-                                    color: Colors.blueAccent,
+                                    color: Colors.blueGrey,
                                   ),
                                 ),
                                 content: Column(

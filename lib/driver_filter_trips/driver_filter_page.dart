@@ -286,41 +286,26 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 2),
-          child: Image(
-            image: AssetImage('assets/fordriverlogo.png'),
-            opacity: AlwaysStoppedAnimation(0.97),
+        leading: Icon(
+          Icons.filter_alt,
+          color: Colors.white,
+        ),
+        title: Text(
+          'Driver Filter Page',
+          style: GoogleFonts.outfit(
+            color: Colors.white, // White text for contrast
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        title: Center(
-          child: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('vehicleData')
-                .doc(widget.driverId)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Text('');
-              }
-
-              var displayName = snapshot.data!['name'];
-
-              return Text(
-                displayName ?? 'No Name',
-                style: GoogleFonts.josefinSans(
-                    color: Colors.black87, fontSize: 18),
-              );
-            },
-          ),
-        ),
-        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        backgroundColor: Colors.redAccent,
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(
               _showDropdowns ? Icons.expand_less : Icons.expand_more,
-              color: Colors.black87,
+              color: Colors.white,
             ),
             onPressed: () {
               setState(() {
@@ -342,7 +327,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor:
-                      Colors.teal.shade200.withOpacity(0.9), // Text color
+                      Colors.redAccent.shade200.withOpacity(0.9), // Text color
                   padding: EdgeInsets.symmetric(
                       horizontal: 32, vertical: 16), // Button padding
                   shape: RoundedRectangleBorder(
@@ -412,7 +397,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
-                                    color: Colors.teal),
+                                    color: Colors.red),
                               ),
                               SizedBox(height: 8),
                               Row(
@@ -427,7 +412,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                     ),
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.phone, color: Colors.teal),
+                                    icon: Icon(Icons.phone, color: Colors.red),
                                     onPressed: () {
                                       final phoneNumber = trip['phone'] ?? '';
                                       _launchPhoneNumber(phoneNumber);
@@ -435,7 +420,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.location_history,
-                                        color: Colors.teal),
+                                        color: Colors.red),
                                     onPressed: () {
                                       final tripId = trip['tripId'] ?? '';
                                       _launchOpenStreetMapWithDirections(
@@ -447,7 +432,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                       Icons.send,
                                       color: isButtonDisabled
                                           ? Colors.grey
-                                          : Colors.teal,
+                                          : Colors.blueAccent,
                                     ),
                                     onPressed: () async {
                                       // Show the initial loading dialog
@@ -637,7 +622,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 children: [
                                   Icon(
                                     Icons.linear_scale_rounded,
-                                    color: Colors.teal,
+                                    color: Colors.red,
                                   ),
                                   SizedBox(
                                     width: 10,
@@ -805,7 +790,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.teal, width: 2),
+                          border: Border.all(color: Colors.red, width: 2),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -836,7 +821,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.teal, width: 2),
+                          border: Border.all(color: Colors.red, width: 2),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -867,7 +852,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.teal, width: 2),
+                          border: Border.all(color: Colors.red, width: 2),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -897,7 +882,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.teal, width: 2),
+                          border: Border.all(color: Colors.red, width: 2),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(

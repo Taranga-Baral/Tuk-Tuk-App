@@ -369,6 +369,7 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.red.shade100.withOpacity(0.18),
       appBar: CustomAppBar(
         appBarColor: Colors.redAccent,
         appBarIcons: const [
@@ -429,76 +430,82 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
                         child: SlideAnimation(
                           verticalOffset: 50.0,
                           child: FadeInAnimation(
-                            child: Card(
-                              margin: EdgeInsets.all(10),
-                              elevation: 1,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                            child: Column(
+                              children: [
+                                Card(
+                                  margin: EdgeInsets.all(10),
+                                  elevation: 0,
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Expanded(
-                                          child: Text(
-                                            '${userData['username'] ?? 'Unknown'}',
-                                            style: GoogleFonts.outfit(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.blueAccent
-                                                  .withOpacity(0.8),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                '${userData['username'] ?? 'Unknown'}',
+                                                style: GoogleFonts.outfit(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blueGrey,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                            Text(
+                                              'Trip #${successfulTripsData.length - index}',
+                                              style: GoogleFonts.outfit(
+                                                fontSize: 16,
+                                                color: Colors.grey[700],
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        Text(
-                                          'Trip #${successfulTripsData.length - index}',
-                                          style: GoogleFonts.outfit(
-                                            fontSize: 16,
-                                            color: Colors.grey[700],
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                        SizedBox(height: 12),
+                                        _buildDetailRow(
+                                          icon: Icons.location_on,
+                                          iconColor: Colors.green,
+                                          text:
+                                              'Pickup: ${tripDetails['pickupLocation'] ?? 'Unknown'}',
                                         ),
+                                        _buildDetailRow(
+                                          icon: Icons.location_on,
+                                          iconColor: Colors.red,
+                                          text:
+                                              'Delivery: ${tripDetails['deliveryLocation'] ?? 'Unknown'}',
+                                        ),
+                                        _buildDetailRow(
+                                          icon: Icons.linear_scale_rounded,
+                                          iconColor: Colors.teal,
+                                          text:
+                                              'Distance: ${double.tryParse(tripDetails['distance'] ?? '0')?.toStringAsFixed(2)} km',
+                                        ),
+                                        _buildDetailRow(
+                                          icon: Icons.money,
+                                          iconColor: Colors.blueAccent,
+                                          text:
+                                              'Fare: NPR ${tripDetails['fare'] ?? '0'}',
+                                        ),
+                                        // _buildDetailRow(
+                                        //   icon: Icons.call_end,
+                                        //   iconColor: Colors.amber,
+                                        //   text:
+                                        //       'Contact: ${userData['phone_number'] ?? 'Unknown'}',
+                                        // ),
                                       ],
                                     ),
-                                    SizedBox(height: 12),
-                                    _buildDetailRow(
-                                      icon: Icons.location_on,
-                                      iconColor: Colors.green,
-                                      text:
-                                          'Pickup: ${tripDetails['pickupLocation'] ?? 'Unknown'}',
-                                    ),
-                                    _buildDetailRow(
-                                      icon: Icons.location_on,
-                                      iconColor: Colors.red,
-                                      text:
-                                          'Delivery: ${tripDetails['deliveryLocation'] ?? 'Unknown'}',
-                                    ),
-                                    _buildDetailRow(
-                                      icon: Icons.linear_scale_rounded,
-                                      iconColor: Colors.teal,
-                                      text:
-                                          'Distance: ${double.tryParse(tripDetails['distance'] ?? '0')?.toStringAsFixed(2)} km',
-                                    ),
-                                    _buildDetailRow(
-                                      icon: Icons.money,
-                                      iconColor: Colors.blueAccent,
-                                      text:
-                                          'Fare: NPR ${tripDetails['fare'] ?? '0'}',
-                                    ),
-                                    // _buildDetailRow(
-                                    //   icon: Icons.call_end,
-                                    //   iconColor: Colors.amber,
-                                    //   text:
-                                    //       'Contact: ${userData['phone_number'] ?? 'Unknown'}',
-                                    // ),
-                                  ],
+                                  ),
                                 ),
-                              ),
+                                Divider(),
+                              ],
                             ),
                           ),
                         ),

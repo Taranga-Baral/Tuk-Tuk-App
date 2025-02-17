@@ -280,10 +280,11 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.red.shade100.withOpacity(0.18),
       appBar: CustomAppBar(
-        appBarColor: Colors.teal,
+        appBarColor: Colors.redAccent,
         appBarIcons: const [
-          Icons.arrow_back,
+          Icons.check_circle,
           Icons.info_outline,
         ],
         title: 'Accepted Requests',
@@ -354,7 +355,8 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                               child: FlipCard(
                                 direction: FlipDirection.HORIZONTAL,
                                 front: Card(
-                                  elevation: 2,
+                                  elevation: 0,
+                                  color: Colors.transparent,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
@@ -375,8 +377,9 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                 '${userDetails['username']}',
                                                 softWrap: true,
                                                 style: TextStyle(
-                                                  fontSize: 21,
-                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.blueGrey,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w800,
                                                 ),
                                               ),
                                             ),
@@ -439,10 +442,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                         ),
 
                                         const SizedBox(height: 12),
-                                        Divider(
-                                          height: 1,
-                                          color: Colors.grey[300],
-                                        ),
+
                                         // const SizedBox(height: 12),
 
                                         Row(
@@ -767,12 +767,20 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                         //     ),
                                         //   ],
                                         // ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Divider(
+                                          height: 1,
+                                          color: Colors.grey[300],
+                                        ),
                                       ],
                                     ),
                                   ),
                                 ),
                                 back: Card(
-                                  elevation: 4,
+                                  elevation: 0,
+                                  color: Colors.transparent,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
@@ -833,15 +841,10 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(height: 15),
-                                        Divider(
-                                          height: 1,
-                                          color: Colors.grey[300],
-                                        ),
-                                        const SizedBox(height: 15),
+                                        const SizedBox(height: 5),
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment.end,
                                           children: [
                                             Column(
                                               crossAxisAlignment:
@@ -868,6 +871,13 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                             //       fontWeight: FontWeight.w600),
                                             // ),
                                           ],
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Divider(
+                                          height: 1,
+                                          color: Colors.grey[300],
                                         ),
                                       ],
                                     ),

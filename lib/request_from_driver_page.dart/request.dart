@@ -741,7 +741,7 @@ class _RequestPageState extends State<RequestPage> {
                                                             child: Icon(
                                                                 Icons.phone,
                                                                 color: Colors
-                                                                    .green),
+                                                                    .blueGrey),
                                                           ),
                                                           SizedBox(
                                                             width: 8,
@@ -820,7 +820,7 @@ class _RequestPageState extends State<RequestPage> {
                                                             child: Icon(
                                                                 Icons.chat,
                                                                 color: Colors
-                                                                    .blue),
+                                                                    .blueGrey),
                                                           ),
                                                         ],
                                                       ),
@@ -1462,7 +1462,7 @@ class _RequestPageState extends State<RequestPage> {
                                                                         Icons
                                                                             .phone,
                                                                         color: Colors
-                                                                            .green),
+                                                                            .blueGrey),
                                                                     onTap: () {
                                                                       final phoneNumber =
                                                                           vehicleData[
@@ -1692,7 +1692,8 @@ class _RequestPageState extends State<RequestPage> {
                                                           Icon(
                                                             Icons
                                                                 .call_end_sharp,
-                                                            color: Colors.green,
+                                                            color:
+                                                                Colors.blueGrey,
                                                           ),
                                                           SizedBox(width: 10),
                                                           Expanded(
@@ -1714,9 +1715,8 @@ class _RequestPageState extends State<RequestPage> {
                                                           Icon(
                                                             Icons
                                                                 .linear_scale_rounded,
-                                                            color: Colors
-                                                                .pinkAccent
-                                                                .shade200,
+                                                            color:
+                                                                Colors.blueGrey,
                                                           ),
                                                           SizedBox(width: 10),
                                                           Text(

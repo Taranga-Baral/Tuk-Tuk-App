@@ -146,6 +146,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
+      color: Colors.transparent,
       margin: const EdgeInsets.all(8.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -182,8 +184,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     textAlign:
                         TextAlign.center, // Adjust text alignment if necessary
                     style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
                     ),
                   ),
                 ),
@@ -193,7 +196,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     '${widget.tripData.distance.toStringAsFixed(1)} Km',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w400,
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
                   ),
@@ -204,7 +208,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     'NPR ${widget.tripData.fare}',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w400,
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
                   ),
@@ -276,7 +281,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   child: Container(
                     height: MediaQuery.of(context).size.height <= 500
                         ? MediaQuery.of(context).size.height * 0.2
-                        : MediaQuery.of(context).size.height * 0.08,
+                        : MediaQuery.of(context).size.height * 0.045,
                     width: MediaQuery.of(context).size.width * 0.25,
                     decoration: BoxDecoration(
                       image: DecorationImage(
@@ -296,7 +301,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   child: Container(
                     height: MediaQuery.of(context).size.height <= 500
                         ? MediaQuery.of(context).size.height * 0.2
-                        : MediaQuery.of(context).size.height * 0.08,
+                        : MediaQuery.of(context).size.height * 0.05,
                     width: MediaQuery.of(context).size.width * 0.35,
                     decoration: BoxDecoration(
                       image: DecorationImage(
@@ -323,7 +328,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   child: Container(
                     height: MediaQuery.of(context).size.height <= 500
                         ? MediaQuery.of(context).size.height * 0.2
-                        : MediaQuery.of(context).size.height * 0.08,
+                        : MediaQuery.of(context).size.height * 0.05,
                     width: MediaQuery.of(context).size.width * 0.25,
                     decoration: BoxDecoration(
                       image: DecorationImage(

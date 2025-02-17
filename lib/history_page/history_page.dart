@@ -850,7 +850,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     const SizedBox(height: 8),
                     _buildTripDetailRow(
                       icon: Icons.info,
-                      iconColor: Colors.amber[700]!,
+                      iconColor: Colors.blueGrey,
                       text:
                           '${double.tryParse(trip['distance'])?.toStringAsFixed(2)} कि.मि, ${trip['vehicleType']}, ${trip['vehicle_mode']}, ${trip['no_of_person']}, ${trip['fare']} रुपैय',
                     ),

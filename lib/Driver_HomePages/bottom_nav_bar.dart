@@ -255,7 +255,7 @@ class _BottomNavBarPageState extends State<BottomNavBarPage>
 
               _buildNavBarItem(
                   Icons.home, 'यात्री खोज', 0, iconSize, labelSize),
-              _buildNavBarItem(Icons.check_circle, 'कुरिरहेका यात्री', 1,
+              _buildNavBarItem(Icons.check_circle, 'कुरिरहेका/पुरौनु पर्ने', 1,
                   iconSize, labelSize),
               _buildNavBarItem(
                   Icons.filter_alt, 'चाहिएको यात्री', 2, iconSize, labelSize),
