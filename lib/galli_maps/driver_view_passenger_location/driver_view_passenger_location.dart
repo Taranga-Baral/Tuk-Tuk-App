@@ -280,10 +280,35 @@ class _DriverViewPassengerLocationState
             ],
           ),
           Positioned(
-              top: 50,
-              child: Icon(
-                Icons.home,
-                color: Colors.red,
+              top: 60,
+              left: 40,
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12)),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        color: Colors.white,
+                        height: 50,
+                        width: 50,
+                        child: Center(
+                          child: Icon(
+                            Icons.menu,
+                            color: Colors.black,
+                            // size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               )),
         ],
       ),

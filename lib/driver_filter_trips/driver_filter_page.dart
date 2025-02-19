@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:final_menu/galli_maps/driver_view_passenger_location/driver_view_passenger_location.dart';
+import 'package:final_menu/galli_maps/map_page.dart';
+import 'package:final_menu/homepage1.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -84,6 +87,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     if (document.exists) {
       setState(() {
         _selectedVehicleType = document['vehicleType']; // Set the vehicleType
+        _selectedVehicleMode = document['vehicleMode']; //Set the vehicleMode
       });
     }
   }
@@ -120,9 +124,14 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
         .where('municipalityDropdown', isEqualTo: _selectedPlace);
 
     // Add vehicle type filter if a specific vehicle type is selected
-    if (_selectedVehicleType != null && _selectedVehicleType != 'All') {
-      query = query.where('vehicleType', isEqualTo: _selectedVehicleType);
-    }
+    // if (_selectedVehicleType != null && _selectedVehicleType != 'All') {
+    //   query = query.where('vehicleType', isEqualTo: _selectedVehicleType);
+    // }
+
+    // // Add vehicle mode filter if a specific vehicle mode is selected
+    // if (_selectedVehicleMode != null && _selectedVehicleMode != 'All') {
+    //   query = query.where('vehicleMode', isEqualTo: _selectedVehicleMode);
+    // }
 
     return query.snapshots().map((snapshot) {
       final trips = snapshot.docs
@@ -397,7 +406,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
-                                    color: Colors.red),
+                                    color: Colors.blueGrey),
                               ),
                               SizedBox(height: 8),
                               Row(
@@ -412,7 +421,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                     ),
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.phone, color: Colors.red),
+                                    icon: Icon(Icons.phone,
+                                        color: Colors.blueGrey),
                                     onPressed: () {
                                       final phoneNumber = trip['phone'] ?? '';
                                       _launchPhoneNumber(phoneNumber);
@@ -420,11 +430,15 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.location_history,
-                                        color: Colors.red),
+                                        color: Colors.blueGrey),
                                     onPressed: () {
                                       final tripId = trip['tripId'] ?? '';
-                                      _launchOpenStreetMapWithDirections(
-                                          tripId);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DriverViewPassengerLocation(
+                                                      tripId: tripId)));
                                     },
                                   ),
                                   IconButton(
@@ -862,16 +876,26 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                             value: _selectedVehicleMode,
                             hint: Text('Select vehicle mode'),
                             underline: SizedBox(),
-                            items: _vehicleModes.map((String mode) {
-                              return DropdownMenuItem<String>(
-                                value: mode,
-                                child: Text(mode),
-                              );
-                            }).toList(),
+
+                            items: _selectedVehicleMode != null
+                                ? [
+                                    DropdownMenuItem<String>(
+                                      value: _selectedVehicleMode,
+                                      child: Text(_selectedVehicleMode!),
+                                    )
+                                  ]
+                                : [],
+
+                            // items: _vehicleModes.map((String mode) {
+                            //   return DropdownMenuItem<String>(
+                            //     value: mode,
+                            //     child: Text(mode),
+                            //   );
+                            // }).toList(),
                             onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedVehicleMode = newValue;
-                              });
+                              // setState(() {
+                              //   _selectedVehicleMode = newValue;
+                              // });
                             },
                           ),
                         ),
@@ -901,10 +925,10 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   ]
                                 : [],
                             onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedVehicleType = newValue!;
-                                // Trigger stream filtering by updating _selectedVehicleType
-                              });
+                              // setState(() {
+                              //   _selectedVehicleType = newValue!;
+                              //   // Trigger stream filtering by updating _selectedVehicleType
+                              // });
                             },
                           ),
                         ),

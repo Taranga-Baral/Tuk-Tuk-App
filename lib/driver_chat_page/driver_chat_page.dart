@@ -790,10 +790,10 @@ class _ChatCardState extends State<ChatCard> {
                               Text(
                                 widget.message,
                                 style: GoogleFonts.comicNeue(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: Colors.grey.shade700,
-                                ),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    // color: Colors.grey.shade700,
+                                    color: Colors.black54),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -804,7 +804,10 @@ class _ChatCardState extends State<ChatCard> {
                     ),
                   ),
                 ),
-                Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 25, right: 25),
+                  child: Divider(),
+                ),
               ],
             ),
           ),

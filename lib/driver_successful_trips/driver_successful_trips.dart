@@ -504,7 +504,11 @@ class _DriverSuccessfulTripsState extends State<DriverSuccessfulTrips> {
                                     ),
                                   ),
                                 ),
-                                Divider(),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 25, right: 25),
+                                  child: Divider(),
+                                ),
                               ],
                             ),
                           ),
