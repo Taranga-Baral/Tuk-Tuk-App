@@ -384,7 +384,7 @@ class _HomePage1State extends State<HomePage1> {
             controller: _advancedDrawerController,
             // backdropColor: Colors.grey[120],
             // backdropColor: Color.fromRGBO(65, 95, 207, 1.0),
-            backdropColor: Colors.blueAccent,
+            backdropColor: const Color.fromARGB(255, 68, 138, 255),
             drawer: buildDrawer(context, avatarLetter, username, phoneNumber,
                 email), // Define your drawer widget here
             child: Scaffold(
