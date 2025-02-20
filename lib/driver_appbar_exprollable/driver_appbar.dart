@@ -573,6 +573,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                             'Number Plate', data['numberPlate'] ?? 'Unknown'),
                         _buildDetailRow(
                             'Vehicle', data['vehicleType'] ?? 'Unknown'),
+                        _buildDetailRow(
+                            'Type', data['vehicleMode'] ?? 'Unknown'),
                         _buildDetailRow('Phone', data['phone'] ?? 'Unknown'),
                         SizedBox(height: 20),
                         // Close Button

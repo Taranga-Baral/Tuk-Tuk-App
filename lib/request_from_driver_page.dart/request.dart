@@ -1413,27 +1413,6 @@ class _RequestPageState extends State<RequestPage> {
                                                                 ],
                                                               ),
                                                               Divider(),
-                                                              Row(
-                                                                children: [
-                                                                  Icon(
-                                                                    Icons.money,
-                                                                    color: Colors
-                                                                        .blueAccent
-                                                                        .shade200,
-                                                                  ),
-                                                                  SizedBox(
-                                                                      width:
-                                                                          10),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      'NPR $fare',
-                                                                      style: TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.w500),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
                                                               SizedBox(
                                                                 height: 10,
                                                               ),
@@ -1709,6 +1688,29 @@ class _RequestPageState extends State<RequestPage> {
                                                           ),
                                                         ],
                                                       ),
+
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+
+                                                      Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons.money,
+                                                            color:
+                                                                Colors.blueGrey,
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Expanded(
+                                                            child: Text(
+                                                              'NPR $fare',
+                                                              style: TextStyle(
+                                                                  fontSize: 14),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+
                                                       SizedBox(height: 5),
                                                       Row(
                                                         children: [

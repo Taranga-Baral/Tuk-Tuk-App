@@ -745,7 +745,7 @@ class _ChatCardState extends State<ChatCard> {
                       children: [
                         // Avatar with first letter
                         CircleAvatar(
-                          backgroundColor: Colors.blue.shade300,
+                          backgroundColor: Colors.blue.shade500,
                           radius: 24,
                           child: Text(
                             widget.username.isNotEmpty

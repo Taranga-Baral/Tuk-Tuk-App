@@ -112,6 +112,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 228, 205),
       resizeToAvoidBottomInset:
           true, // Ensure the layout adjusts for the keyboard
       body: Column(
@@ -148,16 +149,16 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
                     background: ClipPath(
                       clipper: _CurvedAppBarClipper(),
                       child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color.fromARGB(226, 255, 199, 199)!,
-                              Colors.red[400]!
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
+                        decoration: BoxDecoration(color: Colors.redAccent
+                            // gradient: LinearGradient(
+                            //   colors: [
+                            //     const Color.fromARGB(226, 255, 199, 199)!,
+                            //     Colors.blueAccent
+                            //   ],
+                            //   begin: Alignment.topLeft,
+                            //   end: Alignment.bottomRight,
+                            // ),
+                            ),
                       ),
                     ),
                   ),
@@ -272,6 +273,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
               ],
             ),
           ),
+
           // Bottom input field and send button
           Padding(
             padding: const EdgeInsets.all(8.0),
