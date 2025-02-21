@@ -15,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 import 'package:final_menu/models/api.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 // class FareCalculator {
 //   static double calculateFare({
@@ -1033,6 +1034,80 @@ class _MapPageState extends State<MapPage> {
     _getUserLocation();
     _fetchLocation();
     _searchController.addListener(updateLiveText);
+    void showLocationInfoPopup(BuildContext context) async {
+      // Check if the popup has already been shown
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool hasPopupBeenShown = prefs.getBool('hasPopupBeenShown') ?? false;
+
+      if (!hasPopupBeenShown && _currentLocation != null) {
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.info,
+          animType: AnimType.bottomSlide,
+          title: 'Location Information',
+          desc:
+              '', // Leave desc empty since we'll use the body for custom content
+          body: Container(
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: const [
+                    Icon(Icons.location_on, color: Colors.green, size: 20),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Green Sign Indicates your Pickup Point',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: const [
+                    Icon(Icons.location_on, color: Colors.red, size: 20),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Red Sign Indicates your Delivery Point',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.my_location, color: Colors.blue, size: 20),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Your Device: (${_currentLocation!.latitude}, ${_currentLocation!.longitude})',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          btnOkOnPress: () {
+            // Set the flag to true after the popup is shown
+            prefs.setBool('hasPopupBeenShown', true);
+          },
+        ).show();
+      }
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showLocationInfoPopup(context);
+    });
   }
 
   @override
@@ -1067,6 +1142,8 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       _currentLocation = locationData;
     });
+
+    // showLocationInfoPopup(context);
   }
 
   Future<void> _getUserLocation() async {
@@ -1179,7 +1256,7 @@ class _MapPageState extends State<MapPage> {
                                           // Prefix icon (search icon)
                                           prefixIcon: Icon(
                                             Icons.location_on,
-                                            color: Colors.green,
+                                            color: Colors.red,
                                             size: 24,
                                           ),
                                           // Border with rounded corners and shadow

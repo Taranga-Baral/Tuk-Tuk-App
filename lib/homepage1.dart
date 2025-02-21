@@ -382,11 +382,9 @@ class _HomePage1State extends State<HomePage1> {
 
         return AdvancedDrawer(
             controller: _advancedDrawerController,
-            // backdropColor: Colors.grey[120],
-            // backdropColor: Color.fromRGBO(65, 95, 207, 1.0),
             backdropColor: const Color.fromARGB(255, 68, 138, 255),
-            drawer: buildDrawer(context, avatarLetter, username, phoneNumber,
-                email), // Define your drawer widget here
+            drawer: buildDrawer(
+                context, avatarLetter, username, phoneNumber, email),
             child: Scaffold(
               body: CustomScrollView(
                 slivers: [
@@ -1495,7 +1493,7 @@ class _HomePage1State extends State<HomePage1> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

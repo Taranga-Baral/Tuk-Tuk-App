@@ -366,7 +366,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                         title: 'कुल यात्रा (हरु)',
                         value: '$totalDeliveryLocations',
                         icon: Icons.location_on,
-                        color: Colors.green,
+                        color: Colors.black87,
                       ),
                       SizedBox(height: 32),
                       Text(
@@ -400,7 +400,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                                     ),
                                     _buildPieChartSection(
                                       value: totalDeliveryLocations.toDouble(),
-                                      color: Colors.green,
+                                      color: Colors.black,
                                     ),
                                   ],
                                   borderData: FlBorderData(show: false),
