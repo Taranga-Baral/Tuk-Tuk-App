@@ -243,7 +243,7 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
     {
       'image': 'assets/search_tutorial.png',
       'title': 'Search',
-      'subtitle': 'Here you can search Places',
+      'subtitle': 'Multiple Places Available with Distance From Your Device',
       'color': '#FF5252', //red
     },
     {
@@ -330,11 +330,16 @@ class _TutorialPageUserState extends State<TutorialPageUser> {
                                 ),
                                 SizedBox(height: 10),
                                 MediaQuery.of(context).size.height >= 600
-                                    ? Text(
-                                        data['subtitle']!,
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                        textAlign: TextAlign.center,
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15, right: 15),
+                                        child: Text(
+                                          data['subtitle']!,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       )
                                     : SizedBox(),
                               ],

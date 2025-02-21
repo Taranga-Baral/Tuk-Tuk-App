@@ -235,7 +235,7 @@ class _HomePage1State extends State<HomePage1> {
       int lastExecution = prefs.getInt('lastExecution') ?? 0;
       int currentTime = DateTime.now().millisecondsSinceEpoch;
       // int oneDayInMillis = 1 * 24 * 60 * 60 * 1000; // 1 day in milliseconds
-      int oneDayInMillis = 600 * 1000;
+      int oneDayInMillis = 2 * 1000;
 
       // Check if a day has passed since the last execution
       if (currentTime - lastExecution >= oneDayInMillis) {
