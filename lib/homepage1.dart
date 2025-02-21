@@ -1416,8 +1416,7 @@ class _HomePage1State extends State<HomePage1> {
 
   Widget buildDrawer(BuildContext context, String avatarLetterParameter,
       String username, String phoneNumber, String email) {
-    double screenTextScaleFactor =
-        double.parse(MediaQuery.textScaleFactorOf(context).toString());
+    double screenTextScaleFactor = MediaQuery.of(context).textScaleFactor;
     print(screenTextScaleFactor);
     return Drawer(
       child: Container(

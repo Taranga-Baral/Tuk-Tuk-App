@@ -426,7 +426,7 @@ class _MapPageState extends State<MapPage> {
     }
 
     mapHeightWhenFirstBooked();
-
+    double screenTextScaleFactor = MediaQuery.of(context).textScaleFactor;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(
@@ -864,20 +864,24 @@ class _MapPageState extends State<MapPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Duration:',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
+                        Flexible(
+                          child: Text(
+                            'Duration:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
+                            ),
                           ),
                         ),
-                        Text(
-                          '~ ${(double.parse(_duration) / 60).toStringAsFixed(0)} Min, Driving',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[800],
+                        Flexible(
+                          child: Text(
+                            '~ ${(double.parse(_duration) / 60).toStringAsFixed(0)} Min, Driving',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[800],
+                            ),
                           ),
                         ),
                       ],
@@ -886,20 +890,24 @@ class _MapPageState extends State<MapPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Total Fare:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange,
+                        Flexible(
+                          child: Text(
+                            'Total Fare:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange,
+                            ),
                           ),
                         ),
-                        Text(
-                          'NPR ${fare.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange,
+                        Flexible(
+                          child: Text(
+                            'NPR ${fare.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange,
+                            ),
                           ),
                         ),
                       ],

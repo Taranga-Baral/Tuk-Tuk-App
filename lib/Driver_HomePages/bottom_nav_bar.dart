@@ -273,37 +273,39 @@ class _BottomNavBarPageState extends State<BottomNavBarPage>
   Widget _buildNavBarItem(IconData icon, String label, int index,
       double iconSize, double labelSize) {
     bool isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            height: isSelected ? iconSize + 10 : iconSize,
-            width: isSelected ? iconSize + 10 : iconSize,
-            curve: Curves.easeInOut,
-            child: Icon(
-              icon,
-              size: isSelected ? iconSize + 5 : iconSize,
-              color: isSelected ? Colors.redAccent.shade200 : Colors.grey,
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _onItemTapped(index),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: Duration(milliseconds: 200),
+              height: isSelected ? iconSize + 10 : iconSize,
+              width: isSelected ? iconSize + 10 : iconSize,
+              curve: Curves.easeInOut,
+              child: Icon(
+                icon,
+                size: isSelected ? iconSize + 5 : iconSize,
+                color: isSelected ? Colors.redAccent.shade200 : Colors.grey,
+              ),
             ),
-          ),
-          Text(
-            label,
-            // style: TextStyle(
-            //   fontSize: labelSize,
-            //   color: isSelected ? Colors.redAccent : Colors.grey,
-            // ),
-            style: isSelected
-                ? GoogleFonts.ubuntu(
-                    fontSize: labelSize + 1,
-                    color: isSelected ? Colors.redAccent : Colors.grey)
-                : GoogleFonts.ubuntu(
-                    fontSize: labelSize,
-                    color: isSelected ? Colors.redAccent : Colors.grey),
-          ),
-        ],
+            Text(
+              label,
+              // style: TextStyle(
+              //   fontSize: labelSize,
+              //   color: isSelected ? Colors.redAccent : Colors.grey,
+              // ),
+              style: isSelected
+                  ? GoogleFonts.ubuntu(
+                      fontSize: labelSize + 1,
+                      color: isSelected ? Colors.redAccent : Colors.grey)
+                  : GoogleFonts.ubuntu(
+                      fontSize: labelSize,
+                      color: isSelected ? Colors.redAccent : Colors.grey),
+            ),
+          ],
+        ),
       ),
     );
   }

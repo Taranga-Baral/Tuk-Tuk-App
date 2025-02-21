@@ -769,20 +769,24 @@ class _ChatCardState extends State<ChatCard> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    widget.username,
-                                    style: GoogleFonts.outfit(
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.blueGrey,
-                                      fontSize: 16,
+                                  Flexible(
+                                    child: Text(
+                                      widget.username,
+                                      style: GoogleFonts.outfit(
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.blueGrey,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
-                                  Text(
-                                    widget.timestamp,
-                                    style: GoogleFonts.comicNeue(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.shade600,
+                                  Flexible(
+                                    child: Text(
+                                      widget.timestamp,
+                                      style: GoogleFonts.comicNeue(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade600,
+                                      ),
                                     ),
                                   ),
                                 ],
