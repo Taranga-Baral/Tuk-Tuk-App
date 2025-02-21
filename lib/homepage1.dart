@@ -1416,6 +1416,9 @@ class _HomePage1State extends State<HomePage1> {
 
   Widget buildDrawer(BuildContext context, String avatarLetterParameter,
       String username, String phoneNumber, String email) {
+    double screenTextScaleFactor =
+        double.parse(MediaQuery.textScaleFactorOf(context).toString());
+    print(screenTextScaleFactor);
     return Drawer(
       child: Container(
         // color: Colors.grey[120],
@@ -1424,6 +1427,79 @@ class _HomePage1State extends State<HomePage1> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
+            // DrawerHeader(
+            //   decoration: BoxDecoration(
+            //       // color: Colors.white10.withOpacity(0.1),
+            //       ),
+            //   padding: EdgeInsets.symmetric(horizontal: 20),
+            //   child: Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       CircleAvatar(
+            //         radius: 30,
+            //         backgroundColor: Colors.white,
+            //         child: Text(
+            //           avatarLetterParameter,
+            //           style: TextStyle(
+            //             color: Colors.redAccent,
+            //             fontSize: 24,
+            //             fontWeight: FontWeight.bold,
+            //           ),
+            //         ),
+            //       ),
+            //       SizedBox(height: 10),
+            //       FittedBox(
+            //         fit: BoxFit.scaleDown,
+            //         child: Text(
+            //           username,
+            //           style: GoogleFonts.outfit(
+            //             color: Colors.white,
+            //             fontWeight: FontWeight.bold,
+            //             fontSize: 20,
+            //           ),
+            //         ),
+            //       ),
+            //       Text(
+            //         phoneNumber,
+            //         style: TextStyle(
+            //           color: Colors.white70,
+            //           fontSize: 12,
+            //         ),
+            //       ),
+            //       Text(
+            //         email,
+            //         style: TextStyle(
+            //           color: Colors.white70,
+            //           fontSize: 12,
+            //         ),
+            //       ),
+            //       GestureDetector(
+            //         onTap: () {
+            //           // Copy the full userId to the clipboard
+            //           Clipboard.setData(ClipboardData(text: userId));
+            //           // Show a toast message to indicate the text has been copied
+            //           Fluttertoast.showToast(
+            //             msg: userId,
+            //             toastLength: Toast.LENGTH_SHORT,
+            //             gravity: ToastGravity.TOP,
+            //             backgroundColor: Colors.blue,
+            //             textColor: Colors.white,
+            //           );
+            //         },
+            //         child: Text(
+            //           'User ID: ${userId.substring(0, 18)}...',
+            //           style: TextStyle(
+            //             color: Colors.white,
+            //             fontSize: 13,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+
             DrawerHeader(
               decoration: BoxDecoration(
                   // color: Colors.white10.withOpacity(0.1),
@@ -1434,7 +1510,7 @@ class _HomePage1State extends State<HomePage1> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    radius: 30,
+                    radius: screenTextScaleFactor <= 1.3 ? 20 : 16,
                     backgroundColor: Colors.white,
                     child: Text(
                       avatarLetterParameter,
@@ -1446,26 +1522,35 @@ class _HomePage1State extends State<HomePage1> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Text(
-                    username,
-                    style: GoogleFonts.outfit(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                  // Use FittedBox to scale down the username text
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      username,
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenTextScaleFactor <= 1.3 ? 20 : 12,
+                      ),
                     ),
                   ),
-                  Text(
-                    phoneNumber,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
+                  // Use Flexible to allow the text to wrap or scale
+                  Flexible(
+                    child: Text(
+                      phoneNumber,
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: screenTextScaleFactor <= 1.3 ? 12 : 7,
+                      ),
                     ),
                   ),
-                  Text(
-                    email,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
+                  Flexible(
+                    child: Text(
+                      email,
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: screenTextScaleFactor <= 1.3 ? 12 : 7,
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -1485,7 +1570,7 @@ class _HomePage1State extends State<HomePage1> {
                       'User ID: ${userId.substring(0, 18)}...',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: screenTextScaleFactor <= 1.3 ? 13 : 5,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
