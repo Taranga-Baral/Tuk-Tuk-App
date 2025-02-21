@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:final_menu/galli_maps/map_page.dart';
-import 'package:final_menu/splash_screen/splash_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;

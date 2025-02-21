@@ -140,7 +140,7 @@ class _MapPageState extends State<MapPage> {
   MapLibreMapController? controller;
   Line? _selectedLine;
   String _distance = '';
-  bool _distanceResetViewBookingOption = true;
+  final bool _distanceResetViewBookingOption = true;
   String _duration = '';
   String _deliveryLocation = '';
   Symbol? _selectedSymbol;
@@ -154,7 +154,7 @@ class _MapPageState extends State<MapPage> {
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  GalliMethods methods = GalliMethods("1b040d87-2d67-47d5-aa97-f8b47d301fec");
+  GalliMethods methods = GalliMethods('1b040d87-2d67-47d5-aa97-f8b47d301fec');
   List<Symbol> markers = [];
   late void Function() clearMarkers;
   LocationData? _currentLocation;
@@ -164,7 +164,7 @@ class _MapPageState extends State<MapPage> {
   List<String> searchResultsDelivery = [];
   TextEditingController pickupTextController = TextEditingController();
   TextEditingController deliveryTextController = TextEditingController();
-  bool _isLoading = true;
+  final bool _isLoading = true;
   String? selectedMunicipality;
   int? previousPassengers;
   String? selectedMode = 'Petrol';
@@ -575,7 +575,7 @@ class _MapPageState extends State<MapPage> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  Container(
+                  SizedBox(
                     height: 100, // Reduced height for a compact UI
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -1047,7 +1047,7 @@ class _MapPageState extends State<MapPage> {
           title: 'Location Information',
           desc:
               '', // Leave desc empty since we'll use the body for custom content
-          body: Container(
+          body: SizedBox(
             width: MediaQuery.of(context).size.width * 0.7,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1188,7 +1188,7 @@ class _MapPageState extends State<MapPage> {
                           dragEnabled: true,
                           showCurrentLocation: true,
                           showCurrentLocationButton: true,
-                          authToken: "1b040d87-2d67-47d5-aa97-f8b47d301fec",
+                          authToken: '1b040d87-2d67-47d5-aa97-f8b47d301fec',
                           size: (
                             height: MediaQuery.of(context).size.height,
                             width: MediaQuery.of(context).size.width,
@@ -1239,7 +1239,7 @@ class _MapPageState extends State<MapPage> {
                                       child: TextFormField(
                                         validator: (value) {
                                           if (value!.isEmpty) {
-                                            return "Please enter Location";
+                                            return 'Please enter Location';
                                           }
                                           return null; // Return null if validation passes
                                         },
@@ -1518,7 +1518,7 @@ class _MapPageState extends State<MapPage> {
                         double.parse(
                             _currentLocation!.longitude!.toStringAsFixed(6)),
                         _searchController.text.trim(),
-                        "1b040d87-2d67-47d5-aa97-f8b47d301fec"),
+                        '1b040d87-2d67-47d5-aa97-f8b47d301fec'),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
@@ -1546,7 +1546,7 @@ class _MapPageState extends State<MapPage> {
                                     myData['district'],
                                     myData['municipality'],
                                     myData['ward'],
-                                    "1b040d87-2d67-47d5-aa97-f8b47d301fec");
+                                    '1b040d87-2d67-47d5-aa97-f8b47d301fec');
                                 if (coordinates != null) {
                                   await clearRoutes(); // Clear existing routes
                                   await drawRoute(
@@ -1770,7 +1770,7 @@ class _MapPageState extends State<MapPage> {
 
             lineOptionsList.add(LineOptions(
               geometry: geometry,
-              lineColor: "#0000FF",
+              lineColor: '#0000FF',
               lineWidth: 4.0,
               lineOpacity: 0.98,
               draggable: false,
@@ -1851,7 +1851,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<bool> fetchLocationName(LatLng destination) async {
     final String destinationnameURL =
-        "https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${destination.latitude}&lng=${destination.longitude}";
+        'https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${destination.latitude}&lng=${destination.longitude}';
 
     try {
       final response = await http.get(Uri.parse(destinationnameURL));
@@ -1954,7 +1954,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> fetchPickupLocationName() async {
     final String pickupnameURL =
-        "https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}&lng=${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}";
+        'https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}&lng=${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}';
 
     try {
       final response = await http.get(Uri.parse(pickupnameURL));
@@ -1987,7 +1987,7 @@ class _MapPageState extends State<MapPage> {
         _searchQuery = query;
       } else {
         // Validation failed, do not submit
-        print("Validation failed");
+        print('Validation failed');
         // Optionally show an error message or take other actions
       }
     });

@@ -1170,6 +1170,7 @@ class DriverCard extends StatefulWidget {
   final VoidCallback onChatPressed;
 
   const DriverCard({
+    super.key,
     required this.data,
     required this.index,
     required this.totalItems,

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:final_menu/galli_maps/driver_view_passenger_location/driver_view_passenger_location.dart';
-import 'package:final_menu/galli_maps/map_page.dart';
-import 'package:final_menu/homepage1.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;

@@ -644,7 +644,8 @@ class ChatCard extends StatefulWidget {
   final String tripId;
   final String userId;
 
-  ChatCard({
+  const ChatCard({
+    super.key,
     required this.username,
     required this.message,
     required this.timestamp,
@@ -840,7 +841,7 @@ class _ChatCardState extends State<ChatCard> {
                             builder: (context) {
                               return AlertDialog(
                                 title: Text(
-                                  "Order Details",
+                                  'Order Details',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
@@ -852,19 +853,19 @@ class _ChatCardState extends State<ChatCard> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     _buildDetailRow(Icons.location_on,
-                                        "Pickup: ${widget.pickupLocation}"),
+                                        'Pickup: ${widget.pickupLocation}'),
                                     SizedBox(height: 12),
                                     _buildDetailRow(Icons.location_on,
-                                        "Delivery: ${widget.deliveryLocation}"),
+                                        'Delivery: ${widget.deliveryLocation}'),
                                     SizedBox(height: 12),
                                     _buildDetailRow(Icons.directions_car,
-                                        "Distance: ${double.parse(widget.distance).toStringAsFixed(2)}"),
+                                        'Distance: ${double.parse(widget.distance).toStringAsFixed(2)}'),
                                     SizedBox(height: 12),
                                     _buildDetailRow(
-                                        Icons.money, "Fare: ${widget.fare}"),
+                                        Icons.money, 'Fare: ${widget.fare}'),
                                     SizedBox(height: 12),
                                     _buildDetailRow(
-                                        Icons.phone, "Phone: ${widget.phone}"),
+                                        Icons.phone, 'Phone: ${widget.phone}'),
                                   ],
                                 ),
                                 actions: [
@@ -874,7 +875,7 @@ class _ChatCardState extends State<ChatCard> {
                                       _resetCard();
                                     },
                                     child: Text(
-                                      "Close",
+                                      'Close',
                                       style: TextStyle(
                                         color: Colors.redAccent,
                                         fontWeight: FontWeight.bold,

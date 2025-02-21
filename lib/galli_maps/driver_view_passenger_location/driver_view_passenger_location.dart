@@ -134,7 +134,9 @@ class _DriverViewPassengerLocationState
   Future<void> _drawRedRoute() async {
     if (controller == null ||
         _currentLocation == null ||
-        _pickupLocation == null) return;
+        _pickupLocation == null) {
+      return;
+    }
 
     String url =
         'https://route-init.gallimap.com/api/v1/routing?mode=driving&srcLat=${_currentLocation!.latitude!}&srcLng=${_currentLocation!.longitude!}&dstLat=${_pickupLocation!.latitude}&dstLng=${_pickupLocation!.longitude}&accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec';
@@ -161,7 +163,7 @@ class _DriverViewPassengerLocationState
 
             lineOptionsList.add(LineOptions(
               geometry: geometry,
-              lineColor: "#FF0000", // Red color for the route
+              lineColor: '#FF0000', // Red color for the route
               lineWidth: 4.0,
               lineOpacity: 1,
               draggable: false,
@@ -183,7 +185,9 @@ class _DriverViewPassengerLocationState
   Future<void> _drawBlueRoute() async {
     if (controller == null ||
         _pickupLocation == null ||
-        _deliveryLocation == null) return;
+        _deliveryLocation == null) {
+      return;
+    }
 
     String url =
         'https://route-init.gallimap.com/api/v1/routing?mode=driving&srcLat=${_pickupLocation!.latitude}&srcLng=${_pickupLocation!.longitude}&dstLat=${_deliveryLocation!.latitude}&dstLng=${_deliveryLocation!.longitude}&accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec';
@@ -210,7 +214,7 @@ class _DriverViewPassengerLocationState
 
             lineOptionsList.add(LineOptions(
               geometry: geometry,
-              lineColor: "#0000FF", // Blue color for the route
+              lineColor: '#0000FF', // Blue color for the route
               lineWidth: 4.0,
               lineOpacity: 1,
               draggable: false,
@@ -257,7 +261,7 @@ class _DriverViewPassengerLocationState
                   dragEnabled: true,
                   showCurrentLocation: true,
                   showCurrentLocationButton: true,
-                  authToken: "1b040d87-2d67-47d5-aa97-f8b47d301fec",
+                  authToken: '1b040d87-2d67-47d5-aa97-f8b47d301fec',
                   size: (
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width,
@@ -319,7 +323,9 @@ class _DriverViewPassengerLocationState
     if (controller == null ||
         _currentLocation == null ||
         _pickupLocation == null ||
-        _deliveryLocation == null) return;
+        _deliveryLocation == null) {
+      return;
+    }
 
     _pickupMarker = await controller!.addSymbol(SymbolOptions(
       geometry: _pickupLocation!,

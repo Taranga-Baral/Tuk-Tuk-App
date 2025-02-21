@@ -835,7 +835,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               background: LayoutBuilder(
                 builder: (context, constraints) {
                   final double maxHeight = constraints.maxHeight;
-                  final double minHeight = kToolbarHeight;
+                  const double minHeight = kToolbarHeight;
                   final double currentHeight = constraints.biggest.height;
                   final double opacity =
                       (currentHeight - minHeight) / (maxHeight - minHeight);

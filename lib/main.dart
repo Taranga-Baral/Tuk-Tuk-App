@@ -12,8 +12,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.blueAccent, // Choose your preferred color
-    statusBarBrightness: Brightness.dark, // Change the text color of status bar
+    statusBarIconBrightness: Brightness.dark,
+    systemNavigationBarColor: Colors.white,
+    statusBarColor: Colors.white,
+    statusBarBrightness: Brightness.dark,
   ));
   WidgetsFlutterBinding.ensureInitialized();
 
