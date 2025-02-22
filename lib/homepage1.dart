@@ -1384,12 +1384,81 @@ class _HomePage1State extends State<HomePage1> {
 
             GestureDetector(
               onTap: () {
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => MapPage(
+                //               userId: userId,
+                //             )));
+
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MapPage(
-                              userId: userId,
-                            )));
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        MapPage(
+                      userId: userId,
+                    ),
+                    transitionDuration: Duration(
+                        milliseconds:
+                            1500), // Longer duration for bouncy effect
+                    reverseTransitionDuration: Duration(
+                        milliseconds: 1500), // Optional: Set reverse duration
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(0.0, 1.0); // Slide from bottom
+                      const end = Offset.zero;
+                      const curve = Curves.elasticOut; // Bouncy curve
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
+
+                      // Add a fade transition
+                      var fadeTween = Tween(begin: 0.0, end: 1.0);
+                      var fadeAnimation = animation.drive(fadeTween);
+
+                      // Add a scale transition with a bouncy curve
+                      var scaleTween =
+                          Tween(begin: 0.8, end: 1.0); // Scale from 80% to 100%
+                      var scaleAnimation = animation.drive(scaleTween
+                          .chain(CurveTween(curve: Curves.elasticOut)));
+
+                      return FadeTransition(
+                        opacity: fadeAnimation,
+                        child: SlideTransition(
+                          position: offsetAnimation,
+                          child: ScaleTransition(
+                            scale: scaleAnimation,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+
+                // Navigator.push(
+                //   context,
+                //   PageRouteBuilder(
+                //     pageBuilder: (context, animation, secondaryAnimation) =>
+                //         MapPage(
+                //       userId: userId,
+                //     ),
+                //     transitionsBuilder:
+                //         (context, animation, secondaryAnimation, child) {
+                //       const begin = Offset(1.0, 0.0); // Slide from right
+                //       const end = Offset.zero;
+                //       const curve = Curves.easeInOut;
+                //       var tween = Tween(begin: begin, end: end)
+                //           .chain(CurveTween(curve: curve));
+                //       var offsetAnimation = animation.drive(tween);
+
+                //       return SlideTransition(
+                //         position: offsetAnimation,
+                //         child: child,
+                //       );
+                //     },
+                //   ),
+                // );
               },
               child: TextField(
                 controller: searchController,
@@ -1590,12 +1659,56 @@ class _HomePage1State extends State<HomePage1> {
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
-                  // Handle Requests tap
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (BuildContext context) =>
+                  //             RequestPage(userId: userId)));
+
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              RequestPage(userId: userId)));
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          RequestPage(
+                        userId: userId,
+                      ),
+                      transitionDuration: Duration(
+                          milliseconds:
+                              1200), // Longer duration for bouncy effect
+                      reverseTransitionDuration: Duration(
+                          milliseconds: 1200), // Optional: Set reverse duration
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0); // Slide from bottom
+                        const end = Offset.zero;
+                        const curve = Curves.elasticOut; // Bouncy curve
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        // Add a fade transition
+                        var fadeTween = Tween(begin: 0.0, end: 1.0);
+                        var fadeAnimation = animation.drive(fadeTween);
+
+                        // Add a scale transition with a bouncy curve
+                        var scaleTween = Tween(
+                            begin: 0.8, end: 1.0); // Scale from 80% to 100%
+                        var scaleAnimation = animation.drive(scaleTween
+                            .chain(CurveTween(curve: Curves.elasticOut)));
+
+                        return FadeTransition(
+                          opacity: fadeAnimation,
+                          child: SlideTransition(
+                            position: offsetAnimation,
+                            child: ScaleTransition(
+                              scale: scaleAnimation,
+                              child: child,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
                 },
               ),
             ),
@@ -1612,13 +1725,48 @@ class _HomePage1State extends State<HomePage1> {
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
-                  // Handle Chats tap
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatPage(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          ChatPage(
                         userId: userId,
                       ),
+                      transitionDuration: Duration(
+                          milliseconds:
+                              1200), // Longer duration for bouncy effect
+                      reverseTransitionDuration: Duration(
+                          milliseconds: 1200), // Optional: Set reverse duration
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0); // Slide from bottom
+                        const end = Offset.zero;
+                        const curve = Curves.elasticOut; // Bouncy curve
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        // Add a fade transition
+                        var fadeTween = Tween(begin: 0.0, end: 1.0);
+                        var fadeAnimation = animation.drive(fadeTween);
+
+                        // Add a scale transition with a bouncy curve
+                        var scaleTween = Tween(
+                            begin: 0.8, end: 1.0); // Scale from 80% to 100%
+                        var scaleAnimation = animation.drive(scaleTween
+                            .chain(CurveTween(curve: Curves.elasticOut)));
+
+                        return FadeTransition(
+                          opacity: fadeAnimation,
+                          child: SlideTransition(
+                            position: offsetAnimation,
+                            child: ScaleTransition(
+                              scale: scaleAnimation,
+                              child: child,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
@@ -1639,10 +1787,46 @@ class _HomePage1State extends State<HomePage1> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => StatisticsPage(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          StatisticsPage(
                         userId: userId,
                       ),
+                      transitionDuration: Duration(
+                          milliseconds:
+                              1200), // Longer duration for bouncy effect
+                      reverseTransitionDuration: Duration(
+                          milliseconds: 1200), // Optional: Set reverse duration
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0); // Slide from bottom
+                        const end = Offset.zero;
+                        const curve = Curves.elasticOut; // Bouncy curve
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        // Add a fade transition
+                        var fadeTween = Tween(begin: 0.0, end: 1.0);
+                        var fadeAnimation = animation.drive(fadeTween);
+
+                        // Add a scale transition with a bouncy curve
+                        var scaleTween = Tween(
+                            begin: 0.8, end: 1.0); // Scale from 80% to 100%
+                        var scaleAnimation = animation.drive(scaleTween
+                            .chain(CurveTween(curve: Curves.elasticOut)));
+
+                        return FadeTransition(
+                          opacity: fadeAnimation,
+                          child: SlideTransition(
+                            position: offsetAnimation,
+                            child: ScaleTransition(
+                              scale: scaleAnimation,
+                              child: child,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
@@ -1663,10 +1847,46 @@ class _HomePage1State extends State<HomePage1> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => HistoryPage(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          HistoryPage(
                         userId: userId,
                       ),
+                      transitionDuration: Duration(
+                          milliseconds:
+                              1200), // Longer duration for bouncy effect
+                      reverseTransitionDuration: Duration(
+                          milliseconds: 1200), // Optional: Set reverse duration
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0); // Slide from bottom
+                        const end = Offset.zero;
+                        const curve = Curves.elasticOut; // Bouncy curve
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        // Add a fade transition
+                        var fadeTween = Tween(begin: 0.0, end: 1.0);
+                        var fadeAnimation = animation.drive(fadeTween);
+
+                        // Add a scale transition with a bouncy curve
+                        var scaleTween = Tween(
+                            begin: 0.8, end: 1.0); // Scale from 80% to 100%
+                        var scaleAnimation = animation.drive(scaleTween
+                            .chain(CurveTween(curve: Curves.elasticOut)));
+
+                        return FadeTransition(
+                          opacity: fadeAnimation,
+                          child: SlideTransition(
+                            position: offsetAnimation,
+                            child: ScaleTransition(
+                              scale: scaleAnimation,
+                              child: child,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
@@ -1687,8 +1907,43 @@ class _HomePage1State extends State<HomePage1> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => DriverRegistrationPage(),
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          DriverRegistrationPage(),
+                      transitionDuration: Duration(
+                          milliseconds: 1000), // Duration for the transition
+                      reverseTransitionDuration: Duration(
+                          milliseconds: 1000), // Optional: Set reverse duration
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        // Add a rotation transition
+                        var rotateTween = Tween(
+                            begin: 0.0,
+                            end: 1.0); // Rotate from 0 to 360 degrees
+                        var rotateAnimation = animation.drive(rotateTween
+                            .chain(CurveTween(curve: Curves.easeInOut)));
+
+                        // Add a fade transition
+                        var fadeTween = Tween(begin: 0.0, end: 1.0);
+                        var fadeAnimation = animation.drive(fadeTween);
+
+                        // Add a scale transition
+                        var scaleTween = Tween(
+                            begin: 0.5, end: 1.0); // Scale from 50% to 100%
+                        var scaleAnimation = animation.drive(scaleTween
+                            .chain(CurveTween(curve: Curves.easeInOut)));
+
+                        return FadeTransition(
+                          opacity: fadeAnimation,
+                          child: ScaleTransition(
+                            scale: scaleAnimation,
+                            child: RotationTransition(
+                              turns: rotateAnimation,
+                              child: child,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },

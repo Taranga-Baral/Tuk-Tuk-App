@@ -5,6 +5,8 @@ import 'package:final_menu/chat/chat_display_page.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
@@ -1407,6 +1409,55 @@ class _RequestPageState extends State<RequestPage> {
                                                                       style: TextStyle(
                                                                           fontWeight:
                                                                               FontWeight.bold),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Divider(),
+                                                              Row(
+                                                                children: [
+                                                                  GestureDetector(
+                                                                    onTap: () {
+                                                                      // Copy the full tripId to the clipboard
+                                                                      Clipboard.setData(
+                                                                          ClipboardData(
+                                                                              text: tripId));
+                                                                      // Show a toast message to indicate the text has been copied
+                                                                      Fluttertoast
+                                                                          .showToast(
+                                                                        msg:
+                                                                            tripId,
+                                                                        toastLength:
+                                                                            Toast.LENGTH_SHORT,
+                                                                        gravity:
+                                                                            ToastGravity.TOP,
+                                                                        backgroundColor:
+                                                                            Colors.blue,
+                                                                        textColor:
+                                                                            Colors.black,
+                                                                      );
+                                                                    },
+                                                                    child:
+                                                                        Expanded(
+                                                                      child:
+                                                                          Row(
+                                                                        children: [
+                                                                          Icon(
+                                                                            Icons.copy,
+                                                                            color:
+                                                                                Colors.blueAccent,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            width:
+                                                                                10,
+                                                                          ),
+                                                                          Text(
+                                                                            'TripID: ${tripId.substring(0, 18)}****',
+                                                                            style:
+                                                                                TextStyle(fontWeight: FontWeight.bold),
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ],

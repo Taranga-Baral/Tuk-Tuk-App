@@ -460,6 +460,8 @@
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -821,16 +823,20 @@ class _HistoryPageState extends State<HistoryPage> {
 
                         const SizedBox(width: 10),
                         Flexible(
-                          child: Text(
-                            '${trip['driverName']}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: false,
-                            style: GoogleFonts.outfit(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.blue.shade900,
-                            ),
+                          child: Column(
+                            children: [
+                              Text(
+                                '${trip['driverName']}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                                style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.blue.shade900,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],

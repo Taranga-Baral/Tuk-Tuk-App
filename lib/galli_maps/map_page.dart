@@ -1588,53 +1588,59 @@ class _MapPageState extends State<MapPage> {
 //end
                                 }
                               },
-                              child: Card(
-                                elevation: 1,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 3.0, horizontal: 0),
-                                child: ListTile(
-                                  hoverColor: Colors.grey[200],
-                                  selectedTileColor: Colors.green[100],
-                                  title: Text(
-                                    myData['name'],
-                                    textAlign: TextAlign.left,
-                                    style: GoogleFonts.outfit(
-                                        fontSize: 15, letterSpacing: 0.1),
-                                  ),
-                                  subtitle: Text(
-                                    '${myData['district']}, ${myData['province']}',
-                                    textAlign: TextAlign.left,
-                                    style: GoogleFonts.lexend(
-                                      letterSpacing: 0.1,
-                                      fontSize: 10,
+                              child: Column(
+                                children: [
+                                  Card(
+                                    elevation: 0,
+                                    color: Colors.transparent,
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 3.0, horizontal: 0),
+                                    child: ListTile(
+                                      hoverColor: Colors.grey[200],
+                                      selectedTileColor: Colors.green[100],
+                                      title: Text(
+                                        myData['name'],
+                                        textAlign: TextAlign.left,
+                                        style: GoogleFonts.outfit(
+                                            fontSize: 15, letterSpacing: 0.1),
+                                      ),
+                                      subtitle: Text(
+                                        '${myData['district']}, ${myData['province']}',
+                                        textAlign: TextAlign.left,
+                                        style: GoogleFonts.lexend(
+                                          letterSpacing: 0.1,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                      leading: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Icon(
+                                            Icons.location_on_rounded,
+                                            color: Colors.black54,
+                                            size: 14,
+                                          ),
+                                          Text(
+                                            '${double.parse(myData['distance']).toStringAsFixed(2)} km',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                color: (double.parse(myData[
+                                                            'distance'])) <=
+                                                        20
+                                                    ? Colors.green[600]
+                                                    : double.parse(myData[
+                                                                'distance']) >
+                                                            50
+                                                        ? Colors.red[300]
+                                                        : Colors.orangeAccent),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  leading: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Icon(
-                                        Icons.location_on_rounded,
-                                        color: Colors.black54,
-                                        size: 14,
-                                      ),
-                                      Text(
-                                        '${double.parse(myData['distance']).round()} km',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            color: (double.parse(
-                                                        myData['distance'])) <=
-                                                    20
-                                                ? Colors.green[600]
-                                                : double.parse(myData[
-                                                            'distance']) >
-                                                        50
-                                                    ? Colors.red[300]
-                                                    : Colors.orangeAccent),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                  Divider(),
+                                ],
                               ),
                             );
                           },
