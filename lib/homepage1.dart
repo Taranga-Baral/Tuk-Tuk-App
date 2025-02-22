@@ -1400,7 +1400,7 @@ class _HomePage1State extends State<HomePage1> {
                     ),
                     transitionDuration: Duration(
                         milliseconds:
-                            1500), // Longer duration for bouncy effect
+                            1000), // Longer duration for bouncy effect
                     reverseTransitionDuration: Duration(
                         milliseconds: 1500), // Optional: Set reverse duration
                     transitionsBuilder:
@@ -1674,9 +1674,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              1200), // Longer duration for bouncy effect
+                              700), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 1200), // Optional: Set reverse duration
+                          milliseconds: 700), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1734,9 +1734,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              1200), // Longer duration for bouncy effect
+                              700), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 1200), // Optional: Set reverse duration
+                          milliseconds: 700), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1794,9 +1794,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              1200), // Longer duration for bouncy effect
+                              700), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 1200), // Optional: Set reverse duration
+                          milliseconds: 700), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1854,9 +1854,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              1200), // Longer duration for bouncy effect
+                              700), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 1200), // Optional: Set reverse duration
+                          milliseconds: 700), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1911,9 +1911,9 @@ class _HomePage1State extends State<HomePage1> {
                       pageBuilder: (context, animation, secondaryAnimation) =>
                           DriverRegistrationPage(),
                       transitionDuration: Duration(
-                          milliseconds: 1000), // Duration for the transition
+                          milliseconds: 700), // Duration for the transition
                       reverseTransitionDuration: Duration(
-                          milliseconds: 1000), // Optional: Set reverse duration
+                          milliseconds: 700), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         // Add a rotation transition
