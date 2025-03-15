@@ -140,6 +140,7 @@
 //   }
 // }
 
+import 'package:final_menu/homepage1.dart';
 import 'package:flutter/material.dart';
 import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
@@ -217,10 +218,13 @@ class _BottomNavBarPageState extends State<BottomNavBarPage>
       body: _pages[_selectedIndex],
       bottomNavigationBar: _buildCustomBottomNavBar(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: _refreshCurrentPage,
+        onPressed: () {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomePage1()));
+        },
         backgroundColor: Colors.redAccent.shade200,
         child: Icon(
-          Icons.refresh,
+          Icons.person_4_outlined,
           color: Colors.white,
         ),
       ),

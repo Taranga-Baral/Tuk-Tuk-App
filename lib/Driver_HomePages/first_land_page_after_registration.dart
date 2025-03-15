@@ -600,6 +600,7 @@ import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:final_menu/Driver_HomePages/sorting_pages.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
+import 'package:final_menu/driver_appbar_exprollable/driver_appbar.dart';
 import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
 import 'package:final_menu/driver_filter_trips/driver_filter_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
@@ -1140,59 +1141,68 @@ class _DriverHomePageState extends State<DriverHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red.shade100.withOpacity(0.18),
-      appBar: AppBar(
-        centerTitle: true,
-        title: Center(
-          child: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('vehicleData')
-                .doc(widget.driverEmail)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Text('');
-              }
-
-              var displayName = snapshot.data!['name'];
-
-              return Text(
-                displayName ?? 'No Name',
-                style: GoogleFonts.josefinSans(
-                    color: Colors.black87, fontSize: 18),
-              );
-            },
-          ),
-        ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 2),
-          child: Image(image: AssetImage('assets/fordriverlogo.png')),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Row(
-            children: [
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.login_outlined),
-                onSelected: _onMenuItemSelected,
-                itemBuilder: (BuildContext context) {
-                  return [
-                    const PopupMenuItem(
-                        value: 'passenger_mode',
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text('Passenger Mode'),
-                            Icon(Icons.person_outline_sharp)
-                          ],
-                        )),
-                  ];
-                },
-              ),
-            ],
-          ),
+      appBar: CustomAppBar(
+        appBarColor: Colors.teal,
+        appBarIcons: const [
+          Icons.person_2,
+          Icons.info_outline,
         ],
+        title: 'Passenger Requests',
+        driverId: widget.driverEmail,
       ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Center(
+      //     child: StreamBuilder<DocumentSnapshot>(
+      //       stream: FirebaseFirestore.instance
+      //           .collection('vehicleData')
+      //           .doc(widget.driverEmail)
+      //           .snapshots(),
+      //       builder: (context, snapshot) {
+      //         if (!snapshot.hasData) {
+      //           return Text('');
+      //         }
+
+      //         var displayName = snapshot.data!['name'];
+
+      //         return Text(
+      //           displayName ?? 'No Name',
+      //           style: GoogleFonts.josefinSans(
+      //               color: Colors.black87, fontSize: 18),
+      //         );
+      //       },
+      //     ),
+      //   ),
+      //   leading: Padding(
+      //     padding: const EdgeInsets.only(left: 20, top: 2),
+      //     child: Image(image: AssetImage('assets/fordriverlogo.png')),
+      //   ),
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      //   actions: [
+      //     Row(
+      //       children: [
+      //         PopupMenuButton<String>(
+      //           icon: const Icon(Icons.login_outlined),
+      //           onSelected: _onMenuItemSelected,
+      //           itemBuilder: (BuildContext context) {
+      //             return [
+      //               const PopupMenuItem(
+      //                   value: 'passenger_mode',
+      //                   child: Row(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //                     children: [
+      //                       Text('Passenger Mode'),
+      //                       Icon(Icons.person_outline_sharp)
+      //                     ],
+      //                   )),
+      //             ];
+      //           },
+      //         ),
+      //       ],
+      //     ),
+      //   ],
+      // ),
 
       body: _isLoading && _tripDataList.isEmpty
           ? RefreshIndicator(
