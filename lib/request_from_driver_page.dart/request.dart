@@ -664,7 +664,7 @@ class _RequestPageState extends State<RequestPage> {
                                                   Text(
                                                     'Driver Contact:',
                                                     style:
-                                                        GoogleFonts.comicNeue(
+                                                        GoogleFonts.montserrat(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 18,
@@ -677,7 +677,7 @@ class _RequestPageState extends State<RequestPage> {
                                                       Text(
                                                         '${driverData['phone'] ?? 'N/A'}',
                                                         style: GoogleFonts
-                                                            .comicNeue(
+                                                            .montserrat(
                                                                 fontSize: 16),
                                                       ),
                                                       Spacer(),
@@ -1384,9 +1384,9 @@ class _RequestPageState extends State<RequestPage> {
                                                                   Expanded(
                                                                     child: Text(
                                                                       '$pickupLocation',
-                                                                      style: TextStyle(
+                                                                      style: GoogleFonts.montserrat(
                                                                           fontWeight:
-                                                                              FontWeight.bold),
+                                                                              FontWeight.w600),
                                                                     ),
                                                                   ),
                                                                 ],
@@ -1406,9 +1406,9 @@ class _RequestPageState extends State<RequestPage> {
                                                                   Expanded(
                                                                     child: Text(
                                                                       '$deliveryLocation',
-                                                                      style: TextStyle(
+                                                                      style: GoogleFonts.montserrat(
                                                                           fontWeight:
-                                                                              FontWeight.bold),
+                                                                              FontWeight.w600),
                                                                     ),
                                                                   ),
                                                                 ],
@@ -1454,7 +1454,7 @@ class _RequestPageState extends State<RequestPage> {
                                                                           Text(
                                                                             'TripID: ${tripId.substring(0, 18)}****',
                                                                             style:
-                                                                                TextStyle(fontWeight: FontWeight.bold),
+                                                                                GoogleFonts.montserrat(fontWeight: FontWeight.w600),
                                                                           ),
                                                                         ],
                                                                       ),
@@ -1557,12 +1557,12 @@ class _RequestPageState extends State<RequestPage> {
                                                                               true
                                                                           ? 'Trip Booked'
                                                                           : 'Confirm',
-                                                                      style:
-                                                                          TextStyle(
+                                                                      style: GoogleFonts
+                                                                          .montserrat(
                                                                         fontSize:
-                                                                            16, // Font size for the text
+                                                                            14, // Font size for the text
                                                                         fontWeight:
-                                                                            FontWeight.bold, // Bold text
+                                                                            FontWeight.w600, // Bold text
                                                                       ),
                                                                     ),
                                                                   ),
@@ -1582,7 +1582,7 @@ class _RequestPageState extends State<RequestPage> {
                                                                 textAlign:
                                                                     TextAlign
                                                                         .center,
-                                                                style: GoogleFonts.comicNeue(
+                                                                style: GoogleFonts.montserrat(
                                                                     color: Colors
                                                                         .red,
                                                                     fontSize:
@@ -1694,11 +1694,12 @@ class _RequestPageState extends State<RequestPage> {
                                                         // ),
                                                         title: Text(
                                                           '$name',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 16),
+                                                          style: GoogleFonts
+                                                              .outfit(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 16),
                                                         ),
                                                         subtitle: Column(
                                                           crossAxisAlignment:
@@ -1707,8 +1708,10 @@ class _RequestPageState extends State<RequestPage> {
                                                           children: [
                                                             Text(
                                                               '$vehicleModeD V | $numberPlate | $vehicleType',
-                                                              style: TextStyle(
-                                                                  fontSize: 14),
+                                                              style: GoogleFonts
+                                                                  .montserrat(
+                                                                      fontSize:
+                                                                          14),
                                                             ),
                                                           ],
                                                         ),
@@ -1728,8 +1731,10 @@ class _RequestPageState extends State<RequestPage> {
                                                           Expanded(
                                                             child: Text(
                                                               '$phone',
-                                                              style: TextStyle(
-                                                                  fontSize: 14),
+                                                              style: GoogleFonts
+                                                                  .montserrat(
+                                                                      fontSize:
+                                                                          14),
                                                               softWrap: true,
                                                               overflow:
                                                                   TextOverflow
@@ -1754,8 +1759,10 @@ class _RequestPageState extends State<RequestPage> {
                                                           Expanded(
                                                             child: Text(
                                                               'NPR $fare',
-                                                              style: TextStyle(
-                                                                  fontSize: 14),
+                                                              style: GoogleFonts
+                                                                  .montserrat(
+                                                                      fontSize:
+                                                                          14),
                                                             ),
                                                           ),
                                                         ],
@@ -1773,10 +1780,15 @@ class _RequestPageState extends State<RequestPage> {
                                                           SizedBox(width: 10),
                                                           Text(
                                                             'Total: ${double.tryParse(distance)?.toStringAsFixed(1)} km,\nDriver is ${double.parse(distanceBetweenDriverAndPassenger).toStringAsFixed(2)} km away',
-                                                            style: TextStyle(
-                                                                fontSize: 14),
+                                                            style: GoogleFonts
+                                                                .montserrat(
+                                                                    fontSize:
+                                                                        14),
                                                           ),
                                                         ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
                                                       ),
 
                                                       //this
@@ -1839,9 +1851,9 @@ class _RequestPageState extends State<RequestPage> {
         children: [
           Text(
             label,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.montserrat(
               fontWeight: FontWeight.w500,
-              fontSize: 14,
+              fontSize: 13,
               color: Colors.black87,
             ),
           ),
@@ -1849,7 +1861,8 @@ class _RequestPageState extends State<RequestPage> {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              style:
+                  GoogleFonts.montserrat(fontSize: 13, color: Colors.grey[700]),
               overflow: TextOverflow.visible,
               textAlign: TextAlign.start,
               softWrap: true,

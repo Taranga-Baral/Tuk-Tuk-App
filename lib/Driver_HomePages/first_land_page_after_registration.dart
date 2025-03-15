@@ -605,6 +605,7 @@ import 'package:final_menu/driver_filter_trips/driver_filter_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
 import 'package:final_menu/galli_maps/driver_view_passenger_location/driver_view_passenger_location.dart';
 import 'package:final_menu/homepage1.dart';
+import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -1126,7 +1127,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage1(), // Replace with your SignInPage
+            builder: (context) => SignInPage(),
           ),
         );
         break;

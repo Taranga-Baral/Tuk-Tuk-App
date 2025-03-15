@@ -503,17 +503,17 @@ class _HomePage1State extends State<HomePage1> {
                                               TextSpan(
                                                 text:
                                                     'कुल भुक्तानि गरिएको भाडा\n',
-                                                style: GoogleFonts
-                                                    .tiroDevanagariHindi(
+                                                style: GoogleFonts.hind(
                                                   fontSize: 24,
                                                 ),
                                               ),
                                               TextSpan(
                                                 text:
                                                     'NPR ${totalFare.toStringAsFixed(2)}',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                ),
+                                                style: GoogleFonts.montserrat(
+                                                    fontSize: 16,
+                                                    color: const Color.fromARGB(
+                                                        239, 255, 255, 255)),
                                               ),
                                             ],
                                           ),
@@ -594,17 +594,17 @@ class _HomePage1State extends State<HomePage1> {
                                             children: [
                                               TextSpan(
                                                 text: 'जम्मा हिडिएको कि.मि \n',
-                                                style: GoogleFonts
-                                                    .tiroDevanagariHindi(
+                                                style: GoogleFonts.hind(
                                                   fontSize: 22,
                                                 ),
                                               ),
                                               TextSpan(
                                                 text:
                                                     '${totalDistance.toStringAsFixed(2)} Kilometer',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                ),
+                                                style: GoogleFonts.montserrat(
+                                                    fontSize: 16,
+                                                    color: const Color.fromARGB(
+                                                        239, 255, 255, 255)),
                                               ),
                                             ],
                                           ),
@@ -686,16 +686,17 @@ class _HomePage1State extends State<HomePage1> {
                                               TextSpan(
                                                 text:
                                                     'कुल यात्रा गरिएको संख्या\n',
-                                                style: GoogleFonts
-                                                    .tiroDevanagariHindi(
+                                                style: GoogleFonts.hind(
                                                   fontSize: 24,
                                                 ),
                                               ),
                                               TextSpan(
-                                                text: '$totalDeliveryLocations',
-                                                style: TextStyle(
-                                                  fontSize: 26,
-                                                ),
+                                                text:
+                                                    'Trips: $totalDeliveryLocations',
+                                                style: GoogleFonts.montserrat(
+                                                    fontSize: 16,
+                                                    color: const Color.fromARGB(
+                                                        239, 255, 255, 255)),
                                               ),
                                             ],
                                           ),
@@ -1332,9 +1333,12 @@ class _HomePage1State extends State<HomePage1> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            SizedBox(
+              height: 6,
+            ),
             Text(
               'हजुर लाई स्वागत छ ,',
-              style: GoogleFonts.notoSans(
+              style: GoogleFonts.hind(
                 fontSize: 20,
                 color: Colors.black54,
               ),
@@ -1465,6 +1469,7 @@ class _HomePage1State extends State<HomePage1> {
                 decoration: InputDecoration(
                   enabled: false,
                   hintText: 'कहाँ जानू हुन्छ त ?',
+                  hintStyle: GoogleFonts.hind(),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -1606,7 +1611,7 @@ class _HomePage1State extends State<HomePage1> {
                   Flexible(
                     child: Text(
                       phoneNumber,
-                      style: TextStyle(
+                      style: GoogleFonts.montserrat(
                         color: Colors.white70,
                         fontSize: screenTextScaleFactor <= 1.3 ? 12 : 7,
                       ),
@@ -1615,7 +1620,7 @@ class _HomePage1State extends State<HomePage1> {
                   Flexible(
                     child: Text(
                       email,
-                      style: TextStyle(
+                      style: GoogleFonts.montserrat(
                         color: Colors.white70,
                         fontSize: screenTextScaleFactor <= 1.3 ? 12 : 7,
                       ),
@@ -1636,7 +1641,7 @@ class _HomePage1State extends State<HomePage1> {
                     },
                     child: Text(
                       'User ID: ${userId.substring(0, 18)}...',
-                      style: TextStyle(
+                      style: GoogleFonts.montserrat(
                         color: Colors.white,
                         fontSize: screenTextScaleFactor <= 1.3 ? 13 : 5,
                         fontWeight: FontWeight.w600,
@@ -1655,7 +1660,7 @@ class _HomePage1State extends State<HomePage1> {
                 ),
                 title: Text(
                   'Requests',
-                  style: TextStyle(
+                  style: GoogleFonts.montserrat(
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
@@ -1721,7 +1726,7 @@ class _HomePage1State extends State<HomePage1> {
                 ),
                 title: Text(
                   'Chats',
-                  style: TextStyle(
+                  style: GoogleFonts.montserrat(
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
@@ -1781,7 +1786,7 @@ class _HomePage1State extends State<HomePage1> {
                 ),
                 title: Text(
                   'Statistics',
-                  style: TextStyle(
+                  style: GoogleFonts.montserrat(
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
@@ -1841,7 +1846,7 @@ class _HomePage1State extends State<HomePage1> {
                 ),
                 title: Text(
                   'Trips',
-                  style: TextStyle(
+                  style: GoogleFonts.montserrat(
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
@@ -1901,7 +1906,7 @@ class _HomePage1State extends State<HomePage1> {
                 ),
                 title: Text(
                   'Driver Login',
-                  style: TextStyle(
+                  style: GoogleFonts.montserrat(
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
@@ -1958,7 +1963,7 @@ class _HomePage1State extends State<HomePage1> {
                 ),
                 title: Text(
                   'Logout',
-                  style: TextStyle(
+                  style: GoogleFonts.montserrat(
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {

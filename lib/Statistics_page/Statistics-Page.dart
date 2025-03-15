@@ -370,7 +370,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                       SizedBox(height: 32),
                       Text(
                         'यात्रा विवरण',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.hind(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
@@ -449,7 +449,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.hind(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: Colors.grey[700],
@@ -458,7 +458,7 @@ class _StatisticsPageState extends State<StatisticsPage>
                   SizedBox(height: 4),
                   Text(
                     value,
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.hind(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,

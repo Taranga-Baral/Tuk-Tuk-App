@@ -905,7 +905,7 @@ class _HistoryPageState extends State<HistoryPage> {
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.montserrat(
               fontSize: 14,
               color: Colors.grey[700],
             ),

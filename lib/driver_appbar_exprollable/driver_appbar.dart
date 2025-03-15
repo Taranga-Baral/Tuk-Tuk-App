@@ -240,6 +240,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   void initState() {
     super.initState();
     _fetchDriverInfo(); // Fetch driver info on init
+    fetchTotalFare(widget.driverId);
   }
 
   void _fetchDriverInfo() {
@@ -247,6 +248,43 @@ class _CustomAppBarState extends State<CustomAppBar> {
         .collection('vehicleData')
         .doc(widget.driverId)
         .get();
+  }
+
+  double driverTotalBalance = 0.00;
+  double driverTotalMoneyToPay = 0.00;
+//driver blalnce
+  Future<double> fetchTotalFare(String driverId) async {
+    double totalFare = 0.0;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Step 1: Query confirmedDrivers collection for matching driverId
+    QuerySnapshot confirmedDriversSnapshot = await firestore
+        .collection('confirmedDrivers')
+        .where('driverId', isEqualTo: driverId)
+        .get();
+
+    // Step 2: Iterate through matched documents and get tripId
+    for (var doc in confirmedDriversSnapshot.docs) {
+      String tripId = doc['tripId'];
+
+      // Step 3: Query trips collection using tripId and fetch fare
+      DocumentSnapshot tripSnapshot =
+          await firestore.collection('trips').doc(tripId).get();
+
+      if (tripSnapshot.exists) {
+        double fare = double.parse(tripSnapshot['fare']);
+        totalFare += fare; // Step 4: Add fare to totalFare
+      }
+    }
+
+    setState(() {
+      driverTotalBalance = totalFare;
+      driverTotalMoneyToPay = 0.03 * totalFare;
+    });
+    print('Total Fare: $totalFare');
+    print('Total Money to Pay: ${0.03 * totalFare}');
+
+    return totalFare;
   }
 
   @override
@@ -567,15 +605,40 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         ),
                         SizedBox(height: 10),
                         // Driver Details
-                        _buildDetailRow(
-                            'Address', data['address'] ?? 'Unknown Address'),
-                        _buildDetailRow(
-                            'Number Plate', data['numberPlate'] ?? 'Unknown'),
-                        _buildDetailRow(
-                            'Vehicle', data['vehicleType'] ?? 'Unknown'),
-                        _buildDetailRow(
-                            'Type', data['vehicleMode'] ?? 'Unknown'),
-                        _buildDetailRow('Phone', data['phone'] ?? 'Unknown'),
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              _buildDetailRow('Address',
+                                  data['address'] ?? 'Unknown Address'),
+                              _buildDetailRow('Number Plate',
+                                  data['numberPlate'] ?? 'Unknown'),
+                              _buildDetailRow(
+                                  'Vehicle', data['vehicleType'] ?? 'Unknown'),
+                              _buildDetailRow(
+                                  'Type', data['vehicleMode'] ?? 'Unknown'),
+                              _buildDetailRow(
+                                  'Phone', data['phone'] ?? 'Unknown'),
+                              SizedBox(
+                                height: 2,
+                              ),
+                              Divider(
+                                color: Colors.green,
+                                thickness: 1.5,
+                              ),
+                              SizedBox(
+                                height: 2,
+                              ),
+                              _buildDetailRow('Total Earned:',
+                                  driverTotalBalance.toStringAsFixed(0)),
+
+                              //start
+                              _buildDetailRow('Total Money to Pay:',
+                                  driverTotalMoneyToPay.toStringAsFixed(0)),
+                              //end
+                            ],
+                          ),
+                        ),
+
                         SizedBox(height: 20),
                         // Close Button
                         ElevatedButton(
