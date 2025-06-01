@@ -254,6 +254,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
   double driverTotalMoneyToPay = 0.00;
 //driver blalnce
   Future<double> fetchTotalFare(String driverId) async {
+    // double driverTotalBalance = 0.00;
+    // double driverTotalMoneyToPay = 0.00;
     double totalFare = 0.0;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -277,12 +279,27 @@ class _CustomAppBarState extends State<CustomAppBar> {
       }
     }
 
+    // Step 5: Calculate the total money to pay (3% of total fare)
+    double totalMoneyToPay = 0.03 * totalFare;
+
+    // Step 6: Update or create a document in the 'balance' collection
+    await firestore.collection('balance').doc(driverId).set(
+        {
+          'driverTotalBalance': totalFare,
+          'driverTotalMoneyToPay': totalMoneyToPay,
+        },
+        SetOptions(
+            merge: true)); // Merge to update existing fields or create new ones
+
+    // Step 7: Update the state (if this is part of a Flutter widget)
     setState(() {
       driverTotalBalance = totalFare;
-      driverTotalMoneyToPay = 0.03 * totalFare;
+      driverTotalMoneyToPay = totalMoneyToPay;
     });
+
+    // Step 8: Print the results (optional)
     print('Total Fare: $totalFare');
-    print('Total Money to Pay: ${0.03 * totalFare}');
+    print('Total Money to Pay: $totalMoneyToPay');
 
     return totalFare;
   }

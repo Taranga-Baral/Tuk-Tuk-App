@@ -118,8 +118,12 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
 
     // Start the query by filtering trips based on the selected place
     var query = FirebaseFirestore.instance
-        .collection('trips')
-        .where('municipalityDropdown', isEqualTo: _selectedPlace);
+            .collection('trips')
+            .where('municipalityDropdown', isEqualTo: _selectedPlace)
+            .where('vehicle_mode', isEqualTo: _selectedVehicleMode)
+            .where('vehicleType',
+                isEqualTo: _selectedVehicleType) // Filter by vehicle type
+        ;
 
     // Add vehicle type filter if a specific vehicle type is selected
     // if (_selectedVehicleType != null && _selectedVehicleType != 'All') {

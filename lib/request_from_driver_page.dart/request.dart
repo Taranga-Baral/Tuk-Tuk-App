@@ -14,8 +14,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class RequestPage extends StatefulWidget {
   final String userId;
+  final bool? arrivedDriveronInit;
 
-  const RequestPage({super.key, required this.userId});
+  const RequestPage(
+      {super.key, required this.userId, this.arrivedDriveronInit});
 
   @override
   _RequestPageState createState() => _RequestPageState();
@@ -25,12 +27,12 @@ class _RequestPageState extends State<RequestPage> {
   List<DocumentSnapshot> requests = [];
   List<DocumentSnapshot> arrivedDrivers = [];
   bool isDataLoaded = false;
-  bool showArrivedDrivers = false;
+
   bool _isOnline = true; // Track connectivity status
   final Map<String, bool> _buttonStates =
       {}; // Track button states per trip using tripId (String)
   List<bool> _expandedStates = [];
-
+  bool showArrivedDrivers = false;
   @override
   void initState() {
     super.initState();
@@ -39,10 +41,23 @@ class _RequestPageState extends State<RequestPage> {
   }
 
   Future<void> _refreshData() async {
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RequestPage(userId: widget.userId)));
+    if (showArrivedDrivers == false) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RequestPage(
+                    userId: widget.userId,
+                    arrivedDriveronInit: false,
+                  )));
+    } else {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RequestPage(
+                    userId: widget.userId,
+                    arrivedDriveronInit: true,
+                  )));
+    }
   }
 
   Future<void> _checkConnectivity() async {
@@ -53,6 +68,8 @@ class _RequestPageState extends State<RequestPage> {
   }
 
   Future<void> _loadData() async {
+    showArrivedDrivers = widget.arrivedDriveronInit ?? showArrivedDrivers;
+
     try {
       print('Fetching requests...');
       final requestsSnapshot = await FirebaseFirestore.instance
@@ -346,6 +363,7 @@ class _RequestPageState extends State<RequestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
         // backgroundColor: Colors.blueAccent,
         appBar: AppBar(
           leading: IconButton(
@@ -385,36 +403,105 @@ class _RequestPageState extends State<RequestPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-          actions: [
-            Row(
-              children: [
-                PopupMenuButton<String>(
-                  iconColor: Colors.white,
-                  color: Color.fromRGBO(255, 255, 255, 1),
-                  onSelected: (value) {
-                    setState(() {
-                      if (value == 'requests') {
-                        showArrivedDrivers = false;
-                      } else if (value == 'arrivedDrivers') {
-                        showArrivedDrivers = true;
-                      }
-                    });
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'requests',
-                      child: Text('Requests'),
-                    ),
-                    PopupMenuItem(
-                      value: 'arrivedDrivers',
-                      child: Text('Arrived Drivers'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+
+          // actions: [
+          //   Row(
+          //     children: [
+          //       PopupMenuButton<String>(
+          //         iconColor: Colors.white,
+          //         color: Color.fromRGBO(255, 255, 255, 1),
+          //         onSelected: (value) {
+          //           setState(() {
+          //             if (value == 'requests') {
+          //               showArrivedDrivers = false;
+          //             } else if (value == 'arrivedDrivers') {
+          //               showArrivedDrivers = true;
+          //             }
+          //           });
+          //         },
+          //         itemBuilder: (context) => [
+          //           PopupMenuItem(
+          //             value: 'requests',
+          //             child: Text('Requests'),
+          //           ),
+          //           PopupMenuItem(
+          //             value: 'arrivedDrivers',
+          //             child: Text('Arrived Drivers'),
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ],
         ),
+        floatingActionButton: showArrivedDrivers
+            ? SizedBox(
+                width: 120,
+                height: 50,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    print('Value of showArrivedDrivers 1: $showArrivedDrivers');
+                    setState(() {
+                      showArrivedDrivers = !showArrivedDrivers;
+                    });
+                    print(
+                        'Value of showArrivedDrivers after 1: $showArrivedDrivers');
+                  },
+                  backgroundColor: Colors.redAccent.withValues(alpha: 0.92),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.person_add_alt_1_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Requests',
+                        style: GoogleFonts.montserrat(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : SizedBox(
+                width: 155,
+                height: 50,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    print('Value of showArrivedDrivers 2: $showArrivedDrivers');
+
+                    setState(() {
+                      showArrivedDrivers = !showArrivedDrivers;
+                    });
+                    print(
+                        'Value of showArrivedDrivers after 2: $showArrivedDrivers');
+                  },
+                  backgroundColor: Color.fromRGBO(1, 181, 116, 0.93),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.drive_eta_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Waiting for You',
+                        style: GoogleFonts.montserrat(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
         body: isDataLoaded
             ? RefreshIndicator(
                 onRefresh: _refreshData,
@@ -1285,19 +1372,146 @@ class _RequestPageState extends State<RequestPage> {
                                       AsyncSnapshot<List<dynamic>> snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return Center(
-                                        child: Image(
-                                          image: AssetImage(
-                                              'assets/loading_screen.gif'),
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.3,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                        ),
+                                      return ListView.builder(
+                                        itemCount:
+                                            8, // Number of shimmer placeholders
+                                        itemBuilder: (context, index) {
+                                          return Card(
+                                            margin: const EdgeInsets.all(8),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            child: Shimmer.fromColors(
+                                              baseColor: Colors.grey[300]!,
+                                              highlightColor: Colors.grey[100]!,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(16.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    // Container(
+                                                    //   width: 150,
+                                                    //   height: 40,
+                                                    //   color: Colors.white,
+                                                    // ),
+                                                    // const SizedBox(height: 8),
+                                                    // Row(
+                                                    //   children: [
+                                                    //     Container(
+                                                    //       width: 24,
+                                                    //       height: 40,
+                                                    //       color: Colors.white,
+                                                    //     ),
+                                                    //     const SizedBox(width: 10),
+                                                    //     Expanded(
+                                                    //       child: Container(
+                                                    //         height: 40,
+                                                    //         color: Colors.white,
+                                                    //       ),
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
+                                                    // const SizedBox(height: 5),
+                                                    // Row(
+                                                    //   children: [
+                                                    //     Container(
+                                                    //       width: 24,
+                                                    //       height: 40,
+                                                    //       color: Colors.white,
+                                                    //     ),
+                                                    //     const SizedBox(width: 10),
+                                                    //     Expanded(
+                                                    //       child: Container(
+                                                    //         height: 40,
+                                                    //         color: Colors.white,
+                                                    //       ),
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
+
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Container(
+                                                              height: 20,
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 120,
+                                                            ),
+                                                            SizedBox(
+                                                              height: 5,
+                                                            ),
+                                                            Container(
+                                                              height: 10,
+                                                              width: 80,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                            SizedBox(
+                                                              height: 6,
+                                                            ),
+                                                            Container(
+                                                              height: 10,
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 50,
+                                                            ),
+
+                                                            //start
+                                                            SizedBox(
+                                                              height: 4,
+                                                            ),
+                                                            Container(
+                                                              height: 10,
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 50,
+                                                            ),
+
+                                                            SizedBox(
+                                                              height: 5,
+                                                            ),
+                                                            Container(
+                                                              height: 10,
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 50,
+                                                            ),
+
+                                                            SizedBox(
+                                                              height: 5,
+                                                            ),
+                                                            Container(
+                                                              height: 10,
+                                                              color:
+                                                                  Colors.grey,
+                                                              width: 50,
+                                                            ),
+
+                                                            //end
+                                                          ],
+                                                        ),
+                                                        CircleAvatar(
+                                                          radius: 30,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       );
                                       // return _buildShimmerLoading();
                                     }

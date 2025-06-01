@@ -433,7 +433,7 @@ class _StatisticsPageState extends State<StatisticsPage>
     required Color color,
   }) {
     return Card(
-      elevation: 4,
+      elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),

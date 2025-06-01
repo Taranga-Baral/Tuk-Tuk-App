@@ -633,6 +633,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
       []; // List to hold button states for each trip
 
   final List<TripModel> _tripDataList = [];
+
   bool _isLoading = false;
   final ScrollController _scrollController = ScrollController();
 
@@ -993,11 +994,63 @@ class _DriverHomePageState extends State<DriverHomePage> {
     setState(() {}); // Update the UI after loading the states
   }
 
+  Future<double> fetchTotalFare(String driverId) async {
+    double driverTotalBalance = 0.00;
+    double driverTotalMoneyToPay = 0.00;
+    double totalFare = 0.0;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Step 1: Query confirmedDrivers collection for matching driverId
+    QuerySnapshot confirmedDriversSnapshot = await firestore
+        .collection('confirmedDrivers')
+        .where('driverId', isEqualTo: driverId)
+        .get();
+
+    // Step 2: Iterate through matched documents and get tripId
+    for (var doc in confirmedDriversSnapshot.docs) {
+      String tripId = doc['tripId'];
+
+      // Step 3: Query trips collection using tripId and fetch fare
+      DocumentSnapshot tripSnapshot =
+          await firestore.collection('trips').doc(tripId).get();
+
+      if (tripSnapshot.exists) {
+        double fare = double.parse(tripSnapshot['fare']);
+        totalFare += fare; // Step 4: Add fare to totalFare
+      }
+    }
+
+    // Step 5: Calculate the total money to pay (3% of total fare)
+    double totalMoneyToPay = 0.03 * totalFare;
+
+    // Step 6: Update or create a document in the 'balance' collection
+    await firestore.collection('balance').doc(driverId).set(
+        {
+          'driverTotalBalance': totalFare,
+          'driverTotalMoneyToPay': totalMoneyToPay,
+        },
+        SetOptions(
+            merge: true)); // Merge to update existing fields or create new ones
+
+    // Step 7: Update the state (if this is part of a Flutter widget)
+    setState(() {
+      driverTotalBalance = totalFare;
+      driverTotalMoneyToPay = totalMoneyToPay;
+    });
+
+    // Step 8: Print the results (optional)
+    print('Total Fare: $totalFare');
+    print('Total Money to Pay: $totalMoneyToPay');
+
+    return totalFare;
+  }
+
   @override
   void initState() {
     super.initState();
     _loadButtonStates(); // Load button states
     _fetchTrips();
+    fetchTotalFare(widget.driverEmail);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -1444,72 +1497,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 },
               ),
             ),
-      // body: _isLoading && _tripDataList.isEmpty
-      //     ? RefreshIndicator(
-      //         onRefresh: _refreshData,
-      //         child: Center(
-      //           child: Image(
-      //             image: AssetImage('assets/no_data_found.gif'),
-      //             height: MediaQuery.of(context).size.height * 0.3,
-      //             width: MediaQuery.of(context).size.width * 0.3,
-      //           ),
-      //         ),
-      //       )
-      //     : RefreshIndicator(
-      //         onRefresh: _refreshData,
-      //         child: ListView.builder(
-      //           controller: _scrollController,
-      //           itemCount: _tripDataList.length +
-      //               (_hasMore
-      //                   ? 1
-      //                   : 0), // Loading indicator if more trips are available
-      //           itemBuilder: (context, index) {
-      //             if (index == _tripDataList.length) {
-      //               return Center(
-      //                   child: SizedBox()); // Loading indicator at the end
-      //             }
-      //             final tripData = _tripDataList[index];
-      //             // Check the index against the length of _isButtonDisabledList
-      //             final isButtonDisabled = index < _isButtonDisabledList.length
-      //                 ? _isButtonDisabledList[index]
-      //                 : false; // Default to false if index is out of bounds
-
-      //             return TripCardWidget(
-      //               driverId: widget.driverEmail,
-      //               userId: tripData.userId.toString(),
-      //               tripId: tripData.tripId.toString(),
-      //               tripData: _tripDataList[index],
-      //               onPhoneTap: () {
-      //                 if (tripData.phoneNumber != null &&
-      //                     tripData.phoneNumber!.isNotEmpty) {
-      //                   _launchPhoneNumber(tripData.phoneNumber!);
-      //                 } else {
-      //                   ScaffoldMessenger.of(context).showSnackBar(
-      //                     SnackBar(content: Text('Phone number not available')),
-      //                   );
-      //                 }
-      //               },
-      //               onMapTap: () =>
-      //                   // _launchOpenStreetMapWithDirections(tripData.tripId!),
-      //                   Navigator.push(
-      //                       context,
-      //                       MaterialPageRoute(
-      //                           builder: (context) =>
-      //                               DriverViewPassengerLocation(
-      //                                 tripId: tripData.tripId!,
-      //                               ))),
-      //               onRequestTap: () {
-      //                 _setButtonState(index); // Call to disable the button
-      //                 showTripAndUserIdInSnackBar(
-      //                     _tripDataList[index], context, index);
-      //               },
-      //               index: index,
-      //               isButtonDisabled:
-      //                   isButtonDisabled, // Use the checked value here
-      //             );
-      //           },
-      //         ),
-      //       ),
     );
   }
 

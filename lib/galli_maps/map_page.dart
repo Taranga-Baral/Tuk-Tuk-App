@@ -494,9 +494,9 @@ class _MapPageState extends State<MapPage> {
                                     MapPage(userId: widget.userId)));
                       },
                       child: Icon(
-                        Icons.cancel,
+                        Icons.close,
                         color: const Color.fromARGB(237, 244, 67, 54),
-                        size: 30,
+                        size: 24,
                       ),
                     ),
                   ],
@@ -808,7 +808,8 @@ class _MapPageState extends State<MapPage> {
                                   fare = FareCalculator.calculateFare(
                                     distance: distance,
                                     vehicleType: selectedVehicleType!,
-                                    mode: 'Petrol',
+                                    // mode: 'Petrol',
+                                    mode: selectedMode!,
                                     passengers: selectedPassengers,
                                   );
                                 });

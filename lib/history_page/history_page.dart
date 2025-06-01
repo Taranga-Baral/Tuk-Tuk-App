@@ -729,7 +729,7 @@ class _HistoryPageState extends State<HistoryPage> {
           clipBehavior: Clip.antiAlias,
           children: [
             Card(
-              elevation: 4,
+              elevation: 1,
               margin: const EdgeInsets.all(8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),

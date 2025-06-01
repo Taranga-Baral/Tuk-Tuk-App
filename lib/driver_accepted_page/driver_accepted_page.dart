@@ -447,7 +447,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
 
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             InkWell(
                                               onTap: () {
@@ -669,20 +669,25 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                               );
                                                             }
                                                           },
-                                                    child: Icon(
-                                                      Icons.send,
-                                                      color: isSendButtonPressed
-                                                          ? Colors.grey
-                                                          : Colors.blue,
-                                                    ),
+                                                    // child: Icon(
+                                                    //   Icons.send,
+                                                    //   color: isSendButtonPressed
+                                                    //       ? Colors.grey
+                                                    //       : Colors.blue,
+                                                    // ),
+                                                    child: Text('आइपुगे',
+                                                        style: TextStyle(
+                                                          color:
+                                                              isSendButtonPressed
+                                                                  ? Colors.grey
+                                                                  : Colors.blue,
+                                                          fontSize: 17,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        )),
                                                   ),
-                                            IconButton(
-                                              icon: const Icon(Icons.done_all),
-                                              color: isSendButtonPressed &&
-                                                      !isDoneButtonPressed
-                                                  ? Colors.blue
-                                                  : Colors.grey,
-                                              onPressed: isSendButtonPressed &&
+                                            InkWell(
+                                              onTap: isSendButtonPressed &&
                                                       !isDoneButtonPressed
                                                   ? () async {
                                                       await _updateButtonStates(
@@ -751,6 +756,16 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                                       setState(() {});
                                                     }
                                                   : null,
+                                              child: Text('पुराए',
+                                                  style: TextStyle(
+                                                    color: isSendButtonPressed &&
+                                                            !isDoneButtonPressed
+                                                        ? Color.fromRGBO(
+                                                            1, 181, 116, 1)
+                                                        : Colors.grey,
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                  )),
                                             ),
                                           ],
                                         ),
@@ -768,7 +783,7 @@ class _DriverAcceptedPageState extends State<DriverAcceptedPage> {
                                         //   ],
                                         // ),
                                         SizedBox(
-                                          height: 5,
+                                          height: 10,
                                         ),
                                         Divider(
                                           height: 1,
