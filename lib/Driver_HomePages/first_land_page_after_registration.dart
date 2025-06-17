@@ -1026,7 +1026,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // Step 6: Update or create a document in the 'balance' collection
     await firestore.collection('balance').doc(driverId).set(
         {
-          'driverTotalBalance': totalFare,
+          'driverTotalBalance': totalFare * 0.97, // 97% of total fare
           'driverTotalMoneyToPay': totalMoneyToPay,
         },
         SetOptions(

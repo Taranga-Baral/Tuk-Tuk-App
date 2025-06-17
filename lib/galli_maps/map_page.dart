@@ -1203,8 +1203,8 @@ class _MapPageState extends State<MapPage> {
                             width: MediaQuery.of(context).size.width,
                           ),
                           compassPosition: (
-                            position: CompassViewPosition.topRight,
-                            offset: const Point(32, 82)
+                            position: CompassViewPosition.bottomRight,
+                            offset: const Point(14, 75)
                           ),
                           showCompass: true,
                           onMapCreated: (newC) {
@@ -1219,8 +1219,8 @@ class _MapPageState extends State<MapPage> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 35,
-                                    left: 20,
+                                    top: 42,
+                                    left: 0,
                                   ),
                                   child: GestureDetector(
                                     onTap: () {
@@ -1230,113 +1230,111 @@ class _MapPageState extends State<MapPage> {
                                               builder: (context) =>
                                                   HomePage1()));
                                     },
-                                    child: Icon(
-                                      Icons.arrow_back_ios_outlined,
-                                      color: Colors.black87,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Container(
+                                        color: Color.fromARGB(255, 80, 91, 240),
+                                        height:
+                                            MediaQuery.of(context).size.width *
+                                                0.14,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.14,
+                                        child: Icon(
+                                          Icons.menu_rounded,
+                                          size: 22,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
 
                                 Padding(
                                   padding:
-                                      const EdgeInsets.only(left: 10, top: 35),
-                                  child: SizedBox(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.78,
-                                    child: Form(
-                                      key: _formKey,
-                                      child: TextFormField(
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return 'Please enter Location';
-                                          }
-                                          return null; // Return null if validation passes
-                                        },
-                                        onFieldSubmitted: _handleSearch,
-                                        controller: _searchController,
-                                        decoration: InputDecoration(
-                                          // Hint text with a subtle style
-                                          hintText: 'Enter Full Location',
-                                          hintStyle: TextStyle(
-                                            color: Colors.grey[600],
+                                      const EdgeInsets.only(left: 0, top: 42),
+                                  child: Material(
+                                    elevation: 4.5,
+                                    borderRadius: BorderRadius.circular(10),
+                                    shadowColor: Colors.grey
+                                        .withAlpha(50), // Silverish shadow
+                                    child: SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.7,
+                                      child: Form(
+                                        key: _formKey,
+                                        child: TextFormField(
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return 'Please enter Location';
+                                            }
+                                            return null;
+                                          },
+                                          onFieldSubmitted: _handleSearch,
+                                          controller: _searchController,
+                                          decoration: InputDecoration(
+                                            hintText: 'Going to ?',
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey[600],
+                                              fontSize: 16,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                            prefixIcon: Icon(
+                                              Icons.location_on,
+                                              color: Colors.red,
+                                              size: 24,
+                                            ),
+                                            filled: true,
+                                            fillColor: Colors.white,
+                                            suffixIcon: _searchController.text
+                                                    .trim()
+                                                    .isNotEmpty
+                                                ? IconButton(
+                                                    icon: Icon(
+                                                      Icons.clear,
+                                                      color: Colors.grey[600],
+                                                      size: 20,
+                                                    ),
+                                                    onPressed: () {
+                                                      _searchController.clear();
+                                                      setState(() {});
+                                                    },
+                                                  )
+                                                : null,
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                              vertical: 15.0,
+                                              horizontal: 20.0,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide
+                                                  .none, // No visible border
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide(
+                                                color: Colors.grey[300]!,
+                                                width: 1,
+                                              ),
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            color: Colors.black87,
                                             fontSize: 16,
-                                            fontStyle: FontStyle.italic,
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                          // Prefix icon (search icon)
-                                          prefixIcon: Icon(
-                                            Icons.location_on,
-                                            color: Colors.red,
-                                            size: 24,
-                                          ),
-                                          // Border with rounded corners and shadow
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            borderSide: BorderSide(
-                                              color: Colors.blue[700]!,
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                          // Focused border with a glowing effect
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            borderSide: BorderSide(
-                                              color: Colors.blue[700]!,
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                          // Enabled border with a subtle color
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            borderSide: BorderSide(
-                                              color: Colors.grey[400]!,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          // Filled background with a slight transparency
-                                          filled: true,
-                                          fillColor:
-                                              Colors.white.withOpacity(0.9),
-                                          // Suffix icon (clear button)
-                                          suffixIcon: _searchController.text
-                                                  .trim()
-                                                  .isNotEmpty
-                                              ? IconButton(
-                                                  icon: Icon(
-                                                    Icons.clear,
-                                                    color: Colors.grey[600],
-                                                    size: 20,
-                                                  ),
-                                                  onPressed: () {
-                                                    _searchController.clear();
-                                                    setState(() {});
-                                                  },
-                                                )
-                                              : null,
-                                          // Padding inside the TextField
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 15.0,
-                                            horizontal: 20.0,
-                                          ),
-                                          // Add a subtle shadow to the container
-                                          enabled: true,
-                                          isDense: true,
-                                          // Add a floating label behavior
-                                          floatingLabelBehavior:
-                                              FloatingLabelBehavior.auto,
+                                          cursorColor: Colors.blue[700],
+                                          cursorWidth: 2.0,
+                                          cursorRadius: Radius.circular(2.0),
                                         ),
-                                        // Customize the text style
-                                        style: TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        // Cursor customization
-                                        cursorColor: Colors.blue[700],
-                                        cursorWidth: 2.0,
-                                        cursorRadius: Radius.circular(2.0),
                                       ),
                                     ),
                                   ),
@@ -1467,6 +1465,7 @@ class _MapPageState extends State<MapPage> {
   void showPopup() {
     if (_searchController.text.isEmpty) {
       Dialog(
+        backgroundColor: Colors.white,
         elevation: 1,
         insetPadding: EdgeInsets.zero,
         child: Container(

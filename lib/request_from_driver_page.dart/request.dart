@@ -435,70 +435,123 @@ class _RequestPageState extends State<RequestPage> {
           // ],
         ),
         floatingActionButton: showArrivedDrivers
-            ? SizedBox(
-                width: 120,
-                height: 50,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    print('Value of showArrivedDrivers 1: $showArrivedDrivers');
-                    setState(() {
-                      showArrivedDrivers = !showArrivedDrivers;
-                    });
-                    print(
-                        'Value of showArrivedDrivers after 1: $showArrivedDrivers');
-                  },
-                  backgroundColor: Colors.redAccent.withValues(alpha: 0.92),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.person_add_alt_1_rounded,
-                        size: 18,
-                        color: Colors.white,
+            ? IntrinsicWidth(
+                child: SizedBox(
+                  height: 50,
+                  // child: FloatingActionButton(
+                  //   onPressed: () {
+                  // print('Value of showArrivedDrivers 1: $showArrivedDrivers');
+                  // setState(() {
+                  //   showArrivedDrivers = !showArrivedDrivers;
+                  // });
+                  // print(
+                  //     'Value of showArrivedDrivers after 1: $showArrivedDrivers');
+                  //   },
+                  // backgroundColor: Colors.redAccent.withValues(alpha: 0.92),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Icon(
+                  //         Icons.person_add_alt_1_rounded,
+                  //         size: 18,
+                  //         color: Colors.white,
+                  //       ),
+                  //       SizedBox(width: 8),
+                  //       Text(
+                  //         'Requests',
+                  //         style: GoogleFonts.montserrat(
+                  //             fontWeight: FontWeight.w600,
+                  //             color: Colors.white,
+                  //             fontSize: 16),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent.withValues(alpha: 0.92),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(17), // Rounded corners
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Requests',
-                        style: GoogleFonts.montserrat(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16), // Horizontal padding
+                      minimumSize:
+                          const Size(0, 50), // No minimum width, fixed height
+                    ),
+                    onPressed: () {
+                      print(
+                          'Value of showArrivedDrivers 1: $showArrivedDrivers');
+                      setState(() {
+                        showArrivedDrivers = !showArrivedDrivers;
+                      });
+                      print(
+                          'Value of showArrivedDrivers after 1: $showArrivedDrivers');
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min, // Fits content width
+                      children: const [
+                        Icon(
+                          Icons.person_add_alt_1_rounded,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Requests',
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
-                            fontSize: 16),
-                      ),
-                    ],
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               )
-            : SizedBox(
-                width: 155,
-                height: 50,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    print('Value of showArrivedDrivers 2: $showArrivedDrivers');
-
-                    setState(() {
-                      showArrivedDrivers = !showArrivedDrivers;
-                    });
-                    print(
-                        'Value of showArrivedDrivers after 2: $showArrivedDrivers');
-                  },
-                  backgroundColor: Color.fromRGBO(1, 181, 116, 0.93),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.drive_eta_rounded,
-                        size: 18,
-                        color: Colors.white,
+            : IntrinsicWidth(
+                child: SizedBox(
+                  height: 50, // Fixed height
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(1, 181, 116, 0.93),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(17), // Rounded corners
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Waiting for You',
-                        style: GoogleFonts.montserrat(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16), // Horizontal padding
+                      minimumSize:
+                          const Size(0, 50), // No minimum width, fixed height
+                    ),
+                    onPressed: () {
+                      print(
+                          'Value of showArrivedDrivers 2: $showArrivedDrivers');
+                      setState(() {
+                        showArrivedDrivers = !showArrivedDrivers;
+                      });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min, // Fits content width
+                      children: const [
+                        Icon(
+                          Icons.drive_eta_rounded,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Waiting Drivers',
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
-                            fontSize: 16),
-                      ),
-                    ],
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1372,148 +1425,148 @@ class _RequestPageState extends State<RequestPage> {
                                       AsyncSnapshot<List<dynamic>> snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return ListView.builder(
-                                        itemCount:
-                                            8, // Number of shimmer placeholders
-                                        itemBuilder: (context, index) {
-                                          return Card(
-                                            margin: const EdgeInsets.all(8),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                            ),
-                                            child: Shimmer.fromColors(
-                                              baseColor: Colors.grey[300]!,
-                                              highlightColor: Colors.grey[100]!,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(16.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    // Container(
-                                                    //   width: 150,
-                                                    //   height: 40,
-                                                    //   color: Colors.white,
-                                                    // ),
-                                                    // const SizedBox(height: 8),
-                                                    // Row(
-                                                    //   children: [
-                                                    //     Container(
-                                                    //       width: 24,
-                                                    //       height: 40,
-                                                    //       color: Colors.white,
-                                                    //     ),
-                                                    //     const SizedBox(width: 10),
-                                                    //     Expanded(
-                                                    //       child: Container(
-                                                    //         height: 40,
-                                                    //         color: Colors.white,
-                                                    //       ),
-                                                    //     ),
-                                                    //   ],
-                                                    // ),
-                                                    // const SizedBox(height: 5),
-                                                    // Row(
-                                                    //   children: [
-                                                    //     Container(
-                                                    //       width: 24,
-                                                    //       height: 40,
-                                                    //       color: Colors.white,
-                                                    //     ),
-                                                    //     const SizedBox(width: 10),
-                                                    //     Expanded(
-                                                    //       child: Container(
-                                                    //         height: 40,
-                                                    //         color: Colors.white,
-                                                    //       ),
-                                                    //     ),
-                                                    //   ],
-                                                    // ),
+                                      // return ListView.builder(
+                                      //   itemCount:
+                                      //       8, // Number of shimmer placeholders
+                                      //   itemBuilder: (context, index) {
+                                      //     return Card(
+                                      //       margin: const EdgeInsets.all(8),
+                                      //       shape: RoundedRectangleBorder(
+                                      //         borderRadius:
+                                      //             BorderRadius.circular(15),
+                                      //       ),
+                                      //       child: Shimmer.fromColors(
+                                      //         baseColor: Colors.grey[300]!,
+                                      //         highlightColor: Colors.grey[100]!,
+                                      //         child: Padding(
+                                      //           padding:
+                                      //               const EdgeInsets.all(16.0),
+                                      //           child: Column(
+                                      //             crossAxisAlignment:
+                                      //                 CrossAxisAlignment.start,
+                                      //             children: [
+                                      //               // Container(
+                                      //               //   width: 150,
+                                      //               //   height: 40,
+                                      //               //   color: Colors.white,
+                                      //               // ),
+                                      //               // const SizedBox(height: 8),
+                                      //               // Row(
+                                      //               //   children: [
+                                      //               //     Container(
+                                      //               //       width: 24,
+                                      //               //       height: 40,
+                                      //               //       color: Colors.white,
+                                      //               //     ),
+                                      //               //     const SizedBox(width: 10),
+                                      //               //     Expanded(
+                                      //               //       child: Container(
+                                      //               //         height: 40,
+                                      //               //         color: Colors.white,
+                                      //               //       ),
+                                      //               //     ),
+                                      //               //   ],
+                                      //               // ),
+                                      //               // const SizedBox(height: 5),
+                                      //               // Row(
+                                      //               //   children: [
+                                      //               //     Container(
+                                      //               //       width: 24,
+                                      //               //       height: 40,
+                                      //               //       color: Colors.white,
+                                      //               //     ),
+                                      //               //     const SizedBox(width: 10),
+                                      //               //     Expanded(
+                                      //               //       child: Container(
+                                      //               //         height: 40,
+                                      //               //         color: Colors.white,
+                                      //               //       ),
+                                      //               //     ),
+                                      //               //   ],
+                                      //               // ),
 
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceAround,
-                                                      children: [
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Container(
-                                                              height: 20,
-                                                              color:
-                                                                  Colors.grey,
-                                                              width: 120,
-                                                            ),
-                                                            SizedBox(
-                                                              height: 5,
-                                                            ),
-                                                            Container(
-                                                              height: 10,
-                                                              width: 80,
-                                                              color:
-                                                                  Colors.grey,
-                                                            ),
-                                                            SizedBox(
-                                                              height: 6,
-                                                            ),
-                                                            Container(
-                                                              height: 10,
-                                                              color:
-                                                                  Colors.grey,
-                                                              width: 50,
-                                                            ),
+                                      //               Row(
+                                      //                 mainAxisAlignment:
+                                      //                     MainAxisAlignment
+                                      //                         .spaceAround,
+                                      //                 children: [
+                                      //                   Column(
+                                      //                     crossAxisAlignment:
+                                      //                         CrossAxisAlignment
+                                      //                             .start,
+                                      //                     children: [
+                                      //                       Container(
+                                      //                         height: 20,
+                                      //                         color:
+                                      //                             Colors.grey,
+                                      //                         width: 120,
+                                      //                       ),
+                                      //                       SizedBox(
+                                      //                         height: 5,
+                                      //                       ),
+                                      //                       Container(
+                                      //                         height: 10,
+                                      //                         width: 80,
+                                      //                         color:
+                                      //                             Colors.grey,
+                                      //                       ),
+                                      //                       SizedBox(
+                                      //                         height: 6,
+                                      //                       ),
+                                      //                       Container(
+                                      //                         height: 10,
+                                      //                         color:
+                                      //                             Colors.grey,
+                                      //                         width: 50,
+                                      //                       ),
 
-                                                            //start
-                                                            SizedBox(
-                                                              height: 4,
-                                                            ),
-                                                            Container(
-                                                              height: 10,
-                                                              color:
-                                                                  Colors.grey,
-                                                              width: 50,
-                                                            ),
+                                      //                       //start
+                                      //                       SizedBox(
+                                      //                         height: 4,
+                                      //                       ),
+                                      //                       Container(
+                                      //                         height: 10,
+                                      //                         color:
+                                      //                             Colors.grey,
+                                      //                         width: 50,
+                                      //                       ),
 
-                                                            SizedBox(
-                                                              height: 5,
-                                                            ),
-                                                            Container(
-                                                              height: 10,
-                                                              color:
-                                                                  Colors.grey,
-                                                              width: 50,
-                                                            ),
+                                      //                       SizedBox(
+                                      //                         height: 5,
+                                      //                       ),
+                                      //                       Container(
+                                      //                         height: 10,
+                                      //                         color:
+                                      //                             Colors.grey,
+                                      //                         width: 50,
+                                      //                       ),
 
-                                                            SizedBox(
-                                                              height: 5,
-                                                            ),
-                                                            Container(
-                                                              height: 10,
-                                                              color:
-                                                                  Colors.grey,
-                                                              width: 50,
-                                                            ),
+                                      //                       SizedBox(
+                                      //                         height: 5,
+                                      //                       ),
+                                      //                       Container(
+                                      //                         height: 10,
+                                      //                         color:
+                                      //                             Colors.grey,
+                                      //                         width: 50,
+                                      //                       ),
 
-                                                            //end
-                                                          ],
-                                                        ),
-                                                        CircleAvatar(
-                                                          radius: 30,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                      // return _buildShimmerLoading();
+                                      //                       //end
+                                      //                     ],
+                                      //                   ),
+                                      //                   CircleAvatar(
+                                      //                     radius: 30,
+                                      //                   ),
+                                      //                 ],
+                                      //               ),
+                                      //             ],
+                                      //           ),
+                                      //         ),
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // );
+                                      return _buildShimmerLoading();
                                     }
 
                                     if (snapshot.hasError ||
@@ -1620,6 +1673,11 @@ class _RequestPageState extends State<RequestPage> {
                                                                   Expanded(
                                                                     child: Text(
                                                                       '$deliveryLocation',
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      maxLines:
+                                                                          2,
                                                                       style: GoogleFonts.montserrat(
                                                                           fontWeight:
                                                                               FontWeight.w600),

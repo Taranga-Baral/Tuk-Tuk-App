@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/splash_screen/splash_screen.dart';
 import 'package:final_menu/tutorial_screen_user/tutorial_screen_user.dart';
@@ -14,7 +15,7 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
-    systemNavigationBarColor: const Color.fromARGB(255, 95, 144, 228),
+    // systemNavigationBarColor: const Color.fromARGB(255, 95, 144, 228),
     systemNavigationBarIconBrightness: Brightness.light,
     statusBarBrightness: Brightness.dark,
   ));
@@ -41,7 +42,13 @@ Future<void> main() async {
     await checkUpdateVersion();
   }
 
-  runApp(const MyApp());
+  // runApp(const MyApp());
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]).then((_) {
+    runApp(const MyApp()); // Replace MyApp with your root widget
+  });
 }
 
 //update or not
@@ -182,7 +189,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
       // After tutorial or for registered users, check if user is logged in
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        return HomePage1(); // Navigate to HomePage1 if logged in
+        return MapPage(
+          userId: user.uid,
+        ); // Navigate to HomePage1 if logged in
       } else {
         return const RegistrationPage(); // Navigate to Registration if not logged in
       }

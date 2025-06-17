@@ -266,6 +266,7 @@
 //   }
 // }
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
+import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/sign_up_page.dart';
 import 'package:flutter/material.dart';
@@ -300,7 +301,10 @@ class _SignInPageState extends State<SignInPage> {
     if (user != null) {
       Future.delayed(Duration.zero, () {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => HomePage1()),
+          MaterialPageRoute(
+              builder: (context) => MapPage(
+                    userId: user.uid,
+                  )),
           (Route<dynamic> route) =>
               false, // This clears the entire navigation stack
         );
@@ -330,7 +334,10 @@ class _SignInPageState extends State<SignInPage> {
 
         Future.delayed(Duration(seconds: 1), () {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomePage1()),
+            MaterialPageRoute(
+                builder: (context) => MapPage(
+                      userId: userCredential.user!.uid,
+                    )),
             (Route<dynamic> route) => false,
           );
         });

@@ -1464,23 +1464,33 @@ class _HomePage1State extends State<HomePage1> {
                 //   ),
                 // );
               },
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  enabled: false,
-                  hintText: 'कहाँ जानू हुन्छ त ?',
-                  hintStyle: GoogleFonts.hind(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
+              child: Material(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                shadowColor: Colors.grey.withAlpha(50),
+                elevation: 4,
+                child: TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    enabled: false,
+                    prefixIcon: Icon(
+                      Icons.place,
+                      size: 25,
+                      color: Colors.blueAccent,
+                    ),
+                    hintText: 'कहाँ जानू हुन्छ त ?',
+                    hintStyle: GoogleFonts.hind(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
             ),
             SizedBox(
-              height: 10,
+              height: 18,
             ),
           ],
         ),

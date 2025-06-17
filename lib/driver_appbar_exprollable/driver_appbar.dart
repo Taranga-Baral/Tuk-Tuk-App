@@ -240,7 +240,29 @@ class _CustomAppBarState extends State<CustomAppBar> {
   void initState() {
     super.initState();
     _fetchDriverInfo(); // Fetch driver info on init
-    fetchTotalFare(widget.driverId);
+    fetchTotalFare(widget.driverId); // Fetch total fare on init
+  }
+
+  Future<double> fetchPaidAmount(String driverId) async {
+    try {
+      // Get the document where documentID == driverId from 'balance' collection
+      DocumentSnapshot balanceDoc = await FirebaseFirestore.instance
+          .collection('balance')
+          .doc(driverId)
+          .get();
+
+      if (balanceDoc.exists) {
+        // Extract the 'paid' field (assuming it's a number)
+        double paidAmount = balanceDoc['paid']?.toDouble() ?? 0.0;
+        return paidAmount;
+      } else {
+        print('No balance record found for driver: $driverId');
+        return 0.0; // Default value if document doesn't exist
+      }
+    } catch (e) {
+      print('Error fetching paid amount: $e');
+      return 0.0; // Fallback in case of error
+    }
   }
 
   void _fetchDriverInfo() {
@@ -252,12 +274,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   double driverTotalBalance = 0.00;
   double driverTotalMoneyToPay = 0.00;
+  double paid = 0.00;
 //driver blalnce
   Future<double> fetchTotalFare(String driverId) async {
     // double driverTotalBalance = 0.00;
     // double driverTotalMoneyToPay = 0.00;
     double totalFare = 0.0;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
+    paid = await fetchPaidAmount(driverId);
 
     // Step 1: Query confirmedDrivers collection for matching driverId
     QuerySnapshot confirmedDriversSnapshot = await firestore
@@ -285,7 +309,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     // Step 6: Update or create a document in the 'balance' collection
     await firestore.collection('balance').doc(driverId).set(
         {
-          'driverTotalBalance': totalFare,
+          'driverTotalBalance': totalFare * 0.97, // 97% of total fare
           'driverTotalMoneyToPay': totalMoneyToPay,
         },
         SetOptions(
@@ -300,6 +324,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     // Step 8: Print the results (optional)
     print('Total Fare: $totalFare');
     print('Total Money to Pay: $totalMoneyToPay');
+    print('Total Paid Upto Now: $totalMoneyToPay');
 
     return totalFare;
   }
@@ -586,11 +611,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
                       children: [
                         // Title
                         Text(
-                          'Driver Info',
-                          style: GoogleFonts.outfit(
+                          'चलाक जानकारी',
+                          style: GoogleFonts.hind(
                             fontSize: 24,
-                            fontWeight: FontWeight.w700, // Bold title
-                            color: Colors.redAccent, // Red accent color
+                            fontWeight: FontWeight.w600, // Bold title
+                            color: Colors.black87,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -612,45 +637,50 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         ),
                         SizedBox(height: 20),
                         // Driver Name
-                        Text(
-                          data['name'] ?? 'Unknown',
-                          style: GoogleFonts.outfit(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600, // Semi-bold
-                            color: Colors.redAccent.withOpacity(0.8),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              data['name'] ?? 'Unknown',
+                              style: GoogleFonts.outfit(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700, // boldish
+                                color: Colors.redAccent.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 10),
                         // Driver Details
                         SingleChildScrollView(
                           child: Column(
                             children: [
-                              _buildDetailRow('Address',
+                              _buildDetailRow('ठेगाना',
                                   data['address'] ?? 'Unknown Address'),
-                              _buildDetailRow('Number Plate',
+                              _buildDetailRow('नम्बर प्लेट',
                                   data['numberPlate'] ?? 'Unknown'),
                               _buildDetailRow(
-                                  'Vehicle', data['vehicleType'] ?? 'Unknown'),
+                                  'सवारी', data['vehicleType'] ?? 'Unknown'),
+                              _buildDetailRow('सवारी प्रकार',
+                                  data['vehicleMode'] ?? 'Unknown'),
                               _buildDetailRow(
-                                  'Type', data['vehicleMode'] ?? 'Unknown'),
-                              _buildDetailRow(
-                                  'Phone', data['phone'] ?? 'Unknown'),
-                              SizedBox(
-                                height: 2,
-                              ),
+                                  'फोन नम्बर', data['phone'] ?? 'Unknown'),
+
                               Divider(
                                 color: Colors.green,
-                                thickness: 1.5,
+                                thickness: 0.3,
                               ),
-                              SizedBox(
-                                height: 2,
-                              ),
-                              _buildDetailRow('Total Earned:',
-                                  driverTotalBalance.toStringAsFixed(0)),
+
+                              _buildDetailRow(
+                                  'कमाएको कुल रकम:',
+                                  (driverTotalBalance * 0.97)
+                                      .toStringAsFixed(0)),
 
                               //start
-                              _buildDetailRow('Total Money to Pay:',
-                                  driverTotalMoneyToPay.toStringAsFixed(0)),
+                              _buildDetailRow(
+                                  'तिर्नु पर्ने रकम:',
+                                  (driverTotalMoneyToPay - paid)
+                                      .toStringAsFixed(0)),
                               //end
                             ],
                           ),
@@ -658,28 +688,61 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
                         SizedBox(height: 20),
                         // Close Button
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 12),
-                            backgroundColor:
-                                Colors.redAccent, // Red accent color
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        Row(
+                          mainAxisAlignment: paid != driverTotalMoneyToPay
+                              ? MainAxisAlignment.spaceBetween
+                              : MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 12),
+                                backgroundColor:
+                                    Colors.redAccent, // Red accent color
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 5,
+                              ),
+                              child: Text(
+                                'Close',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600, // Semi-bold
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                            elevation: 5,
-                          ),
-                          child: Text(
-                            'Close',
-                            style: GoogleFonts.outfit(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600, // Semi-bold
-                              color: Colors.white,
-                            ),
-                          ),
+                            driverTotalMoneyToPay != paid
+                                ? ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 12),
+                                      backgroundColor:
+                                          Colors.green, // Red accent color
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      elevation: 5,
+                                    ),
+                                    child: Text(
+                                      'Pay Now',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 16,
+                                        fontWeight:
+                                            FontWeight.w600, // Semi-bold
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox(),
+                          ],
                         ),
                       ],
                     ),
@@ -772,10 +835,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
         children: [
           Text(
             '$label: ',
-            style: GoogleFonts.comicNeue(
-              fontSize: 16,
-              fontWeight: FontWeight.bold, // Medium weight
-              color: Colors.black87,
+            style: GoogleFonts.hind(
+              fontSize: 18,
+              fontWeight: FontWeight.w600, // Medium weight
+              color: Colors.black54,
             ),
           ),
           Expanded(
