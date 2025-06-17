@@ -1,213 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-//   final Color appBarColor;
-//   final List<IconData> appBarIcons;
-//   final String title;
-//   final String driverId;
-
-//   const CustomAppBar({
-//     super.key,
-//     required this.appBarColor,
-//     required this.appBarIcons,
-//     required this.title,
-//     required this.driverId,
-//   });
-
-//   @override
-//   Size get preferredSize => Size.fromHeight(kToolbarHeight);
-
-//   @override
-//   _CustomAppBarState createState() => _CustomAppBarState();
-// }
-
-// class _CustomAppBarState extends State<CustomAppBar> {
-//   late Future<DocumentSnapshot> _driverInfoFuture;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _fetchDriverInfo(); // Fetch driver info on init
-//   }
-
-//   void _fetchDriverInfo() {
-//     _driverInfoFuture = FirebaseFirestore.instance
-//         .collection('vehicleData')
-//         .doc(widget.driverId)
-//         .get();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return AppBar(
-//       leading: Padding(
-//         padding: const EdgeInsets.only(left: 20, top: 2),
-//         child: Image(image: AssetImage('assets/fordriverlogo.png')),
-//       ),
-//       backgroundColor: Colors.transparent,
-//       elevation: 0,
-//       title: Center(
-//         child: StreamBuilder<DocumentSnapshot>(
-//           stream: FirebaseFirestore.instance
-//               .collection('vehicleData')
-//               .doc(widget.driverId)
-//               .snapshots(),
-//           builder: (context, snapshot) {
-//             if (!snapshot.hasData) {
-//               return Text('');
-//             }
-
-//             var displayName = snapshot.data!['name'];
-
-//             return Text(
-//               displayName ?? 'No Name',
-//               style: GoogleFonts.outfit(color: Colors.black87, fontSize: 18),
-//             );
-//           },
-//         ),
-//       ),
-//       centerTitle: true,
-//       actions: [
-//         IconButton(
-//           icon: Icon(widget.appBarIcons[1], color: Colors.black54, size: 19),
-//           onPressed: () {
-//             // Show driver info in a dialog
-//             _showDriverInfoDialog(context);
-//           },
-//         ),
-//       ],
-//     );
-//   }
-
-//   void _showDriverInfoDialog(BuildContext context) {
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return FutureBuilder<DocumentSnapshot>(
-//           future: _driverInfoFuture,
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return Center(child: CircularProgressIndicator());
-//             } else if (snapshot.hasError || !snapshot.hasData) {
-//               return AlertDialog(
-//                 title: Text('Error'),
-//                 content: Text('Driver information not found.'),
-//                 actions: [
-//                   TextButton(
-//                     child: Text('OK'),
-//                     onPressed: () {
-//                       Navigator.of(context).pop();
-//                     },
-//                   ),
-//                 ],
-//               );
-//             } else {
-//               var data = snapshot.data!.data() as Map<String, dynamic>;
-//               return AlertDialog(
-//                 backgroundColor: Colors.white,
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(15),
-//                 ),
-//                 title: Text(
-//                   'Driver Info',
-//                   style: TextStyle(
-//                     fontSize: 20,
-//                     fontWeight: FontWeight.bold,
-//                     color: widget.appBarColor,
-//                   ),
-//                 ),
-//                 content: Container(
-//                   width: MediaQuery.of(context).size.width * 0.8,
-//                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//                   child: SingleChildScrollView(
-//                     child: Column(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         SingleChildScrollView(
-//                           scrollDirection: Axis.horizontal,
-//                           child: Row(
-//                             children: [
-//                               SizedBox(width: 15),
-//                               CircleAvatar(
-//                                 radius: 40,
-//                                 backgroundImage: NetworkImage(
-//                                   data['profilePictureUrl'] ?? '',
-//                                 ),
-//                               ),
-//                               SizedBox(width: 15),
-//                               CircleAvatar(
-//                                 radius: 40,
-//                                 backgroundImage: NetworkImage(
-//                                   data['selfieWithCitizenshipUrl'] ?? '',
-//                                 ),
-//                               ),
-//                               SizedBox(width: 15),
-//                               CircleAvatar(
-//                                 radius: 40,
-//                                 backgroundImage: NetworkImage(
-//                                   data['selfieWithLicenseUrl'] ?? '',
-//                                 ),
-//                               ),
-//                               SizedBox(width: 15),
-//                             ],
-//                           ),
-//                         ),
-//                         SizedBox(height: 10),
-//                         Text(
-//                           data['name'] ?? 'Unknown',
-//                           style: TextStyle(
-//                             fontSize: 18,
-//                             fontWeight: FontWeight.bold,
-//                             color: widget.appBarColor,
-//                           ),
-//                         ),
-//                         Divider(),
-//                         Text(
-//                           'Address: ${data['address'] ?? 'Unknown Address'}',
-//                           textAlign: TextAlign.center,
-//                           style: TextStyle(color: Colors.black54),
-//                         ),
-//                         Divider(),
-//                         Text(
-//                           'Number Plate: ${data['numberPlate'] ?? 'Unknown'}',
-//                           textAlign: TextAlign.center,
-//                           style: TextStyle(color: Colors.black54),
-//                         ),
-//                         Divider(),
-//                         Text(
-//                           'Vehicle: ${data['vehicleType'] ?? 'Unknown'}',
-//                           textAlign: TextAlign.center,
-//                           style: TextStyle(color: Colors.black54),
-//                         ),
-//                         Divider(),
-//                         Text(
-//                           'Phone: ${data['phone'] ?? 'Unknown'}',
-//                           textAlign: TextAlign.center,
-//                           style: TextStyle(color: Colors.black54),
-//                         ),
-//                         Divider(),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//                 actions: [
-//                   TextButton(
-//                     child: Text('Close'),
-//                     onPressed: () {
-//                       Navigator.of(context).pop();
-//                     },
-//                   ),
-//                 ],
-//               );
-//             }
-//           },
-//         );
-//       },
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -385,375 +175,199 @@ class _CustomAppBarState extends State<CustomAppBar> {
     );
   }
 
-//   void _showDriverInfoDialog(BuildContext context) {
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return FutureBuilder<DocumentSnapshot>(
-//           future: _driverInfoFuture,
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return Center(child: CircularProgressIndicator());
-//             } else if (snapshot.hasError || !snapshot.hasData) {
-//               return AlertDialog(
-//                 title: Text('Error'),
-//                 content: Text('Driver information not found.'),
-//                 actions: [
-//                   TextButton(
-//                     child: Text('OK'),
-//                     onPressed: () {
-//                       Navigator.of(context).pop();
-//                     },
-//                   ),
-//                 ],
-//               );
-//             } else {
-//               var data = snapshot.data!.data() as Map<String, dynamic>;
-//               return Dialog(
-//                 backgroundColor:
-//                     Colors.transparent, // Transparent background for gradient
-//                 elevation: 0,
-//                 child: AnimatedContainer(
-//                   duration: Duration(milliseconds: 300),
-//                   curve: Curves.easeInOut,
-//                   padding: EdgeInsets.all(20),
-//                   decoration: BoxDecoration(
-//                     gradient: LinearGradient(
-//                       colors: [Colors.redAccent, Colors.orangeAccent],
-//                       begin: Alignment.topLeft,
-//                       end: Alignment.bottomRight,
-//                     ),
-//                     borderRadius: BorderRadius.circular(20),
-//                     boxShadow: [
-//                       BoxShadow(
-//                         color: Colors.black.withOpacity(0.3),
-//                         blurRadius: 20,
-//                         spreadRadius: 5,
-//                       ),
-//                     ],
-//                   ),
-//                   child: SingleChildScrollView(
-//                     child: Column(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         // Title
-//                         Text(
-//                           'Driver Info',
-//                           style: GoogleFonts.outfit(
-//                             fontSize: 24,
-//                             fontWeight: FontWeight.bold,
-//                             color: Colors.white,
-//                           ),
-//                         ),
-//                         SizedBox(height: 20),
-//                         // Images in a horizontal scrollable row
-//                         SingleChildScrollView(
-//                           scrollDirection: Axis.horizontal,
-//                           child: Row(
-//                             children: [
-//                               _buildImageCard(data['profilePictureUrl'] ?? ''),
-//                               SizedBox(width: 10),
-//                               _buildImageCard(
-//                                   data['selfieWithCitizenshipUrl'] ?? ''),
-//                               SizedBox(width: 10),
-//                               _buildImageCard(
-//                                   data['selfieWithLicenseUrl'] ?? ''),
-//                             ],
-//                           ),
-//                         ),
-//                         SizedBox(height: 20),
-//                         // Driver Name
-//                         Text(
-//                           data['name'] ?? 'Unknown',
-//                           style: GoogleFonts.outfit(
-//                             fontSize: 20,
-//                             fontWeight: FontWeight.bold,
-//                             color: Colors.white,
-//                           ),
-//                         ),
-//                         SizedBox(height: 10),
-//                         // Driver Details
-//                         _buildDetailRow(
-//                             'Address', data['address'] ?? 'Unknown Address'),
-//                         _buildDetailRow(
-//                             'Number Plate', data['numberPlate'] ?? 'Unknown'),
-//                         _buildDetailRow(
-//                             'Vehicle', data['vehicleType'] ?? 'Unknown'),
-//                         _buildDetailRow('Phone', data['phone'] ?? 'Unknown'),
-//                         SizedBox(height: 20),
-//                         // Close Button
-//                         ElevatedButton(
-//                           onPressed: () {
-//                             Navigator.of(context).pop();
-//                           },
-//                           style: ElevatedButton.styleFrom(
-//                             padding: EdgeInsets.symmetric(
-//                                 horizontal: 30, vertical: 12),
-//                             backgroundColor: Colors.white,
-//                             shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(15),
-//                             ),
-//                             elevation: 5,
-//                           ),
-//                           child: Text(
-//                             'Close',
-//                             style: GoogleFonts.outfit(
-//                               fontSize: 16,
-//                               fontWeight: FontWeight.bold,
-//                               color: Colors.redAccent,
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               );
-//             }
-//           },
-//         );
-//       },
-//     );
-//   }
-
-// // Helper function to build image cards
-//   Widget _buildImageCard(String imageUrl) {
-//     return Card(
-//       elevation: 5,
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(15),
-//       ),
-//       child: ClipRRect(
-//         borderRadius: BorderRadius.circular(15),
-//         child: Image.network(
-//           imageUrl,
-//           width: 100,
-//           height: 100,
-//           fit: BoxFit.cover,
-//           errorBuilder: (context, error, stackTrace) {
-//             return Container(
-//               width: 100,
-//               height: 100,
-//               color: Colors.grey[200],
-//               child: Icon(Icons.person, size: 40, color: Colors.grey[500]),
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-
-// // Helper function to build detail rows
-//   Widget _buildDetailRow(String label, String value) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(vertical: 8),
-//       child: Row(
-//         children: [
-//           Text(
-//             '$label: ',
-//             style: GoogleFonts.outfit(
-//               fontSize: 16,
-//               fontWeight: FontWeight.bold,
-//               color: Colors.white,
-//             ),
-//           ),
-//           Expanded(
-//             child: Text(
-//               value,
-//               style: GoogleFonts.outfit(
-//                 fontSize: 16,
-//                 color: Colors.white.withOpacity(0.9),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
   void _showDriverInfoDialog(BuildContext context) {
+    // Create streams for both driver data and balance
+    final driverStream = FirebaseFirestore.instance
+        .collection('vehicleData')
+        .doc(widget.driverId)
+        .snapshots();
+
+    final balanceStream = FirebaseFirestore.instance
+        .collection('balance')
+        .doc(widget.driverId)
+        .snapshots();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return FutureBuilder<DocumentSnapshot>(
-          future: _driverInfoFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError || !snapshot.hasData) {
-              return AlertDialog(
-                title: Text('Error'),
-                content: Text('Driver information not found.'),
-                actions: [
-                  TextButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+        return StreamBuilder<DocumentSnapshot>(
+          stream: driverStream,
+          builder: (context, driverSnapshot) {
+            return StreamBuilder<DocumentSnapshot>(
+              stream: balanceStream,
+              builder: (context, balanceSnapshot) {
+                // Loading state
+                if (driverSnapshot.connectionState == ConnectionState.waiting ||
+                    balanceSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                // Error state
+                if (driverSnapshot.hasError || balanceSnapshot.hasError) {
+                  return AlertDialog(
+                    title: Text('Error'),
+                    content: Text('Could not load driver information'),
+                    actions: [
+                      TextButton(
+                        child: Text('OK'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  );
+                }
+
+                // Data available
+                final driverData =
+                    driverSnapshot.data?.data() as Map<String, dynamic>? ?? {};
+                final balanceData =
+                    balanceSnapshot.data?.data() as Map<String, dynamic>? ?? {};
+
+                // Calculate values with validation
+                final totalEarnings =
+                    (balanceData['driverTotalBalance'] ?? 0.0).toDouble();
+                final totalToPay =
+                    (balanceData['driverTotalMoneyToPay'] ?? 0.0).toDouble();
+                final paidAmount = (balanceData['paid'] ?? 0.0)
+                    .toDouble()
+                    .clamp(0, double.infinity);
+                final remainingToPay =
+                    (totalToPay - paidAmount).clamp(0, double.infinity);
+
+                return Dialog(
+                  backgroundColor: Colors.white,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ],
-              );
-            } else {
-              var data = snapshot.data!.data() as Map<String, dynamic>;
-              return Dialog(
-                backgroundColor: Colors.white, // White background
-                elevation: 10, // Shadow
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  padding: EdgeInsets.all(20),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Title
-                        Text(
-                          'चलाक जानकारी',
-                          style: GoogleFonts.hind(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600, // Bold title
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        // Images in a horizontal scrollable row
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              _buildImageCard(
-                                  context, data['profilePictureUrl'] ?? ''),
-                              SizedBox(width: 10),
-                              _buildImageCard(context,
-                                  data['selfieWithCitizenshipUrl'] ?? ''),
-                              SizedBox(width: 10),
-                              _buildImageCard(
-                                  context, data['selfieWithLicenseUrl'] ?? ''),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        // Driver Name
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              data['name'] ?? 'Unknown',
-                              style: GoogleFonts.outfit(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700, // boldish
-                                color: Colors.redAccent.withOpacity(0.8),
-                              ),
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    padding: EdgeInsets.all(20),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'चलाक जानकारी',
+                            style: GoogleFonts.hind(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        // Driver Details
-                        SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              _buildDetailRow('ठेगाना',
-                                  data['address'] ?? 'Unknown Address'),
-                              _buildDetailRow('नम्बर प्लेट',
-                                  data['numberPlate'] ?? 'Unknown'),
-                              _buildDetailRow(
-                                  'सवारी', data['vehicleType'] ?? 'Unknown'),
-                              _buildDetailRow('सवारी प्रकार',
-                                  data['vehicleMode'] ?? 'Unknown'),
-                              _buildDetailRow(
-                                  'फोन नम्बर', data['phone'] ?? 'Unknown'),
-
-                              Divider(
-                                color: Colors.green,
-                                thickness: 0.3,
-                              ),
-
-                              _buildDetailRow(
-                                  'कमाएको कुल रकम:',
-                                  (driverTotalBalance * 0.97)
-                                      .toStringAsFixed(0)),
-
-                              //start
-                              _buildDetailRow(
-                                  'तिर्नु पर्ने रकम:',
-                                  (driverTotalMoneyToPay - paid)
-                                      .toStringAsFixed(0)),
-                              //end
-                            ],
                           ),
-                        ),
+                          SizedBox(height: 20),
 
-                        SizedBox(height: 20),
-                        // Close Button
-                        Row(
-                          mainAxisAlignment: paid != driverTotalMoneyToPay
-                              ? MainAxisAlignment.spaceBetween
-                              : MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 12),
-                                backgroundColor:
-                                    Colors.redAccent, // Red accent color
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                elevation: 5,
-                              ),
-                              child: Text(
-                                'Close',
+                          // Image row (unchanged)
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                _buildImageCard(context,
+                                    driverData['profilePictureUrl'] ?? ''),
+                                SizedBox(width: 10),
+                                _buildImageCard(
+                                    context,
+                                    driverData['selfieWithCitizenshipUrl'] ??
+                                        ''),
+                                SizedBox(width: 10),
+                                _buildImageCard(context,
+                                    driverData['selfieWithLicenseUrl'] ?? ''),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 20),
+
+                          // Driver name (unchanged)
+                          Row(
+                            children: [
+                              Text(
+                                driverData['name'] ?? 'Unknown',
                                 style: GoogleFonts.outfit(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600, // Semi-bold
-                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.redAccent,
                                 ),
                               ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+
+                          // Updated live values section
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                _buildDetailRow('ठेगाना',
+                                    driverData['address'] ?? 'Unknown'),
+                                _buildDetailRow('नम्बर प्लेट',
+                                    driverData['numberPlate'] ?? 'Unknown'),
+                                _buildDetailRow('सवारी',
+                                    driverData['vehicleType'] ?? 'Unknown'),
+                                _buildDetailRow('सवारी प्रकार',
+                                    driverData['vehicleMode'] ?? 'Unknown'),
+                                _buildDetailRow('फोन नम्बर',
+                                    driverData['phone'] ?? 'Unknown'),
+
+                                Divider(color: Colors.green, thickness: 0.3),
+
+                                // Live updating financial info
+                                _buildDetailRow('कमाएको कुल रकम:',
+                                    totalEarnings.toStringAsFixed(0)),
+                                _buildDetailRow('तिर्नु पर्ने रकम:',
+                                    remainingToPay.toStringAsFixed(0)),
+                              ],
                             ),
-                            driverTotalMoneyToPay != paid
-                                ? ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    style: ElevatedButton.styleFrom(
+                          ),
+                          SizedBox(height: 20),
+
+                          // Buttons (unchanged)
+                          Row(
+                            mainAxisAlignment: remainingToPay > 0
+                                ? MainAxisAlignment.spaceBetween
+                                : MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 12),
+                                ),
+                                child: Text(
+                                  'Close',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              if (remainingToPay > 0)
+                                ElevatedButton(
+                                  onPressed: () => _handlePayment(context),
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 12),
-                                      backgroundColor:
-                                          Colors.green, // Red accent color
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      elevation: 5,
-                                    ),
-                                    child: Text(
-                                      'Pay Now',
-                                      style: GoogleFonts.outfit(
-                                        fontSize: 16,
-                                        fontWeight:
-                                            FontWeight.w600, // Semi-bold
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox(),
-                          ],
-                        ),
-                      ],
+                                          horizontal: 20, vertical: 12)),
+                                  child: Text(
+                                    'Pay Now',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }
+                );
+              },
+            );
           },
         );
       },
     );
+  }
+
+// New payment handler
+  void _handlePayment(BuildContext context) async {
+    // Implement your payment logic here
+    // This will automatically trigger a UI update through the streams
+    print('Payment initiated');
   }
 
 // Helper function to build image cards with full-screen on tap

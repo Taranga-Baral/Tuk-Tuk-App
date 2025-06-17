@@ -703,10 +703,10 @@ class _HistoryPageState extends State<HistoryPage> {
         children: [
           Image.asset(
             'assets/no_data_found.gif',
-            height: MediaQuery.of(context).size.height * 0.5,
+            // height: MediaQuery.of(context).size.height * 0.18,
             width: MediaQuery.of(context).size.width * 0.5,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 0),
           Text(
             'No trips found!',
             style: GoogleFonts.outfit(
@@ -714,6 +714,7 @@ class _HistoryPageState extends State<HistoryPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
+          SizedBox(height: 20),
         ],
       ),
     );

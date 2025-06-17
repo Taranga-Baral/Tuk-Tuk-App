@@ -374,7 +374,9 @@ class _RequestPageState extends State<RequestPage> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           // backgroundColor: Color.fromRGBO(65, 95, 207, 1),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: showArrivedDrivers == true
+              ? const Color.fromRGBO(1, 181, 116, 0.93)
+              : Colors.redAccent.withValues(alpha: 0.92),
           // title: Text(
           //   'Driver Requests',
           // softWrap: true,
@@ -386,7 +388,7 @@ class _RequestPageState extends State<RequestPage> {
           // ),
           title: showArrivedDrivers == true
               ? Text(
-                  'Arrived Driver',
+                  'Arrived Drivers',
                   softWrap: true,
                   maxLines: 1,
                   style: GoogleFonts.outfit(
@@ -395,7 +397,7 @@ class _RequestPageState extends State<RequestPage> {
                   ),
                 )
               : Text(
-                  'Approve Request of Drivers',
+                  'Driver Requests',
                   softWrap: true,
                   maxLines: 1,
                   style: GoogleFonts.outfit(
@@ -499,7 +501,7 @@ class _RequestPageState extends State<RequestPage> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          'Requests',
+                          'View Rider Requests',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -543,7 +545,7 @@ class _RequestPageState extends State<RequestPage> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          'Waiting Drivers',
+                          'View Arrived Riders',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,

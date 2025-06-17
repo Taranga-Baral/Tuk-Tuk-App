@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:final_menu/login_screen/sign_up_page.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -20,6 +21,8 @@ Future<void> main() async {
     statusBarBrightness: Brightness.dark,
   ));
   WidgetsFlutterBinding.ensureInitialized();
+
+  await _preloadGoogleFonts();
 
   // Initialize Firebase
   if (kIsWeb) {
@@ -49,6 +52,19 @@ Future<void> main() async {
   ]).then((_) {
     runApp(const MyApp()); // Replace MyApp with your root widget
   });
+}
+
+Future<void> _preloadGoogleFonts() async {
+  // Initialize Google Fonts (required for preloading)
+  await GoogleFonts.pendingFonts([
+    // List all font families used in your app
+    GoogleFonts.getFont('Outfit'),
+    GoogleFonts.getFont('Hind'),
+    GoogleFonts.getFont('Montserrat'),
+    GoogleFonts.getFont('Comic Neue'),
+    GoogleFonts.getFont('Lexend'),
+    GoogleFonts.getFont('Ubuntu'),
+  ]);
 }
 
 //update or not

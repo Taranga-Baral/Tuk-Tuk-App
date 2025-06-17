@@ -967,7 +967,7 @@ class _MapPageState extends State<MapPage> {
                         setState(() {
                           isBookingInProgress =
                               false; // Enable the button after completion
-                          Navigator.pushReplacement(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
@@ -1273,11 +1273,12 @@ class _MapPageState extends State<MapPage> {
                                           onFieldSubmitted: _handleSearch,
                                           controller: _searchController,
                                           decoration: InputDecoration(
-                                            hintText: 'Going to ?',
-                                            hintStyle: TextStyle(
+                                            hintText: 'म यहाँ जान्छु',
+                                            hintStyle: GoogleFonts.hind(
                                               color: Colors.grey[600],
                                               fontSize: 16,
-                                              fontStyle: FontStyle.italic,
+                                              fontWeight: FontWeight.w500,
+                                              // fontStyle: FontStyle.italic,
                                             ),
                                             prefixIcon: Icon(
                                               Icons.location_on,
@@ -2184,7 +2185,7 @@ class _MapPageState extends State<MapPage> {
         btnOkColor: Colors.deepOrange.shade500.withOpacity(0.8),
         alignment: Alignment.center,
         btnOkOnPress: () {
-          Navigator.pushReplacement(
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => RequestPage(userId: widget.userId)));
