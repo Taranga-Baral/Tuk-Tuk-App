@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
@@ -2057,6 +2058,7 @@ class _HomePage1State extends State<HomePage1> {
                                     onPressed: () {
                                       // Sign out and navigate to the SignInPage
                                       FirebaseAuth.instance.signOut();
+                                      GoogleSignIn().signOut();
                                       Navigator.of(context)
                                           .pop(); // Close the dialog
                                       Navigator.pushReplacement(

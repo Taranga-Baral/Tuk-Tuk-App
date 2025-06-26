@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/homepage1.dart';
+import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:final_menu/splash_screen/splash_screen.dart';
 import 'package:final_menu/tutorial_screen_user/tutorial_screen_user.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +12,7 @@ import 'package:final_menu/login_screen/sign_up_page.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -108,6 +110,7 @@ Future<void> _preloadGoogleFonts() async {
     GoogleFonts.getFont('Comic Neue'),
     GoogleFonts.getFont('Lexend'),
     GoogleFonts.getFont('Ubuntu'),
+    GoogleFonts.getFont('Poppins'),
   ]);
 }
 
@@ -213,48 +216,104 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _isLoading = true;
   bool _isFirstLaunch = true; // Default to true
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
-    _checkUser();
+    _initializeApp();
   }
 
-  Future<void> _checkUser() async {
-    // Display splash screen for 3 seconds
-    await Future.delayed(const Duration(seconds: 3));
+  Future<void> _initializeApp() async {
+    // Show splash screen for minimum 3 seconds
+    await Future.wait([
+      Future.delayed(const Duration(seconds: 3)),
+      _checkTutorialStatus(),
+      _verifyUserProfile(),
+    ]);
 
-    // Check if the tutorial has been completed
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _checkTutorialStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool hasSeenTutorial = prefs.getBool('hasSeenTutorial') ?? false;
+    _isFirstLaunch = prefs.getBool('hasSeenTutorial') ?? false;
+  }
 
-    setState(() {
-      _isLoading = false;
-      _isFirstLaunch =
-          !hasSeenTutorial; // If tutorial is seen, not first launch
-    });
+  Future<void> _verifyUserProfile() async {
+    User? user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+
+      if (!userDoc.exists ||
+          userDoc['phone_number'] == null ||
+          userDoc['username'] == null) {
+        // Force logout if profile is incomplete
+        await _auth.signOut();
+        if (await GoogleSignIn().isSignedIn()) {
+          await GoogleSignIn().signOut();
+        }
+      }
+    } catch (e) {
+      print("Profile verification error: $e");
+      await _auth.signOut();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Always display the splash screen until loading is complete
     if (_isLoading) {
       return const SplashScreen();
     }
 
-    // After loading is complete, check if the tutorial needs to be shown
     if (_isFirstLaunch) {
-      return TutorialPageUser(); // Show tutorial
-    } else {
-      // After tutorial or for registered users, check if user is logged in
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        return MapPage(
-          userId: user.uid,
-        ); // Navigate to HomePage1 if logged in
-      } else {
-        return const RegistrationPage(); // Navigate to Registration if not logged in
-      }
+      return TutorialPageUser();
     }
+
+    return StreamBuilder<User?>(
+      stream: _auth.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final user = snapshot.data;
+
+          if (user == null) {
+            return const SignInPage();
+          }
+
+          // Verify profile completion before allowing access
+          return FutureBuilder<DocumentSnapshot>(
+            future: _firestore.collection('users').doc(user.uid).get(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.done) {
+                final userDoc = userSnapshot.data;
+
+                if (userDoc != null &&
+                    userDoc.exists &&
+                    userDoc['phone_number'] != null &&
+                    userDoc['username'] != null) {
+                  return MapPage(userId: user.uid);
+                } else {
+                  // Force logout if profile is incomplete
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _auth.signOut();
+                    GoogleSignIn().signOut();
+                  });
+                  return const SignInPage();
+                }
+              }
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            },
+          );
+        }
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      },
+    );
   }
 }

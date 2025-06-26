@@ -965,7 +965,8 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                       controller: _passwordController,
                       obscureText: _obscureText,
                       decoration: InputDecoration(
-                        suffixIconColor: Color.fromARGB(174, 255, 89, 117),
+                        suffixIconColor:
+                            const Color.fromARGB(211, 158, 158, 158),
                         prefixIconColor:
                             const Color.fromARGB(174, 255, 89, 117),
                         labelText: 'Enter your Password',
@@ -1044,13 +1045,14 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                           ],
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               'Passenger Mode',
-                              style: GoogleFonts.amaticSc(
-                                fontSize: screenHeight * 0.04,
-                                fontWeight: FontWeight.bold,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
                                 color: const Color.fromARGB(255, 241, 136, 153),
                               ),
                             ),

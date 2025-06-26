@@ -5,6 +5,7 @@ import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -122,19 +123,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   SizedBox(
                     height: 12,
                   ),
-                  GestureDetector(
+                  InkWell(
                     onTap: () {
                       Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SignInPage()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DriverAuthPage()),
+                      );
                     },
-                    child: const Text(
-                      ' Already? Sign In Here.',
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w600,
-                          decorationColor: Colors.white),
+                    child: Text(
+                      ' Login as Driver?',
+                      style: GoogleFonts.poppins(
+                        color: const Color.fromARGB(178, 14, 13, 13),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        decorationColor: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -150,9 +154,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
               SizedBox(
                 height: 14,
               ),
-              const Text(
+              Text(
                 'Sign up',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Color.fromARGB(255, 163, 66, 192),
                   fontSize: 38,
                   fontWeight: FontWeight.w600,
@@ -236,8 +240,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   255, 187, 109, 201)), // Always purplish
                           labelText: 'Enter your Username',
                           hintText: 'Taranga Baral',
-                          hintStyle: TextStyle(color: Colors.grey[500]),
-                          labelStyle: TextStyle(
+                          hintStyle:
+                              GoogleFonts.poppins(color: Colors.grey[500]),
+                          labelStyle: GoogleFonts.poppins(
                             fontSize: 15,
                             color: Colors.grey[600], // Grey label when inactive
                             fontWeight:
@@ -319,8 +324,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   255, 187, 109, 201)), // Always purplish
                           labelText: 'Enter your Mobile Number',
                           hintText: '98********',
-                          hintStyle: TextStyle(color: Colors.grey[500]),
-                          labelStyle: TextStyle(
+                          hintStyle:
+                              GoogleFonts.poppins(color: Colors.grey[500]),
+                          labelStyle: GoogleFonts.poppins(
                             fontSize: 15,
                             color: Colors.grey[600], // Grey label when inactive
                             fontWeight:
@@ -401,8 +407,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   255, 187, 109, 201)), // Always purplish
                           labelText: 'Enter your E-mail',
                           hintText: 'example@gmail.com',
-                          hintStyle: TextStyle(color: Colors.grey[500]),
-                          labelStyle: TextStyle(
+                          hintStyle:
+                              GoogleFonts.poppins(color: Colors.grey[500]),
+                          labelStyle: GoogleFonts.poppins(
                             fontSize: 15,
                             color: Colors.grey[600], // Grey label when inactive
                             fontWeight:
@@ -512,8 +519,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           labelText: 'Enter your Password',
                           hintText: '••••••••',
-                          hintStyle: TextStyle(color: Colors.grey[500]),
-                          labelStyle: TextStyle(
+                          hintStyle:
+                              GoogleFonts.poppins(color: Colors.grey[500]),
+                          labelStyle: GoogleFonts.poppins(
                             fontSize: 15,
                             color: Colors.grey[600], // Grey label when inactive
                             fontWeight:
@@ -577,48 +585,33 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         ),
                       ),
                       const SizedBox(height: 25),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DriverAuthPage()),
-                          );
-                        },
-                        child: Container(
-                          width: screenWidth * 0.9,
-                          padding: EdgeInsets.all(screenHeight * 0.02),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                                color: const Color.fromARGB(160, 200, 54, 244),
-                                width: 2),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: const Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+
+                      InkWell(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignInPage()),
+                            );
+                          },
+                          child: RichText(
+                              text: TextSpan(
                             children: [
-                              Text(
-                                'Driver Mode',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(190, 200, 54, 244),
-                                ),
-                              ),
-                              SizedBox(height: 8),
+                              TextSpan(
+                                  text: 'Already? ',
+                                  style: GoogleFonts.poppins(
+                                      color:
+                                          const Color.fromARGB(178, 14, 13, 13),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600)),
+                              TextSpan(
+                                  text: 'Sign In',
+                                  style: GoogleFonts.poppins(
+                                      color: Color.fromARGB(255, 163, 66, 192),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600)),
                             ],
-                          ),
-                        ),
-                      ),
+                          ))),
                     ],
                   ),
                 ),
