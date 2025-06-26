@@ -149,474 +149,494 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 14,
-              ),
-              Text(
-                'Sign up',
-                style: GoogleFonts.poppins(
-                  color: Color.fromARGB(255, 163, 66, 192),
-                  fontSize: 38,
-                  fontWeight: FontWeight.w600,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 14,
                 ),
-              ),
-//               RichText(
-//   text: TextSpan(
-//     children: const [
-//       TextSpan(
-//         text: 'Sign ',
-//         style: TextStyle(
-//           color: Color.fromARGB(255, 163, 66, 192), // Purple color
-//           fontSize: 30,
-//           fontWeight: FontWeight.w600,
-//         ),
-//       ),
-//       TextSpan(
-//         text: 'Up',
-//         style: TextStyle(
-//           color: Colors.redAccent, // Adjust color as needed
-//           fontSize: 30,
-//           fontWeight: FontWeight.w600,
-//         ),
-//       ),
-//       TextSpan(
-//         text: '.',
-//         style: TextStyle(
-//           color: Colors.redAccent, // Adjust color as needed
-//           fontSize: 30,
-//           fontWeight: FontWeight.w900,
-//         ),
-//       ),
-//     ],
-//   ),
-// ),
+                Text(
+                  'Sign up',
+                  style: GoogleFonts.poppins(
+                    color: Color.fromARGB(255, 163, 66, 192),
+                    fontSize: 38,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                //               RichText(
+                //   text: TextSpan(
+                //     children: const [
+                //       TextSpan(
+                //         text: 'Sign ',
+                //         style: TextStyle(
+                //           color: Color.fromARGB(255, 163, 66, 192), // Purple color
+                //           fontSize: 30,
+                //           fontWeight: FontWeight.w600,
+                //         ),
+                //       ),
+                //       TextSpan(
+                //         text: 'Up',
+                //         style: TextStyle(
+                //           color: Colors.redAccent, // Adjust color as needed
+                //           fontSize: 30,
+                //           fontWeight: FontWeight.w600,
+                //         ),
+                //       ),
+                //       TextSpan(
+                //         text: '.',
+                //         style: TextStyle(
+                //           color: Colors.redAccent, // Adjust color as needed
+                //           fontSize: 30,
+                //           fontWeight: FontWeight.w900,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
 
-              SizedBox(
-                height: 18,
-              ),
-              Padding(
-                padding: EdgeInsets.all(12),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      // TextFormField(
-                      //   controller: _usernameController,
-                      //   decoration: const InputDecoration(
-                      //     labelText: 'Enter your Username',
-                      //     prefixIcon: Icon(Icons.person_2),
-                      //     hintText: 'Taranga Baral',
-                      //     filled: true,
-                      //     fillColor: Colors.white12,
-                      //     prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                      //     enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //         color: Color.fromARGB(255, 182, 116, 194),
-                      //       ),
-                      //     ),
-                      //     focusedBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //           color: Color.fromARGB(255, 200, 54, 244)),
-                      //     ),
-                      //     border: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.all(Radius.circular(18)),
-                      //     ),
-                      //   ),
-                      //   validator: (value) {
-                      //     if (value == null || value.isEmpty) {
-                      //       return 'Please enter a username';
-                      //     }
-                      //     return null;
-                      //   },
-                      // ),
+                SizedBox(
+                  height: 18,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        // TextFormField(
+                        //   controller: _usernameController,
+                        //   decoration: const InputDecoration(
+                        //     labelText: 'Enter your Username',
+                        //     prefixIcon: Icon(Icons.person_2),
+                        //     hintText: 'Taranga Baral',
+                        //     filled: true,
+                        //     fillColor: Colors.white12,
+                        //     prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                        //     enabledBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color.fromARGB(255, 182, 116, 194),
+                        //       ),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //           color: Color.fromARGB(255, 200, 54, 244)),
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.all(Radius.circular(18)),
+                        //     ),
+                        //   ),
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'Please enter a username';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
 
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.person_2,
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201)), // Always purplish
-                          labelText: 'Enter your Username',
-                          hintText: 'Taranga Baral',
-                          hintStyle:
-                              GoogleFonts.poppins(color: Colors.grey[500]),
-                          labelStyle: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[600], // Grey label when inactive
-                            fontWeight:
-                                FontWeight.w500, // Slightly bolder label
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: const Color.fromARGB(
-                                  69, 189, 189, 189)!, // Silverish-grey,
-                              width: 1.0, // Thin border when untouched
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.person_2,
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201)), // Always purplish
+                            labelText: 'Enter your Username',
+                            hintText: 'Taranga Baral',
+                            hintStyle:
+                                GoogleFonts.poppins(color: Colors.grey[500]),
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 15,
+                              color:
+                                  Colors.grey[600], // Grey label when inactive
+                              fontWeight:
+                                  FontWeight.w500, // Slightly bolder label
                             ),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201), // Purplish color
-                              width: 1.5, // Slightly broader when focused
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: const Color.fromARGB(
+                                    69, 189, 189, 189)!, // Silverish-grey,
+                                width: 1.0, // Thin border when untouched
+                              ),
                             ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201), // Purplish color
+                                width: 1.5, // Slightly broader when focused
+                              ),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
                           ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 15),
+                          style: TextStyle(color: Colors.black87),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a username';
+                            }
+                            return null;
+                          },
                         ),
-                        style: TextStyle(color: Colors.black87),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a username';
-                          }
-                          return null;
-                        },
-                      ),
 
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      // TextFormField(
-                      //   keyboardType: TextInputType.number,
-                      //   controller: _mobileController,
-                      //   decoration: const InputDecoration(
-                      //     labelText: 'Enter your Mobile Number',
-                      //     prefixIcon: Icon(Icons.phone),
-                      //     hintText: '98********',
-                      //     filled: true,
-                      //     fillColor: Colors.white12,
-                      //     prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                      //     enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //         color: Color.fromARGB(255, 182, 116, 194),
-                      //       ),
-                      //     ),
-                      //     focusedBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //           color: Color.fromARGB(255, 200, 54, 244)),
-                      //     ),
-                      //     border: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.all(Radius.circular(18)),
-                      //     ),
-                      //   ),
-                      //   validator: (value) {
-                      //     if (value == null || value.isEmpty) {
-                      //       return 'Please enter a mobile phone number';
-                      //     } else if (value.length < 10 || value.length > 10) {
-                      //       return 'Please Enter Valid Mobile Number';
-                      //     }
-                      //     return null;
-                      //   },
-                      // ),
-
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: _mobileController,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.phone,
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201)), // Always purplish
-                          labelText: 'Enter your Mobile Number',
-                          hintText: '98********',
-                          hintStyle:
-                              GoogleFonts.poppins(color: Colors.grey[500]),
-                          labelStyle: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[600], // Grey label when inactive
-                            fontWeight:
-                                FontWeight.w500, // Slightly bolder label
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: const Color.fromARGB(
-                                  69, 189, 189, 189)!, // Silverish-grey,
-                              width: 1.0, // Thin border when untouched
-                            ),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201), // Purplish color
-                              width: 1.5, // Slightly broader when focused
-                            ),
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 15),
+                        const SizedBox(
+                          height: 20,
                         ),
-                        style: TextStyle(color: Colors.black87),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a mobile phone number';
-                          } else if (value.length != 10) {
-                            return 'Please enter a valid 10-digit mobile number';
-                          }
-                          return null;
-                        },
-                      ),
+                        // TextFormField(
+                        //   keyboardType: TextInputType.number,
+                        //   controller: _mobileController,
+                        //   decoration: const InputDecoration(
+                        //     labelText: 'Enter your Mobile Number',
+                        //     prefixIcon: Icon(Icons.phone),
+                        //     hintText: '98********',
+                        //     filled: true,
+                        //     fillColor: Colors.white12,
+                        //     prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                        //     enabledBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color.fromARGB(255, 182, 116, 194),
+                        //       ),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //           color: Color.fromARGB(255, 200, 54, 244)),
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.all(Radius.circular(18)),
+                        //     ),
+                        //   ),
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'Please enter a mobile phone number';
+                        //     } else if (value.length < 10 || value.length > 10) {
+                        //       return 'Please Enter Valid Mobile Number';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
 
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      // TextFormField(
-                      //   controller: _emailController,
-                      //   decoration: const InputDecoration(
-                      //     labelText: 'Enter your E-mail',
-                      //     prefixIcon: Icon(Icons.email),
-                      //     hintText: 'johndoe@gmail.com',
-                      //     filled: true,
-                      //     fillColor: Colors.white12,
-                      //     prefixIconColor: Color.fromARGB(255, 187, 109, 201),
-                      //     enabledBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //         color: Color.fromARGB(255, 182, 116, 194),
-                      //       ),
-                      //     ),
-                      //     focusedBorder: OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //           color: Color.fromARGB(255, 200, 54, 244)),
-                      //     ),
-                      //     border: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.all(Radius.circular(18)),
-                      //     ),
-                      //   ),
-                      //   validator: (value) {
-                      //     if (value == null || value.isEmpty) {
-                      //       return 'Please enter an email';
-                      //     }
-                      //     return null;
-                      //   },
-                      // ),
-
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.email,
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201)), // Always purplish
-                          labelText: 'Enter your E-mail',
-                          hintText: 'example@gmail.com',
-                          hintStyle:
-                              GoogleFonts.poppins(color: Colors.grey[500]),
-                          labelStyle: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[600], // Grey label when inactive
-                            fontWeight:
-                                FontWeight.w500, // Slightly bolder label
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: const Color.fromARGB(
-                                  69, 189, 189, 189)!, // Silverish-grey,
-                              width: 1.0, // Thin border when untouched
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          controller: _mobileController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.phone,
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201)), // Always purplish
+                            labelText: 'Enter your Mobile Number',
+                            hintText: '98********',
+                            hintStyle:
+                                GoogleFonts.poppins(color: Colors.grey[500]),
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 15,
+                              color:
+                                  Colors.grey[600], // Grey label when inactive
+                              fontWeight:
+                                  FontWeight.w500, // Slightly bolder label
                             ),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201), // Purplish color
-                              width: 1.5, // Slightly broader when focused
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: const Color.fromARGB(
+                                    69, 189, 189, 189)!, // Silverish-grey,
+                                width: 1.0, // Thin border when untouched
+                              ),
                             ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201), // Purplish color
+                                width: 1.5, // Slightly broader when focused
+                              ),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
                           ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 15),
+                          style: TextStyle(color: Colors.black87),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a mobile phone number';
+                            } else if (value.length != 10) {
+                              return 'Please enter a valid 10-digit mobile number';
+                            }
+                            return null;
+                          },
                         ),
-                        style: TextStyle(color: Colors.black87),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter an email address';
-                          } else if (!RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                              .hasMatch(value)) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
-                      ),
 
-                      const SizedBox(height: 20),
-                      // TextFormField(
-                      //   controller: _passwordController,
-                      //   obscureText: _obscureText,
-                      //   decoration: InputDecoration(
-                      //     labelText: 'Enter your Password',
-                      //     prefixIcon: const Icon(Icons.password),
-                      //     filled: true,
-                      //     fillColor: Colors.white12,
-                      //     prefixIconColor:
-                      //         const Color.fromARGB(255, 187, 109, 201),
-                      //     suffixIconColor:
-                      //         const Color.fromARGB(255, 180, 113, 192),
-                      //     suffixIcon: IconButton(
-                      //       icon: Icon(_obscureText
-                      //           ? Icons.visibility_off
-                      //           : Icons.visibility),
-                      //       onPressed: () {
-                      //         setState(() {
-                      //           _obscureText = !_obscureText;
-                      //         });
-                      //       },
-                      //     ),
-                      //     enabledBorder: const OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //         color: Color.fromARGB(255, 182, 116, 194),
-                      //       ),
-                      //     ),
-                      //     focusedBorder: const OutlineInputBorder(
-                      //       borderSide: BorderSide(
-                      //           color: Color.fromARGB(255, 200, 54, 244)),
-                      //     ),
-                      //     border: const OutlineInputBorder(
-                      //       borderRadius: BorderRadius.all(Radius.circular(18)),
-                      //     ),
-                      //   ),
-                      //   validator: (value) {
-                      //     if (value == null || value.isEmpty) {
-                      //       return 'Please enter a password';
-                      //     } else if (value.length < 6) {
-                      //       return 'Password must be at least 6 characters long';
-                      //     }
-                      //     return null;
-                      //   },
-                      // ),
-
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscureText,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.lock,
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201)), // Always purplish
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: const Color.fromARGB(123, 158, 158, 158),
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                          ),
-                          labelText: 'Enter your Password',
-                          hintText: '••••••••',
-                          hintStyle:
-                              GoogleFonts.poppins(color: Colors.grey[500]),
-                          labelStyle: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: Colors.grey[600], // Grey label when inactive
-                            fontWeight:
-                                FontWeight.w500, // Slightly bolder label
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: const Color.fromARGB(
-                                  69, 189, 189, 189)!, // Silverish-grey,
-                              width: 1.0, // Thin border when untouched
-                            ),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(
-                              color: Color.fromARGB(
-                                  255, 187, 109, 201), // Purplish color
-                              width: 1.5, // Slightly broader when focused
-                            ),
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 15),
+                        const SizedBox(
+                          height: 20,
                         ),
-                        style: TextStyle(color: Colors.black87),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a password';
-                          } else if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
-                      ),
+                        // TextFormField(
+                        //   controller: _emailController,
+                        //   decoration: const InputDecoration(
+                        //     labelText: 'Enter your E-mail',
+                        //     prefixIcon: Icon(Icons.email),
+                        //     hintText: 'johndoe@gmail.com',
+                        //     filled: true,
+                        //     fillColor: Colors.white12,
+                        //     prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                        //     enabledBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color.fromARGB(255, 182, 116, 194),
+                        //       ),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //           color: Color.fromARGB(255, 200, 54, 244)),
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.all(Radius.circular(18)),
+                        //     ),
+                        //   ),
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'Please enter an email';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
 
-                      SizedBox(height: 38),
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
-                        child: GestureDetector(
-                          onTap: _register,
-                          child: Container(
-                            // height: screenHeight * 0.08,
-                            height: 55,
-                            width: screenWidth,
-                            color: _color,
-                            child: const Center(
-                              child: Text(
-                                'Register',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.email,
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201)), // Always purplish
+                            labelText: 'Enter your E-mail',
+                            hintText: 'example@gmail.com',
+                            hintStyle:
+                                GoogleFonts.poppins(color: Colors.grey[500]),
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 15,
+                              color:
+                                  Colors.grey[600], // Grey label when inactive
+                              fontWeight:
+                                  FontWeight.w500, // Slightly bolder label
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: const Color.fromARGB(
+                                    69, 189, 189, 189)!, // Silverish-grey,
+                                width: 1.0, // Thin border when untouched
+                              ),
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201), // Purplish color
+                                width: 1.5, // Slightly broader when focused
+                              ),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
+                          ),
+                          style: TextStyle(color: Colors.black87),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter an email address';
+                            } else if (!RegExp(
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                .hasMatch(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+                        // TextFormField(
+                        //   controller: _passwordController,
+                        //   obscureText: _obscureText,
+                        //   decoration: InputDecoration(
+                        //     labelText: 'Enter your Password',
+                        //     prefixIcon: const Icon(Icons.password),
+                        //     filled: true,
+                        //     fillColor: Colors.white12,
+                        //     prefixIconColor:
+                        //         const Color.fromARGB(255, 187, 109, 201),
+                        //     suffixIconColor:
+                        //         const Color.fromARGB(255, 180, 113, 192),
+                        //     suffixIcon: IconButton(
+                        //       icon: Icon(_obscureText
+                        //           ? Icons.visibility_off
+                        //           : Icons.visibility),
+                        //       onPressed: () {
+                        //         setState(() {
+                        //           _obscureText = !_obscureText;
+                        //         });
+                        //       },
+                        //     ),
+                        //     enabledBorder: const OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //         color: Color.fromARGB(255, 182, 116, 194),
+                        //       ),
+                        //     ),
+                        //     focusedBorder: const OutlineInputBorder(
+                        //       borderSide: BorderSide(
+                        //           color: Color.fromARGB(255, 200, 54, 244)),
+                        //     ),
+                        //     border: const OutlineInputBorder(
+                        //       borderRadius: BorderRadius.all(Radius.circular(18)),
+                        //     ),
+                        //   ),
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return 'Please enter a password';
+                        //     } else if (value.length < 6) {
+                        //       return 'Password must be at least 6 characters long';
+                        //     }
+                        //     return null;
+                        //   },
+                        // ),
+
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscureText,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.lock,
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201)), // Always purplish
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: const Color.fromARGB(123, 158, 158, 158),
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
+                            labelText: 'Enter your Password',
+                            hintText: '••••••••',
+                            hintStyle:
+                                GoogleFonts.poppins(color: Colors.grey[500]),
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 15,
+                              color:
+                                  Colors.grey[600], // Grey label when inactive
+                              fontWeight:
+                                  FontWeight.w500, // Slightly bolder label
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: const Color.fromARGB(
+                                    69, 189, 189, 189)!, // Silverish-grey,
+                                width: 1.0, // Thin border when untouched
+                              ),
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(
+                                    255, 187, 109, 201), // Purplish color
+                                width: 1.5, // Slightly broader when focused
+                              ),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 15),
+                          ),
+                          style: TextStyle(color: Colors.black87),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a password';
+                            } else if (value.length < 6) {
+                              return 'Password must be at least 6 characters';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        SizedBox(height: 38),
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                          child: GestureDetector(
+                            onTap: _register,
+                            child: Container(
+                              // height: screenHeight * 0.08,
+                              height: 55,
+                              width: screenWidth,
+                              color: _color,
+                              child: const Center(
+                                child: Text(
+                                  'Register',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 25),
+                        const SizedBox(height: 25),
 
-                      InkWell(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInPage()),
-                            );
-                          },
-                          child: RichText(
-                              text: TextSpan(
-                            children: [
-                              TextSpan(
-                                  text: 'Already? ',
-                                  style: GoogleFonts.poppins(
-                                      color:
-                                          const Color.fromARGB(178, 14, 13, 13),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600)),
-                              TextSpan(
-                                  text: 'Sign In',
-                                  style: GoogleFonts.poppins(
-                                      color: Color.fromARGB(255, 163, 66, 192),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ))),
-                    ],
+                        InkWell(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignInPage()),
+                              );
+                            },
+                            child: RichText(
+                                text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: 'Already? ',
+                                    style: GoogleFonts.poppins(
+                                        color: const Color.fromARGB(
+                                            178, 14, 13, 13),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600)),
+                                TextSpan(
+                                    text: 'Sign In',
+                                    style: GoogleFonts.poppins(
+                                        color:
+                                            Color.fromARGB(255, 163, 66, 192),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600)),
+                              ],
+                            ))),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

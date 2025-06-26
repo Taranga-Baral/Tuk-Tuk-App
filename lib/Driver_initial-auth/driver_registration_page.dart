@@ -532,7 +532,10 @@ import 'package:bcrypt/bcrypt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
+import 'package:final_menu/galli_maps/map_page.dart';
+import 'package:final_menu/login_screen/profile_setup.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -587,7 +590,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                 // Title
                 Text(
                   'Account Found',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.poppins(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
@@ -597,8 +600,8 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                 // Content
                 Text(
                   'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?',
-                  style: GoogleFonts.comicNeue(
-                    fontSize: 16,
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
                     color: Colors.grey[700],
                   ),
                 ),
@@ -619,17 +622,18 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                           horizontal: 20,
                           vertical: 10,
                         ),
-                        backgroundColor: Colors.red[50], // Light red background
+                        backgroundColor:
+                            redColor.withAlpha(230), // Light red background
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       child: Text(
                         'Logout',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.poppins(
                           fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.red,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -669,18 +673,18 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                           horizontal: 20,
                           vertical: 10,
                         ),
-                        backgroundColor:
-                            Colors.green[50], // Light green background
+                        backgroundColor: Colors.green
+                            .withAlpha(220), // Light green background
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       child: Text(
                         'Log In',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.poppins(
                           fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.green,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -692,56 +696,6 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
         );
       },
     );
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return AlertDialog(
-    //       title:  Text('Account Found',style: GoogleFonts.outfit(fontWeight: FontWeight.w400),),
-    //       content: Text(
-    //           'You already have an account: $savedEmail. Would you like to log in with this account or switch to another one?',style: GoogleFonts.comicNeue(),),
-    //       actions: <Widget>[
-    //         TextButton(
-    //           onPressed: () {
-    //             // Clear the saved email to log in with a different account
-    //             _clearSavedEmail();
-    //             Navigator.pop(context);
-    //           },
-    //           child: const Text('Logout',style: TextStyle(color: Colors.red),),
-    //         ),
-    //         TextButton(
-    //           onPressed: () {
-    //             // Log in with the saved account
-    //             Navigator.pushAndRemoveUntil(
-    //               context,
-    //               PageRouteBuilder(
-    //                 pageBuilder: (context, animation, secondaryAnimation) =>
-    //                     BottomNavBarPage(driverEmail: savedEmail),
-    //                 transitionsBuilder:
-    //                     (context, animation, secondaryAnimation, child) {
-    //                   const begin = Offset(1.0, 0.0); // Slide in from the right
-    //                   const end = Offset.zero;
-    //                   const curve = Curves.decelerate;
-
-    //                   var tween = Tween(begin: begin, end: end)
-    //                       .chain(CurveTween(curve: curve));
-    //                   var offsetAnimation = animation.drive(tween);
-
-    //                   return SlideTransition(
-    //                     position: offsetAnimation,
-    //                     child: child,
-    //                   );
-    //                 },
-    //               ),
-    //               (route) =>
-    //                   false, // This ensures all previous routes are removed
-    //             );
-    //           },
-    //           child: const Text('Log In',style: TextStyle(color: Colors.green),),
-    //         ),
-    //       ],
-    //     );
-    //   },
-    // );
   }
 
   Future<void> _clearSavedEmail() async {
@@ -922,9 +876,9 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
           child: Column(
             children: [
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Verify Driver',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Color.fromARGB(255, 255, 89, 117),
                   fontSize: 38,
                   fontWeight: FontWeight.w600,
@@ -1002,13 +956,13 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                       child: GestureDetector(
                         onTap: _validateDriver,
                         child: Container(
-                          height: screenHeight * 0.08,
+                          height: 56,
                           width: screenWidth,
                           color: _color,
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               'Driver Sign In',
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -1018,53 +972,53 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 25),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignInPage()),
-                        );
-                      },
-                      child: Container(
-                        width: screenWidth * 0.9,
-                        padding: EdgeInsets.all(screenHeight * 0.02),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                              color: const Color.fromARGB(255, 241, 136, 153),
-                              width: 2),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Passenger Mode',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: const Color.fromARGB(255, 241, 136, 153),
+                    const SizedBox(height: 30),
+                    InkWell(
+                      onTap: () async {
+                        // Check current auth state
+                        final user = FirebaseAuth.instance.currentUser;
+
+                        if (user != null) {
+                          // User is logged in - check if profile is complete
+                          final userDoc = await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user.uid)
+                              .get();
+
+                          if (userDoc.exists &&
+                              userDoc['phone_number'] != null &&
+                              userDoc['username'] != null) {
+                            // Profile complete - go to MapPage
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MapPage(userId: user.uid),
                               ),
-                            ),
-                            // const SizedBox(height: 8),
-                            // Text(
-                            //   'Sign in or register as a driver to access driver-specific features.',
-                            //   style: GoogleFonts.amaticSc(
-                            //     fontSize: screenHeight * 0.025,
-                            //     color: const Color.fromARGB(255, 182, 116, 194),
-                            //   ),
-                            // ),
-                          ],
+                            );
+                          } else {
+                            // Profile incomplete - go to ProfileSetup
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ProfileSetupPage(user: user),
+                              ),
+                            );
+                          }
+                        } else {
+                          // No user logged in - go to SignInPage
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => SignInPage()),
+                          );
+                        }
+                      },
+                      child: Text(
+                        'Login as Passenger',
+                        style: GoogleFonts.poppins(
+                          color: const Color.fromARGB(178, 14, 13, 13),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          decorationColor: Colors.white,
                         ),
                       ),
                     ),

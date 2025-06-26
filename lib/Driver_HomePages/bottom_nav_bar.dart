@@ -140,7 +140,12 @@
 //   }
 // }
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/homepage1.dart';
+import 'package:final_menu/login_screen/profile_setup.dart';
+import 'package:final_menu/login_screen/sign_in_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:final_menu/Driver_HomePages/first_land_page_after_registration.dart';
 import 'package:final_menu/driver_accepted_page/driver_accepted_page.dart';
@@ -218,9 +223,43 @@ class _BottomNavBarPageState extends State<BottomNavBarPage>
       body: _pages[_selectedIndex],
       bottomNavigationBar: _buildCustomBottomNavBar(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomePage1()));
+        onPressed: () async {
+          // Check current auth state
+          final user = FirebaseAuth.instance.currentUser;
+
+          if (user != null) {
+            // User is logged in - check if profile is complete
+            final userDoc = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+            if (userDoc.exists &&
+                userDoc['phone_number'] != null &&
+                userDoc['username'] != null) {
+              // Profile complete - go to MapPage
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MapPage(userId: user.uid),
+                ),
+              );
+            } else {
+              // Profile incomplete - go to ProfileSetup
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProfileSetupPage(user: user),
+                ),
+              );
+            }
+          } else {
+            // No user logged in - go to SignInPage
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => SignInPage()),
+            );
+          }
         },
         backgroundColor: Colors.redAccent.shade200,
         child: Icon(

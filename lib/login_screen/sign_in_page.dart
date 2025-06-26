@@ -787,193 +787,204 @@ class _SignInPageState extends State<SignInPage> {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Column(
-                children: [
-                  const SizedBox(height: 14),
-                  Text(
-                    'Sign In',
-                    style: GoogleFonts.poppins(
-                      color: Color.fromARGB(255, 163, 66, 192),
-                      fontSize: 38,
-                      fontWeight: FontWeight.w600,
+              Padding(
+                padding: const EdgeInsets.only(left: 12, right: 12, top: 8),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 14),
+                    Text(
+                      'Sign In',
+                      style: GoogleFonts.poppins(
+                        color: Color.fromARGB(255, 163, 66, 192),
+                        fontSize: 38,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(12),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 30),
-                        TextFormField(
-                          controller: _controllerEmail,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.email,
-                                color: Color.fromARGB(255, 187, 109, 201)),
-                            labelText: 'E-mail',
-                            hintText: 'johndoe@gmail.com',
-                            hintStyle:
-                                GoogleFonts.poppins(color: Colors.grey[500]),
-                            labelStyle: GoogleFonts.poppins(
-                              fontSize: 15,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(
-                                color: const Color.fromARGB(69, 189, 189, 189)!,
-                                width: 1.0,
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 15),
+                          Form(
+                            child: TextFormField(
+                              controller: _controllerEmail,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.email,
+                                    color: Color.fromARGB(255, 187, 109, 201)),
+                                labelText: 'E-mail',
+                                hintText: 'johndoe@gmail.com',
+                                hintStyle: GoogleFonts.poppins(
+                                    color: Colors.grey[500]),
+                                labelStyle: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  borderSide: BorderSide(
+                                    color: const Color.fromARGB(
+                                        69, 189, 189, 189)!,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 187, 109, 201),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 15),
                               ),
+                              style: TextStyle(color: Colors.black87),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 187, 109, 201),
-                                width: 1.5,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 15),
                           ),
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                        const SizedBox(height: 30),
-                        TextFormField(
-                          controller: _controllerPassword,
-                          obscureText: _obscureText,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock,
-                                color: Color.fromARGB(255, 187, 109, 201)),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureText
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: const Color.fromARGB(123, 158, 158, 158),
-                                size: 20,
+                          const SizedBox(height: 30),
+                          TextFormField(
+                            controller: _controllerPassword,
+                            obscureText: _obscureText,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.lock,
+                                  color: Color.fromARGB(255, 187, 109, 201)),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color:
+                                      const Color.fromARGB(123, 158, 158, 158),
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              },
-                            ),
-                            labelText: 'Password',
-                            hintText: '••••••••',
-                            hintStyle:
-                                GoogleFonts.poppins(color: Colors.grey[500]),
-                            labelStyle: GoogleFonts.poppins(
-                              fontSize: 15,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(
-                                color: const Color.fromARGB(69, 189, 189, 189)!,
-                                width: 1.0,
+                              labelText: 'Password',
+                              hintText: '••••••••',
+                              hintStyle:
+                                  GoogleFonts.poppins(color: Colors.grey[500]),
+                              labelStyle: GoogleFonts.poppins(
+                                fontSize: 15,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
                               ),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 187, 109, 201),
-                                width: 1.5,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                borderSide: BorderSide(
+                                  color:
+                                      const Color.fromARGB(69, 189, 189, 189)!,
+                                  width: 1.0,
+                                ),
                               ),
+                              focusedBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(255, 187, 109, 201),
+                                  width: 1.5,
+                                ),
+                              ),
+                              border: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 15),
                             ),
-                            border: const OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 15),
+                            style: TextStyle(color: Colors.black87),
                           ),
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                        const SizedBox(height: 38),
-                        ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12)),
-                          child: GestureDetector(
-                            onTap: _signIn,
-                            child: Container(
-                              height: 55,
-                              width: screenWidth,
-                              color: _color,
-                              child: Center(
-                                child: Text(
-                                  'Sign In',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
+                          const SizedBox(height: 38),
+                          ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
+                            child: GestureDetector(
+                              onTap: _signIn,
+                              child: Container(
+                                height: 55,
+                                width: screenWidth,
+                                color: _color,
+                                child: Center(
+                                  child: Text(
+                                    'Sign In',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 25),
-                        InkWell(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegistrationPage()),
-                              );
-                            },
-                            child: Text(
-                              'Create new account',
-                              style: GoogleFonts.outfit(
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color.fromARGB(178, 14, 13, 13),
-                                  fontSize: 16),
-                            )),
-                        SizedBox(
-                          height: 75,
-                        ),
-                        Column(
-                          children: [
-                            InkWell(
-                              onTap: _signInWithGoogle,
+                          const SizedBox(height: 25),
+                          InkWell(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RegistrationPage()),
+                                );
+                              },
                               child: Text(
-                                'Or continue with',
-                                style: GoogleFonts.poppins(
+                                'Create new account',
+                                style: GoogleFonts.outfit(
                                     fontWeight: FontWeight.w600,
-                                    // color: Color.fromRGBO(243, 83, 33, 1),
-                                    color: Color.fromARGB(255, 163, 66, 192),
+                                    color:
+                                        const Color.fromARGB(178, 14, 13, 13),
                                     fontSize: 16),
-                              ),
-                            ),
-                            SizedBox(height: 14),
-                            InkWell(
-                              onTap:
-                                  _isGoogleSigningIn ? null : _signInWithGoogle,
-                              child: _isGoogleSigningIn
-                                  ? CircularProgressIndicator(
+                              )),
+                          SizedBox(
+                            height: 75,
+                          ),
+                          Column(
+                            children: [
+                              InkWell(
+                                onTap: _signInWithGoogle,
+                                child: Text(
+                                  'Or continue with',
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      // color: Color.fromRGBO(243, 83, 33, 1),
                                       color: Color.fromARGB(255, 163, 66, 192),
-                                    )
-                                  : Image.asset(
-                                      'assets/google.png',
-                                      height: 22,
-                                    ),
-                            )
-                          ],
-                        )
-                      ],
+                                      fontSize: 16),
+                                ),
+                              ),
+                              SizedBox(height: 14),
+                              InkWell(
+                                onTap: _isGoogleSigningIn
+                                    ? null
+                                    : _signInWithGoogle,
+                                child: _isGoogleSigningIn
+                                    ? CircularProgressIndicator(
+                                        color:
+                                            Color.fromARGB(255, 163, 66, 192),
+                                      )
+                                    : Image.asset(
+                                        'assets/google.png',
+                                        height: 22,
+                                      ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
