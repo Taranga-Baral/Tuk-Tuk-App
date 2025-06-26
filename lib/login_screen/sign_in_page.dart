@@ -344,15 +344,72 @@ class _SignInPageState extends State<SignInPage> {
       }
     } catch (e) {
       print('Error signing in: $e');
+      // showDialog(
+      //   context: context,
+      //   builder: (context) => AlertDialog(
+      //     title: Text('Sign In Failed'),
+      //     content: Text('Try again with valid credentials.'),
+      //     actions: <Widget>[
+      //       TextButton(
+      //           child: Text('OK'),
+      //           onPressed: () => Navigator.of(context).pop()),
+      //     ],
+      //   ),
+      // );
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Sign In Failed'),
-          content: Text('Invalid email or password. Please try again.'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          title: Column(
+            children: const [
+              Icon(Icons.error,
+                  color: Color.fromARGB(220, 244, 67, 54),
+                  size: 40), // Error icon
+              SizedBox(height: 8),
+
+              Text(
+                'Sign In Failed',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          content: const Text(
+            'Try again with valid credentials.',
+            style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: <Widget>[
-            TextButton(
-                child: Text('OK'),
-                onPressed: () => Navigator.of(context).pop()),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Color.fromARGB(214, 163, 66, 192), //purplish bg
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    color: Colors.white, // White text
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
           ],
         ),
       );
@@ -435,64 +492,159 @@ class _SignInPageState extends State<SignInPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 30),
+                    // TextFormField(
+                    //   controller: _controllerEmail,
+                    //   decoration: const InputDecoration(
+                    //     prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                    //     labelText: 'Enter your E-mail',
+                    //     prefixIcon: Icon(Icons.email),
+                    //     hintText: 'johndoe@gmail.com',
+                    //     filled: true,
+                    //     fillColor: Colors.white12,
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderSide: BorderSide(
+                    //           color: Color.fromARGB(255, 182, 116, 194)),
+                    //     ),
+                    //     focusedBorder: OutlineInputBorder(
+                    //       borderSide: BorderSide(
+                    //           color: Color.fromARGB(255, 200, 54, 244)),
+                    //     ),
+                    //     border: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.all(Radius.circular(18)),
+                    //     ),
+                    //   ),
+                    // ),
+
                     TextFormField(
                       controller: _controllerEmail,
-                      decoration: const InputDecoration(
-                        prefixIconColor: Color.fromARGB(255, 187, 109, 201),
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.email,
+                            color: Color.fromARGB(
+                                255, 187, 109, 201)), // Always purplish
                         labelText: 'Enter your E-mail',
-                        prefixIcon: Icon(Icons.email),
                         hintText: 'johndoe@gmail.com',
-                        filled: true,
-                        fillColor: Colors.white12,
+                        hintStyle: TextStyle(color: Colors.grey[500]),
+                        labelStyle: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey[600], // Grey label when inactive
+                          fontWeight: FontWeight.w500,
+                        ),
                         enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(
-                              color: Color.fromARGB(255, 182, 116, 194)),
+                            color: const Color.fromARGB(
+                                69, 189, 189, 189)!, // Silverish-grey
+                            width: 1.0, // Thin border when untouched
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(
-                              color: Color.fromARGB(255, 200, 54, 244)),
+                            color: Color.fromARGB(
+                                255, 187, 109, 201), // Purplish color
+                            width: 1.5, // Slightly broader when focused
+                          ),
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                       ),
+                      style: TextStyle(color: Colors.black87),
                     ),
+
                     const SizedBox(height: 30),
+                    // TextFormField(
+                    //   controller: _controllerPassword,
+                    //   obscureText: _obscureText,
+                    //   decoration: InputDecoration(
+                    //     suffixIconColor:
+                    //         const Color.fromARGB(255, 180, 113, 192),
+                    //     prefixIconColor:
+                    //         const Color.fromARGB(255, 187, 109, 201),
+                    //     labelText: 'Enter your Password',
+                    //     prefixIcon: const Icon(Icons.password),
+                    //     filled: true,
+                    //     fillColor: Colors.white12,
+                    //     suffixIcon: IconButton(
+                    //       icon: Icon(_obscureText
+                    //           ? Icons.visibility_off
+                    //           : Icons.visibility),
+                    //       onPressed: () {
+                    //         setState(() {
+                    //           _obscureText = !_obscureText;
+                    //         });
+                    //       },
+                    //     ),
+                    //     enabledBorder: const OutlineInputBorder(
+                    //       borderSide: BorderSide(
+                    //           color: Color.fromARGB(255, 182, 116, 194)),
+                    //     ),
+                    //     focusedBorder: const OutlineInputBorder(
+                    //       borderSide: BorderSide(
+                    //           color: Color.fromARGB(255, 200, 54, 244)),
+                    //     ),
+                    //     border: const OutlineInputBorder(
+                    //       borderRadius: BorderRadius.all(Radius.circular(18)),
+                    //     ),
+                    //   ),
+                    // ),
+
                     TextFormField(
                       controller: _controllerPassword,
                       obscureText: _obscureText,
                       decoration: InputDecoration(
-                        suffixIconColor:
-                            const Color.fromARGB(255, 180, 113, 192),
-                        prefixIconColor:
-                            const Color.fromARGB(255, 187, 109, 201),
-                        labelText: 'Enter your Password',
-                        prefixIcon: const Icon(Icons.password),
-                        filled: true,
-                        fillColor: Colors.white12,
+                        prefixIcon: const Icon(Icons.lock,
+                            color: Color.fromARGB(
+                                255, 187, 109, 201)), // Always purplish
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureText
-                              ? Icons.visibility_off
-                              : Icons.visibility),
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: const Color.fromARGB(123, 158, 158, 158),
+                            size: 20,
+                          ),
                           onPressed: () {
                             setState(() {
                               _obscureText = !_obscureText;
                             });
                           },
                         ),
-                        enabledBorder: const OutlineInputBorder(
+                        labelText: 'Enter your Password',
+                        hintText: '••••••••',
+                        hintStyle: TextStyle(color: Colors.grey[500]),
+                        labelStyle: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey[600], // Grey label when inactive
+                          fontWeight: FontWeight.w500, // Slightly bolder label
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(
-                              color: Color.fromARGB(255, 182, 116, 194)),
+                            color: const Color.fromARGB(
+                                69, 189, 189, 189)!, // Silverish-grey,
+                            width: 1.0, // Thin border when untouched
+                          ),
                         ),
                         focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                           borderSide: BorderSide(
-                              color: Color.fromARGB(255, 200, 54, 244)),
+                            color: Color.fromARGB(
+                                255, 187, 109, 201), // Purplish color
+                            width: 1.5, // Slightly broader when focused
+                          ),
                         ),
                         border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 15),
                       ),
+                      style: TextStyle(color: Colors.black87),
                     ),
+
                     const SizedBox(height: 38),
                     ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(12)),

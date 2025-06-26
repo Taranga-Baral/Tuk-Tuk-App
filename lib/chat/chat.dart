@@ -1083,7 +1083,27 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
       body: confirmedDriversData.isEmpty
-          ? _buildShimmerLoading()
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/no_data_found.gif',
+                    // height: MediaQuery.of(context).size.height * 0.18,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                  ),
+                  // const SizedBox(height: 0),
+                  // Text(
+                  //   'No Recent Chats',
+                  //   style: GoogleFonts.outfit(
+                  //     fontSize: 18,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
+                  SizedBox(height: 20),
+                ],
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _refreshData,
               child: Padding(

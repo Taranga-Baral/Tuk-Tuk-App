@@ -248,7 +248,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'चलाक जानकारी',
+                            'चालक जानकारी',
                             style: GoogleFonts.hind(
                               fontSize: 24,
                               fontWeight: FontWeight.w600,

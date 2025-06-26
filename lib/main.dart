@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:final_menu/login_screen/sign_up_page.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +22,8 @@ Future<void> main() async {
     statusBarBrightness: Brightness.dark,
   ));
   WidgetsFlutterBinding.ensureInitialized();
+
+  await _initializeLocationServices();
 
   await _preloadGoogleFonts();
 
@@ -52,6 +55,47 @@ Future<void> main() async {
   ]).then((_) {
     runApp(const MyApp()); // Replace MyApp with your root widget
   });
+}
+
+Future<void> _initializeLocationServices() async {
+  // Check if location services are enabled
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled, show a dialog to enable them
+    await _showLocationServiceDisabledAlert();
+  }
+
+  // Check location permission
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Permissions are denied, show a dialog
+      await _showLocationPermissionDeniedAlert();
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever, show a dialog to open app settings
+    await _showLocationPermissionPermanentlyDeniedAlert();
+  }
+}
+
+Future<void> _showLocationServiceDisabledAlert() async {
+  // This would typically be shown in the context of a widget
+  // For main.dart, we'll just print a message
+  print(
+      'Location services are disabled. Please enable them in device settings.');
+}
+
+Future<void> _showLocationPermissionDeniedAlert() async {
+  print(
+      'Location permissions are denied. Please grant permissions to use location features.');
+}
+
+Future<void> _showLocationPermissionPermanentlyDeniedAlert() async {
+  print(
+      'Location permissions are permanently denied. Please enable them in app settings.');
 }
 
 Future<void> _preloadGoogleFonts() async {

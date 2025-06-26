@@ -16,6 +16,10 @@ import 'package:location/location.dart';
 import 'package:final_menu/models/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibration/vibration.dart';
+
+import 'package:permission_handler/permission_handler.dart'
+    as secondarpermission;
 
 // class FareCalculator {
 //   static double calculateFare({
@@ -567,7 +571,7 @@ class _MapPageState extends State<MapPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Select Vehicle Type',
+                    'Vehicle Type',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -615,7 +619,7 @@ class _MapPageState extends State<MapPage> {
                                           : Colors.grey[300]!,
                                       width: 2,
                                     ),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Image.asset(
                                     vehicleImages[index],
@@ -653,7 +657,7 @@ class _MapPageState extends State<MapPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Select Your Municipality',
+                    'Current Location',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -678,7 +682,7 @@ class _MapPageState extends State<MapPage> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? const Color.fromARGB(235, 80, 91, 247)
-                                : Colors.grey[200],
+                                : Color.fromRGBO(244, 245, 252, 1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -709,7 +713,7 @@ class _MapPageState extends State<MapPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Select Vehicle Mode',
+                    'Vehicle Mode',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -739,8 +743,8 @@ class _MapPageState extends State<MapPage> {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? const Color.fromARGB(235, 80, 91, 247)
-                                  : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(10),
+                                  : Color.fromRGBO(244, 245, 252, 1),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Center(
                               child: Text(
@@ -764,69 +768,80 @@ class _MapPageState extends State<MapPage> {
             ),
 
             // Number of Passengers Selection
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Select Number of Passengers',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[800],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(
-                        selectedVehicleType == 'Motor Bike' ? 1 : 5,
-                        (index) {
-                          int passengerCount = index + 1;
-                          bool isSelected =
-                              selectedPassengers == passengerCount;
-
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: ChoiceChip(
-                              label: Text(
-                                '$passengerCount',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : const Color.fromARGB(235, 80, 91, 247),
-                                ),
-                              ),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                setState(() {
-                                  selectedPassengers = passengerCount;
-                                  fare = FareCalculator.calculateFare(
-                                    distance: distance,
-                                    vehicleType: selectedVehicleType!,
-                                    // mode: 'Petrol',
-                                    mode: selectedMode!,
-                                    passengers: selectedPassengers,
-                                  );
-                                });
-                              },
-                              selectedColor:
-                                  const Color.fromARGB(235, 80, 91, 247),
-                              backgroundColor: Colors.grey[200],
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                            ),
-                          );
-                        },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Passengers',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange[800],
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 8),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(
+                            selectedVehicleType == 'Motor Bike' ? 1 : 5,
+                            (index) {
+                              int passengerCount = index + 1;
+                              bool isSelected =
+                                  selectedPassengers == passengerCount;
+
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: ChoiceChip(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  checkmarkColor: Colors.white,
+                                  label: Text(
+                                    '$passengerCount',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : const Color.fromARGB(
+                                              235, 80, 91, 247),
+                                    ),
+                                  ),
+                                  selected: isSelected,
+                                  onSelected: (selected) {
+                                    setState(() {
+                                      selectedPassengers = passengerCount;
+                                      fare = FareCalculator.calculateFare(
+                                        distance: distance,
+                                        vehicleType: selectedVehicleType!,
+                                        // mode: 'Petrol',
+                                        mode: selectedMode!,
+                                        passengers: selectedPassengers,
+                                      );
+                                    });
+                                  },
+                                  selectedColor:
+                                      const Color.fromARGB(235, 80, 91, 247),
+                                  backgroundColor:
+                                      Color.fromRGBO(244, 245, 252, 1),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
 
             // Total Fare, Distance, and Duration Display
@@ -903,7 +918,7 @@ class _MapPageState extends State<MapPage> {
                         ),
                         Flexible(
                           child: Text(
-                            'NPR ${fare.toStringAsFixed(2)}',
+                            'NPR ${fare.toStringAsFixed(0)}',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -986,7 +1001,7 @@ class _MapPageState extends State<MapPage> {
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 73, 85, 252),
                       borderRadius:
-                          BorderRadius.circular(10), // Rounded corners
+                          BorderRadius.circular(20), // Rounded corners
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.2), // Subtle shadow
@@ -1041,7 +1056,8 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     _getUserLocation();
-    _fetchLocation();
+    fetchlocMethodName();
+
     _searchController.addListener(updateLiveText);
     void showLocationInfoPopup(BuildContext context) async {
       // Check if the popup has already been shown
@@ -1132,27 +1148,32 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  Future<void> _fetchLocation() async {
-    Location location = Location();
+  Future<void> fetchlocMethodName() async {
+    Future<void> _fetchLocation() async {
+      Location location = Location();
 
-    bool serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) return;
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) return;
+      }
+
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) return;
+      }
+
+      LocationData locationData = await location.getLocation();
+      setState(() {
+        _currentLocation = locationData;
+      });
+
+      // showLocationInfoPopup(context);
     }
 
-    PermissionStatus permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) return;
-    }
-
-    LocationData locationData = await location.getLocation();
-    setState(() {
-      _currentLocation = locationData;
-    });
-
-    // showLocationInfoPopup(context);
+    await _fetchLocation();
+    await fetchPickupLocationName();
   }
 
   Future<void> _getUserLocation() async {
@@ -1190,12 +1211,24 @@ class _MapPageState extends State<MapPage> {
                             ? MediaQuery.of(context).size.height * 0.4
                             : MediaQuery.of(context).size.height * 1,
                         child: GalliMap(
+                          // initialCameraPostion: CameraPosition(
+                          //   target: LatLng(_currentLocation!.latitude!,
+                          //       _currentLocation!.longitude!),
+                          //   zoom: 0.5,
+                          // ),
+
                           scrollGestureEnabled: true,
                           showThree60Widget: false,
                           showSearchWidget: false,
                           doubleClickZoomEnabled: true,
                           dragEnabled: true,
                           showCurrentLocation: true,
+                          // initialCameraPostion: CameraPosition(
+                          //     target: LatLng(
+                          //       _currentLocation!.latitude!,
+                          //       _currentLocation!.longitude!,
+                          //     ),
+                          //     zoom: 15),
                           showCurrentLocationButton: true,
                           authToken: '1b040d87-2d67-47d5-aa97-f8b47d301fec',
                           size: (
@@ -1212,7 +1245,39 @@ class _MapPageState extends State<MapPage> {
                             setState(() {});
                           },
                           onMapClick: (LatLng latLng) {},
-                          onMapLongPress: (LatLng latlng) {},
+                          onMapLongPress: (LatLng latlng) async {
+                            void vibrateOnceLight() async {
+                              if (await Vibration.hasVibrator() ?? false) {
+                                Vibration.vibrate(duration: 50, amplitude: 5);
+                              }
+                            }
+
+                            vibrateOnceLight();
+
+                            await clearRoutes(); // Clear existing routes
+                            await drawRoute(latlng); // Draw new route
+
+                            // Fetch and print pickup and delivery location names
+                            await fetchPickupLocationName();
+                            await fetchLocationName(latlng);
+                            await fetchDistanceDuration(latlng);
+                            setState(() {
+                              _destinationLatitude = latlng.latitude.toString();
+                              _destinationLongitude =
+                                  latlng.longitude.toString();
+                            });
+
+                            //start
+                            if (_distance != '' && _duration != '') {
+                              fare = FareCalculator.calculateFare(
+                                distance: _distance,
+                                vehicleType: selectedVehicleType!,
+                                mode: selectedMode!,
+                                passengers: selectedPassengers,
+                              );
+                              print('Printed Fare : $fare');
+                            }
+                          },
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1233,7 +1298,7 @@ class _MapPageState extends State<MapPage> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: Container(
-                                        color: Color.fromARGB(255, 80, 91, 240),
+                                        color: Colors.white,
                                         height:
                                             MediaQuery.of(context).size.width *
                                                 0.14,
@@ -1243,7 +1308,7 @@ class _MapPageState extends State<MapPage> {
                                         child: Icon(
                                           Icons.menu_rounded,
                                           size: 22,
-                                          color: Colors.white,
+                                          color: Colors.black87,
                                         ),
                                       ),
                                     ),
@@ -1581,7 +1646,7 @@ class _MapPageState extends State<MapPage> {
                                     fare = FareCalculator.calculateFare(
                                       distance: _distance,
                                       vehicleType: selectedVehicleType!,
-                                      mode: 'Petrol',
+                                      mode: selectedMode!,
                                       passengers: selectedPassengers,
                                     );
                                     print('Printed Fare : $fare');
@@ -1967,7 +2032,42 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  // Future<void> fetchPickupLocationName() async {
+  //   final String pickupnameURL =
+  //       'https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}&lng=${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}';
+
+  //   try {
+  //     final response = await http.get(Uri.parse(pickupnameURL));
+
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+  //       if (jsonResponse['success'] == true) {
+  //         final String locationName = jsonResponse['data']['generalName'];
+  //         print('Hi there Pickup locname is : $locationName');
+  //         print(
+  //             'Hi there Pickup Latitude is : ${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}, Pickup Longitude is : ${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}');
+  //         setState(() {
+  //           _pickupLocation = locationName;
+  //         });
+  //       } else {
+  //         print('Error: ${jsonResponse['message']}');
+  //       }
+  //     } else {
+  //       print('Failed to load data: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Exception caught: $e');
+  //   }
+  // }
+
   Future<void> fetchPickupLocationName() async {
+    // First check if location is null
+    if (_currentLocation == null) {
+      _showLocationServiceDialog();
+      return;
+    }
+
     final String pickupnameURL =
         'https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}&lng=${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}';
 
@@ -1994,6 +2094,144 @@ class _MapPageState extends State<MapPage> {
     } catch (e) {
       print('Exception caught: $e');
     }
+  }
+
+// Add this method to your class
+  Future<void> _openAppSettings() async {
+    try {
+      // Open the app settings page
+      await secondarpermission.openAppSettings();
+
+      // After returning from settings, check location status again
+      final status = await secondarpermission.Permission.location.status;
+      if (status.isGranted) {
+        // If permission was granted, refresh the location
+        await _refreshLocation();
+      }
+    } catch (e) {
+      print('Error opening app settings: $e');
+      // Optionally show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not open settings'),
+        ),
+      );
+    }
+  }
+
+  void _showLocationServiceDialog() {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.warning,
+      animType: AnimType.scale,
+      title: 'Enable Wifi and Location',
+      titleTextStyle: const TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Color.fromARGB(255, 187, 109, 201),
+      ),
+      desc:
+          '\nPlease enable location services to continue and make sure your device location and internet is also turned on.',
+      descTextStyle: const TextStyle(fontSize: 16),
+      btnOkText: 'Settings',
+      btnOkColor: Color.fromARGB(255, 187, 109, 201),
+      btnOkOnPress: () async {
+        await _openAppSettings();
+      },
+      btnCancelText: 'Refresh',
+      btnCancelColor: const Color.fromARGB(204, 189, 189, 189),
+      btnCancelOnPress: () {
+        _refreshLocation();
+      },
+      buttonsBorderRadius: BorderRadius.circular(8),
+      dismissOnTouchOutside: false,
+      dismissOnBackKeyPress: false,
+      padding: const EdgeInsets.all(20),
+      dialogBackgroundColor: Colors.white,
+      borderSide: const BorderSide(
+        color: Color.fromARGB(255, 187, 109, 201),
+        width: 2,
+      ),
+      dialogBorderRadius: BorderRadius.circular(15),
+    ).show();
+  }
+
+  // void _showLocationServiceDialog() {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => AlertDialog(
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(12.0),
+  //       ),
+  //       title: const Text(
+  //         'Location Service Required',
+  //         style: TextStyle(
+  //           fontWeight: FontWeight.bold,
+  //           fontSize: 20,
+  //         ),
+  //         textAlign: TextAlign.center,
+  //       ),
+  //       content: const Text(
+  //         'Please enable location services to continue. Make sure your device location is turned on.',
+  //         style: TextStyle(fontSize: 16),
+  //         textAlign: TextAlign.center,
+  //       ),
+  //       actionsAlignment: MainAxisAlignment.center,
+  //       actions: <Widget>[
+  //         TextButton(
+  //           child: const Text(
+  //             'Open Settings',
+  //             style: TextStyle(color: Colors.blue),
+  //           ),
+  //           onPressed: () async {
+  //             Navigator.pop(context);
+  //             await _openAppSettings();
+  //           },
+  //         ),
+  //         ElevatedButton(
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: const Color.fromARGB(255, 187, 109, 201),
+  //             shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.circular(8.0),
+  //             ),
+  //             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  //           ),
+  //           child: const Text(
+  //             'Refresh',
+  //             style: TextStyle(
+  //               color: Colors.white,
+  //               fontWeight: FontWeight.w600,
+  //               fontSize: 16,
+  //             ),
+  //           ),
+  //           onPressed: () {
+  //             Navigator.pop(context);
+  //             _refreshLocation();
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Future<void> _refreshLocation() async {
+    // // Add your location refresh logic here
+    // // For example:
+    // setState(() {
+    //   _currentLocation = null; // Reset location
+    // });
+
+    // // Call your location fetching method again
+    // await fetchPickupLocationName();
+
+    // // You might also want to call your location permission check again
+    // // await _checkLocationPermission();
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapPage(userId: widget.userId),
+        ));
   }
 
   void _handleSearch(String query) {
