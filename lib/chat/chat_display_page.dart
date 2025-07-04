@@ -531,19 +531,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   //start
   void _showTripDetails(BuildContext context) {
     showModalBottomSheet(
@@ -556,172 +543,174 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),),
-          child: SingleChildScrollView(
-            physics: ClampingScrollPhysics(),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height * 0.5,
-              ),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-              // Handle
-              Container(
-              margin: EdgeInsets.only(top: 12, bottom: 8),
-              width: 60,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
-              ),),
-
-              // Header
-              Padding(
-                padding: EdgeInsets.fromLTRB(24, 16, 16, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Trip Summary',
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.blueAccent),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.close_rounded, size: 24),
-                      color: Colors.grey[600],
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Content
-              Padding(
-                padding: EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Column(
-                  children: [
-                    // Driver Card
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: 80,
-                        maxWidth: double.infinity,
-                      ),
-                      child: _buildInfoCard(
-                        icon: Icons.person_outline_rounded,
-                        iconColor: Colors.indigo,
-                        title: 'Driver',
-                        value: widget.driverName,
-                      ),
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Location Cards
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: 80,
-                        maxWidth: double.infinity,
-                      ),
-                      child: _buildLocationCard(
-                        icon: Icons.location_on,
-                        iconColor: Colors.green[600]!,
-                        title: 'Pickup Location',
-                        value: widget.pickupLocation,
-                        backgroundColor: Colors.green[50]!,
-                      ),
-                    ),
-
-                    SizedBox(height: 12),
-
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: 80,
-                        maxWidth: double.infinity,
-                      ),
-                      child: _buildLocationCard(
-                        icon: Icons.location_on,
-                        iconColor: Colors.red[600]!,
-                        title: 'Delivery Location',
-                        value: widget.deliveryLocation,
-                        backgroundColor: Colors.red[50]!,
-                      ),
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Details Grid - Using Wrap instead of GridView
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width - 72) / 2,
-                          child: _buildDetailChip(
-                            icon: Icons.speed_rounded,
-                            label: 'Kilometer',
-                            value: double.parse(widget.distance).toStringAsFixed(1),
-                          ),
-                        ),
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width - 72) / 2,
-                          child: _buildDetailChip(
-                            icon: Icons.currency_rupee,
-                            label: 'NPR',
-                            value: '${widget.fare}',
-                          ),
-                        ),
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width - 72) / 2,
-                          child: _buildDetailChip(
-                            icon: Icons.people_alt_rounded,
-                            label: 'Passengers',
-                            value: widget.no_of_person.toString(),
-                          ),
-                        ),
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width - 72) / 2,
-                          child: _buildDetailChip(
-                            icon: _getVehicleIcon(),
-                            label: 'Vehicle',
-                            value: widget.vehicle_mode,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Button
-              Padding(
-                padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
-                    minimumSize: Size(double.infinity, 56),
-                    elevation: 0,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'Close Details',
-                    style: GoogleFonts.outfit(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle
+                Container(
+                  margin: EdgeInsets.only(top: 12, bottom: 8),
+                  width: 60,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-              )
+
+                // Header
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24, 16, 16, 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Trip Summary',
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.blueAccent),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close_rounded, size: 24),
+                        color: Colors.grey[600],
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Content
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24, 8, 24, 24),
+                  child: Column(
+                    children: [
+                      // Driver Card
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: 80,
+                          maxWidth: double.infinity,
+                        ),
+                        child: _buildInfoCard(
+                          icon: Icons.person_outline_rounded,
+                          iconColor: Colors.indigo,
+                          title: 'Driver',
+                          value: widget.driverName,
+                        ),
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // Location Cards
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: 80,
+                          maxWidth: double.infinity,
+                        ),
+                        child: _buildLocationCard(
+                          icon: Icons.location_on,
+                          iconColor: Colors.green[600]!,
+                          title: 'Pickup Location',
+                          value: widget.pickupLocation,
+                          backgroundColor: Colors.green[50]!,
+                        ),
+                      ),
+
+                      SizedBox(height: 12),
+
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: 80,
+                          maxWidth: double.infinity,
+                        ),
+                        child: _buildLocationCard(
+                          icon: Icons.location_on,
+                          iconColor: Colors.red[600]!,
+                          title: 'Delivery Location',
+                          value: widget.deliveryLocation,
+                          backgroundColor: Colors.red[50]!,
+                        ),
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // Details Grid - Using Wrap instead of GridView
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 72) / 2,
+                            child: _buildDetailChip(
+                              icon: Icons.speed_rounded,
+                              label: 'Kilometer',
+                              value: double.parse(widget.distance)
+                                  .toStringAsFixed(1),
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 72) / 2,
+                            child: _buildDetailChip(
+                              icon: Icons.currency_rupee,
+                              label: 'NPR',
+                              value: '${widget.fare}',
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 72) / 2,
+                            child: _buildDetailChip(
+                              icon: Icons.people_alt_rounded,
+                              label: 'Passengers',
+                              value: widget.no_of_person.toString(),
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 72) / 2,
+                            child: _buildDetailChip(
+                              icon: _getVehicleIcon(),
+                              label: 'Vehicle',
+                              value: widget.vehicle_mode,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Button
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
+                      minimumSize: Size(double.infinity, 56),
+                      elevation: 0,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'Close Details',
+                      style: GoogleFonts.outfit(
+                          fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
         ),
-
-    ),);
+      ),
+    );
   }
 
   Widget _buildInfoCard({
@@ -806,7 +795,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   title,
                   style: GoogleFonts.poppins(
                       fontSize: 14,
-
                       color: iconColor.withOpacity(0.8),
                       fontWeight: FontWeight.w700),
                 ),
@@ -853,15 +841,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600]),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               Text(
                 value,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -871,13 +855,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   IconData _getVehicleIcon() {
-    switch(widget.vehicle_mode.toLowerCase()) {
-      case 'taxi': return Icons.local_taxi_rounded;
-      case 'bike': return Icons.electric_bike_rounded;
-      case 'truck': return Icons.local_shipping_rounded;
-      default: return Icons.directions_car_rounded;
+    switch (widget.vehicle_mode.toLowerCase()) {
+      case 'taxi':
+        return Icons.local_taxi_rounded;
+      case 'bike':
+        return Icons.electric_bike_rounded;
+      case 'truck':
+        return Icons.local_shipping_rounded;
+      default:
+        return Icons.directions_car_rounded;
     }
   }
+
   //end
   @override
   Widget build(BuildContext context) {
@@ -973,8 +962,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               StreamBuilder<List<Map<String, dynamic>>>(
                 stream: _getMessages(),
                 builder: (context, snapshot) {
-
-
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
@@ -984,7 +971,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         color: Colors.redAccent.withAlpha(230),
                         height: 35,
                         width: double.infinity,
-                        child: Center(child: Text('No any Messages', style: GoogleFonts.poppins(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),)));
+                        child: Center(
+                            child: Text(
+                          'No any Messages',
+                          style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600),
+                        )));
                   }
 
                   final messages = snapshot.data!;
@@ -1009,7 +1003,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           padding: EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             color: isDriverMessage
-                                ? Colors.green.withOpacity(0.3)
+                                ? Colors.redAccent.withOpacity(0.3)
                                 : Colors.blueAccent.withOpacity(0.8),
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
@@ -1039,7 +1033,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                 chatData['message'],
                                 style: TextStyle(
                                   color: isDriverMessage
-                                      ? Colors.black87
+                                      ? Colors.black
                                       : Colors.white,
                                   fontSize: 16.0,
                                 ),
@@ -1098,11 +1092,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     maxLines: null,
                     decoration: InputDecoration(
                       hintText: 'Type your message...',
-                      hintStyle: GoogleFonts.outfit(fontWeight: FontWeight.w400,
+                      hintStyle: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w400,
                         fontSize: 16,
                         color: Colors.grey[600],
-
-
                       ),
                       border: InputBorder.none,
                     ),

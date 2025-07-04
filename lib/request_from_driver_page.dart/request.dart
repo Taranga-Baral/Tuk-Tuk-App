@@ -1795,57 +1795,76 @@ class _RequestPageState extends State<RequestPage> {
   }
 
   Widget _buildShimmerLoading() {
-    return ListView.builder(
-      itemCount: 8,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.all(8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(height: 20, color: Colors.grey, width: 120),
-                          const SizedBox(height: 5),
-                          Container(height: 10, width: 80, color: Colors.grey),
-                          const SizedBox(height: 6),
-                          Container(height: 10, color: Colors.grey, width: 50),
-                          const SizedBox(height: 4),
-                          Container(height: 10, color: Colors.grey, width: 50),
-                          const SizedBox(height: 5),
-                          Container(height: 10, color: Colors.grey, width: 50),
-                          const SizedBox(height: 5),
-                          Container(height: 10, color: Colors.grey, width: 50),
-                        ],
-                      ),
-                      const CircleAvatar(radius: 30),
-                    ],
+    return SingleChildScrollView(
+      child: ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: 5,
+        itemBuilder: (context, index) {
+          return Column(
+            children: [
+              Card(
+                elevation: 0,
+                color: Colors.transparent,
+                // margin: const EdgeInsets.all(8),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.circular(15),
+                // ),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                    height: 20, color: Colors.grey, width: 120),
+                                const SizedBox(height: 5),
+                                Container(
+                                    height: 10, width: 80, color: Colors.grey),
+                                const SizedBox(height: 6),
+                                Container(
+                                    height: 10, color: Colors.grey, width: 50),
+                                const SizedBox(height: 4),
+                                Container(
+                                    height: 10, color: Colors.grey, width: 50),
+                                const SizedBox(height: 5),
+                                Container(
+                                    height: 10, color: Colors.grey, width: 50),
+                                const SizedBox(height: 5),
+                                Container(
+                                    height: 10, color: Colors.grey, width: 50),
+                              ],
+                            ),
+                            const CircleAvatar(radius: 30),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        );
-      },
+              SizedBox(
+                height: 16,
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        canPop: false,
+      canPop: false,
       onPopInvoked: (bool didPop) async {
         if (didPop) return; // Already handled by system
 
@@ -1857,94 +1876,72 @@ class _RequestPageState extends State<RequestPage> {
           );
         }
       },
-
-
-        child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage1()),
-              ),
-            ),
-            backgroundColor: showArrivedDrivers
-                ? const Color.fromRGBO(1, 181, 116, 0.93)
-                : Colors.redAccent.withValues(alpha: 0.92),
-            title: Text(
-              showArrivedDrivers ? 'Arrived Riders' : 'Ride Requests',
-              style: GoogleFonts.outfit(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage1()),
             ),
           ),
-          floatingActionButton: IntrinsicWidth(
-            child: SizedBox(
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: showArrivedDrivers
-                      ? Colors.redAccent.withValues(alpha: 0.92)
-                      : const Color.fromRGBO(1, 181, 116, 0.93),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                onPressed: () {
-                  setState(() {
-                    showArrivedDrivers = !showArrivedDrivers;
-                  });
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      showArrivedDrivers
-                          ? Icons.person_add_alt_1_rounded
-                          : Icons.drive_eta_rounded,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      showArrivedDrivers ? 'Requests' : 'Arrival',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          backgroundColor: showArrivedDrivers
+              ? const Color.fromRGBO(1, 181, 116, 0.93)
+              : Colors.redAccent.withValues(alpha: 0.92),
+          title: Text(
+            showArrivedDrivers ? 'Arrived Riders' : 'Ride Requests',
+            style: GoogleFonts.outfit(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
-
-
-
-          body: _buildContent(),
-
-
-
-
-
-
-
-
-
-
-
         ),
+        floatingActionButton: IntrinsicWidth(
+          child: SizedBox(
+            height: 50,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: showArrivedDrivers
+                    ? Colors.redAccent.withValues(alpha: 0.92)
+                    : const Color.fromRGBO(1, 181, 116, 0.93),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(17),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              onPressed: () {
+                setState(() {
+                  showArrivedDrivers = !showArrivedDrivers;
+                });
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    showArrivedDrivers
+                        ? Icons.person_add_alt_1_rounded
+                        : Icons.drive_eta_rounded,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    showArrivedDrivers ? 'Requests' : 'Arrival',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: _buildContent(),
+      ),
     );
   }
-
-
-
-
-
-
 
   Widget _buildContent() {
     // Case 1: Data is still loading
@@ -1961,21 +1958,21 @@ class _RequestPageState extends State<RequestPage> {
     // Case 3: Data exists - show list with refresh
     return RefreshIndicator(
       onRefresh: _refreshData,
-      child: ListView.builder(
-        physics: _buildCustomScrollPhysics(),
-        itemCount: showArrivedDrivers ? arrivedDrivers.length : requests.length,
-        itemBuilder: (context, index) {
-          return showArrivedDrivers
-              ? _buildArrivedDriverItem(index)
-              : _buildRequestItem(index);
-        },
+      child: SingleChildScrollView(
+        child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount:
+              showArrivedDrivers ? arrivedDrivers.length : requests.length,
+          itemBuilder: (context, index) {
+            return showArrivedDrivers
+                ? _buildArrivedDriverItem(index)
+                : _buildRequestItem(index);
+          },
+        ),
       ),
     );
   }
-
-
-
-
 
   Widget _buildArrivedDriverItem(int index) {
     final driver = arrivedDrivers[index];
@@ -2000,7 +1997,6 @@ class _RequestPageState extends State<RequestPage> {
               child: FutureBuilder<Map<String, dynamic>>(
                 future: _getDriverAndTripDetails(driverId, tripId),
                 builder: (context, snapshot) {
-
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return _buildShimmerLoading(); // Show shimmer for individual items
                   }
@@ -2010,10 +2006,9 @@ class _RequestPageState extends State<RequestPage> {
                     return _buildShimmerLoading();
                   }
 
-
-    if (!snapshot.hasData) {
-    return _buildShimmerLoading(); // Show shimmer while loading
-    }
+                  if (!snapshot.hasData) {
+                    return _buildShimmerLoading(); // Show shimmer while loading
+                  }
 
                   final driverData = snapshot.data!['driver'] ?? {};
                   final tripData = snapshot.data!['trip'] ?? {};
@@ -2284,19 +2279,14 @@ class _RequestPageState extends State<RequestPage> {
             .get(),
       ]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-
         if (!snapshot.hasData || snapshot.data == null) {
           // return _buildNoDataFound(false, context);
           return _buildShimmerLoading();
         }
 
-
-
-          if (!snapshot.hasData) {
-            return _buildShimmerLoading(); // Show shimmer while loading
-          }
-
-
+        if (!snapshot.hasData) {
+          return _buildShimmerLoading(); // Show shimmer while loading
+        }
 
         final vehicleData = snapshot.data![0].data() as Map<String, dynamic>;
         final tripData = snapshot.data![1].data() as Map<String, dynamic>;
@@ -2660,21 +2650,21 @@ class _RequestPageState extends State<RequestPage> {
     }
   }
 
-  ScrollPhysics _buildCustomScrollPhysics() {
-    const double maxScrollSpeed = 1.0;
-    return const AlwaysScrollableScrollPhysics().applyTo(
-      ClampingScrollPhysics(
-        parent: _LimitedScrollPhysics(maxScrollSpeed: maxScrollSpeed),
-      ),
-    );
-  }
+  // ScrollPhysics _buildCustomScrollPhysics() {
+  //   const double maxScrollSpeed = 1.0;
+  //   return const AlwaysScrollableScrollPhysics().applyTo(
+  //     ClampingScrollPhysics(
+  //       parent: _LimitedScrollPhysics(maxScrollSpeed: maxScrollSpeed),
+  //     ),
+  //   );
+  // }
 }
 
 Widget _buildNoDataFound(bool isArrivedDrivers, BuildContext context) {
   return Center(
     child: SizedBox(
       // color: Colors.red,
-      height: MediaQuery.of(context).size.height *0.9,
+      height: MediaQuery.of(context).size.height * 0.9,
       width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -2686,7 +2676,6 @@ Widget _buildNoDataFound(bool isArrivedDrivers, BuildContext context) {
             height: 200,
             fit: BoxFit.contain,
           ),
-
 
           // Title
           Text(
@@ -2714,7 +2703,7 @@ Widget _buildNoDataFound(bool isArrivedDrivers, BuildContext context) {
           // ),
 
           SizedBox(
-            width: MediaQuery.of(context).size.width *0.74,
+            width: MediaQuery.of(context).size.width * 0.74,
             child: Text(
               isArrivedDrivers
                   ? 'No driver arrivals in the last 24 hours. Book your ride and wait if requested recently.'
@@ -2728,43 +2717,37 @@ Widget _buildNoDataFound(bool isArrivedDrivers, BuildContext context) {
             ),
           ),
 
-
-
-
-          SizedBox(height: 60,),
-
-
-
+          SizedBox(
+            height: 60,
+          ),
         ],
       ),
     ),
   );
 }
 
+// class _LimitedScrollPhysics extends ScrollPhysics {
+//   final double maxScrollSpeed;
 
+//   const _LimitedScrollPhysics({
+//     required this.maxScrollSpeed,
+//     super.parent,
+//   });
 
-class _LimitedScrollPhysics extends ScrollPhysics {
-  final double maxScrollSpeed;
+//   @override
+//   _LimitedScrollPhysics applyTo(ScrollPhysics? ancestor) {
+//     return _LimitedScrollPhysics(
+//       maxScrollSpeed: maxScrollSpeed,
+//       parent: buildParent(ancestor),
+//     );
+//   }
 
-  const _LimitedScrollPhysics({
-    required this.maxScrollSpeed,
-    super.parent,
-  });
-
-  @override
-  _LimitedScrollPhysics applyTo(ScrollPhysics? ancestor) {
-    return _LimitedScrollPhysics(
-      maxScrollSpeed: maxScrollSpeed,
-      parent: buildParent(ancestor),
-    );
-  }
-
-  @override
-  Simulation? createBallisticSimulation(
-      ScrollMetrics position, double velocity) {
-    if (velocity.abs() > maxScrollSpeed) {
-      velocity = velocity.sign * maxScrollSpeed;
-    }
-    return super.createBallisticSimulation(position, velocity);
-  }
-}
+//   @override
+//   Simulation? createBallisticSimulation(
+//       ScrollMetrics position, double velocity) {
+//     if (velocity.abs() > maxScrollSpeed) {
+//       velocity = velocity.sign * maxScrollSpeed;
+//     }
+//     return super.createBallisticSimulation(position, velocity);
+//   }
+// }

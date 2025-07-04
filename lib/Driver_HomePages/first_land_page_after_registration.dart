@@ -1486,12 +1486,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
     } catch (e) {
       // Handle error (e.g., if something goes wrong during the Firebase write)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error sending request: $e'),
-          duration: const Duration(seconds: 3),
-        ),
-      );
     }
   }
 }

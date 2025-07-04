@@ -1649,7 +1649,10 @@ import 'package:bcrypt/bcrypt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
 import 'package:final_menu/Driver_initial-auth/driver_registration_page.dart';
+import 'package:final_menu/homepage1.dart';
+import 'package:final_menu/login_screen/profile_setup.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -2146,11 +2149,45 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
+                            onTap: () async {
+                              // Check current auth state
+                              final user = FirebaseAuth.instance.currentUser;
+
+                              if (user != null) {
+                                // User is logged in - check if profile is complete
+                                final userDoc = await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(user.uid)
+                                    .get();
+
+                                if (userDoc.exists &&
+                                    userDoc['phone_number'] != null &&
+                                    userDoc['username'] != null) {
+                                  // Profile complete - go to MapPage
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => HomePage1(),
+                                    ),
+                                  );
+                                } else {
+                                  // Profile incomplete - go to ProfileSetup
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          ProfileSetupPage(user: user),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                // No user logged in - go to SignInPage
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SignInPage()));
+                                      builder: (_) => SignInPage()),
+                                );
+                              }
                             },
                             child: Icon(FontAwesomeIcons.arrowLeft)),
                         Text(

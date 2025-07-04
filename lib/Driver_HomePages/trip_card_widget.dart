@@ -520,9 +520,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                             );
                           } finally {
                             // Close the loading dialog if it's still open
-                            setState(() {
+                            if (mounted) {
                               setState(() {});
-                            });
+                            }
                           }
                         },
                   color: widget.isButtonDisabled ? Colors.grey : Colors.blue,
