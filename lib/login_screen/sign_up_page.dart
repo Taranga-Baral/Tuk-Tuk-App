@@ -256,7 +256,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide(
                                 color: const Color.fromARGB(
-                                    69, 189, 189, 189)!, // Silverish-grey,
+                                    69, 189, 189, 189), // Silverish-grey,
                                 width: 1.0, // Thin border when untouched
                               ),
                             ),
@@ -344,7 +344,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide(
                                 color: const Color.fromARGB(
-                                    69, 189, 189, 189)!, // Silverish-grey,
+                                    69, 189, 189, 189), // Silverish-grey,
                                 width: 1.0, // Thin border when untouched
                               ),
                             ),
@@ -431,7 +431,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide(
                                 color: const Color.fromARGB(
-                                    69, 189, 189, 189)!, // Silverish-grey,
+                                    69, 189, 189, 189), // Silverish-grey,
                                 width: 1.0, // Thin border when untouched
                               ),
                             ),
@@ -547,7 +547,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide(
                                 color: const Color.fromARGB(
-                                    69, 189, 189, 189)!, // Silverish-grey,
+                                    69, 189, 189, 189), // Silverish-grey,
                                 width: 1.0, // Thin border when untouched
                               ),
                             ),

@@ -605,9 +605,7 @@ import 'package:final_menu/driver_chat_page/driver_chat_page.dart';
 import 'package:final_menu/driver_filter_trips/driver_filter_page.dart';
 import 'package:final_menu/driver_successful_trips/driver_successful_trips.dart';
 import 'package:final_menu/galli_maps/driver_view_passenger_location/driver_view_passenger_location.dart';
-import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -629,10 +627,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
   final int _itemsPerPage = 10;
   DocumentSnapshot? _lastDocument;
   bool _hasMore = true;
-  final List<bool> _isButtonDisabledList =
+   List<bool> _isButtonDisabledList =
       []; // List to hold button states for each trip
 
-  final List<TripModel> _tripDataList = [];
+   List<TripModel> _tripDataList = [];
+
+  StreamSubscription<List<TripModel>>? _tripsSubscription;
 
   bool _isLoading = false;
   final ScrollController _scrollController = ScrollController();
@@ -770,200 +770,160 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   // Other existing methods...
-  Future<void> _fetchTrips() async {
-    if (_isLoading || !_hasMore) {
-      return; // Check if already loading or no more trips
-    }
-    setState(() => _isLoading = true); // Set loading state to true
+  // Future<void> _fetchTrips() async {
+  //   if (_isLoading || !_hasMore) {
+  //     return; // Check if already loading or no more trips
+  //   }
+  //   setState(() => _isLoading = true); // Set loading state to true
+  //
+  //   // Get the current time and the cutoff time (1 hour ago)
+  //   DateTime now = DateTime.now();
+  //   DateTime cutoffTime = now.subtract(Duration(hours: 1));
+  //
+  //   Query query = FirebaseFirestore.instance
+  //       .collection('trips')
+  //       .where('timestamp',
+  //           isGreaterThan: Timestamp.fromDate(
+  //               cutoffTime)) // Filter for trips within the last hour
+  //       .orderBy(_getSortField(), descending: _getSortDescending())
+  //       .limit(_itemsPerPage); // Limit results to items per page
+  //
+  //   if (_lastDocument != null) {
+  //     query = query.startAfterDocument(
+  //         _lastDocument!); // Start after last fetched document
+  //   }
+  //
+  //   try {
+  //     print('Fetching trips...'); // Debugging print
+  //     final querySnapshot = await query.get();
+  //     if (querySnapshot.docs.isEmpty) {
+  //       setState(() => _hasMore = false); // No more trips to load
+  //       await _loadButtonStates();
+  //     } else {
+  //       _lastDocument = querySnapshot.docs.last; // Update last document
+  //
+  //       // Step 1: Get driverEmail from widget
+  //       String driverEmail = widget
+  //           .driverEmail; // Assuming driverEmail is available in the widget
+  //
+  //       // Step 2: Fetch vehicleData for the specific driverEmail
+  //       var vehicleQuerySnapshot = await FirebaseFirestore.instance
+  //           .collection('vehicleData')
+  //           .where('email',
+  //               isEqualTo: driverEmail) // Match the driver email in vehicleData
+  //           .get();
+  //
+  //       // Step 3: Create a map of vehicleData for the specific driverEmail
+  //       Map<String, dynamic>? vehicleData;
+  //       if (vehicleQuerySnapshot.docs.isNotEmpty) {
+  //         vehicleData = vehicleQuerySnapshot.docs.first
+  //             .data(); // Get vehicle data for this driver
+  //         print(
+  //             'Fetched vehicleData for driver: $vehicleData'); // Debugging print
+  //       } else {
+  //         print(
+  //             'No vehicleData found for driverEmail: $driverEmail'); // Debugging print
+  //       }
+  //
+  //       // Step 4: Filter trips based on vehicleType match
+  //       var newTrips = querySnapshot.docs
+  //           .map((doc) {
+  //             var tripData = doc.data() as Map<String, dynamic>;
+  //             String? vehicleTypeFromVehicleData =
+  //                 vehicleData?['vehicleType'] as String?;
+  //             String? vehicleTypeFromTrips = tripData['vehicleType'] as String?;
+  //
+  //             if (vehicleTypeFromVehicleData != null &&
+  //                 vehicleTypeFromTrips != null) {
+  //               // Only add the trip if the vehicle types match
+  //               if (vehicleTypeFromVehicleData == vehicleTypeFromTrips) {
+  //                 tripData['distance'] =
+  //                     double.tryParse(tripData['distance'] as String? ?? '') ??
+  //                         0.0;
+  //                 tripData['fare'] =
+  //                     double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
+  //                 tripData['tripId'] = doc.id; // Add trip ID
+  //                 return TripModel.fromJson(tripData);
+  //               }
+  //             }
+  //             return null; // Return null if the types don't match
+  //           })
+  //           .where((trip) => trip != null)
+  //           .toList()
+  //           .cast<TripModel>();
+  //
+  //       print('Fetched and filtered trips: $newTrips'); // Debugging print
+  //
+  //       // Add new trips to the list
+  //       _tripDataList.addAll(newTrips);
+  //
+  //       // Initialize button states for newly added trips
+  //       for (var trip in newTrips) {
+  //         _isButtonDisabledList.add(false); // Set initial state as enabled
+  //       }
+  //
+  //       // Load button states after new trips are fetched
+  //       await _loadButtonStates();
+  //
+  //       // Sort the complete trip list
+  //       _tripDataList.sort((a, b) => _sortTrips(a, b));
+  //
+  //       if (mounted) setState(() {}); // Update UI
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching trips: $e'); // Handle any errors
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() => _isLoading = false); // Set loading state to false
+  //     }
+  //   }
+  // }
 
-    // Get the current time and the cutoff time (1 hour ago)
-    DateTime now = DateTime.now();
-    DateTime cutoffTime = now.subtract(Duration(hours: 1));
 
-    Query query = FirebaseFirestore.instance
+
+  Stream<List<TripModel>> _getTripsStream() {
+    DateTime cutoffTime = DateTime.now().subtract(Duration(hours: 1));
+
+    return FirebaseFirestore.instance
         .collection('trips')
-        .where('timestamp',
-            isGreaterThan: Timestamp.fromDate(
-                cutoffTime)) // Filter for trips within the last hour
+        .where('timestamp', isGreaterThan: Timestamp.fromDate(cutoffTime))
         .orderBy(_getSortField(), descending: _getSortDescending())
-        .limit(_itemsPerPage); // Limit results to items per page
+        .snapshots()
+        .asyncMap((querySnapshot) async {
+      // Get driver's vehicle data
+      final vehicleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('vehicleData')
+          .where('email', isEqualTo: widget.driverEmail)
+          .get();
 
-    if (_lastDocument != null) {
-      query = query.startAfterDocument(
-          _lastDocument!); // Start after last fetched document
-    }
+      final vehicleData = vehicleQuerySnapshot.docs.isNotEmpty
+          ? vehicleQuerySnapshot.docs.first.data()
+          : null;
 
-    try {
-      print('Fetching trips...'); // Debugging print
-      final querySnapshot = await query.get();
-      if (querySnapshot.docs.isEmpty) {
-        setState(() => _hasMore = false); // No more trips to load
-        await _loadButtonStates();
-      } else {
-        _lastDocument = querySnapshot.docs.last; // Update last document
+      return querySnapshot.docs
+          .map((doc) {
+        final tripData = doc.data();
 
-        // Step 1: Get driverEmail from widget
-        String driverEmail = widget
-            .driverEmail; // Assuming driverEmail is available in the widget
-
-        // Step 2: Fetch vehicleData for the specific driverEmail
-        var vehicleQuerySnapshot = await FirebaseFirestore.instance
-            .collection('vehicleData')
-            .where('email',
-                isEqualTo: driverEmail) // Match the driver email in vehicleData
-            .get();
-
-        // Step 3: Create a map of vehicleData for the specific driverEmail
-        Map<String, dynamic>? vehicleData;
-        if (vehicleQuerySnapshot.docs.isNotEmpty) {
-          vehicleData = vehicleQuerySnapshot.docs.first
-              .data(); // Get vehicle data for this driver
-          print(
-              'Fetched vehicleData for driver: $vehicleData'); // Debugging print
-        } else {
-          print(
-              'No vehicleData found for driverEmail: $driverEmail'); // Debugging print
+        if (vehicleData?['vehicleType'] == tripData['vehicleType']) {
+          tripData['distance'] =
+              double.tryParse(tripData['distance'] as String? ?? '') ??
+                  0.0;
+          tripData['fare'] =
+              double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
+          tripData['tripId'] = doc.id; // Add trip ID
+          return TripModel.fromJson(tripData);
         }
 
-        // Step 4: Filter trips based on vehicleType match
-        var newTrips = querySnapshot.docs
-            .map((doc) {
-              var tripData = doc.data() as Map<String, dynamic>;
-              String? vehicleTypeFromVehicleData =
-                  vehicleData?['vehicleType'] as String?;
-              String? vehicleTypeFromTrips = tripData['vehicleType'] as String?;
-
-              if (vehicleTypeFromVehicleData != null &&
-                  vehicleTypeFromTrips != null) {
-                // Only add the trip if the vehicle types match
-                if (vehicleTypeFromVehicleData == vehicleTypeFromTrips) {
-                  tripData['distance'] =
-                      double.tryParse(tripData['distance'] as String? ?? '') ??
-                          0.0;
-                  tripData['fare'] =
-                      double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
-                  tripData['tripId'] = doc.id; // Add trip ID
-                  return TripModel.fromJson(tripData);
-                }
-              }
-              return null; // Return null if the types don't match
-            })
-            .where((trip) => trip != null)
-            .toList()
-            .cast<TripModel>();
-
-        print('Fetched and filtered trips: $newTrips'); // Debugging print
-
-        // Add new trips to the list
-        _tripDataList.addAll(newTrips);
-
-        // Initialize button states for newly added trips
-        for (var trip in newTrips) {
-          _isButtonDisabledList.add(false); // Set initial state as enabled
-        }
-
-        // Load button states after new trips are fetched
-        await _loadButtonStates();
-
-        // Sort the complete trip list
-        _tripDataList.sort((a, b) => _sortTrips(a, b));
-
-        if (mounted) setState(() {}); // Update UI
-      }
-    } catch (e) {
-      print('Error fetching trips: $e'); // Handle any errors
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false); // Set loading state to false
-      }
-    }
+        return null;
+      })
+          .where((trip) => trip != null)
+          .toList()
+          .cast<TripModel>();
+    });
   }
 
-//   Future<void> _fetchTrips() async {
-//   if (_isLoading || !_hasMore) return; // Check if already loading or no more trips
-//   setState(() => _isLoading = true); // Set loading state to true
 
-//   Query query = FirebaseFirestore.instance
-//       .collection('trips')
-//       .orderBy(_getSortField(), descending: _getSortDescending())
-//       .limit(_itemsPerPage); // Limit results to items per page
 
-//   if (_lastDocument != null) {
-//     query = query.startAfterDocument(_lastDocument!); // Start after last fetched document
-//   }
-
-//   try {
-//     final querySnapshot = await query.get();
-//     if (querySnapshot.docs.isEmpty) {
-//       setState(() => _hasMore = false); // No more trips to load
-//       await _loadButtonStates();
-//     } else {
-//       _lastDocument = querySnapshot.docs.last; // Update last document
-//       var newTrips = <TripModel>[];
-
-//       for (var doc in querySnapshot.docs) {
-//         var tripData = doc.data() as Map<String, dynamic>;
-
-//         // Ensure driverId exists and is not null
-//         String? driverId = tripData['driverId'] as String?;
-//         if (driverId == null || driverId.isEmpty) {
-//           print('Skipping trip: driverId is null or empty');
-//           continue; // Skip this trip if driverId is missing
-//         }
-
-//         // Fetch the vehicleData based on the driverId
-//         var vehicleSnapshot = await FirebaseFirestore.instance
-//             .collection('vehicleData')
-//             .doc(driverId)
-//             .get();
-
-//         if (vehicleSnapshot.exists) {
-//           var vehicleData = vehicleSnapshot.data() as Map<String, dynamic>;
-
-//           // Ensure vehicleType exists in both collections
-//           String? vehicleTypeFromVehicleData = vehicleData['vehicleType'] as String?;
-//           String? vehicleTypeFromTrips = tripData['vehicleType'] as String?;
-
-//           if (vehicleTypeFromVehicleData == null || vehicleTypeFromTrips == null) {
-//             print('Skipping trip: vehicleType is missing in either collection');
-//             continue; // Skip this trip if vehicleType is missing
-//           }
-
-//           // Only add the trip if the vehicle types match
-//           if (vehicleTypeFromVehicleData == vehicleTypeFromTrips) {
-//             tripData['distance'] =
-//                 double.tryParse(tripData['distance'] as String? ?? '') ?? 0.0;
-//             tripData['fare'] =
-//                 double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
-//             tripData['tripId'] = doc.id; // Add trip ID
-
-//             newTrips.add(TripModel.fromJson(tripData));
-//           }
-//         }
-//       }
-
-//       // Add new trips to the list
-//       _tripDataList.addAll(newTrips);
-
-//       // Initialize button states for newly added trips
-//       for (var trip in newTrips) {
-//         _isButtonDisabledList.add(false); // Set initial state as enabled
-//       }
-
-//       // Load button states after new trips are fetched
-//       await _loadButtonStates();
-
-//       // Sort the complete trip list
-//       _tripDataList.sort((a, b) => _sortTrips(a, b));
-
-//       if (mounted) setState(() {}); // Update UI
-//     }
-//   } catch (e) {
-//     print('Error fetching trips: $e'); // Handle any errors
-//   } finally {
-//     if (mounted) setState(() => _isLoading = false); // Set loading state to false
-//   }
-// }
 
   Future<void> _loadButtonStates() async {
     final driverId = widget.driverEmail;
@@ -1033,10 +993,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
             merge: true)); // Merge to update existing fields or create new ones
 
     // Step 7: Update the state (if this is part of a Flutter widget)
-    setState(() {
-      driverTotalBalance = totalFare;
-      driverTotalMoneyToPay = totalMoneyToPay;
-    });
+    if (mounted) {
+      setState(() {
+        driverTotalBalance = totalFare;
+        driverTotalMoneyToPay = totalMoneyToPay;
+      });
+    }
 
     // Step 8: Print the results (optional)
     print('Total Fare: $totalFare');
@@ -1048,13 +1010,19 @@ class _DriverHomePageState extends State<DriverHomePage> {
   @override
   void initState() {
     super.initState();
-    _loadButtonStates(); // Load button states
-    _fetchTrips();
+    _loadButtonStates();
     fetchTotalFare(widget.driverEmail);
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _fetchTrips();
+
+    // Initialize stream subscription
+    _tripsSubscription = _getTripsStream().listen((trips) {
+      if (mounted) {
+        setState(() {
+          _tripDataList = trips;
+          _tripDataList.sort(_sortTrips);
+          // Initialize button states
+          _isButtonDisabledList = List.filled(trips.length, false);
+        });
+        _loadButtonStates(); // Load button states after new trips arrive
       }
     });
   }
@@ -1191,6 +1159,18 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   @override
+
+
+
+  @override
+  void dispose() {
+    _tripsSubscription?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red.shade100.withOpacity(0.18),
@@ -1203,300 +1183,257 @@ class _DriverHomePageState extends State<DriverHomePage> {
         title: 'Passenger Requests',
         driverId: widget.driverEmail,
       ),
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   title: Center(
-      //     child: StreamBuilder<DocumentSnapshot>(
-      //       stream: FirebaseFirestore.instance
-      //           .collection('vehicleData')
-      //           .doc(widget.driverEmail)
-      //           .snapshots(),
-      //       builder: (context, snapshot) {
-      //         if (!snapshot.hasData) {
-      //           return Text('');
-      //         }
 
-      //         var displayName = snapshot.data!['name'];
 
-      //         return Text(
-      //           displayName ?? 'No Name',
-      //           style: GoogleFonts.josefinSans(
-      //               color: Colors.black87, fontSize: 18),
-      //         );
-      //       },
-      //     ),
-      //   ),
-      //   leading: Padding(
-      //     padding: const EdgeInsets.only(left: 20, top: 2),
-      //     child: Image(image: AssetImage('assets/fordriverlogo.png')),
-      //   ),
-      //   backgroundColor: Colors.transparent,
-      //   elevation: 0,
-      //   actions: [
-      //     Row(
-      //       children: [
-      //         PopupMenuButton<String>(
-      //           icon: const Icon(Icons.login_outlined),
-      //           onSelected: _onMenuItemSelected,
-      //           itemBuilder: (BuildContext context) {
-      //             return [
-      //               const PopupMenuItem(
-      //                   value: 'passenger_mode',
-      //                   child: Row(
-      //                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //                     children: [
-      //                       Text('Passenger Mode'),
-      //                       Icon(Icons.person_outline_sharp)
-      //                     ],
-      //                   )),
-      //             ];
-      //           },
-      //         ),
-      //       ],
-      //     ),
-      //   ],
-      // ),
 
-      body: _isLoading && _tripDataList.isEmpty
-          ? RefreshIndicator(
-              onRefresh: _refreshData,
-              child: Center(
-                child: Image(
-                  image: AssetImage('assets/no_data_found.gif'),
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  width: MediaQuery.of(context).size.width * 0.3,
-                ),
-              ),
-            )
-          : RefreshIndicator(
-              onRefresh: _refreshData,
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: _tripDataList.length + (_hasMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == _tripDataList.length) {
-                    return Card(
-                      margin: const EdgeInsets.all(8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+
+      body: StreamBuilder<List<TripModel>>(
+        stream: _getTripsStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final trips = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: trips.length,
+            itemBuilder: (context, index) {
+
+
+
+
+              if (index == _tripDataList.length) {
+                return Card(
+                  margin: const EdgeInsets.all(8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceAround,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Container(
-                                    height: 10,
-                                    width: 60,
-                                    color: Colors.grey,
-                                  ),
-                                  Container(
-                                    height: 10,
-                                    width: 40,
-                                    color: Colors.grey,
-                                  ),
-                                  Container(
-                                    height: 10,
-                                    width: 60,
-                                    color: Colors.grey,
-                                  ),
-                                ],
+                              Container(
+                                height: 10,
+                                width: 60,
+                                color: Colors.grey,
                               ),
-                              Divider(),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: const [
-                                  Icon(Icons.electric_rickshaw),
-                                  Icon(Icons.numbers),
-                                  Icon(Icons.drive_eta_rounded),
-                                ],
+                              Container(
+                                height: 10,
+                                width: 40,
+                                color: Colors.grey,
                               ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  height: 30,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.8,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  height: 30,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.75,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Container(
-                                  height: 30,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.8,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: const [
-                                  Icon(Icons.send),
-                                  Icon(
-                                    Icons.phone,
-                                  ),
-                                  Icon(Icons.location_on),
-                                ],
+                              Container(
+                                height: 10,
+                                width: 60,
+                                color: Colors.grey,
                               ),
                             ],
                           ),
-                        ),
+                          Divider(),
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceAround,
+                            children: const [
+                              Icon(Icons.electric_rickshaw),
+                              Icon(Icons.numbers),
+                              Icon(Icons.drive_eta_rounded),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              height: 30,
+                              width:
+                              MediaQuery.of(context).size.width * 0.8,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              height: 30,
+                              width:
+                              MediaQuery.of(context).size.width * 0.75,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              height: 30,
+                              width:
+                              MediaQuery.of(context).size.width * 0.8,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceAround,
+                            children: const [
+                              Icon(Icons.send),
+                              Icon(
+                                Icons.phone,
+                              ),
+                              Icon(Icons.location_on),
+                            ],
+                          ),
+                        ],
                       ),
-                    );
-                  }
-
-                  final tripData = _tripDataList[index];
-                  final isButtonDisabled = index < _isButtonDisabledList.length
-                      ? _isButtonDisabledList[index]
-                      : false;
-
-                  // Use FutureBuilder to fetch passengerVehicleMode asynchronously
-                  return FutureBuilder<String?>(
-                    future: PassengerSelectedVehicleMode(
-                      tripData.tripId.toString(), // Pass tripId
-                      tripData.userId.toString(), // Pass userId
-                      widget.driverEmail, // Pass driverId
                     ),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        // Show a loading indicator while waiting for the result
-                        return Center(
-                          child: SizedBox(), //CircularProgressIndicator
-                        );
-                      } else if (snapshot.hasError) {
-                        // Handle errors
-                        return Center(
-                          child: Text('Error: ${snapshot.error}'),
-                        );
-                      } else if (!snapshot.hasData || snapshot.data == null) {
-                        // Handle case where no data is returned
-                        return SizedBox
-                            .shrink(); // Hide the card if no vehicle mode is found
-                      } else {
-                        // Fetch the vehicle mode for the driver (since _vehicleModeMap is not available)
-                        String? passengerVehicleMode = snapshot.data;
+                  ),
+                );
+              }
 
-                        // Here you would ideally fetch vehicleMode directly from Firestore
-                        // For illustration, let's assume vehicleMode fetching similar to passengerVehicleMode
-                        Future<String?> fetchVehicleMode() async {
-                          final vehicleDataSnapshot = await FirebaseFirestore
-                              .instance
-                              .collection('vehicleData')
-                              .doc(widget.driverEmail)
-                              .get();
-                          print("$vehicleDataSnapshot.data()?['vehicleMode']");
-                          return vehicleDataSnapshot.data()?['vehicleMode']
-                              as String?;
-                        }
+              final tripData = trips[index];
+              final isButtonDisabled = index < _isButtonDisabledList.length
+                  ? _isButtonDisabledList[index]
+                  : false;
 
-                        // Use FutureBuilder to fetch vehicleMode asynchronously
-                        return FutureBuilder<String?>(
-                          future: fetchVehicleMode(),
-                          builder: (context, vehicleModeSnapshot) {
-                            if (vehicleModeSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              // Show a loading indicator while waiting for the result
-                              return Center(
-                                child: SizedBox(), //circularProgress Indicator
-                              );
-                            } else if (vehicleModeSnapshot.hasError) {
-                              // Handle errors
-                              return Center(
-                                child:
-                                    Text('Error: ${vehicleModeSnapshot.error}'),
-                              );
-                            } else if (!vehicleModeSnapshot.hasData ||
-                                vehicleModeSnapshot.data == null) {
-                              // Handle case where no vehicle mode data is returned
-                              return SizedBox
-                                  .shrink(); // Hide the card if no vehicle mode is found
-                            } else {
-                              String? vehicleMode = vehicleModeSnapshot.data;
+              // Use FutureBuilder to fetch passengerVehicleMode asynchronously
+              return FutureBuilder<String?>(
+                future: PassengerSelectedVehicleMode(
+                  tripData.tripId.toString(), // Pass tripId
+                  tripData.userId.toString(), // Pass userId
+                  widget.driverEmail, // Pass driverId
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // Show a loading indicator while waiting for the result
+                    return Center(
+                      child: SizedBox(), //CircularProgressIndicator
+                    );
+                  } else if (snapshot.hasError) {
+                    // Handle errors
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data == null) {
+                    // Handle case where no data is returned
+                    return SizedBox
+                        .shrink(); // Hide the card if no vehicle mode is found
+                  } else {
+                    // Fetch the vehicle mode for the driver (since _vehicleModeMap is not available)
+                    String? passengerVehicleMode = snapshot.data;
 
-                              // Display the card only if the vehicle modes match
-                              if (passengerVehicleMode == vehicleMode) {
-                                return TripCardWidget(
-                                  driverId: widget.driverEmail, // Pass driverId
-                                  userId:
-                                      tripData.userId.toString(), // Pass userId
-                                  tripId:
-                                      tripData.tripId.toString(), // Pass tripId
-                                  tripData: tripData,
-                                  onPhoneTap: () {
-                                    if (tripData.phoneNumber != null &&
-                                        tripData.phoneNumber!.isNotEmpty) {
-                                      _launchPhoneNumber(tripData.phoneNumber!);
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                'Phone number not available')),
-                                      );
-                                    }
-                                  },
-                                  onMapTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DriverViewPassengerLocation(
+                    // Here you would ideally fetch vehicleMode directly from Firestore
+                    // For illustration, let's assume vehicleMode fetching similar to passengerVehicleMode
+                    Future<String?> fetchVehicleMode() async {
+                      final vehicleDataSnapshot = await FirebaseFirestore
+                          .instance
+                          .collection('vehicleData')
+                          .doc(widget.driverEmail)
+                          .get();
+                      print("$vehicleDataSnapshot.data()?['vehicleMode']");
+                      return vehicleDataSnapshot.data()?['vehicleMode']
+                      as String?;
+                    }
+
+                    // Use FutureBuilder to fetch vehicleMode asynchronously
+                    return FutureBuilder<String?>(
+                      future: fetchVehicleMode(),
+                      builder: (context, vehicleModeSnapshot) {
+                        if (vehicleModeSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          // Show a loading indicator while waiting for the result
+                          return Center(
+                            child: SizedBox(), //circularProgress Indicator
+                          );
+                        } else if (vehicleModeSnapshot.hasError) {
+                          // Handle errors
+                          return Center(
+                            child:
+                            Text('Error: ${vehicleModeSnapshot.error}'),
+                          );
+                        } else if (!vehicleModeSnapshot.hasData ||
+                            vehicleModeSnapshot.data == null) {
+                          // Handle case where no vehicle mode data is returned
+                          return SizedBox
+                              .shrink(); // Hide the card if no vehicle mode is found
+                        } else {
+                          String? vehicleMode = vehicleModeSnapshot.data;
+
+                          // Display the card only if the vehicle modes match
+                          if (passengerVehicleMode == vehicleMode) {
+                            return TripCardWidget(
+                              driverId: widget.driverEmail, // Pass driverId
+                              userId:
+                              tripData.userId.toString(), // Pass userId
+                              tripId:
+                              tripData.tripId.toString(), // Pass tripId
+                              tripData: tripData,
+                              onPhoneTap: () {
+                                if (tripData.phoneNumber != null &&
+                                    tripData.phoneNumber!.isNotEmpty) {
+                                  _launchPhoneNumber(tripData.phoneNumber!);
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Phone number not available')),
+                                  );
+                                }
+                              },
+                              onMapTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DriverViewPassengerLocation(
                                         tripId: tripData.tripId!, // Pass tripId
                                       ),
-                                    ),
-                                  ),
-                                  onRequestTap: () {
-                                    _setButtonState(
-                                        index); // Call to disable the button
-                                    showTripAndUserIdInSnackBar(
-                                        tripData, context, index);
-                                  },
-                                  index: index,
-                                  isButtonDisabled: isButtonDisabled,
-                                );
-                              } else {
-                                // Return an empty container if the vehicle modes don't match
-                                return SizedBox.shrink();
-                              }
-                            }
-                          },
-                        );
-                      }
-                    },
-                  );
+                                ),
+                              ),
+                              onRequestTap: () {
+                                _setButtonState(
+                                    index); // Call to disable the button
+                                showTripAndUserIdInSnackBar(
+                                    tripData, context, index);
+                              },
+                              index: index,
+                              isButtonDisabled: isButtonDisabled,
+                            );
+                          } else {
+                            // Return an empty container if the vehicle modes don't match
+                            return SizedBox.shrink();
+                          }
+                        }
+                      },
+                    );
+                  }
                 },
-              ),
-            ),
+              );
+            },
+          );
+        },
+      ),
+
+
+
     );
   }
 

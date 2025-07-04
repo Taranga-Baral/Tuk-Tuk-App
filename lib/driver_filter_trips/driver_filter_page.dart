@@ -331,35 +331,48 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
         child: Column(
           children: [
             if (_showDropdowns) ...[
-              ElevatedButton(
+              OutlinedButton(
                 onPressed: () {
-                  showPopup(context); // Show popup only when a condition is met
+                  showFilterPopup(context);
                 },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor:
-                      Colors.redAccent.shade200.withOpacity(0.9), // Text color
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 32, vertical: 16), // Button padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Rounded edges
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent, // Text and icon color
+                  side: BorderSide(
+                    color: Colors.redAccent.shade400, // Border color
+                    width: 1.5, // Slightly thicker border
                   ),
-                  elevation: 2, // Add elevation for shadow effect
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 12.0, // Compact padding
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(24.0), // Gentle rounding
+                  ),
+                  backgroundColor: Colors.transparent, // No fill color
+                  elevation: 0, // No shadow
+                  tapTargetSize:
+                      MaterialTapTargetSize.shrinkWrap, // Minimal touch target
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
-                    Icon(Icons.filter_alt,
-                        color: Colors.white), // Add a filter icon
-                    SizedBox(width: 8), // Space between icon and text
+                    Icon(
+                      Icons.filter_alt_outlined,
+                      color: Colors.grey,
+                      size: 18.0, // Compact icon
+                    ),
+                    SizedBox(width: 8.0), // Tight spacing
                     Text(
-                      'Filter Trips',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      'Filter',
+                      style: TextStyle(
+                        fontSize: 14.0, // Compact text
+                        fontWeight: FontWeight.w500, // Medium weight
+                      ),
                     ),
                   ],
                 ),
-              ),
+              )
             ],
 
             // StreamBuilder to display trips
@@ -790,175 +803,464 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
     }
   }
 
-  showPopup(BuildContext context) {
-    showDialog(
+  // showPopup(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Driver Filter'),
+  //         content: SingleChildScrollView(
+  //           child: Column(
+  //             children: [
+  //               SingleChildScrollView(
+  //                 child: Column(
+  //                   children: [
+  //                     DecoratedBox(
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.white,
+  //                         borderRadius: BorderRadius.circular(8),
+  //                         border: Border.all(color: Colors.red, width: 2),
+  //                       ),
+  //                       child: Padding(
+  //                         padding: const EdgeInsets.symmetric(
+  //                             horizontal: 12, vertical: 4),
+  //                         child: DropdownButton<String>(
+  //                           isExpanded: true,
+  //                           value: _selectedPlace,
+  //                           hint: Text('Select a place'),
+  //                           underline: SizedBox(),
+  //                           items: _places.map((String place) {
+  //                             return DropdownMenuItem<String>(
+  //                               value: place,
+  //                               child: Text(place),
+  //                             );
+  //                           }).toList(),
+  //                           onChanged: (String? newValue) {
+  //                             setState(() {
+  //                               _selectedPlace = newValue;
+  //                             });
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     SizedBox(height: 16),
+  //
+  //                     // Dropdown to select sorting option
+  //                     DecoratedBox(
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.white,
+  //                         borderRadius: BorderRadius.circular(8),
+  //                         border: Border.all(color: Colors.red, width: 2),
+  //                       ),
+  //                       child: Padding(
+  //                         padding: const EdgeInsets.symmetric(
+  //                             horizontal: 12, vertical: 4),
+  //                         child: DropdownButton<String>(
+  //                           isExpanded: true,
+  //                           value: _selectedSort,
+  //                           hint: Text('Select sorting option'),
+  //                           underline: SizedBox(),
+  //                           items: _sortOptions.map((String sortOption) {
+  //                             return DropdownMenuItem<String>(
+  //                               value: sortOption,
+  //                               child: Text(sortOption),
+  //                             );
+  //                           }).toList(),
+  //                           onChanged: (String? newValue) {
+  //                             setState(() {
+  //                               _selectedSort = newValue;
+  //                             });
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     SizedBox(height: 16),
+  //
+  //                     // Dropdown to select vehicle mode
+  //                     DecoratedBox(
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.white,
+  //                         borderRadius: BorderRadius.circular(8),
+  //                         border: Border.all(color: Colors.red, width: 2),
+  //                       ),
+  //                       child: Padding(
+  //                         padding: const EdgeInsets.symmetric(
+  //                             horizontal: 12, vertical: 4),
+  //                         child: DropdownButton<String>(
+  //                           isExpanded: true,
+  //                           value: _selectedVehicleMode,
+  //                           hint: Text('Select vehicle mode'),
+  //                           underline: SizedBox(),
+  //
+  //                           items: _selectedVehicleMode != null
+  //                               ? [
+  //                                   DropdownMenuItem<String>(
+  //                                     value: _selectedVehicleMode,
+  //                                     child: Text(_selectedVehicleMode!),
+  //                                   )
+  //                                 ]
+  //                               : [],
+  //
+  //                           // items: _vehicleModes.map((String mode) {
+  //                           //   return DropdownMenuItem<String>(
+  //                           //     value: mode,
+  //                           //     child: Text(mode),
+  //                           //   );
+  //                           // }).toList(),
+  //                           onChanged: (String? newValue) {
+  //                             // setState(() {
+  //                             //   _selectedVehicleMode = newValue;
+  //                             // });
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     SizedBox(height: 20),
+  //
+  //                     DecoratedBox(
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.white,
+  //                         borderRadius: BorderRadius.circular(8),
+  //                         border: Border.all(color: Colors.red, width: 2),
+  //                       ),
+  //                       child: Padding(
+  //                         padding: const EdgeInsets.symmetric(
+  //                             horizontal: 12, vertical: 4),
+  //                         child: DropdownButton<String>(
+  //                           isExpanded: true,
+  //                           value: _selectedVehicleType,
+  //                           hint: Text('Vehicle Type'),
+  //                           underline: SizedBox(),
+  //                           items: _selectedVehicleType != null
+  //                               ? [
+  //                                   DropdownMenuItem<String>(
+  //                                     value: _selectedVehicleType,
+  //                                     child: Text(_selectedVehicleType!),
+  //                                   )
+  //                                 ]
+  //                               : [],
+  //                           onChanged: (String? newValue) {
+  //                             // setState(() {
+  //                             //   _selectedVehicleType = newValue!;
+  //                             //   // Trigger stream filtering by updating _selectedVehicleType
+  //                             // });
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ),
+  //
+  //                     SizedBox(
+  //                       height: 20,
+  //                     ),
+  //
+  //                     // Display selected place
+  //
+  //                     SizedBox(height: 20),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop(); // Closes the popup
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  void showFilterPopup(BuildContext context) {
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Driver Filter'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                SingleChildScrollView(
-                  child: Column(
+        return Container(
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+
+                  Text(
+                    'Filter Drivers',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.redAccent,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Content with constrained height
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.7,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Location Filter
+                          _buildFilterSection(
+                            title: 'Location',
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedPlace,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[300]!),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                              ),
+                              items: _places.map((String place) {
+                                return DropdownMenuItem<String>(
+                                  value: place,
+                                  child: Text(
+                                    place,
+                                    style: GoogleFonts.poppins(fontSize: 14),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedPlace = newValue;
+                                });
+                              },
+                              hint: Text(
+                                'Select location',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Sorting Options
+                          _buildFilterSection(
+                            title: 'Sort By',
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedSort,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[300]!),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                              ),
+                              items: _sortOptions.map((String option) {
+                                return DropdownMenuItem<String>(
+                                  value: option,
+                                  child: Text(
+                                    option,
+                                    style: GoogleFonts.poppins(fontSize: 14),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedSort = newValue;
+                                });
+                              },
+                              hint: Text(
+                                'Select sorting',
+                                style: GoogleFonts.poppins(fontSize: 14),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Vehicle Mode (Read-only)
+                          _buildFilterSection(
+                            title: 'Vehicle Mode',
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[300]!),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      _selectedVehicleMode ?? 'Not specified',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(Icons.lock_outline,
+                                      size: 18, color: Colors.grey[500]),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Vehicle Type (Read-only)
+                          _buildFilterSection(
+                            title: 'Vehicle Type',
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[300]!),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      _selectedVehicleType ?? 'Not specified',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(Icons.lock_outline,
+                                      size: 18, color: Colors.grey[500]),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Action Buttons
+                  Row(
                     children: [
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red, width: 2),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: _selectedPlace,
-                            hint: Text('Select a place'),
-                            underline: SizedBox(),
-                            items: _places.map((String place) {
-                              return DropdownMenuItem<String>(
-                                value: place,
-                                child: Text(place),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedPlace = newValue;
-                              });
-                            },
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            backgroundColor: Colors.grey[100],
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey[800],
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 16),
-
-                      // Dropdown to select sorting option
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red, width: 2),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: _selectedSort,
-                            hint: Text('Select sorting option'),
-                            underline: SizedBox(),
-                            items: _sortOptions.map((String sortOption) {
-                              return DropdownMenuItem<String>(
-                                value: sortOption,
-                                child: Text(sortOption),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedSort = newValue;
-                              });
-                            },
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                          onPressed: () {
+                            // Apply filters
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Apply',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 16),
-
-                      // Dropdown to select vehicle mode
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red, width: 2),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: _selectedVehicleMode,
-                            hint: Text('Select vehicle mode'),
-                            underline: SizedBox(),
-
-                            items: _selectedVehicleMode != null
-                                ? [
-                                    DropdownMenuItem<String>(
-                                      value: _selectedVehicleMode,
-                                      child: Text(_selectedVehicleMode!),
-                                    )
-                                  ]
-                                : [],
-
-                            // items: _vehicleModes.map((String mode) {
-                            //   return DropdownMenuItem<String>(
-                            //     value: mode,
-                            //     child: Text(mode),
-                            //   );
-                            // }).toList(),
-                            onChanged: (String? newValue) {
-                              // setState(() {
-                              //   _selectedVehicleMode = newValue;
-                              // });
-                            },
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red, width: 2),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: _selectedVehicleType,
-                            hint: Text('Vehicle Type'),
-                            underline: SizedBox(),
-                            items: _selectedVehicleType != null
-                                ? [
-                                    DropdownMenuItem<String>(
-                                      value: _selectedVehicleType,
-                                      child: Text(_selectedVehicleType!),
-                                    )
-                                  ]
-                                : [],
-                            onChanged: (String? newValue) {
-                              // setState(() {
-                              //   _selectedVehicleType = newValue!;
-                              //   // Trigger stream filtering by updating _selectedVehicleType
-                              // });
-                            },
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(
-                        height: 20,
-                      ),
-
-                      // Display selected place
-
-                      SizedBox(height: 20),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Closes the popup
-              },
-              child: Text('OK'),
-            ),
-          ],
         );
       },
+    );
+  }
+
+  Widget _buildFilterSection({required String title, required Widget child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
+        ),
+        const SizedBox(height: 8),
+        child,
+      ],
     );
   }
 

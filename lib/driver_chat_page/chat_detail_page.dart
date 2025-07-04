@@ -687,6 +687,7 @@
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DriverChatDisplayPage extends StatefulWidget {
@@ -810,7 +811,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             // colors: [Color(0xFFE6F0FA), Color(0xFFB3E5FC)],
-            colors: [Color(0xFFE6F0FA), Color(0xffD5E0FF)],
+            colors: const [Color(0xFFE6F0FA), Color(0xffD5E0FF)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -860,10 +861,10 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
                             : 'D';
                         return Text(
                           firstLetter,
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                         );
                       },
@@ -936,7 +937,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
                 decoration: BoxDecoration(
                   color: isDriverMessage ? Color(0xFF42A5F5) : Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 4,
@@ -970,7 +971,7 @@ class _DriverChatDisplayPageState extends State<DriverChatDisplayPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 4,

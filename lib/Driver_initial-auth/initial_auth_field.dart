@@ -2002,10 +2002,10 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
+                  children: const [
                     CircularProgressIndicator(),
-                    const SizedBox(height: 20),
-                    const Text('Uploading and processing data...'),
+                    SizedBox(height: 20),
+                    Text('Uploading and processing data...'),
                   ],
                 ),
               ),
@@ -2413,7 +2413,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2462,7 +2462,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2505,7 +2505,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2549,7 +2549,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2588,7 +2588,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2628,7 +2628,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2823,9 +2823,9 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: const [
           Icon(Icons.error_outline, color: Colors.red),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Image unavailable',
             style: TextStyle(color: Colors.red),
@@ -2874,7 +2874,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2913,7 +2913,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -2963,7 +2963,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -3005,7 +3005,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -3047,7 +3047,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),
@@ -3095,7 +3095,7 @@ class _DriverAuthPageState extends State<DriverAuthPage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   borderSide: BorderSide(
-                    color: const Color.fromARGB(69, 189, 189, 189)!,
+                    color: const Color.fromARGB(69, 189, 189, 189),
                     width: 1.0,
                   ),
                 ),

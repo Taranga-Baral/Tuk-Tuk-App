@@ -142,7 +142,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/galli_maps/map_page.dart';
-import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/profile_setup.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';

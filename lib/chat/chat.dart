@@ -918,6 +918,8 @@
 //   }
 // }
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/chat/chat_display_page.dart';
 import 'package:flutter/material.dart';
@@ -935,15 +937,217 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<Map<String, dynamic>> confirmedDriversData = [];
   DocumentSnapshot? lastDocument;
   bool isLoadingMore = false;
+
+  List<Map<String, dynamic>> confirmedDriversData = [];
+  StreamSubscription<QuerySnapshot>? _subscription;
+  bool _isInitialLoad = true;
+
+
+  // Your existing _checkIfTripIsSuccessful method
+  Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    try {
+      QuerySnapshot querySnapshot = await firestore
+          .collection('successfulTrips')
+          .where('tripId', isEqualTo: tripId)
+          .where('userId', isEqualTo: userId)
+          .limit(1)
+          .get();
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking successful trip: $e');
+      return false;
+    }
+  }
+
+
+
+
+
+
+
+
+  Widget _buildDriverList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: confirmedDriversData.length,
+      itemBuilder: (context, index) {
+        var data = confirmedDriversData[index];
+
+        return DriverCard(
+          data: data,
+          index: index,
+          totalItems: confirmedDriversData.length,
+          onChatPressed: () {
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return FadeScaleTransition(
+                    animation: animation,
+                    child: ChatDetailPage(
+                      userId: widget.userId,
+                      driverId: data['driverId'],
+                      tripId: data['tripId'],
+                      driverName: data['driverName'],
+                      pickupLocation: data['pickupLocation'],
+                      deliveryLocation: data['deliveryLocation'],
+                      distance: data['distance'],
+                      no_of_person: data['no_of_person'],
+                      vehicle_mode: data['vehicle_mode'],
+                      fare: data['fare'],
+                    ),
+                  );
+                },
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+  Widget _buildEmptyState() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/no_data_found.gif',
+          width: MediaQuery.of(context).size.width * 0.5,
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'No Active Chats',
+          style: GoogleFonts.outfit(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'When you confirm a driver, your chat will appear here',
+          style: GoogleFonts.outfit(
+            fontSize: 14,
+            color: Colors.grey[400],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+
+
+
+
 
   @override
   void initState() {
     super.initState();
-    fetchConfirmedDriversData();
+    _setupLiveUpdates(); // Replace fetchConfirmedDriversData with this
+     }
+
+
+
+  void _setupLiveUpdates() {
+    final firestore = FirebaseFirestore.instance;
+    DateTime oneDayAgo = DateTime.now().subtract(Duration(hours: 24));
+
+    _subscription = firestore
+        .collection('confirmedDrivers')
+        .where('userId', isEqualTo: widget.userId)
+        .where('confirmedAt', isGreaterThanOrEqualTo: oneDayAgo)
+        .orderBy('confirmedAt', descending: true)
+        .snapshots()
+        .listen((snapshot) async {
+
+      List<Map<String, dynamic>> updatedData = [];
+
+      for (var doc in snapshot.docs) {
+        var confirmedDriverData = doc.data() as Map<String, dynamic>;
+
+        bool isTripSuccessful = await _checkIfTripIsSuccessful(
+          confirmedDriverData['tripId'],
+          confirmedDriverData['userId'],
+        );
+
+        if (!isTripSuccessful) {
+          DocumentSnapshot tripSnapshot = await firestore
+              .collection('trips')
+              .doc(confirmedDriverData['tripId'])
+              .get();
+
+          if (tripSnapshot.exists) {
+            var tripData = tripSnapshot.data() as Map<String, dynamic>;
+            var tripTimestamp = (tripData['timestamp'] as Timestamp).toDate();
+
+            if (tripTimestamp.isAfter(oneDayAgo)) {
+              DocumentSnapshot driverSnapshot = await firestore
+                  .collection('vehicleData')
+                  .doc(confirmedDriverData['driverId'])
+                  .get();
+              var driverData = driverSnapshot.data() as Map<String, dynamic>;
+
+              updatedData.add({
+                'id': doc.id,
+                'pickupLocation': tripData['pickupLocation'],
+                'deliveryLocation': tripData['deliveryLocation'],
+                'distance': tripData['distance'],
+                'fare': tripData['fare'],
+                'driverName': driverData['name'],
+                'driverPhone': driverData['phone'],
+                'profilePictureUrl': driverData['profilePictureUrl'] ?? '',
+                'driverId': confirmedDriverData['driverId'],
+                'tripId': confirmedDriverData['tripId'],
+                'no_of_person': tripData['no_of_person'],
+                'vehicle_mode': tripData['vehicle_mode'],
+                'timestamp': confirmedDriverData['timestamp'],
+              });
+            }
+          }
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          confirmedDriversData = updatedData;
+          _isInitialLoad = false;
+        });
+      }
+    });
   }
+
+
+  @override
+  void dispose() {
+    _subscription?.cancel(); // Important to prevent memory leaks
+    super.dispose();
+  }
+
 
   Future<void> _refreshData() async {
     setState(() {});
@@ -951,7 +1155,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> fetchConfirmedDriversData({bool isLoadMore = false}) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DateTime oneHourAgo = DateTime.now().subtract(Duration(hours: 10));
+    DateTime oneDayAgo = DateTime.now().subtract(Duration(hours: 24));
 
     Query query = firestore
         .collection('confirmedDrivers')
@@ -986,7 +1190,7 @@ class _ChatPageState extends State<ChatPage> {
             var tripData = tripSnapshot.data() as Map<String, dynamic>;
             var tripTimestamp = (tripData['timestamp'] as Timestamp).toDate();
 
-            if (tripTimestamp.isAfter(oneHourAgo)) {
+            if (tripTimestamp.isAfter(oneDayAgo)) {
               DocumentSnapshot driverSnapshot = await firestore
                   .collection('vehicleData')
                   .doc(confirmedDriverData['driverId'])
@@ -1024,23 +1228,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    try {
-      QuerySnapshot querySnapshot = await firestore
-          .collection('successfulTrips')
-          .where('tripId', isEqualTo: tripId)
-          .where('userId', isEqualTo: userId)
-          .limit(1)
-          .get();
-
-      return querySnapshot.docs.isNotEmpty;
-    } catch (e) {
-      print('Error checking successful trip: $e');
-      return false;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1082,106 +1270,23 @@ class _ChatPageState extends State<ChatPage> {
           )
         ],
       ),
-      body: confirmedDriversData.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/no_data_found.gif',
-                    // height: MediaQuery.of(context).size.height * 0.18,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                  ),
-                  // const SizedBox(height: 0),
-                  // Text(
-                  //   'No Recent Chats',
-                  //   style: GoogleFonts.outfit(
-                  //     fontSize: 18,
-                  //     fontWeight: FontWeight.bold,
-                  //   ),
-                  // ),
-                  SizedBox(height: 20),
-                ],
-              ),
-            )
-          : RefreshIndicator(
-              onRefresh: _refreshData,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: confirmedDriversData.length,
-                        itemBuilder: (context, index) {
-                          var data = confirmedDriversData[index];
-
-                          return DriverCard(
-                            data: data,
-                            index: index,
-                            totalItems: confirmedDriversData.length,
-                            onChatPressed: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder:
-                                      (context, animation, secondaryAnimation) {
-                                    return FadeScaleTransition(
-                                      animation: animation,
-                                      child: ChatDetailPage(
-                                        userId: widget.userId,
-                                        driverId: data['driverId'],
-                                        tripId: data['tripId'],
-                                        driverName: data['driverName'],
-                                        pickupLocation: data['pickupLocation'],
-                                        deliveryLocation:
-                                            data['deliveryLocation'],
-                                        distance: data['distance'],
-                                        no_of_person: data['no_of_person'],
-                                        vehicle_mode: data['vehicle_mode'],
-                                        fare: data['fare'],
-                                      ),
-                                    );
-                                  },
-                                  transitionsBuilder: (context, animation,
-                                      secondaryAnimation, child) {
-                                    const begin = Offset(1.0, 0.0);
-                                    const end = Offset.zero;
-                                    const curve = Curves.easeInOut;
-
-                                    var tween = Tween(begin: begin, end: end);
-                                    var offsetAnimation = animation.drive(
-                                        tween.chain(CurveTween(curve: curve)));
-
-                                    return SlideTransition(
-                                      position: offsetAnimation,
-                                      child: child,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                    // if (isLoadingMore)
-                    //   Padding(
-                    //     padding: const EdgeInsets.all(8.0),
-                    //     child: Image(
-                    //       image: AssetImage(
-                    //         'assets/logo.png',
-                    //       ),
-                    //       height: MediaQuery.of(context).size.height * 0.6,
-                    //       width: MediaQuery.of(context).size.width * 0.9,
-                    //     ),
-                    //   ),
-                  ],
-                ),
-              ),
-            ),
+      body: _isInitialLoad
+          ? _buildShimmerLoading()
+          : confirmedDriversData.isEmpty
+          ? _buildEmptyState()
+          : _buildDriverList(),
     );
   }
 }
+
+
+
+
+
+
+
+
+
 
 class DriverCard extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -1204,130 +1309,6 @@ class DriverCard extends StatefulWidget {
 class _DriverCardState extends State<DriverCard> {
   @override
   Widget build(BuildContext context) {
-    // return Stack(
-    //   clipBehavior: Clip.none,
-    //   children: [
-    //     Card(
-    //       elevation: 4,
-    //       margin: EdgeInsets.symmetric(vertical: 6),
-    //       shape: RoundedRectangleBorder(
-    //         borderRadius: BorderRadius.circular(12),
-    //       ),
-    //       child: Padding(
-    //         padding: const EdgeInsets.all(12.0),
-    //         child: Row(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: [
-    //             SizedBox(width: 1),
-    //             // Profile Picture
-    //             CircleAvatar(
-    //               radius: 20,
-    //               backgroundImage: data['profilePictureUrl'].isNotEmpty
-    //                   ? NetworkImage(data['profilePictureUrl'])
-    //                   : AssetImage('assets/logo.png') as ImageProvider,
-    //             ),
-    //             SizedBox(width: 12),
-    //             // Driver Details
-    //             Expanded(
-    //               child: Column(
-    //                 crossAxisAlignment: CrossAxisAlignment.start,
-    //                 children: [
-    //                   // Driver Name
-    //                   Text(
-    //                     data['driverName'],
-    //                     style: TextStyle(
-    //                       fontWeight: FontWeight.bold,
-    //                       fontSize: 16,
-    //                     ),
-    //                   ),
-    //                   SizedBox(height: 8),
-    //                   // Pickup Location
-    //                   Row(
-    //                     children: [
-    //                       Icon(
-    //                         Icons.location_on,
-    //                         color: Colors.red,
-    //                         size: 16,
-    //                       ),
-    //                       SizedBox(width: 4),
-    //                       Expanded(
-    //                         child: Text(
-    //                           'Pickup: ${data['pickupLocation']}',
-    //                           style: TextStyle(fontSize: 14),
-    //                         ),
-    //                       ),
-    //                     ],
-    //                   ),
-    //                   SizedBox(height: 4),
-    //                   // Delivery Location
-    //                   Row(
-    //                     children: [
-    //                       Icon(
-    //                         Icons.location_on,
-    //                         color: Colors.green,
-    //                         size: 16,
-    //                       ),
-    //                       SizedBox(width: 4),
-    //                       Expanded(
-    //                         child: Text(
-    //                           'Delivery: ${data['deliveryLocation']}',
-    //                           style: TextStyle(fontSize: 14),
-    //                         ),
-    //                       ),
-    //                     ],
-    //                   ),
-    //                   SizedBox(height: 4),
-    //                   // Contact Number
-    //                   Row(
-    //                     children: [
-    //                       Icon(
-    //                         Icons.phone,
-    //                         color: Colors.blue,
-    //                         size: 16,
-    //                       ),
-    //                       SizedBox(width: 4),
-    //                       Text(
-    //                         'Contact: ${data['driverPhone']}',
-    //                         style: TextStyle(fontSize: 14),
-    //                       ),
-    //                     ],
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //             // Chat Icon
-    //             IconButton(
-    //               icon: Icon(Icons.chat, color: Colors.green),
-    //               onPressed: onChatPressed,
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //     Positioned(
-    //       top: -1,
-    //       right: -1,
-    //       child: // Serial Number
-    //           ClipRRect(
-    //         borderRadius: BorderRadius.circular(20),
-    //         child: Container(
-    //           color: Colors.blueAccent,
-    //           width: 20,
-    //           height: 20,
-    //           alignment: Alignment.center,
-    //           child: Text(
-    //             '${index + 1}',
-    //             style: TextStyle(
-    //               fontSize: 16,
-    //               fontWeight: FontWeight.bold,
-    //               color: Colors.white,
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     )
-    //   ],
-    // );
 
     return Stack(
       clipBehavior: Clip.none,
@@ -1438,7 +1419,7 @@ class _DriverCardState extends State<DriverCard> {
                           children: [
                             Icon(
                               Icons.location_on,
-                              color: Colors.red.shade400,
+                              color: Colors.green.shade400,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
@@ -1459,7 +1440,7 @@ class _DriverCardState extends State<DriverCard> {
                           children: [
                             Icon(
                               Icons.location_on,
-                              color: Colors.green.shade400,
+                              color: Colors.red.shade400,
                               size: 18,
                             ),
                             const SizedBox(width: 8),

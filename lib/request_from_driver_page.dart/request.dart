@@ -1595,6 +1595,7 @@ import 'package:animations/animations.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/chat/chat_display_page.dart';
+import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/homepage1.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
@@ -1645,20 +1646,20 @@ class _RequestPageState extends State<RequestPage> {
 
   void _setupLiveUpdates() {
     final now = DateTime.now();
-    final oneHourAgo = now.subtract(const Duration(hours: 1));
+    final oneDayAgo = now.subtract(const Duration(hours: 24));
 
     // Live updates for requests
     _requestsSubscription = FirebaseFirestore.instance
         .collection('requestsofDrivers')
         .where('userId', isEqualTo: widget.userId)
-        .where('requestTimestamp', isGreaterThanOrEqualTo: oneHourAgo)
+        .where('requestTimestamp', isGreaterThanOrEqualTo: oneDayAgo)
         .orderBy('requestTimestamp', descending: true)
         .snapshots()
         .listen((snapshot) async {
       List<DocumentSnapshot> filteredRequests = [];
 
       for (var requestDoc in snapshot.docs) {
-        final request = requestDoc.data() as Map<String, dynamic>;
+        final request = requestDoc.data();
         final tripId = request['tripId'];
         final driverId = request['driverId'];
         final userId = request['userId'];
@@ -1706,7 +1707,7 @@ class _RequestPageState extends State<RequestPage> {
     _arrivedDriversSubscription = FirebaseFirestore.instance
         .collection('arrivedDrivers')
         .where('userId', isEqualTo: widget.userId)
-        .where('timestamp', isGreaterThanOrEqualTo: oneHourAgo)
+        .where('timestamp', isGreaterThanOrEqualTo: oneDayAgo)
         .orderBy('timestamp', descending: true)
         .snapshots()
         .listen((snapshot) {
@@ -1843,96 +1844,138 @@ class _RequestPageState extends State<RequestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pushReplacement(
+    return PopScope(
+        canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) return; // Already handled by system
+
+        // Immediately navigate to HomePage1
+        if (mounted) {
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomePage1()),
-          ),
-        ),
-        backgroundColor: showArrivedDrivers
-            ? const Color.fromRGBO(1, 181, 116, 0.93)
-            : Colors.redAccent.withValues(alpha: 0.92),
-        title: Text(
-          showArrivedDrivers ? 'Arrived Riders' : 'Ride Requests',
-          style: GoogleFonts.outfit(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      floatingActionButton: IntrinsicWidth(
-        child: SizedBox(
-          height: 50,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: showArrivedDrivers
-                  ? Colors.redAccent.withValues(alpha: 0.92)
-                  : const Color.fromRGBO(1, 181, 116, 0.93),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17),
+          );
+        }
+      },
+
+
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage1()),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
             ),
-            onPressed: () {
-              setState(() {
-                showArrivedDrivers = !showArrivedDrivers;
-              });
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  showArrivedDrivers
-                      ? Icons.person_add_alt_1_rounded
-                      : Icons.drive_eta_rounded,
-                  size: 18,
-                  color: Colors.white,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  showArrivedDrivers ? 'Requests' : 'Arrival',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    fontSize: 16,
+            backgroundColor: showArrivedDrivers
+                ? const Color.fromRGBO(1, 181, 116, 0.93)
+                : Colors.redAccent.withValues(alpha: 0.92),
+            title: Text(
+              showArrivedDrivers ? 'Arrived Riders' : 'Ride Requests',
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          floatingActionButton: IntrinsicWidth(
+            child: SizedBox(
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: showArrivedDrivers
+                      ? Colors.redAccent.withValues(alpha: 0.92)
+                      : const Color.fromRGBO(1, 181, 116, 0.93),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
-              ],
+                onPressed: () {
+                  setState(() {
+                    showArrivedDrivers = !showArrivedDrivers;
+                  });
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      showArrivedDrivers
+                          ? Icons.person_add_alt_1_rounded
+                          : Icons.drive_eta_rounded,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      showArrivedDrivers ? 'Requests' : 'Arrival',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
+
+
+
+          body: _buildContent(),
+
+
+
+
+
+
+
+
+
+
+
         ),
-      ),
-      body: isDataLoaded
-          ? RefreshIndicator(
-              onRefresh: _refreshData,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Column(
-                    children: [
-                      Flexible(
-                        child: ListView.builder(
-                          physics: _buildCustomScrollPhysics(),
-                          itemCount: showArrivedDrivers
-                              ? arrivedDrivers.length
-                              : requests.length,
-                          itemBuilder: (context, index) {
-                            return showArrivedDrivers
-                                ? _buildArrivedDriverItem(index)
-                                : _buildRequestItem(index);
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            )
-          : _buildShimmerLoading(),
     );
   }
+
+
+
+
+
+
+
+  Widget _buildContent() {
+    // Case 1: Data is still loading
+    if (!isDataLoaded) {
+      return _buildShimmerLoading();
+    }
+
+    // Case 2: Data loaded but empty
+    if ((showArrivedDrivers && arrivedDrivers.isEmpty) ||
+        (!showArrivedDrivers && requests.isEmpty)) {
+      return _buildNoDataFound(showArrivedDrivers, context);
+    }
+
+    // Case 3: Data exists - show list with refresh
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      child: ListView.builder(
+        physics: _buildCustomScrollPhysics(),
+        itemCount: showArrivedDrivers ? arrivedDrivers.length : requests.length,
+        itemBuilder: (context, index) {
+          return showArrivedDrivers
+              ? _buildArrivedDriverItem(index)
+              : _buildRequestItem(index);
+        },
+      ),
+    );
+  }
+
+
+
+
 
   Widget _buildArrivedDriverItem(int index) {
     final driver = arrivedDrivers[index];
@@ -1957,12 +2000,20 @@ class _RequestPageState extends State<RequestPage> {
               child: FutureBuilder<Map<String, dynamic>>(
                 future: _getDriverAndTripDetails(driverId, tripId),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child:
-                          Image(image: AssetImage('assets/no_data_found.gif')),
-                    );
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _buildShimmerLoading(); // Show shimmer for individual items
                   }
+
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    // return _buildNoDataFound(true, context);
+                    return _buildShimmerLoading();
+                  }
+
+
+    if (!snapshot.hasData) {
+    return _buildShimmerLoading(); // Show shimmer while loading
+    }
 
                   final driverData = snapshot.data!['driver'] ?? {};
                   final tripData = snapshot.data!['trip'] ?? {};
@@ -2233,11 +2284,19 @@ class _RequestPageState extends State<RequestPage> {
             .get(),
       ]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: Image(image: AssetImage('assets/no_data_found.gif')),
-          );
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          // return _buildNoDataFound(false, context);
+          return _buildShimmerLoading();
         }
+
+
+
+          if (!snapshot.hasData) {
+            return _buildShimmerLoading(); // Show shimmer while loading
+          }
+
+
 
         final vehicleData = snapshot.data![0].data() as Map<String, dynamic>;
         final tripData = snapshot.data![1].data() as Map<String, dynamic>;
@@ -2610,6 +2669,79 @@ class _RequestPageState extends State<RequestPage> {
     );
   }
 }
+
+Widget _buildNoDataFound(bool isArrivedDrivers, BuildContext context) {
+  return Center(
+    child: SizedBox(
+      // color: Colors.red,
+      height: MediaQuery.of(context).size.height *0.9,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Centered illustration
+          Image.asset(
+            'assets/no_data_found.gif', // Replace with your asset
+            width: 200,
+            height: 200,
+            fit: BoxFit.contain,
+          ),
+
+
+          // Title
+          Text(
+            isArrivedDrivers ? 'No Arrival Yet' : 'No Requests Yet',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+
+          // Subtitle
+          // Text(
+          //   isArrivedDrivers
+          //       ? 'Your Driver haven\'t arrived in the last\n24 hours. Book your Ride and try again. If\nyou have requested a rider recently,\nwait for rider to arrive'
+          //       : 'You haven\'t received any ride requests in\nthe last 24 hours. Book your Ride\nand try again. If you have booked recently,\nwait for Requests in this screen',
+          //   style: GoogleFonts.montserrat(
+          //     fontSize: 14,
+          //     fontWeight: FontWeight.w400,
+          //     color: Colors.grey[400],
+          //   ),
+          //   textAlign: TextAlign.center,
+          // ),
+
+          SizedBox(
+            width: MediaQuery.of(context).size.width *0.74,
+            child: Text(
+              isArrivedDrivers
+                  ? 'No driver arrivals in the last 24 hours. Book your ride and wait if requested recently.'
+                  : 'No ride requests received in the last 24 hours. Book your ride and wait for requests.',
+              style: GoogleFonts.montserrat(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+
+
+
+
+          SizedBox(height: 60,),
+
+
+
+        ],
+      ),
+    ),
+  );
+}
+
+
 
 class _LimitedScrollPhysics extends ScrollPhysics {
   final double maxScrollSpeed;

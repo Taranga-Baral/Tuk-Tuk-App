@@ -631,9 +631,11 @@ class _SignInPageState extends State<SignInPage> {
         );
       }
     } catch (e) {
-      setState(() => _isGoogleSigningIn = false);
-      _showErrorDialog('Sign In Failed', _getErrorMessage(e));
-      debugPrint('Google Sign-In Error: $e');
+      if (mounted) {
+        setState(() => _isGoogleSigningIn = false);
+        _showErrorDialog('Sign In Failed', _getErrorMessage(e));
+        debugPrint('Google Sign-In Error: $e');
+      }
     }
   }
 
@@ -827,8 +829,8 @@ class _SignInPageState extends State<SignInPage> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10)),
                                   borderSide: BorderSide(
-                                    color: const Color.fromARGB(
-                                        69, 189, 189, 189)!,
+                                    color:
+                                        const Color.fromARGB(69, 189, 189, 189),
                                     width: 1.0,
                                   ),
                                 ),
@@ -886,7 +888,7 @@ class _SignInPageState extends State<SignInPage> {
                                     BorderRadius.all(Radius.circular(10)),
                                 borderSide: BorderSide(
                                   color:
-                                      const Color.fromARGB(69, 189, 189, 189)!,
+                                      const Color.fromARGB(69, 189, 189, 189),
                                   width: 1.0,
                                 ),
                               ),

@@ -21,51 +21,6 @@ import 'package:vibration/vibration.dart';
 import 'package:permission_handler/permission_handler.dart'
     as secondarpermission;
 
-// class FareCalculator {
-//   static double calculateFare({
-//     required String distance,
-//     required String vehicleType,
-//     required String mode,
-//     required int passengers,
-//   }) {
-//     double rate = 0;
-//     double distanceKm = double.parse(distance) / 1000;
-//     DateTime now = DateTime.now();
-//     int currentHour = now.hour;
-//     bool isDaytime = currentHour >= 6 && currentHour < 18;
-//     double timeMultiplier = isDaytime ? 1 : 1.1;
-
-//     // Define fare rates for each vehicle type and mode
-//     final Map<String, Map<String, List<double>>> fareRates = {
-//       'Tuk Tuk': {
-//         'Petrol': [2.4, 4.5, 7, 9, 11.5, 14],
-//         'Electric': [1, 1.6, 2.4, 3.4, 4.2, 5],
-//       },
-//       'Motor Bike': {
-//         'Petrol': [1.6, 1.2],
-//         'Electric': [1, 0.75],
-//       },
-//       'Taxi': {
-//         'Petrol': [10, 7.5],
-//         'Electric': [4, 3],
-//       },
-//     };
-
-//     // Get the rate based on vehicle type, mode, and passengers
-//     if (fareRates.containsKey(vehicleType) &&
-//         fareRates[vehicleType]!.containsKey(mode)) {
-//       List<double> rates = fareRates[vehicleType]![mode]!;
-//       rate = rates[passengers - 1]; // Adjust for 0-based index
-//     }
-
-//     // Apply distance and time-based multiplier
-//     return (distanceKm * 10) *
-//         rate *
-//         timeMultiplier *
-//         (isDaytime ? 1.01 : 0.99);
-//   }
-// }
-
 class FareCalculator {
   static double calculateFare({
     required String distance,
@@ -205,193 +160,6 @@ class _MapPageState extends State<MapPage> {
     }
     return {};
   }
-
-  // void _calculateFare(String distance) {
-  //   double rate = 0;
-  //   print(distance);
-  //   double distancedoublevar = double.parse(distance);
-  //   int distanceintvarwithoutroundoff = distancedoublevar.toInt();
-  //   int distanceintvar = distanceintvarwithoutroundoff.round();
-
-  //   DateTime now = DateTime.now();
-  //   int currentHour = now.hour;
-  //   //daytime is equal to 6 to 6
-  //   bool isDaytime = currentHour >= 6 && currentHour < 18;
-
-  //   // Default rate modifier for daytime is 1, and for nighttime it's 1.05
-  //   double timeMultiplier = isDaytime ? 1 : 1.1;
-
-  //   if (selectedVehicleType == 'Tuk Tuk') {
-  //     // Calculate base rate based on distance and mode
-  //     if (distanceintvar <= 7) {
-  //       if (selectedMode == 'Petrol') {
-  //         if (selectedPassengers == 1) {
-  //           rate = 2.4;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 4.5;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 7;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 9;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 11.5;
-  //         } else {
-  //           rate = 14;
-  //         }
-  //       } else {
-  //         // Non-petrol mode
-  //         if (selectedPassengers == 1) {
-  //           rate = 1;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 1.6;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 2.4;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 3.4;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 4.2;
-  //         } else {
-  //           rate = 5;
-  //         }
-  //       }
-  //     } else {
-  //       // Distance greater than 7 km
-  //       if (selectedMode == 'Petrol') {
-  //         if (selectedPassengers == 1) {
-  //           rate = 1.9;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 3.6;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 5.5;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 7.4;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 9.7;
-  //         } else {
-  //           rate = 12;
-  //         }
-  //       } else {
-  //         // Non-petrol mode
-  //         if (selectedPassengers == 1) {
-  //           rate = 0.75;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 1.4;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 4.3;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 5.7;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 7;
-  //         } else {
-  //           rate = 8.5;
-  //         }
-  //       }
-  //     }
-  //   } else if (selectedVehicleType == 'Motor Bike') {
-  //     // Calculate base rate based on distance and mode
-  //     if (distanceintvar <= 10) {
-  //       if (selectedMode == 'Petrol') {
-  //         if (selectedPassengers == 1) {
-  //           rate = 1.6;
-  //         }
-  //       } else {
-  //         // Non-petrol mode
-  //         if (selectedPassengers == 1) {
-  //           rate = 1;
-  //         }
-  //       }
-  //     } else {
-  //       // Distance greater than 7 km
-  //       if (selectedMode == 'Petrol') {
-  //         if (selectedPassengers == 1) {
-  //           rate = 1.2;
-  //         }
-  //       } else {
-  //         // Non-petrol mode
-  //         if (selectedPassengers == 1) {
-  //           rate = 0.75;
-  //         }
-  //       }
-  //     }
-  //   } else if (selectedVehicleType == 'Taxi') {
-  //     // Calculate base rate based on distance and mode
-  //     if (distanceintvar <= 7) {
-  //       if (selectedMode == 'Petrol') {
-  //         if (selectedPassengers == 1) {
-  //           rate = 10;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 10;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 10;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 10;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 10;
-  //         } else {
-  //           rate = 10;
-  //         }
-  //       } else {
-  //         // Non-petrol mode
-  //         if (selectedPassengers == 1) {
-  //           rate = 4;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 4;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 4;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 4;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 4;
-  //         } else {
-  //           rate = 4;
-  //         }
-  //       }
-  //     } else {
-  //       // Distance greater than 7 km
-  //       if (selectedMode == 'Petrol') {
-  //         if (selectedPassengers == 1) {
-  //           rate = 7.5;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 7.5;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 7.5;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 7.5;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 7.5;
-  //         } else {
-  //           rate = 7.5;
-  //         }
-  //       } else {
-  //         // Non-petrol mode
-  //         if (selectedPassengers == 1) {
-  //           rate = 3;
-  //         } else if (selectedPassengers == 2) {
-  //           rate = 3;
-  //         } else if (selectedPassengers == 3) {
-  //           rate = 3;
-  //         } else if (selectedPassengers == 4) {
-  //           rate = 3;
-  //         } else if (selectedPassengers == 5) {
-  //           rate = 3;
-  //         } else {
-  //           rate = 3;
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   // Apply distance and the time-based multiplier to the fare calculation
-  //   fare = (double.parse(distance) * 10) *
-  //       rate *
-  //       timeMultiplier *
-  //       (isDaytime ? 1.01 : 0.99);
-
-  //   // Print to check if it's daytime or nighttime and the calculated fare
-  //   print("Booking time: ${isDaytime ? 'Daytime' : 'Nighttime'}");
-  //   print('Calculated fare: $fare');
-  //   print('Selected Vehicle Type: $selectedVehicleType');
-  // }
 
   Widget _buildVehicleTypeSelector(
       String distance, String duration, StateSetter setState) {
@@ -1149,7 +917,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> fetchlocMethodName() async {
-    Future<void> _fetchLocation() async {
+    Future<void> fetchLocation() async {
       Location location = Location();
 
       bool serviceEnabled = await location.serviceEnabled();
@@ -1172,7 +940,7 @@ class _MapPageState extends State<MapPage> {
       // showLocationInfoPopup(context);
     }
 
-    await _fetchLocation();
+    await fetchLocation();
     await fetchPickupLocationName();
   }
 
@@ -1314,7 +1082,6 @@ class _MapPageState extends State<MapPage> {
                                     ),
                                   ),
                                 ),
-
                                 Padding(
                                   padding:
                                       const EdgeInsets.only(left: 0, top: 42),
@@ -1405,105 +1172,6 @@ class _MapPageState extends State<MapPage> {
                                     ),
                                   ),
                                 ),
-                                // Padding(
-                                //   padding:
-                                //       const EdgeInsets.only(left: 10, top: 35),
-                                //   child: SizedBox(
-                                //     width: MediaQuery.of(context).size.width *
-                                //         0.78,
-                                //     child: Form(
-                                //       key: _formKey,
-                                //       child: TextFormField(
-                                //         validator: (value) {
-                                //           if (value!.isEmpty) {
-                                //             return "Please enter Location";
-                                //           }
-                                //           return null; // Return null if validation passes
-                                //         },
-                                //         onFieldSubmitted: _handleSearch,
-
-                                //         controller: _searchController,
-                                //         decoration: InputDecoration(
-                                //           // Add a hint text
-                                //           hintText: 'Full Location',
-                                //           hintStyle: TextStyle(
-                                //             color: Colors.grey[800],
-                                //             fontSize: 16,
-                                //             fontStyle: FontStyle.italic,
-                                //           ),
-                                //           // Add a prefix icon (e.g., a search icon)
-                                //           prefixIcon: Icon(
-                                //             Icons.search,
-                                //             color: Colors.blue[700],
-                                //             size: 24,
-                                //           ),
-                                //           // Add a border with rounded corners
-                                //           border: OutlineInputBorder(
-                                //             borderRadius:
-                                //                 BorderRadius.circular(12.0),
-                                //             borderSide: BorderSide(
-                                //               color: Colors.blue[700]!,
-                                //               width: 2.0,
-                                //             ),
-                                //           ),
-                                //           // Customize the focused border
-                                //           focusedBorder: OutlineInputBorder(
-                                //             borderRadius:
-                                //                 BorderRadius.circular(12.0),
-                                //             borderSide: BorderSide(
-                                //               color: Colors.blue[700]!,
-                                //               width: 2.0,
-                                //             ),
-                                //           ),
-                                //           // Customize the enabled border
-                                //           enabledBorder: OutlineInputBorder(
-                                //             borderRadius:
-                                //                 BorderRadius.circular(12.0),
-                                //             borderSide: BorderSide(
-                                //               color: Colors.grey[400]!,
-                                //               width: 1.5,
-                                //             ),
-                                //           ),
-                                //           // Add a filled background color
-                                //           filled: true,
-                                //           fillColor: const Color.fromARGB(
-                                //               200, 255, 255, 255),
-                                //           // Add a suffix icon (e.g., a clear button)
-                                //           suffixIcon: _searchController.text
-                                //                   .trim()
-                                //                   .isNotEmpty
-                                //               ? IconButton(
-                                //                   icon: Icon(
-                                //                     Icons.clear,
-                                //                     color: Colors.grey[600],
-                                //                     size: 20,
-                                //                   ),
-                                //                   onPressed: () {
-                                //                     _searchController.clear();
-                                //                     setState(() {});
-                                //                   },
-                                //                 )
-                                //               : null,
-                                //           // Add padding inside the TextField
-                                //           contentPadding: EdgeInsets.symmetric(
-                                //             vertical: 5.0,
-                                //             horizontal: 20.0,
-                                //           ),
-                                //         ),
-                                //         // Customize the text style
-                                //         style: TextStyle(
-                                //           color: Colors.black87,
-                                //           fontSize: 16,
-                                //           fontWeight: FontWeight.w500,
-                                //         ),
-                                //         // Add cursor customization
-                                //         cursorColor: Colors.blue[700],
-                                //         cursorWidth: 2.0,
-                                //         cursorRadius: Radius.circular(2.0),
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
                               ],
                             ),
                           ],
@@ -1962,29 +1630,6 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  // Future<void> fetchDistanceDuration(LatLng destination) async {
-  //   final String distanceAndDuration =
-  //       "https://route-init.gallimap.com/api/v1/routing/distance?mode=driving&srcLat=${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}&srcLng=${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}&dstLat=${destination.latitude}&dstLng=${destination.longitude}&accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec";
-
-  //   try {
-  //     final response = await http.get(Uri.parse(distanceAndDuration));
-  //     final Map<String, dynamic> jsonResponse = json.decode(response.body);
-
-  //     if (jsonResponse['success'] == true) {
-  //       final double distance = jsonResponse['data'][0]['distance'];
-  //       final double duration = jsonResponse['data'][0]['duration'];
-
-  //       print('Hi there Distance is : $distance');
-  //       print('Hi there Duration is : $duration');
-  //       print('hi there hi there');
-  //     } else {
-  //       print('Error: ${jsonResponse['message']}');
-  //     }
-  //   } catch (e) {
-  //     print('Exception caught: $e');
-  //   }
-  // }
-
   Future<bool> fetchDistanceDuration(LatLng destination) async {
     try {
       const String accessToken = '1b040d87-2d67-47d5-aa97-f8b47d301fec';
@@ -2031,35 +1676,6 @@ class _MapPageState extends State<MapPage> {
       return false;
     }
   }
-
-  // Future<void> fetchPickupLocationName() async {
-  //   final String pickupnameURL =
-  //       'https://route-init.gallimap.com/api/v1/reverse/generalReverse?accessToken=1b040d87-2d67-47d5-aa97-f8b47d301fec&lat=${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}&lng=${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}';
-
-  //   try {
-  //     final response = await http.get(Uri.parse(pickupnameURL));
-
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> jsonResponse = json.decode(response.body);
-
-  //       if (jsonResponse['success'] == true) {
-  //         final String locationName = jsonResponse['data']['generalName'];
-  //         print('Hi there Pickup locname is : $locationName');
-  //         print(
-  //             'Hi there Pickup Latitude is : ${double.parse(_currentLocation!.latitude!.toStringAsFixed(6))}, Pickup Longitude is : ${double.parse(_currentLocation!.longitude!.toStringAsFixed(6))}');
-  //         setState(() {
-  //           _pickupLocation = locationName;
-  //         });
-  //       } else {
-  //         print('Error: ${jsonResponse['message']}');
-  //       }
-  //     } else {
-  //       print('Failed to load data: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Exception caught: $e');
-  //   }
-  // }
 
   Future<void> fetchPickupLocationName() async {
     // First check if location is null
@@ -2156,77 +1772,7 @@ class _MapPageState extends State<MapPage> {
     ).show();
   }
 
-  // void _showLocationServiceDialog() {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) => AlertDialog(
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(12.0),
-  //       ),
-  //       title: const Text(
-  //         'Location Service Required',
-  //         style: TextStyle(
-  //           fontWeight: FontWeight.bold,
-  //           fontSize: 20,
-  //         ),
-  //         textAlign: TextAlign.center,
-  //       ),
-  //       content: const Text(
-  //         'Please enable location services to continue. Make sure your device location is turned on.',
-  //         style: TextStyle(fontSize: 16),
-  //         textAlign: TextAlign.center,
-  //       ),
-  //       actionsAlignment: MainAxisAlignment.center,
-  //       actions: <Widget>[
-  //         TextButton(
-  //           child: const Text(
-  //             'Open Settings',
-  //             style: TextStyle(color: Colors.blue),
-  //           ),
-  //           onPressed: () async {
-  //             Navigator.pop(context);
-  //             await _openAppSettings();
-  //           },
-  //         ),
-  //         ElevatedButton(
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: const Color.fromARGB(255, 187, 109, 201),
-  //             shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(8.0),
-  //             ),
-  //             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-  //           ),
-  //           child: const Text(
-  //             'Refresh',
-  //             style: TextStyle(
-  //               color: Colors.white,
-  //               fontWeight: FontWeight.w600,
-  //               fontSize: 16,
-  //             ),
-  //           ),
-  //           onPressed: () {
-  //             Navigator.pop(context);
-  //             _refreshLocation();
-  //           },
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Future<void> _refreshLocation() async {
-    // // Add your location refresh logic here
-    // // For example:
-    // setState(() {
-    //   _currentLocation = null; // Reset location
-    // });
-
-    // // Call your location fetching method again
-    // await fetchPickupLocationName();
-
-    // // You might also want to call your location permission check again
-    // // await _checkLocationPermission();
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(

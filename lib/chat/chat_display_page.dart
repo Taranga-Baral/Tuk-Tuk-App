@@ -423,6 +423,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -530,68 +531,354 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     });
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //start
   void _showTripDetails(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Trip Details'),
-        content: SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Column(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),),
+          child: SingleChildScrollView(
+            physics: ClampingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height * 0.5,
+              ),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+              // Handle
+              Container(
+              margin: EdgeInsets.only(top: 12, bottom: 8),
+              width: 60,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),),
+
+              // Header
+              Padding(
+                padding: EdgeInsets.fromLTRB(24, 16, 16, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Trip Summary',
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.blueAccent),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close_rounded, size: 24),
+                      color: Colors.grey[600],
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Content
+              Padding(
+                padding: EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Column(
+                  children: [
+                    // Driver Card
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: 80,
+                        maxWidth: double.infinity,
+                      ),
+                      child: _buildInfoCard(
+                        icon: Icons.person_outline_rounded,
+                        iconColor: Colors.indigo,
+                        title: 'Driver',
+                        value: widget.driverName,
+                      ),
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Location Cards
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: 80,
+                        maxWidth: double.infinity,
+                      ),
+                      child: _buildLocationCard(
+                        icon: Icons.location_on,
+                        iconColor: Colors.green[600]!,
+                        title: 'Pickup Location',
+                        value: widget.pickupLocation,
+                        backgroundColor: Colors.green[50]!,
+                      ),
+                    ),
+
+                    SizedBox(height: 12),
+
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: 80,
+                        maxWidth: double.infinity,
+                      ),
+                      child: _buildLocationCard(
+                        icon: Icons.location_on,
+                        iconColor: Colors.red[600]!,
+                        title: 'Delivery Location',
+                        value: widget.deliveryLocation,
+                        backgroundColor: Colors.red[50]!,
+                      ),
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Details Grid - Using Wrap instead of GridView
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width - 72) / 2,
+                          child: _buildDetailChip(
+                            icon: Icons.speed_rounded,
+                            label: 'Kilometer',
+                            value: double.parse(widget.distance).toStringAsFixed(1),
+                          ),
+                        ),
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width - 72) / 2,
+                          child: _buildDetailChip(
+                            icon: Icons.currency_rupee,
+                            label: 'NPR',
+                            value: '${widget.fare}',
+                          ),
+                        ),
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width - 72) / 2,
+                          child: _buildDetailChip(
+                            icon: Icons.people_alt_rounded,
+                            label: 'Passengers',
+                            value: widget.no_of_person.toString(),
+                          ),
+                        ),
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width - 72) / 2,
+                          child: _buildDetailChip(
+                            icon: _getVehicleIcon(),
+                            label: 'Vehicle',
+                            value: widget.vehicle_mode,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Button
+              Padding(
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    minimumSize: Size(double.infinity, 56),
+                    elevation: 0,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Close Details',
+                    style: GoogleFonts.outfit(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              )
+              ],
+            ),
+          ),
+        ),
+
+    ),);
+  }
+
+  Widget _buildInfoCard({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String value,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 24, color: iconColor),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'चालकको नाम : ${widget.driverName}',
-                  textAlign: TextAlign.left,
+                  title,
+                  style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[800],
+                      fontWeight: FontWeight.w600),
                 ),
-                Divider(),
+                SizedBox(height: 4),
                 Text(
-                  'उठाउने स्थान : ${widget.pickupLocation}',
-                  textAlign: TextAlign.left,
-                ),
-                Divider(),
-                Text(
-                  'डेलिभरी स्थान : ${widget.deliveryLocation}',
-                  textAlign: TextAlign.left,
-                ),
-                Divider(),
-                Text(
-                  'दूरी : ${widget.distance} km',
-                  textAlign: TextAlign.left,
-                ),
-                Divider(),
-                Text(
-                  'भाडा : NPR ${widget.fare}',
-                  textAlign: TextAlign.left,
-                ),
-                Divider(),
-                Text(
-                  'यात्री (हरू) : ${widget.no_of_person}',
-                  textAlign: TextAlign.left,
-                ),
-                Divider(),
-                Text(
-                  'सवारी साधनको प्रकार : ${widget.vehicle_mode}',
-                  textAlign: TextAlign.left,
+                  value,
+                  style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[800]),
                 ),
               ],
             ),
-          ]),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.blueAccent,
-            ),
-            child: Text('Close'),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildLocationCard({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String value,
+    required Color backgroundColor,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 28, color: iconColor),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                      fontSize: 14,
+
+                      color: iconColor.withOpacity(0.8),
+                      fontWeight: FontWeight.w700),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  value,
+                  style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[800]),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailChip({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.indigo[600]),
+          SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600]),
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getVehicleIcon() {
+    switch(widget.vehicle_mode.toLowerCase()) {
+      case 'taxi': return Icons.local_taxi_rounded;
+      case 'bike': return Icons.electric_bike_rounded;
+      case 'truck': return Icons.local_shipping_rounded;
+      default: return Icons.directions_car_rounded;
+    }
+  }
+  //end
   @override
   Widget build(BuildContext context) {
     TextEditingController messageController = TextEditingController();
@@ -618,7 +905,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       : GestureDetector(
                           onTap: () => _showTripDetails(context),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                            // mainAxisSize: MainAxisSize.space,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               AvatarGlow(
                                 glowColor: Colors.blueAccent,
@@ -630,7 +918,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                       NetworkImage(_cachedProfilePictureUrl!),
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              // SizedBox(width: 12),
                               Text(
                                 widget.driverName,
                                 style: TextStyle(
@@ -638,6 +926,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
+                              ),
+                              SizedBox(
+                                width: 35,
                               ),
                             ],
                           ),
@@ -682,16 +973,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               StreamBuilder<List<Map<String, dynamic>>>(
                 stream: _getMessages(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
+
 
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
 
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No messages.'));
+                    return Container(
+                        color: Colors.redAccent.withAlpha(230),
+                        height: 35,
+                        width: double.infinity,
+                        child: Center(child: Text('No any Messages', style: GoogleFonts.poppins(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),)));
                   }
 
                   final messages = snapshot.data!;
@@ -805,6 +1098,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     maxLines: null,
                     decoration: InputDecoration(
                       hintText: 'Type your message...',
+                      hintStyle: GoogleFonts.outfit(fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        color: Colors.grey[600],
+
+
+                      ),
                       border: InputBorder.none,
                     ),
                   ),

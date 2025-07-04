@@ -258,7 +258,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
       }
     } catch (e) {
-      print("Profile verification error: $e");
+      print('Profile verification error: $e');
       await _auth.signOut();
     }
   }

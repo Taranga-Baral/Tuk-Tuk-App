@@ -385,7 +385,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                     BorderRadius.all(Radius.circular(10)),
                                 borderSide: BorderSide(
                                   color: const Color.fromARGB(
-                                      69, 189, 189, 189)!, // Silverish-grey,
+                                      69, 189, 189, 189), // Silverish-grey,
                                   width: 1.0, // Thin border when untouched
                                 ),
                               ),
@@ -433,7 +433,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                     BorderRadius.all(Radius.circular(10)),
                                 borderSide: BorderSide(
                                   color: const Color.fromARGB(
-                                      69, 189, 189, 189)!, // Silverish-grey,
+                                      69, 189, 189, 189), // Silverish-grey,
                                   width: 1.0, // Thin border when untouched
                                 ),
                               ),
@@ -455,8 +455,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                             ),
                             keyboardType: TextInputType.phone,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return 'Required';
+                              }
                               if (!RegExp(r'^\+?[0-9]{10,15}$')
                                   .hasMatch(value)) {
                                 return 'Enter valid phone number';
@@ -489,7 +490,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                                     BorderRadius.all(Radius.circular(10)),
                                 borderSide: BorderSide(
                                   color: const Color.fromARGB(
-                                      69, 189, 189, 189)!, // Silverish-grey,
+                                      69, 189, 189, 189), // Silverish-grey,
                                   width: 1.0, // Thin border when untouched
                                 ),
                               ),
@@ -511,10 +512,12 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                             ),
                             onChanged: _checkUsernameAvailability,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return 'Required';
-                              if (value.length < 4)
+                              }
+                              if (value.length < 4) {
                                 return 'Minimum 4 characters';
+                              }
                               if (!_usernameAvailable) return 'Username taken';
                               return null;
                             },

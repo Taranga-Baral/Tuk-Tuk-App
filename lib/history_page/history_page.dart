@@ -459,9 +459,8 @@
 //   }
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -706,15 +705,36 @@ class _HistoryPageState extends State<HistoryPage> {
             // height: MediaQuery.of(context).size.height * 0.18,
             width: MediaQuery.of(context).size.width * 0.5,
           ),
-          const SizedBox(height: 0),
           Text(
-            'No trips found!',
-            style: GoogleFonts.outfit(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+           'No Trips Yet',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
             ),
+            textAlign: TextAlign.center,
           ),
-          SizedBox(height: 20),
+
+          const SizedBox(height: 8),
+
+
+          SizedBox(
+            width: MediaQuery.of(context).size.width *0.64,
+            child: Text(
+             'Book yourself a trip first and then come back later !!!',
+              style: GoogleFonts.montserrat(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+          ),
+
+
+          SizedBox(height: 50,),
+
         ],
       ),
     );
