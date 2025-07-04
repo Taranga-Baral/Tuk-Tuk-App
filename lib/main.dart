@@ -294,7 +294,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                     userDoc.exists &&
                     userDoc['phone_number'] != null &&
                     userDoc['username'] != null) {
-                  return MapPage(userId: user.uid);
+                  return HomePage1();
                 } else {
                   // Force logout if profile is incomplete
                   WidgetsBinding.instance.addPostFrameCallback((_) {

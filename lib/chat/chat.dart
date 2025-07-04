@@ -944,7 +944,6 @@ class _ChatPageState extends State<ChatPage> {
   StreamSubscription<QuerySnapshot>? _subscription;
   bool _isInitialLoad = true;
 
-
   // Your existing _checkIfTripIsSuccessful method
   Future<bool> _checkIfTripIsSuccessful(String tripId, String userId) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -961,13 +960,6 @@ class _ChatPageState extends State<ChatPage> {
       return false;
     }
   }
-
-
-
-
-
-
-
 
   Widget _buildDriverList() {
     return ListView.builder(
@@ -1001,7 +993,8 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   );
                 },
-                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
                   const begin = Offset(1.0, 0.0);
                   const end = Offset.zero;
                   const curve = Curves.easeInOut;
@@ -1020,58 +1013,49 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
   Widget _buildEmptyState() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(
-          'assets/no_data_found.gif',
-          width: MediaQuery.of(context).size.width * 0.5,
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'No Active Chats',
-          style: GoogleFonts.outfit(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[600],
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.8,
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/no_data_found.gif',
+                width: MediaQuery.of(context).size.width * 0.5,
+              ),
+              Text(
+                'No Active Chats',
+                style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'When you confirm a driver, your chat will\nappear here',
+                style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  color: Colors.grey[400],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'When you confirm a driver, your chat will appear here',
-          style: GoogleFonts.outfit(
-            fontSize: 14,
-            color: Colors.grey[400],
-          ),
-          textAlign: TextAlign.center,
-        ),
+        )
       ],
     );
   }
-
-
-
-
-
 
   @override
   void initState() {
     super.initState();
     _setupLiveUpdates(); // Replace fetchConfirmedDriversData with this
-     }
-
-
+  }
 
   void _setupLiveUpdates() {
     final firestore = FirebaseFirestore.instance;
@@ -1084,7 +1068,6 @@ class _ChatPageState extends State<ChatPage> {
         .orderBy('confirmedAt', descending: true)
         .snapshots()
         .listen((snapshot) async {
-
       List<Map<String, dynamic>> updatedData = [];
 
       for (var doc in snapshot.docs) {
@@ -1141,13 +1124,11 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-
   @override
   void dispose() {
     _subscription?.cancel(); // Important to prevent memory leaks
     super.dispose();
   }
-
 
   Future<void> _refreshData() async {
     setState(() {});
@@ -1228,8 +1209,6 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1273,20 +1252,11 @@ class _ChatPageState extends State<ChatPage> {
       body: _isInitialLoad
           ? _buildShimmerLoading()
           : confirmedDriversData.isEmpty
-          ? _buildEmptyState()
-          : _buildDriverList(),
+              ? _buildEmptyState()
+              : _buildDriverList(),
     );
   }
 }
-
-
-
-
-
-
-
-
-
 
 class DriverCard extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -1309,7 +1279,6 @@ class DriverCard extends StatefulWidget {
 class _DriverCardState extends State<DriverCard> {
   @override
   Widget build(BuildContext context) {
-
     return Stack(
       clipBehavior: Clip.none,
       children: [

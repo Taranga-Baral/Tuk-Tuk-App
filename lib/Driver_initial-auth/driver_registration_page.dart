@@ -533,6 +533,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/Driver_HomePages/bottom_nav_bar.dart';
 import 'package:final_menu/Driver_initial-auth/initial_auth_field.dart';
 import 'package:final_menu/galli_maps/map_page.dart';
+import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/profile_setup.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -992,7 +993,7 @@ class _DriverRegistrationPageState extends State<DriverRegistrationPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => MapPage(userId: user.uid),
+                                builder: (_) => HomePage1(),
                               ),
                             );
                           } else {

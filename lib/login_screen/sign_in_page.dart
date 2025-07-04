@@ -520,7 +520,7 @@ class _SignInPageState extends State<SignInPage> {
     // Only allow access if profile is complete
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => MapPage(userId: user.uid)),
+      MaterialPageRoute(builder: (_) => HomePage1()),
       (route) => false,
     );
   }
@@ -547,10 +547,7 @@ class _SignInPageState extends State<SignInPage> {
 
         Future.delayed(Duration(seconds: 1), () {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => MapPage(
-                      userId: userCredential.user!.uid,
-                    )),
+            MaterialPageRoute(builder: (context) => HomePage1()),
             (Route<dynamic> route) => false,
           );
         });
@@ -626,7 +623,7 @@ class _SignInPageState extends State<SignInPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => MapPage(userId: userCredential.user!.uid),
+            builder: (_) => HomePage1(),
           ),
         );
       }

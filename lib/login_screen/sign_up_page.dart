@@ -55,10 +55,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           // Navigate to HomePage after 1 second
           Future.delayed(Duration(seconds: 1), () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                  builder: (context) => MapPage(
-                        userId: userId,
-                      )),
+              MaterialPageRoute(builder: (context) => HomePage1()),
             );
           });
 
