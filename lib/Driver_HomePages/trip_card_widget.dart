@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'trip_model.dart';
+import 'package:intl/intl.dart'; // Make sure to import this at the top of your file
 
 class TripCardWidget extends StatefulWidget {
   final TripModel tripData;
@@ -179,12 +180,11 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 Expanded(
                   child: Text(
                     '${widget.tripData.username}',
-                    textAlign:
-                        TextAlign.center, // Adjust text alignment if necessary
+                    textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
-                      color: Colors.blueGrey,
-                      fontWeight: FontWeight.w700,
                       fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade800,
                     ),
                   ),
                 ),
@@ -194,9 +194,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     '${widget.tripData.distance.toStringAsFixed(1)} Km',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
-                      color: Colors.blueGrey,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                      color: Colors.grey.shade800,
                     ),
                   ),
                 ),
@@ -206,9 +206,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     'NPR ${widget.tripData.fare}',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
-                      color: Colors.blueGrey,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                      color: Colors.grey.shade800,
                     ),
                   ),
                 ),
@@ -352,7 +352,11 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 Expanded(
                     child: Text(
                   '${widget.tripData.pickupLocation}',
-                  style: GoogleFonts.comicNeue(),
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
                 )),
               ],
             ),
@@ -369,7 +373,11 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 Expanded(
                     child: Text(
                   '${widget.tripData.deliveryLocation}',
-                  style: GoogleFonts.comicNeue(),
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
                 )),
               ],
             ),
@@ -386,7 +394,11 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 Expanded(
                     child: Text(
                   '${widget.tripData.municipalityDropdown}',
-                  style: GoogleFonts.comicNeue(),
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
                 )),
               ],
             ),
@@ -524,20 +536,20 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 ),
                 IconButton(
                   icon: const Icon(
-                    Icons.location_on,
+                    Icons.location_searching_rounded,
                     color: Colors.blueGrey,
                   ),
                   onPressed: widget.onMapTap,
                 ),
               ],
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${widget.tripData.timestamp}',
-                  style:
-                      GoogleFonts.comicNeue(fontSize: 12, color: Colors.grey),
+                  _formatTimestamp(widget.tripData.timestamp),
+                  style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -545,5 +557,31 @@ class _TripCardWidgetState extends State<TripCardWidget> {
         ),
       ),
     );
+  }
+
+// Add this helper function to your widget class
+  String _formatTimestamp(DateTime date) {
+    final month = DateFormat('MMM').format(date);
+    final day = date.day;
+    final suffix = _getDaySuffix(day);
+    final time = DateFormat('h:mm a').format(date);
+
+    return '$month $day$suffix, $time';
+  }
+
+  String _getDaySuffix(int day) {
+    if (day >= 11 && day <= 13) {
+      return 'th';
+    }
+    switch (day % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
   }
 }

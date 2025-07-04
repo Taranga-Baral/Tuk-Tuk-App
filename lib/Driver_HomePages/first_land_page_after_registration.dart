@@ -627,10 +627,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
   final int _itemsPerPage = 10;
   DocumentSnapshot? _lastDocument;
   bool _hasMore = true;
-   List<bool> _isButtonDisabledList =
+  List<bool> _isButtonDisabledList =
       []; // List to hold button states for each trip
 
-   List<TripModel> _tripDataList = [];
+  List<TripModel> _tripDataList = [];
 
   StreamSubscription<List<TripModel>>? _tripsSubscription;
 
@@ -879,8 +879,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
   //   }
   // }
 
-
-
   Stream<List<TripModel>> _getTripsStream() {
     DateTime cutoffTime = DateTime.now().subtract(Duration(hours: 1));
 
@@ -902,28 +900,24 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
       return querySnapshot.docs
           .map((doc) {
-        final tripData = doc.data();
+            final tripData = doc.data();
 
-        if (vehicleData?['vehicleType'] == tripData['vehicleType']) {
-          tripData['distance'] =
-              double.tryParse(tripData['distance'] as String? ?? '') ??
-                  0.0;
-          tripData['fare'] =
-              double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
-          tripData['tripId'] = doc.id; // Add trip ID
-          return TripModel.fromJson(tripData);
-        }
+            if (vehicleData?['vehicleType'] == tripData['vehicleType']) {
+              tripData['distance'] =
+                  double.tryParse(tripData['distance'] as String? ?? '') ?? 0.0;
+              tripData['fare'] =
+                  double.tryParse(tripData['fare'] as String? ?? '') ?? 0.0;
+              tripData['tripId'] = doc.id; // Add trip ID
+              return TripModel.fromJson(tripData);
+            }
 
-        return null;
-      })
+            return null;
+          })
           .where((trip) => trip != null)
           .toList()
           .cast<TripModel>();
     });
   }
-
-
-
 
   Future<void> _loadButtonStates() async {
     final driverId = widget.driverEmail;
@@ -951,7 +945,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
     }
 
-    setState(() {}); // Update the UI after loading the states
+    if (mounted) {
+      setState(() {}); // Update the UI after loading the states
+    }
   }
 
   Future<double> fetchTotalFare(String driverId) async {
@@ -1159,17 +1155,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   @override
-
-
-
   @override
   void dispose() {
     _tripsSubscription?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
-
-
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1183,10 +1174,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
         title: 'Passenger Requests',
         driverId: widget.driverEmail,
       ),
-
-
-
-
       body: StreamBuilder<List<TripModel>>(
         stream: _getTripsStream(),
         builder: (context, snapshot) {
@@ -1203,10 +1190,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
           return ListView.builder(
             itemCount: trips.length,
             itemBuilder: (context, index) {
-
-
-
-
               if (index == _tripDataList.length) {
                 return Card(
                   margin: const EdgeInsets.all(8),
@@ -1222,8 +1205,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Container(
                                 height: 10,
@@ -1244,8 +1226,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                           Divider(),
                           Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: const [
                               Icon(Icons.electric_rickshaw),
                               Icon(Icons.numbers),
@@ -1259,8 +1240,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
                               height: 30,
-                              width:
-                              MediaQuery.of(context).size.width * 0.8,
+                              width: MediaQuery.of(context).size.width * 0.8,
                               color: Colors.grey,
                             ),
                           ),
@@ -1271,8 +1251,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
                               height: 30,
-                              width:
-                              MediaQuery.of(context).size.width * 0.75,
+                              width: MediaQuery.of(context).size.width * 0.75,
                               color: Colors.grey,
                             ),
                           ),
@@ -1283,8 +1262,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
                               height: 30,
-                              width:
-                              MediaQuery.of(context).size.width * 0.8,
+                              width: MediaQuery.of(context).size.width * 0.8,
                               color: Colors.grey,
                             ),
                           ),
@@ -1292,8 +1270,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             height: 20,
                           ),
                           Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: const [
                               Icon(Icons.send),
                               Icon(
@@ -1350,7 +1327,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           .get();
                       print("$vehicleDataSnapshot.data()?['vehicleMode']");
                       return vehicleDataSnapshot.data()?['vehicleMode']
-                      as String?;
+                          as String?;
                     }
 
                     // Use FutureBuilder to fetch vehicleMode asynchronously
@@ -1366,8 +1343,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         } else if (vehicleModeSnapshot.hasError) {
                           // Handle errors
                           return Center(
-                            child:
-                            Text('Error: ${vehicleModeSnapshot.error}'),
+                            child: Text('Error: ${vehicleModeSnapshot.error}'),
                           );
                         } else if (!vehicleModeSnapshot.hasData ||
                             vehicleModeSnapshot.data == null) {
@@ -1381,21 +1357,18 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           if (passengerVehicleMode == vehicleMode) {
                             return TripCardWidget(
                               driverId: widget.driverEmail, // Pass driverId
-                              userId:
-                              tripData.userId.toString(), // Pass userId
-                              tripId:
-                              tripData.tripId.toString(), // Pass tripId
+                              userId: tripData.userId.toString(), // Pass userId
+                              tripId: tripData.tripId.toString(), // Pass tripId
                               tripData: tripData,
                               onPhoneTap: () {
                                 if (tripData.phoneNumber != null &&
                                     tripData.phoneNumber!.isNotEmpty) {
                                   _launchPhoneNumber(tripData.phoneNumber!);
                                 } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                        content: Text(
-                                            'Phone number not available')),
+                                        content:
+                                            Text('Phone number not available')),
                                   );
                                 }
                               },
@@ -1404,8 +1377,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       DriverViewPassengerLocation(
-                                        tripId: tripData.tripId!, // Pass tripId
-                                      ),
+                                    tripId: tripData.tripId!, // Pass tripId
+                                  ),
                                 ),
                               ),
                               onRequestTap: () {
@@ -1431,9 +1404,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
           );
         },
       ),
-
-
-
     );
   }
 

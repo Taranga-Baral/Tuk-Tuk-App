@@ -406,7 +406,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                       //return card
 
                       return Card(
-                        elevation: 4.0,
+                        elevation: 1,
+                        // color: Colors.white70,
                         margin: EdgeInsets.symmetric(vertical: 8.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -431,8 +432,11 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   Expanded(
                                     child: Text(
                                       '${trip['municipalityDropdown'] ?? 'No Record of Municipality'} - ${trip['vehicle_mode']}',
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.black54),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                   IconButton(
@@ -444,7 +448,7 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.location_history,
+                                    icon: Icon(Icons.location_searching_rounded,
                                         color: Colors.blueGrey),
                                     onPressed: () {
                                       final tripId = trip['tripId'] ?? '';
@@ -623,7 +627,11 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   Expanded(
                                     child: Text(
                                       '${trip['pickupLocation'] ?? 'No pickup location'}',
-                                      style: TextStyle(fontSize: 14),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -641,7 +649,11 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   Expanded(
                                     child: Text(
                                       '${trip['deliveryLocation'] ?? 'No delivery location'}',
-                                      style: TextStyle(fontSize: 14),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -659,7 +671,11 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   Expanded(
                                     child: Text(
                                       '${double.parse(trip['distance']).toStringAsFixed(0)} km',
-                                      style: TextStyle(fontSize: 14),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -677,7 +693,11 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                                   Expanded(
                                     child: Text(
                                       'NPR ${double.parse(trip['fare']).toStringAsFixed(1)}',
-                                      style: TextStyle(fontSize: 14),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -687,8 +707,8 @@ class _DriverFilterPageState extends State<DriverFilterPage> {
                               ),
                               Text(
                                 formatTimestamp(trip['timestamp']),
-                                style:
-                                    TextStyle(fontSize: 11, color: Colors.grey),
+                                style: GoogleFonts.outfit(
+                                    fontSize: 12, color: Colors.grey),
                               ),
                             ],
                           ),
