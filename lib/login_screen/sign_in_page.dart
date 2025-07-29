@@ -492,8 +492,7 @@ class _SignInPageState extends State<SignInPage> {
 
   // Add this at class level
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
+      scopes: ['email', 'profile'], signInOption: SignInOption.standard);
 
   @override
   void initState() {
@@ -505,24 +504,36 @@ class _SignInPageState extends State<SignInPage> {
     User? user = _auth.currentUser;
     if (user == null) return;
 
-    // Verify profile is complete
-    final userDoc = await _firestore.collection('users').doc(user.uid).get();
+    try {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
-    if (!userDoc.exists ||
-        userDoc['phone_number'] == null ||
-        userDoc['username'] == null) {
-      // Force sign out if profile incomplete
+      if (!userDoc.exists ||
+          userDoc['phone_number'] == null ||
+          userDoc['username'] == null) {
+        // Navigate to profile setup instead of signing out
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProfileSetupPage(
+              user: user,
+              googleAccessToken: null, // No tokens available here
+              googleIdToken: null,
+            ),
+          ),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage1()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error checking user profile: $e');
+      // Optionally show error or sign out
       await _auth.signOut();
-      await _googleSignIn.signOut();
-      return;
     }
-
-    // Only allow access if profile is complete
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => HomePage1()),
-      (route) => false,
-    );
   }
 
   void _signIn() async {
@@ -571,16 +582,26 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _signInWithGoogle() async {
     try {
+      if (!mounted) return;
       setState(() => _isGoogleSigningIn = true);
 
-      // Clear existing sessions
-      await Future.wait([
-        _auth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      // Initialize GoogleSignIn if not already done
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
 
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // Only sign out if there's an existing session
+      try {
+        if (await googleSignIn.isSignedIn()) {
+          await googleSignIn.signOut();
+        }
+      } catch (e) {
+        debugPrint('Google sign-out error (can be ignored): $e');
+      }
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
+        if (!mounted) return;
         setState(() => _isGoogleSigningIn = false);
         return;
       }
@@ -596,19 +617,24 @@ class _SignInPageState extends State<SignInPage> {
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
-      // Check if user exists in Firestore
+      if (userCredential.user == null) {
+        throw Exception('User authentication failed');
+      }
+
+      // Check profile completeness
       final userDoc = await _firestore
           .collection('users')
-          .doc(userCredential.user?.uid)
+          .doc(userCredential.user!.uid)
           .get();
 
+      if (!mounted) return;
       setState(() => _isGoogleSigningIn = false);
 
       if (!userDoc.exists ||
           userDoc['phone_number'] == null ||
           userDoc['username'] == null) {
-        // New user or incomplete profile
-        Navigator.pushReplacement(
+        // New user - go to profile setup
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (_) => ProfileSetupPage(
@@ -617,21 +643,21 @@ class _SignInPageState extends State<SignInPage> {
               googleIdToken: googleAuth.idToken,
             ),
           ),
+          (route) => false,
         );
       } else {
-        // Existing user with complete profile
-        Navigator.pushReplacement(
+        // Existing complete profile - go to home
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-            builder: (_) => HomePage1(),
-          ),
+          MaterialPageRoute(builder: (_) => HomePage1()),
+          (route) => false,
         );
       }
     } catch (e) {
+      debugPrint('Google Sign-In Error: $e');
       if (mounted) {
         setState(() => _isGoogleSigningIn = false);
         _showErrorDialog('Sign In Failed', _getErrorMessage(e));
-        debugPrint('Google Sign-In Error: $e');
       }
     }
   }

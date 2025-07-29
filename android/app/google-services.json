@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:488044824852:android:5081cf45a264e6472f5a01",
+        "mobilesdk_app_id": "1:488044824852:android:4e18023ad48b19e42f5a01",
         "android_client_info": {
-          "package_name": "com.example.final_menu"
+          "package_name": "com.example.admin"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "488044824852-p6bcqq5kot83qfrm70c7pn2ulvohfrng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBcn6omDEgh8e5UaQurejByBooUvMWV77A"
@@ -20,7 +25,49 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488044824852-p6bcqq5kot83qfrm70c7pn2ulvohfrng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488044824852:android:5081cf45a264e6472f5a01",
+        "android_client_info": {
+          "package_name": "com.example.final_menu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488044824852-k5aht7jta1oppcnh5mg3co28jd0esq66.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.final_menu",
+            "certificate_hash": "1003c04f855e000e02d1c8cbaa5f7c185856e91f"
+          }
+        },
+        {
+          "client_id": "488044824852-p6bcqq5kot83qfrm70c7pn2ulvohfrng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcn6omDEgh8e5UaQurejByBooUvMWV77A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488044824852-p6bcqq5kot83qfrm70c7pn2ulvohfrng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

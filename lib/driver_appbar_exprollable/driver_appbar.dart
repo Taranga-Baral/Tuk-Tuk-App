@@ -1,3 +1,4 @@
+import 'package:final_menu/driver_buy_token/driver_buy_token.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -376,7 +377,18 @@ class _CustomAppBarState extends State<CustomAppBar> {
                           if (remainingToPay > 0)
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () => _handlePayment(context),
+                                onPressed: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TokenPurchasePage(
+                                          // driverId: widget.driverId,
+                                          // totalFare: driverTotalBalance,
+                                          // paidAmount: paid,
+                                          ),
+                                    ),
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.redAccent,
                                   padding: EdgeInsets.symmetric(vertical: 14),
@@ -579,13 +591,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
     //     );
     //   },
     // );
-  }
-
-// New payment handler
-  void _handlePayment(BuildContext context) async {
-    // Implement your payment logic here
-    // This will automatically trigger a UI update through the streams
-    print('Payment initiated');
   }
 
 // // Helper function to build image cards with full-screen on tap
