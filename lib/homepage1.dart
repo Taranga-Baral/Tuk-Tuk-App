@@ -1404,9 +1404,9 @@ class _HomePage1State extends State<HomePage1> {
                       userId: userId,
                     ),
                     transitionDuration: Duration(
-                        milliseconds: 800), // Longer duration for bouncy effect
+                        milliseconds: 200), // Longer duration for bouncy effect
                     reverseTransitionDuration: Duration(
-                        milliseconds: 800), // Optional: Set reverse duration
+                        milliseconds: 200), // Optional: Set reverse duration
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1689,9 +1689,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              700), // Longer duration for bouncy effect
+                              200), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 400), // Optional: Set reverse duration
+                          milliseconds: 200), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1749,9 +1749,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              700), // Longer duration for bouncy effect
+                              200), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 400), // Optional: Set reverse duration
+                          milliseconds: 200), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1809,9 +1809,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              700), // Longer duration for bouncy effect
+                              200), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 400), // Optional: Set reverse duration
+                          milliseconds: 200), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1869,9 +1869,9 @@ class _HomePage1State extends State<HomePage1> {
                       ),
                       transitionDuration: Duration(
                           milliseconds:
-                              700), // Longer duration for bouncy effect
+                              200), // Longer duration for bouncy effect
                       reverseTransitionDuration: Duration(
-                          milliseconds: 400), // Optional: Set reverse duration
+                          milliseconds: 200), // Optional: Set reverse duration
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0); // Slide from bottom
@@ -1920,42 +1920,76 @@ class _HomePage1State extends State<HomePage1> {
                       color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
+                  // Navigator.push(
+                  //   context,
+                  //   PageRouteBuilder(
+                  //     pageBuilder: (context, animation, secondaryAnimation) =>
+                  //         DriverRegistrationPage(),
+                  //     transitionDuration: Duration(
+                  //         milliseconds: 200), // Duration for the transition
+                  //     reverseTransitionDuration: Duration(
+                  //         milliseconds: 200), // Optional: Set reverse duration
+                  //     transitionsBuilder:
+                  //         (context, animation, secondaryAnimation, child) {
+                  //       // Add a rotation transition
+                  //       var rotateTween = Tween(
+                  //           begin: 0.0,
+                  //           end: 1.0); // Rotate from 0 to 360 degree (0 to 1 scaling ma ho)s
+                  //       var rotateAnimation = animation.drive(rotateTween
+                  //           .chain(CurveTween(curve: Curves.easeInOut)));
+
+                  //       // Add a fade transition
+                  //       var fadeTween = Tween(begin: 0.0, end: 1.0);
+                  //       var fadeAnimation = animation.drive(fadeTween);
+
+                  //       // Add a scale transition
+                  //       var scaleTween = Tween(
+                  //           begin: 0.5, end: 1.0); // Scale from 50% to 100%
+                  //       var scaleAnimation = animation.drive(scaleTween
+                  //           .chain(CurveTween(curve: Curves.easeInOut)));
+
+                  //       return FadeTransition(
+                  //         opacity: fadeAnimation,
+                  //         child: ScaleTransition(
+                  //           scale: scaleAnimation,
+                  //           child: RotationTransition(
+                  //             turns: rotateAnimation,
+                  //             child: child,
+                  //           ),
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // );
+
                   Navigator.push(
                     context,
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
                           DriverRegistrationPage(),
-                      transitionDuration: Duration(
-                          milliseconds: 600), // Duration for the transition
-                      reverseTransitionDuration: Duration(
-                          milliseconds: 500), // Optional: Set reverse duration
+                      transitionDuration:
+                          Duration(milliseconds: 300), // Smooth 300ms
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
-                        // Add a rotation transition
-                        var rotateTween = Tween(
-                            begin: 0.0,
-                            end: 1.0); // Rotate from 0 to 360 degrees
-                        var rotateAnimation = animation.drive(rotateTween
-                            .chain(CurveTween(curve: Curves.easeInOut)));
+                        // A gentle fade from 0 to 1
+                        final fadeAnimation = CurvedAnimation(
+                          parent: animation,
+                          curve: Curves
+                              .easeInOut, // standard, smooth curve finishing almost
+                        );
 
-                        // Add a fade transition
-                        var fadeTween = Tween(begin: 0.0, end: 1.0);
-                        var fadeAnimation = animation.drive(fadeTween);
-
-                        // Add a scale transition
-                        var scaleTween = Tween(
-                            begin: 0.5, end: 1.0); // Scale from 50% to 100%
-                        var scaleAnimation = animation.drive(scaleTween
-                            .chain(CurveTween(curve: Curves.easeInOut)));
+                        // A very subtle scale from 95% to 100%
+                        final scaleAnimation = CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeInOut,
+                        );
 
                         return FadeTransition(
                           opacity: fadeAnimation,
                           child: ScaleTransition(
-                            scale: scaleAnimation,
-                            child: RotationTransition(
-                              turns: rotateAnimation,
-                              child: child,
-                            ),
+                            scale: Tween<double>(begin: 0.95, end: 1.0)
+                                .animate(scaleAnimation), // Very subtle scale
+                            child: child,
                           ),
                         );
                       },

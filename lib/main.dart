@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_menu/galli_maps/map_page.dart';
 import 'package:final_menu/homepage1.dart';
 import 'package:final_menu/login_screen/sign_in_page.dart';
+import 'package:final_menu/providers/api_provider.dart';
 import 'package:final_menu/splash_screen/splash_screen.dart';
 import 'package:final_menu/tutorial_screen_user/tutorial_screen_user.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,7 @@ Future<void> main() async {
     statusBarBrightness: Brightness.dark,
   ));
   WidgetsFlutterBinding.ensureInitialized();
+  // await ApiProvider.initialize(); // Initialize before running app
 
   await _initializeLocationServices();
 

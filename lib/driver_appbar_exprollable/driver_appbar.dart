@@ -244,168 +244,174 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     ],
                   ),
                   padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Drag handle
-                      Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        margin: EdgeInsets.only(bottom: 12),
-                      ),
-
-                      // Header
-                      Text(
-                        'चालक जानकारी',
-                        style: GoogleFonts.poppins(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.blueGrey[800],
-                        ),
-                      ),
-                      SizedBox(height: 16),
-
-                      // Images in a compact grid
-                      GridView.count(
-                        shrinkWrap: true,
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 8,
-                        childAspectRatio: 0.9,
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          _buildImageCard(
-                              driverData['profilePictureUrl'] ?? ''),
-                          _buildImageCard(
-                              driverData['selfieWithCitizenshipUrl'] ?? ''),
-                          _buildImageCard(
-                              driverData['selfieWithLicenseUrl'] ?? ''),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-
-                      // Driver info card
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              driverData['name'] ?? 'Unknown',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.blueGrey[900],
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            _buildDetailItem(Icons.location_on, 'ठेगाना',
-                                driverData['address'] ?? 'Unknown'),
-                            _buildDetailItem(Icons.directions_car, 'सवारी',
-                                '${driverData['vehicleType'] ?? 'Unknown'} (${driverData['vehicleMode'] ?? 'Unknown'})'),
-                            _buildDetailItem(
-                                Icons.confirmation_number,
-                                'नम्बर प्लेट',
-                                driverData['numberPlate'] ?? 'Unknown'),
-                            _buildDetailItem(Icons.phone, 'फोन नम्बर',
-                                driverData['phone'] ?? 'Unknown'),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 16),
-
-                      // Financial card
-                      Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: Column(
-                          children: [
-                            _buildFinancialRow('Total Earnings', totalEarnings,
-                                Colors.black87),
-                            // SizedBox(height: 8),
-                            // _buildFinancialRow(
-                            //     'Pending Payment',
-                            //     remainingToPay,
-                            //     remainingToPay > 0
-                            //         ? Colors.orange[700]!
-                            //         : Colors.green[700]!),
-
-                            SizedBox(height: 8),
-                            _buildFinancialRow(
-                                'Token Left',
-                                remainingToPay + 100,
-                                remainingToPay > 0
-                                    ? Colors.redAccent
-                                    : Colors.green[700]!),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-
-                      // Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(vertical: 14),
-                                side: BorderSide(color: Colors.redAccent),
-                              ),
-                              child: Text('Close',
-                                  style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                      color: Colors.blueGrey[800])),
-                            ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Drag handle
+                        Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2),
                           ),
-                          if (remainingToPay > 0) SizedBox(width: 12),
-                          if (remainingToPay > 0)
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TokenPurchasePage(
-                                          // driverId: widget.driverId,
-                                          // totalFare: driverTotalBalance,
-                                          // paidAmount: paid,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.redAccent,
-                                  padding: EdgeInsets.symmetric(vertical: 14),
-                                  elevation: 0,
+                          margin: EdgeInsets.only(bottom: 12),
+                        ),
+
+                        // Header
+                        Text(
+                          'चालक जानकारी',
+                          style: GoogleFonts.poppins(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.blueGrey[800],
+                          ),
+                        ),
+                        SizedBox(height: 16),
+
+                        // Images in a compact grid
+                        GridView.count(
+                          shrinkWrap: true,
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                          childAspectRatio: 0.9,
+                          physics: NeverScrollableScrollPhysics(),
+                          children: [
+                            _buildImageCard(
+                                driverData['profilePictureUrl'] ?? ''),
+                            _buildImageCard(
+                                driverData['selfieWithCitizenshipUrl'] ?? ''),
+                            _buildImageCard(
+                                driverData['selfieWithLicenseUrl'] ?? ''),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+
+                        // Driver info card
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey[200]!),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                driverData['name'] ?? 'Unknown',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blueGrey[900],
                                 ),
-                                child: Text('Buy Token',
+                              ),
+                              SizedBox(height: 8),
+                              _buildDetailItem(Icons.location_on, 'ठेगाना',
+                                  driverData['address'] ?? 'Unknown'),
+                              _buildDetailItem(Icons.directions_car, 'सवारी',
+                                  '${driverData['vehicleType'] ?? 'Unknown'} (${driverData['vehicleMode'] ?? 'Unknown'})'),
+                              _buildDetailItem(
+                                  Icons.confirmation_number,
+                                  'नम्बर प्लेट',
+                                  driverData['numberPlate'] ?? 'Unknown'),
+                              _buildDetailItem(Icons.phone, 'फोन नम्बर',
+                                  driverData['phone'] ?? 'Unknown'),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 16),
+
+                        // Financial card
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey[200]!),
+                          ),
+                          child: Column(
+                            children: [
+                              _buildFinancialRow('Total Earnings',
+                                  totalEarnings, Colors.black87),
+                              // SizedBox(height: 8),
+                              // _buildFinancialRow(
+                              //     'Pending Payment',
+                              //     remainingToPay,
+                              //     remainingToPay > 0
+                              //         ? Colors.orange[700]!
+                              //         : Colors.green[700]!),
+
+                              SizedBox(height: 8),
+                              Text(
+                                'No Commissions, yet. Enjoy your earnings!',
+                                textAlign: TextAlign.right,
+                              ),
+                              // _buildFinancialRow(
+                              //     'Token Left',
+                              //     remainingToPay + 100,
+                              //     remainingToPay > 0
+                              //         ? Colors.redAccent
+                              //         : Colors.green[700]!),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+
+                        // Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  side: BorderSide(color: Colors.redAccent),
+                                ),
+                                child: Text('Close',
                                     style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,
-                                        color: Colors.white)),
+                                        color: Colors.blueGrey[800])),
                               ),
                             ),
-                        ],
-                      ),
-                      SizedBox(
-                          height: MediaQuery.of(context).viewInsets.bottom),
-                    ],
+                            if (remainingToPay > 0) SizedBox(width: 12),
+                            // if (remainingToPay > 0)
+                            //   Expanded(
+                            //     child: ElevatedButton(
+                            //       onPressed: () {
+                            //         Navigator.pushReplacement(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //             builder: (context) => TokenPurchasePage(
+                            //                 // driverId: widget.driverId,
+                            //                 // totalFare: driverTotalBalance,
+                            //                 // paidAmount: paid,
+                            //                 ),
+                            //           ),
+                            //         );
+                            //       },
+                            //       style: ElevatedButton.styleFrom(
+                            //         backgroundColor: Colors.redAccent,
+                            //         padding: EdgeInsets.symmetric(vertical: 14),
+                            //         elevation: 0,
+                            //       ),
+                            //       child: Text('Buy Token',
+                            //           style: GoogleFonts.poppins(
+                            //               fontWeight: FontWeight.w600,
+                            //               fontSize: 16,
+                            //               color: Colors.white)),
+                            //     ),
+                            //   ),
+                          ],
+                        ),
+                        SizedBox(
+                            height: MediaQuery.of(context).viewInsets.bottom),
+                      ],
+                    ),
                   ),
                 );
               },

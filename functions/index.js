@@ -2,27 +2,22 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
 
-// Reference to Firestore
-const db = admin.firestore();
+const GALLI_MAPS_TOKEN = "1b040d87-2d67-47d5-aa97-f8b47d301fec";
 
-// Define the HTTP function
-exports.getDeliveryInfo = functions.https.onRequest(async (req, res) => {
-  try {
-    // Get data from Firestore
-    const snapshot = await db.collection("trips").get();
-    if (snapshot.empty) {
-      return res.status(404).send("No data found.");
-    }
-    // Process data
-    const data = [];
-    snapshot.forEach((doc) => {
-      data.push({id: doc.id, ...doc.data()});
-    });
-
-    // Send the data as JSON
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error("Error retrieving data:", error);
-    return res.status(500).send("Internal Server Error");
+exports.generateTempToken = functions.https.onCall(async (data, context) => {
+  // 🔐 1. Require user authentication
+  if (!context.auth) {
+    throw new functions.https.HttpsError( "unauthenticated", "Login required" );
   }
+
+  // ⏳ 2. Create a short-lived token (e.g., 5 minutes)
+  const tempToken = await admin.firestore().collection("tokens").add({
+    token: GALLI_MAPS_TOKEN,
+    userId: context.auth.uid,
+    expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 mins expiry
+  });
+
+  // 3. Return a **reference ID** (not the actual token)
+  return {tokenId: tempToken.id};
 });
+
